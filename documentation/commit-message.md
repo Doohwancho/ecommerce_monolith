@@ -13,7 +13,7 @@ How
 
 
 1) {feature}-{actions}-{prev+1}: {content}
-2) {etc}: {content}
+2) {etc}-{prev+1}: {content}
 
 
 
@@ -29,6 +29,10 @@ discount
 order
 delivery
 payment
+
+aws
+db
+api
 ci : CI 관련 설정 수정에 대한 커밋
 docs : 문서 수정에 대한 커밋
 
