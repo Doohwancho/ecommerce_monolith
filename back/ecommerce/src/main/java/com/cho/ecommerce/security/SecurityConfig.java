@@ -2,6 +2,7 @@ package com.cho.ecommerce.security;
 
 
 import com.cho.ecommerce.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,12 +13,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@RequiredArgsConstructor
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
     
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -25,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
     
@@ -33,18 +34,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
+            .csrf()
+                .ignoringAntMatchers("/h2-console/**") // Disable CSRF for H2 console
+                .disable() //disable csrf for conveniency
+                .headers().frameOptions().disable().and() //h2-console 접속시 ui error 막기 위해 썼다.
             .formLogin(config -> {
                 config.loginPage("/login")
-//                    .successForwardUrl("/")
-                    .failureForwardUrl("/login?error=true");
+                    .failureForwardUrl("/login?error=true")
+                    .defaultSuccessUrl("/", true);
             })
             .authorizeRequests(config -> {
-                config.antMatchers("/login")
-                    .permitAll()
-                    .antMatchers("/")
-                    .authenticated()
-                ;
+                config.antMatchers("/login").permitAll()
+                    .antMatchers("/register").permitAll()
+                    .antMatchers("/h2-console/**").permitAll() //allow h2-console access for developer
+                    .anyRequest().authenticated();
+                //Q. what is .anyRequest().authenticated()?
+                //any request not matched by the previous antMatchers should be authenticated.
+                //In other words, all other URLs in your application require the user to be authenticated.
             })
         ;
     }

@@ -9,14 +9,14 @@ spring:
   # Database Setting Info (Database를 H2로 사용하기 위해 H2연결 정보 입력)
   datasource:
     driver-class-name: org.h2.Driver  # Database를 H2로 사용하겠다.
-    url: jdbc:h2:~/test  # H2 접속 정보
+    url: jdbc:h2:mem:testdb  # H2 접속 정보
     username: sa  # H2 접속 시 입력할 username 정보 (원하는 것으로 입력)
     password:  # H2 접속 시 입력할 password 정보 (원하는 것으로 입력)
-    initialization-mode: always # ?
+    initialization-mode: always # 서버 생성시 자동으로 db schema 생성이나 data.sql을 insert해준다.
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl_auto: create # 애플리케이션이 시작할 때 DB를 어떻게 할 것인지 정해준다.
+      ddl_auto: update # 애플리케이션이 시작할 때 DB를 어떻게 할 것인지 정해준다.
     properties.hibernate:
       hbm2ddl.auto: create    # 애플리케이션이 시작할 때 DB를 어떻게 할 것인지 정해준다.
       format_sql: true        # sql 쿼리를 예쁘게 보여준다.
