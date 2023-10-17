@@ -13,7 +13,6 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,8 +30,7 @@ public class UserService implements UserDetailsService {
     private final AuthorityRepository authorityRepository;
     private final UserAuthorityRepository userAuthorityRepository;
     private final UserRepository userRepository;
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
     
     @Transactional
     public User save(User user) {
@@ -61,7 +59,7 @@ public class UserService implements UserDetailsService {
     
     
     public Optional<User> findUser(String userId) {
-        return userRepository.findByUserId(userId); //TODO 5 - Optional을 반환타입으로 하면 안좋다고 effective java에서 말한거같은데?
+        return userRepository.findByUserId(userId); //TODO 5 - Optional을 반환타입으로 하면 안좋다고 effective java에서 말한거 같은데?
     }
     
     @Transactional
@@ -117,13 +115,13 @@ public class UserService implements UserDetailsService {
         return userOptional.isPresent();
     }
     
-    public void clearUsers() {
-        userRepository.deleteAll();
-    }
+//    public void clearUsers() {
+//        userRepository.deleteAll();
+//    }
     
-    public Page<User> listUsers(Integer page, Integer size) {
-        return userRepository.findAll(PageRequest.of(page - 1, size));
-    }
+//    public Page<User> listUsers(Integer page, Integer size) {
+//        return userRepository.findAll(PageRequest.of(page - 1, size));
+//    }
     
 //    public Map<String, User> getUserMap(Collection<String> userIds) {
 //        if (userIds == null || userIds.isEmpty()) {

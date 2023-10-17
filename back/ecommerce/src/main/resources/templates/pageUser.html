@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Protected Page</title>
+</head>
+<body>
+
+<div sec:authorize="hasRole('ROLE_USER')">
+  <h1>Welcome, user!</h1>
+  <p>This content is only visible to logged-in users with the "ROLE_USER" authority.</p>
+</div>
+
+<!-- Optional: Display a login link for non-logged-in users -->
+<div sec:authorize="isAnonymous()">
+  <a href="/login">Login to view content</a>
+</div>
+
+</body>
+</html>

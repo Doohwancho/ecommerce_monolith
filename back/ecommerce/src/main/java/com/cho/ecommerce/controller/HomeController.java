@@ -53,7 +53,7 @@ public class HomeController {
         if (error) {
             model.addAttribute("errorMessage", "아이디나 패스워드가 올바르지 않습니다.");
         }
-        return "loginForm";
+        return "redirect:/user";
     }
     
     
@@ -63,7 +63,6 @@ public class HomeController {
         return "register";
     }
     
-    
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user, BindingResult result) {
         if (result.hasErrors()) {
@@ -71,24 +70,19 @@ public class HomeController {
             log.info("binding error on controller!!"); //TODO - binding result handling error 처리
             return "redirect:/register";
         }
-        //@ModelAttribute User user
         userService.save(user);
         return "redirect:/login";
     }
-//
-//    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
-//    @GetMapping(value = "/user")
-//    public SecurityMessage user() {
-//        return SecurityMessage.builder()
-//            .message("user page")
-//            .auth(SecurityContextHolder.getContext().getAuthentication()).build();
-//    }
-//
-//    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-//    @GetMapping(value = "/admin")
-//    public SecurityMessage admin() {
-//        return SecurityMessage.builder()
-//            .message("admin page")
-//            .auth(SecurityContextHolder.getContext().getAuthentication()).build();
-//    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    @GetMapping(value = "/user")
+    public String user() {
+        return "pageUser";
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @GetMapping(value = "/admin")
+    public String admin() {
+        return "pageAdmin";
+    }
 }
