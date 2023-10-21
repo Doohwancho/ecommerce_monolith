@@ -8,7 +8,7 @@
 
 <div class="container">
   <h2>Register</h2>
-  <form th:action="@{/register}" th:object="${user}" method="post">
+  <form th:action="@{/register}" th:object="${userEntity}" method="post">
     <div class="form-group">
       <label for="userId">userId:</label>
       <input type="text" id="userId" th:field="*{userId}" required placeholder="Enter userId" />

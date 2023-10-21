@@ -1,0 +1,113 @@
+openapi: 3.0.3
+info:
+  title: User Management API
+  version: 1.0.0
+  description: API for managing users, authorities, and user-authorities.
+paths:
+  /register:
+    post:
+      tags:
+        - User
+      summary: return whether or not register succeeded
+      description: Returns the Result of Register Attempt
+      operationId: registerUser
+      parameters:
+        - name: userId
+          in: query
+          description: Unique user identifier.
+          required: true
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: Unique email address.
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: User's name.
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: User's password.
+          required: true
+          schema:
+            type: string
+      responses: #TODO - default:
+        201:
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Registration successful"
+        400:
+          description: Bad Request
+  /login:
+    post:
+      tags:
+        - User
+      summary: Authenticate and login a user
+      description: Authenticates the user and returns a login status message.
+      operationId: loginUser
+      requestBody:
+        description: User credentials for authentication
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginPostDTO'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginPostDTO'
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged in successfully"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid username or password"
+components:
+  schemas:
+    RegisterPostDTO:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Unique user identifier.
+        email:
+          type: string
+          description: Unique email address.
+        name:
+          type: string
+        password:
+          type: string
+    LoginPostDTO:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Unique user identifier.
+        password:
+          type: string
+          description: User's password.

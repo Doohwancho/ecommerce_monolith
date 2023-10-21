@@ -561,7 +561,7 @@
       {
         "value": "방법\n\n1. Distributor, Dropshipper는 추후 필요가 생기면, 요구 컬럼 조사 후, 새로운 테이블을 만들어 Member 테이블과 1대1 관계를 맺어준다.\n2. AUTHORITY는 ROLE_GUEST, ROLE_MEMBER, ROLE_MERCHANT, ROLE_VIP, ROLE_ADMIN이 있다.\n3. ROLE_GUEST는 회원가입만 한 상태이며, google OAuth 인증이나, 외부 인증 모듈을 pass하면 ROLE_MEMBER로 승격시켜주는 로직을 추후 작성한다.\n4. 모든 유저는 MEMBER 테이블에 등록되고 (구매자든 판매자든), 개인 인증 후 ROLE_MEMBER가 되면 구매신청이 가능하다. \n5. 판매자의 경우, ROLE_MEMBER인 상태에서, 판매자 등록페이지에서 MERCHANT/AFFILIATE/DISTRIBUTOR/DROPSHIPPER/ETC 등으로 판매자 등록하면, 해당 테이블에 정보가 들어간다.\n6. ",
         "ui": {
-          "active": true,
+          "active": false,
           "left": 606,
           "top": 302,
           "zIndex": 8,

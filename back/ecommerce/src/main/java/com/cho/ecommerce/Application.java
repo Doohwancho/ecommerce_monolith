@@ -1,13 +1,12 @@
 package com.cho.ecommerce;
 
-import com.cho.ecommerce.domain.Authority;
-import com.cho.ecommerce.domain.User;
-import com.cho.ecommerce.domain.UserAuthority;
-import com.cho.ecommerce.repository.AuthorityRepository;
-import com.cho.ecommerce.repository.UserAuthorityRepository;
-import com.cho.ecommerce.repository.UserRepository;
+import com.cho.ecommerce.domain.member.entity.AuthorityEntity;
+import com.cho.ecommerce.domain.member.entity.UserEntity;
+import com.cho.ecommerce.domain.member.entity.UserAuthorityEntity;
+import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
+import com.cho.ecommerce.domain.member.repository.UserAuthorityRepository;
+import com.cho.ecommerce.domain.member.repository.UserRepository;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -31,17 +30,17 @@ public class Application {
         return args -> {
             //step1) ROLE_USER, ROLE_ADMIN to Authority table
             if (!authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
-                Authority userRole = new Authority("ROLE_USER");
+                AuthorityEntity userRole = new AuthorityEntity("ROLE_USER");
                 authorityRepository.save(userRole);
             }
             if (!authorityRepository.findByAuthority("ROLE_ADMIN").isPresent()) {
-                Authority adminRole = new Authority("ROLE_ADMIN");
+                AuthorityEntity adminRole = new AuthorityEntity("ROLE_ADMIN");
                 authorityRepository.save(adminRole);
             }
             
             //step2) create admin with id:admin pw:admin
             if (authorityRepository.findByAuthority("ROLE_ADMIN").isPresent()) {
-                User admin = new User();
+                UserEntity admin = new UserEntity();
                 admin.setUserId("admin");
                 admin.setName("admin");
                 admin.setEmail("admin@admin.com");
@@ -51,16 +50,17 @@ public class Application {
                 admin.setRole("ADMIN");
                 admin.setEnabled(true);
     
-                User savedUser = userRepository.save(admin);
+                UserEntity savedUserEntity = userRepository.save(admin);
                 
-                Authority userRole = authorityRepository.findByAuthority(Authority.ROLE_ADMIN)
+                AuthorityEntity userRole = authorityRepository.findByAuthority(
+                        AuthorityEntity.ROLE_ADMIN)
                     .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
     
-                UserAuthority userAuthority = new UserAuthority();
-                userAuthority.setUser(savedUser);
-                userAuthority.setAuthority(userRole);
+                UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
+                userAuthorityEntity.setUserEntity(savedUserEntity);
+                userAuthorityEntity.setAuthorityEntity(userRole);
     
-                userAuthorityRepository.save(userAuthority);
+                userAuthorityRepository.save(userAuthorityEntity);
             }
         };
     }
