@@ -21,8 +21,10 @@ Features
 
 1. authentication
 2. security
-3. synchronization
-4. structure
+3. product
+4. order
+5. payment
+
 
 ---\
 Actions
