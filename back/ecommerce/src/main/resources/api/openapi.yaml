@@ -11,7 +11,7 @@ paths:
       summary: return whether or not register succeeded
       description: Returns the Result of Register Attempt
       operationId: registerUser
-      parameters:
+      parameters: #TODO - parameters to schema
         - name: userId
           in: query
           description: Unique user identifier.
@@ -36,7 +36,7 @@ paths:
           required: true
           schema:
             type: string
-      responses: #TODO - default:
+      responses:
         201:
           description: Registration successful
           content:
@@ -49,6 +49,16 @@ paths:
                     example: "Registration successful"
         400:
           description: Bad Request
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
   /login:
     post:
       tags:
@@ -87,6 +97,16 @@ paths:
                   message:
                     type: string
                     example: "Invalid username or password"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
 components:
   schemas:
     RegisterPostDTO:

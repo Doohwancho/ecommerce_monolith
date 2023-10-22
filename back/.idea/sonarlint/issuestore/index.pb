@@ -17,7 +17,5 @@ Vecommerce/src/main/java/com/cho/ecommerce/domain/member/repository/UserReposito
 Secommerce/src/main/java/com/cho/ecommerce/domain/member/entity/AuthorityEntity.java,e/a/ea6af488c95b71b907e0d7d33b2f0882fb35c15b
 ‡
 Wecommerce/src/main/java/com/cho/ecommerce/domain/member/entity/UserAuthorityEntity.java,b/9/b9318de29854120218cf8e0280697b8e884d5d70
-{
-Kecommerce/src/main/java/com/cho/ecommerce/global/config/SecurityConfig.java,6/c/6ca8e45ec1fb40b81b6f998662ebf781f440283a
 ‚
 Recommerce/src/main/java/com/cho/ecommerce/domain/member/util/UserDTOConverter.java,9/d/9d8b662a4b2d98aca254fbfa0da4e384248b2649
