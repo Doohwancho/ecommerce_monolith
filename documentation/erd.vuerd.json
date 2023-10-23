@@ -3,7 +3,7 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -99,
+    "scrollTop": -112,
     "scrollLeft": -104,
     "zoomLevel": 0.9,
     "show": {
@@ -43,7 +43,7 @@
   "table": {
     "tables": [
       {
-        "name": "Member",
+        "name": "MEMBER",
         "comment": "USER 테이블 명은 MYSQL에서 쓸 수 없으니 MEMBER로 변경",
         "columns": [
           {
@@ -258,7 +258,7 @@
           "active": false,
           "left": 53.8891,
           "top": 51.1121,
-          "zIndex": 85,
+          "zIndex": 96,
           "widthName": 60,
           "widthComment": 120,
           "color": "#EB4747"
@@ -416,7 +416,7 @@
         "id": "a0e26ae3-223c-4c3f-99fe-50219513e42b"
       },
       {
-        "name": "Product",
+        "name": "PRODUCT",
         "comment": "",
         "columns": [
           {
@@ -562,7 +562,7 @@
           "active": false,
           "left": 78.7777,
           "top": 382.7782,
-          "zIndex": 88,
+          "zIndex": 98,
           "widthName": 60,
           "widthComment": 60,
           "color": "#97FF00"
@@ -571,7 +571,7 @@
         "id": "9f137a29-7f3d-4506-ac6a-dada8a928dab"
       },
       {
-        "name": "Category",
+        "name": "CATEGORY",
         "comment": "",
         "columns": [
           {
@@ -648,8 +648,8 @@
           "active": false,
           "left": 573.2228,
           "top": 300.5568,
-          "zIndex": 89,
-          "widthName": 60,
+          "zIndex": 100,
+          "widthName": 62.64494323730469,
           "widthComment": 60,
           "color": "#00FF97"
         },
