@@ -51,4 +51,12 @@ public class CategoryEntity{
     public String getName() {
         return this.name;
     }
+    
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
 }

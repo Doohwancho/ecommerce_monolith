@@ -41,4 +41,8 @@ public class OptionEntity {
     public Set<OptionVariationEntity> getOptionVariations() {
         return this.optionVariations;
     }
+    
+    public void setCategory(CategoryEntity category) {
+        this.category = category;
+    }
 }
