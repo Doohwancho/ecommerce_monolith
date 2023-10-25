@@ -1,6 +1,9 @@
 package com.cho.ecommerce.domain.product.entity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,6 +34,9 @@ public class ProductItemEntity {
     
     @OneToMany(mappedBy = "productItem")
     private Set<ProductOptionVariationEntity> productOptionVariations;
+    
+    @OneToMany(mappedBy = "productItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DiscountEntity> discounts = new ArrayList<>();
     
     // getters, setters, and other methods
 }

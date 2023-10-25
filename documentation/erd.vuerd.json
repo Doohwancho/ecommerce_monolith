@@ -3,8 +3,8 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -112,
-    "scrollLeft": -104,
+    "scrollTop": -121,
+    "scrollLeft": -58,
     "zoomLevel": 0.9,
     "show": {
       "tableComment": true,
@@ -757,7 +757,7 @@
           "active": false,
           "left": 53.2223,
           "top": 668.445,
-          "zIndex": 90,
+          "zIndex": 110,
           "widthName": 89.3209228515625,
           "widthComment": 60,
           "color": "#0055FF"
@@ -1013,15 +1013,170 @@
         ],
         "ui": {
           "active": false,
-          "left": 505.7774,
-          "top": 914.4449,
-          "zIndex": 94,
+          "left": 504.6663,
+          "top": 947.7782,
+          "zIndex": 114,
           "widthName": 170.81784057617188,
           "widthComment": 60,
           "color": "#FF0000"
         },
         "visible": true,
         "id": "431af9d1-4261-4c8c-8814-c3c932f96dae"
+      },
+      {
+        "name": "DISCOUNT",
+        "comment": "",
+        "columns": [
+          {
+            "name": "DISCOUNT_ID",
+            "comment": "",
+            "dataType": "",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": true,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": true,
+              "fk": false,
+              "pfk": false,
+              "widthName": 77.07492065429688,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "2edfce1d-af1d-42ad-b2b0-ce41c5143043"
+          },
+          {
+            "name": "DISCOUNT_TYPE",
+            "comment": "",
+            "dataType": "",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 93.89691162109375,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "17211095-61dd-4461-b5a0-72468b3ee8e8"
+          },
+          {
+            "name": "DISCOUNT_VALUE",
+            "comment": "",
+            "dataType": "",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 102.43789672851562,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "02ebeaa4-534e-47cf-8a11-ea1d161a007a"
+          },
+          {
+            "name": "START_DATE",
+            "comment": "",
+            "dataType": "",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 71.34193420410156,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "e1c86f35-9dd7-4b28-9f7f-b4da0662d5ba"
+          },
+          {
+            "name": "END_DATE",
+            "comment": "",
+            "dataType": "",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60.44795227050781,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "449a2e08-cbab-425d-ad42-0ead41792b0d"
+          },
+          {
+            "name": "PRODUCT_ITEM_ID",
+            "comment": "",
+            "dataType": "",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": true,
+              "pfk": false,
+              "widthName": 105.50590515136719,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "cc44d105-ecff-4498-8de7-3b870106b105"
+          }
+        ],
+        "ui": {
+          "active": false,
+          "left": 22.8889,
+          "top": 894.5549,
+          "zIndex": 113,
+          "widthName": 60.88993835449219,
+          "widthComment": 60,
+          "color": "#FF8000"
+        },
+        "visible": true,
+        "id": "6a58c7ea-61a4-483b-9ad3-57f3a85aa0ab"
       }
     ],
     "indexes": []
@@ -1231,8 +1386,8 @@
           "columnIds": [
             "09afc5af-abae-4320-b8fa-e171de86f820"
           ],
-          "x": 742.7788114379882,
-          "y": 914.4449,
+          "x": 741.6677114379883,
+          "y": 947.7782,
           "direction": "top"
         },
         "constraintName": "fk_option_variation_to_product_option_variation",
@@ -1257,13 +1412,39 @@
           "columnIds": [
             "eef49391-0b6b-4311-9c04-1d6263763644"
           ],
-          "x": 505.7774,
-          "y": 979.6949,
+          "x": 504.6663,
+          "y": 1013.0282,
           "direction": "left"
         },
         "constraintName": "fk_product_item_to_product_option_variation",
         "visible": true,
         "id": "44751eb9-517a-4a14-b1fe-8bd8ab4995fb"
+      },
+      {
+        "identification": false,
+        "relationshipType": "OneN",
+        "startRelationshipType": "Dash",
+        "start": {
+          "tableId": "31d8d004-d5ad-4d26-965d-c304d1c1855b",
+          "columnIds": [
+            "5ebad9a3-b3dc-40a4-949c-fe022a5bc12d"
+          ],
+          "x": 249.47525257568358,
+          "y": 819.445,
+          "direction": "bottom"
+        },
+        "end": {
+          "tableId": "6a58c7ea-61a4-483b-9ad3-57f3a85aa0ab",
+          "columnIds": [
+            "cc44d105-ecff-4498-8de7-3b870106b105"
+          ],
+          "x": 219.1418525756836,
+          "y": 894.5549,
+          "direction": "top"
+        },
+        "constraintName": "fk_product_item_to_discount",
+        "visible": true,
+        "id": "0bd55130-42ed-42ee-8ce3-6659d6cc8491"
       }
     ]
   }

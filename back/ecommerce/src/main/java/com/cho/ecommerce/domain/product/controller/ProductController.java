@@ -1,6 +1,7 @@
 package com.cho.ecommerce.domain.product.controller;
 
 import com.cho.ecommerce.api.ProductApi;
+import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.service.ProductService;
@@ -42,7 +43,7 @@ public class ProductController implements ProductApi {
     }
     
     @Override
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO product) {
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductCreateDTO product) {
         return ResponseEntity.ok(productService.saveProduct(product));
     }
     

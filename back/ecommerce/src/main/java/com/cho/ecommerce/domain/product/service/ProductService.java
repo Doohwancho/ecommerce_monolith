@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.product.service;
 
+import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
@@ -24,6 +25,13 @@ public class ProductService {
     
     public Optional<ProductEntity> getProductById(Long id) {
         return productRepository.findById(id);
+    }
+    
+    public ProductDTO saveProduct(ProductCreateDTO product) {
+        ProductEntity productEntity = productMapper.productCreateDTOToProductEntity(product);
+        ProductEntity savedProduct = productRepository.save(productEntity);
+        ProductDTO productDTO = productMapper.productEntityToProductDTO(savedProduct);
+        return productDTO;
     }
     
     public ProductDTO saveProduct(ProductDTO product) {

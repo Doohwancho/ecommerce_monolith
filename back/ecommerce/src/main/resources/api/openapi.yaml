@@ -8,7 +8,7 @@ paths:
     post:
       tags:
         - User
-      summary: return whether or not register succeeded
+      summary: register a user
       description: Returns the Result of Register Attempt
       operationId: registerUser
       parameters: #TODO - parameters to schema
@@ -63,7 +63,7 @@ paths:
     post:
       tags:
         - User
-      summary: Authenticate and login a user
+      summary: Authenticate a user
       description: Authenticates the user and returns a login status message.
       operationId: loginUser
       requestBody:
@@ -138,7 +138,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProductDTO'
+              $ref: '#/components/schemas/ProductCreateDTO'
       responses:
         '201':
           description: Product created
@@ -261,6 +261,20 @@ components:
         password:
           type: string
           description: User's password.
+    ProductCreateDTO:
+      type: object
+      properties:
+        PRODUCT_ID:
+          type: integer
+          format: int64
+        NAME:
+          type: string
+        DESCRIPTION:
+          type: string
+        CATEGORY_ID:
+          type: integer
+      required:
+        - PRODUCT_ID
     ProductDTO:
       type: object
       properties:
