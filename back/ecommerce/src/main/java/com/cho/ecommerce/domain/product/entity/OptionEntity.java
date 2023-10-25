@@ -30,5 +30,15 @@ public class OptionEntity {
     @OneToMany(mappedBy = "option")
     private Set<OptionVariationEntity> optionVariations;
     
-    // getters, setters, and other methods
+    public String getValue() {
+        return this.value;
+    }
+    
+    public void setValue(String value) {
+        this.value = value;
+    }
+    
+    public Set<OptionVariationEntity> getOptionVariations() {
+        return this.optionVariations;
+    }
 }
