@@ -23,6 +23,9 @@ public class CategoryEntity{
     @Column(name = "CATEGORY_CODE")
     private String categoryCode;
     
+    @Column(name = "NAME")
+    private String name;
+    
     @ManyToOne
     @JoinColumn(name = "PARENT_CATEGORY_ID")
     private CategoryEntity parentCategory;
@@ -35,6 +38,17 @@ public class CategoryEntity{
     
     @OneToMany(mappedBy = "category")
     private Set<ProductEntity> products;
+ 
+    public void update(String categoryCode, String name) {
+        this.categoryCode = categoryCode;
+        this.name = name;
+    }
     
-    // getters, setters, and other methods
+    public String getCategoryCode(){
+        return this.categoryCode;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
 }
