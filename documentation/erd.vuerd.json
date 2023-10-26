@@ -1191,9 +1191,9 @@
         ],
         "ui": {
           "active": true,
-          "left": 33.9999,
-          "top": 771.2224,
-          "zIndex": 59,
+          "left": 19.5556,
+          "top": 779.0001,
+          "zIndex": 60,
           "widthName": 60.88993835449219,
           "widthComment": 60,
           "color": "#FF8000"
@@ -1702,8 +1702,8 @@
           "columnIds": [
             "cc44d105-ecff-4498-8de7-3b870106b105"
           ],
-          "x": 230.2528525756836,
-          "y": 771.2224,
+          "x": 215.8085525756836,
+          "y": 779.0001,
           "direction": "top"
         },
         "constraintName": "fk_product_item_to_discount",

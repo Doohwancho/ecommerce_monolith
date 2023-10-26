@@ -1,6 +1,7 @@
 package com.cho.ecommerce.domain.member.entity;
 
 
+import com.cho.ecommerce.domain.order.entity.OrderEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -59,6 +60,12 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     
     @Column(name="UPDATED_AT")
     private LocalDateTime updated;
+    
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<OrderEntity> orders = new HashSet<>();
+    
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() { //TODO 7 - <? extends GrantedAuthority> 가 왜 안되는가?

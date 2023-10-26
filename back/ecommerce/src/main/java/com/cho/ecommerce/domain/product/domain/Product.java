@@ -2,7 +2,6 @@ package com.cho.ecommerce.domain.product.domain;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.util.Assert;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product{
