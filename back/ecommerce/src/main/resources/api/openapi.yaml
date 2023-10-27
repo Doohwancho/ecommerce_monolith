@@ -230,6 +230,94 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /orders:
+    get:
+      summary: Get all orders
+      tags:
+        - Order
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderDTO'
+    post:
+      summary: Create a new order
+      tags:
+        - Order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDTO'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDTO'
+  /orders/{orderId}:
+    get:
+      summary: Get a specific order by ID
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDTO'
+    put:
+      summary: Update an order by ID
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDTO'
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDTO'
+    delete:
+      summary: Delete an order by ID
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Order deleted
 components:
   schemas:
     Error:
@@ -293,3 +381,25 @@ components:
           type: integer
       required:
         - PRODUCT_ID
+    OrderDTO:
+      type: object
+      properties:
+        orderId:
+          type: integer
+          format: int64
+          readOnly: true
+        orderDate:
+          type: string
+          format: date-time
+        orderStatus:
+          type: string
+        memberId:
+          type: integer
+        paymentId:
+          type: string
+        deliveryId:
+          type: string
+      required:
+        - orderDate
+        - orderStatus
+        - memberId

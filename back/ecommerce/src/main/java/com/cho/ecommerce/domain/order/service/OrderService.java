@@ -1,11 +1,14 @@
 package com.cho.ecommerce.domain.order.service;
 
+import com.cho.ecommerce.api.domain.OrderDTO;
 import com.cho.ecommerce.domain.order.domain.Order;
 import com.cho.ecommerce.domain.order.entity.OrderEntity;
 import com.cho.ecommerce.domain.order.mapper.OrderMapper;
+import com.cho.ecommerce.domain.order.mapper.TimeMapper;
 import com.cho.ecommerce.domain.order.repository.OrderRepository;
 import com.cho.ecommerce.global.error.ResourceNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +21,12 @@ public class OrderService {
     @Autowired
     private OrderMapper orderMapper;
     
-    public OrderEntity createOrder(OrderEntity order) {
-        return orderRepository.save(order);
+    @Autowired
+    private TimeMapper timeMapper;
+    
+    public OrderEntity createOrder(OrderDTO order) {
+        OrderEntity orderEntity = orderMapper.orderDTOToOrderEntity(order);
+        return orderRepository.save(orderEntity);
     }
     
     public OrderEntity getOrderById(Long orderId) {
@@ -27,20 +34,35 @@ public class OrderService {
             .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
     }
     
-    public List<OrderEntity> getAllOrders() {
-        return orderRepository.findAll();
+    public OrderDTO getOrderByIdForOrderDTO(Long orderId) {
+        OrderEntity orderEntity = getOrderById(orderId);
+        return orderMapper.orderEntityToOrderDTO(orderEntity);
     }
     
-    public OrderEntity updateOrder(Long orderId, OrderEntity orderDetails) {
+    public List<OrderDTO> getAllOrders() {
+        List<OrderEntity> orderEntityList = orderRepository.findAll();
+        return orderEntityList.stream().map(orderMapper::orderEntityToOrderDTO).collect(Collectors.toList());
+    }
+    
+    public OrderDTO updateOrder(Long orderId, OrderDTO orderDetails) {
         OrderEntity orderEntity = getOrderById(orderId);
-        Order order = orderMapper.orderEntityToOrder(orderEntity);
         
-        order.setOrderDate(orderDetails.getOrderDate());
-        order.setOrderStatus(orderDetails.getOrderStatus());
+        orderEntity.setOrderStatus(orderDetails.getOrderStatus());
         
-        OrderEntity orderEntityToBeSaved = orderMapper.orderToOrderEntity(order);
+        OrderDTO orderToSave = orderMapper.orderEntityToOrderDTO(orderEntity);
         
-        return orderRepository.save(orderEntityToBeSaved);
+        //TODO - what to update?
+    
+        OrderEntity order = createOrder(orderToSave);
+
+//        Order order = orderMapper.orderEntityToOrder(orderEntity);
+//
+//        order.setOrderDate(timeMapper.offsetDateTimeToLocalDateTime(orderDetails.getOrderDate()));
+//        order.setOrderStatus(orderDetails.getOrderStatus());
+//
+//        OrderEntity orderEntityToBeSaved = orderMapper.orderToOrderEntity(order);
+        
+        return orderMapper.orderEntityToOrderDTO(order);
     }
     
     public void deleteOrder(Long orderId) {

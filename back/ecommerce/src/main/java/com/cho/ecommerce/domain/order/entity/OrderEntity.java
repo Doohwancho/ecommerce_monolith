@@ -2,7 +2,9 @@ package com.cho.ecommerce.domain.order.entity;
 
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.product.domain.Product;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,12 +20,14 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.util.Assert;
 
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 public class OrderEntity {
     
     @Id
@@ -32,7 +36,7 @@ public class OrderEntity {
     private Long orderId;
     
     @Column(name = "ORDER_DATE")
-    private LocalDateTime orderDate;
+    private LocalDateTime orderDate; //TODO - OffsetDateTime에서 Offset 저장 지원 안되는 db있으니, LocalDateTime랑 Offset까지 별개 column으로 저장해야 함
     
     @Column(name = "ORDER_STATUS")
     private String orderStatus;
