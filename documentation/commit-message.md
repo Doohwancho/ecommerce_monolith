@@ -23,7 +23,6 @@ Features
 2. security
 3. product
 4. order
-5. payment
 
 
 ---\

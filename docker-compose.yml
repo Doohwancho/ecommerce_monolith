@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  ecommerce-app:
+    build:
+      context: ./back/ecommerce
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
