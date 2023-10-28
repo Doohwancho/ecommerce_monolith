@@ -17,11 +17,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +35,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 public class UserEntity implements UserDetails { // UserDetailService를 구현한 클래스를 따로 분리해서 만들어서 처리해도 된다.
     
     @Id
@@ -46,6 +50,11 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     private String email;
     private String name;
 //    private String picUrl; //TODO 1 - user picture?
+    
+    @OneToOne(cascade = CascadeType.ALL) //Casecade로 지정하면, UserEntity를 저장하면 AddressEntity도 자동 저장된다.
+    @JoinColumn(name = "ADDRESS_ID")
+    private AddressEntity address;
+    
     @JsonIgnore //prevent the password from being included when the object is serialized into JSON format
     private String password;
     private String role;

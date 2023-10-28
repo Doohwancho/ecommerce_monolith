@@ -7,19 +7,16 @@ import com.cho.ecommerce.domain.member.entity.UserAuthorityEntity;
 import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserAuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
-import com.cho.ecommerce.domain.member.util.UserDTOConverter;
+import com.cho.ecommerce.domain.member.mapper.UserMapper;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -32,24 +29,21 @@ public class UserService implements UserDetailsService {
     private final AuthorityRepository authorityRepository;
     private final UserAuthorityRepository userAuthorityRepository;
     private final UserRepository userRepository;
-    private final UserDTOConverter userDTOConverter;
+    private final UserMapper userMapper;
 
     
     @Transactional
-    public UserEntity save(RegisterPostDTO registerPostDTO) {
-        //1. convert dto to userEntity
-        UserEntity userEntity = userDTOConverter.dtoToEntity(registerPostDTO);
-        
+    public UserEntity saveRoleUser(UserEntity userEntity) {
         //2. Create and save the user's authority
         AuthorityEntity userRole = authorityRepository.findByAuthority(AuthorityEntity.ROLE_USER)
             .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
-        
+    
         UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
         userAuthorityEntity.setUserEntity(userEntity);
         userAuthorityEntity.setAuthorityEntity(userRole);
     
         userAuthorityRepository.save(userAuthorityEntity);
-        
+    
         //3. save user
         userEntity.setUserAuthorities(userAuthorityEntity);
         UserEntity savedUserEntity = userRepository.save(userEntity);
@@ -57,6 +51,17 @@ public class UserService implements UserDetailsService {
         return savedUserEntity;
     }
     
+    @Transactional
+    public UserEntity saveRoleUser(RegisterPostDTO registerPostDTO) {
+        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO, "USER");
+        return saveRoleUser(userEntity);
+    }
+    
+    @Transactional
+    public UserEntity saveRoleAdmin(RegisterPostDTO registerPostDTO) {
+        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO, "ADMIN");
+        return saveRoleUser(userEntity);
+    }
     
     public Optional<UserEntity> findUser(String userId) {
         return userRepository.findByUserId(userId); //TODO 5 - Optional을 반환타입으로 하면 안좋다고 effective java에서 말한거 같은데?

@@ -2,13 +2,17 @@ package com.cho.ecommerce.domain.order.mapper;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import org.apache.tomcat.jni.Local;
+import java.time.ZoneOffset;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface TimeMapper {
-    LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime);
-    OffsetDateTime localDateTimeToOffsetDateTime(LocalDateTime localDateTime);
     
+    default OffsetDateTime localDateTimeToOffsetDateTime(LocalDateTime localDateTime) {
+        return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
+    }
     
+    default LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
+        return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
+    }
 }

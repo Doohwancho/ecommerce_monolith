@@ -2,9 +2,9 @@ package com.cho.ecommerce.domain.member.controller;
 
 import com.cho.ecommerce.api.UserApi;
 import com.cho.ecommerce.api.domain.InlineResponse200;
-import com.cho.ecommerce.api.domain.InlineResponse201;
 import com.cho.ecommerce.api.domain.LoginPostDTO;
 import com.cho.ecommerce.api.domain.RegisterPostDTO;
+import com.cho.ecommerce.api.domain.RegisterResponseDTO;
 import com.cho.ecommerce.domain.member.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -77,21 +77,13 @@ public class UserController implements UserApi {
 //    }
     
     
-    //    @PostMapping("/register")
     @Override
-    public ResponseEntity<InlineResponse201> registerUser(String userId, String email, String name, String password) {
+    public ResponseEntity<RegisterResponseDTO> registerRoleUser(RegisterPostDTO registerPostDTO) {
         try {
-            // Creating a RegisterPostDTO object and setting its fields
-            RegisterPostDTO registerPostDTO = new RegisterPostDTO();
-            registerPostDTO.setUserId(userId);
-            registerPostDTO.setEmail(email);
-            registerPostDTO.setName(name);
-            registerPostDTO.setPassword(password);
-        
-            userService.save(registerPostDTO);
-        
+            userService.saveRoleUser(registerPostDTO);
+    
             // Creating a response
-            InlineResponse201 response = new InlineResponse201();
+            RegisterResponseDTO response = new RegisterResponseDTO();
             response.setMessage("Registration successful");
         
             return new ResponseEntity<>(response, HttpStatus.CREATED);

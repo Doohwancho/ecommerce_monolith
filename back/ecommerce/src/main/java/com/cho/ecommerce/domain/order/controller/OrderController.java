@@ -39,13 +39,13 @@ public class OrderController implements OrderApi {
     
     @Override
     public ResponseEntity<OrderDTO> ordersOrderIdPut(Long orderId, OrderDTO order) {
-        Order updatedOrder = orderService.updateOrder(orderId, order);
+        OrderDTO updatedOrder = orderService.updateOrder(orderId, order);
         return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
     }
     
     @Override
     public ResponseEntity<OrderDTO> ordersPost(OrderDTO order) {
-        Order createdOrder = orderService.createOrder(order);
+        OrderDTO createdOrder = orderService.createOrder(order);
         return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
     }
 }

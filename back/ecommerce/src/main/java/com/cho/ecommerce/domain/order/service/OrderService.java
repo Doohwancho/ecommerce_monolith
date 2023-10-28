@@ -24,9 +24,10 @@ public class OrderService {
     @Autowired
     private TimeMapper timeMapper;
     
-    public OrderEntity createOrder(OrderDTO order) {
+    public OrderDTO createOrder(OrderDTO order) {
         OrderEntity orderEntity = orderMapper.orderDTOToOrderEntity(order);
-        return orderRepository.save(orderEntity);
+        OrderEntity savedOrderEntity = orderRepository.save(orderEntity);
+        return orderMapper.orderEntityToOrderDTO(savedOrderEntity);
     }
     
     public OrderEntity getOrderById(Long orderId) {
@@ -53,7 +54,6 @@ public class OrderService {
         
         //TODO - what to update?
     
-        OrderEntity order = createOrder(orderToSave);
 
 //        Order order = orderMapper.orderEntityToOrder(orderEntity);
 //
@@ -62,7 +62,7 @@ public class OrderService {
 //
 //        OrderEntity orderEntityToBeSaved = orderMapper.orderToOrderEntity(order);
         
-        return orderMapper.orderEntityToOrderDTO(order);
+        return createOrder(orderToSave);
     }
     
     public void deleteOrder(Long orderId) {

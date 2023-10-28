@@ -10,43 +10,21 @@ paths:
         - User
       summary: register a user
       description: Returns the Result of Register Attempt
-      operationId: registerUser
-      parameters: #TODO - parameters to schema
-        - name: userId
-          in: query
-          description: Unique user identifier.
-          required: true
-          schema:
-            type: string
-        - name: email
-          in: query
-          description: Unique email address.
-          required: true
-          schema:
-            type: string
-        - name: name
-          in: query
-          description: User's name.
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: User's password.
-          required: true
-          schema:
-            type: string
+      operationId: registerRoleUser
+      requestBody:
+        description: User registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterPostDTO'
       responses:
         201:
           description: Registration successful
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Registration successful"
+                $ref: '#/components/schemas/RegisterResponseDTO'
         400:
           description: Bad Request
         default:
@@ -340,6 +318,30 @@ components:
           type: string
         password:
           type: string
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+              description: Street name and number.
+            city:
+              type: string
+              description: City name.
+            state:
+              type: string
+              description: State or province name.
+            country:
+              type: string
+              description: Country name.
+            zipCode:
+              type: string
+              description: Postal or ZIP code.
+    RegisterResponseDTO:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Registration successful"
     LoginPostDTO:
       type: object
       properties:

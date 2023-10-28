@@ -7,7 +7,7 @@
         - userId
         - email
         - name
-        - passwordq
+        - password
 - 로그인
 - 상품
 	- CRUD
