@@ -11,13 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequiredArgsConstructor
 @Controller
@@ -29,10 +32,6 @@ public class UserController implements UserApi {
     private final AuthenticationManager authenticationManager;
     
     
-//    @RequestMapping("/")
-//    public String home() {
-//        return "index";
-//    }
     
 //    @GetMapping("/login")
 //    public String getLogin(
@@ -93,11 +92,11 @@ public class UserController implements UserApi {
         }
     }
 
-//    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
-//    @GetMapping(value = "/user")
-//    public String user() {
-//        return "pageUser";
-//    }
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    @GetMapping(value = "/user")
+    public String user() {
+        return "pageUser";
+    }
 //
 //    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
 //    @GetMapping(value = "/admin")

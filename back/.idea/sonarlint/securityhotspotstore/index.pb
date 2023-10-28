@@ -11,8 +11,6 @@ _ecommerce/src/main/java/com/cho/ecommerce/domain/member/repository/UserAuthorit
 Wecommerce/src/main/java/com/cho/ecommerce/domain/member/entity/UserAuthorityEntity.java,b/9/b9318de29854120218cf8e0280697b8e884d5d70
 ƒ
 Secommerce/src/main/java/com/cho/ecommerce/domain/member/entity/AuthorityEntity.java,e/a/ea6af488c95b71b907e0d7d33b2f0882fb35c15b
-{
-Kecommerce/src/main/java/com/cho/ecommerce/global/config/SecurityConfig.java,6/c/6ca8e45ec1fb40b81b6f998662ebf781f440283a
 Š
 Zecommerce/src/main/java/com/cho/ecommerce/domain/product/controller/ProductController.java,8/0/8010cdcd59de16d1085bca69618726359a441af1
 ‘

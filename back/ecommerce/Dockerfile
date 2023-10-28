@@ -20,6 +20,7 @@ COPY ./src ./src
 RUN ./gradlew clean bootJar
 
 # Use OpenJDK JRE for runtime
+# TODO - openjdk:8-jdk-alpine으로 바꾸면, 성능이 더 괜찮아지려나?
 FROM openjdk:8-jre-slim
 
 # Set the working directory in docker
