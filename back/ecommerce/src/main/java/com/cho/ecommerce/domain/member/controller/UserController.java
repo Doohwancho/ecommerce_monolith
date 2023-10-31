@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequiredArgsConstructor
 @Controller
@@ -65,7 +64,6 @@ public class UserController implements UserApi {
             InlineResponse200 response = new InlineResponse200();
             response.setMessage("Invalid username or password");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-            
         }
     }
 
@@ -94,8 +92,11 @@ public class UserController implements UserApi {
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @GetMapping(value = "/user")
-    public String user() {
-        return "pageUser";
+    public ResponseEntity<RegisterResponseDTO> user() {
+        RegisterResponseDTO response = new RegisterResponseDTO();
+        response.setMessage("test user page! with ROLE_USER!");
+    
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 //
 //    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
