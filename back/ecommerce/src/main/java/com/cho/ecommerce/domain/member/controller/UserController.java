@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @Controller
@@ -25,16 +27,16 @@ public class UserController implements UserApi {
     
     
     
-//    @GetMapping("/login")
-//    public String getLogin(
-//        @RequestParam(defaultValue = "false") Boolean error,
-//        Model model
-//    ) {
-//        if (error) {
-//            model.addAttribute("errorMessage", "아이디나 패스워드가 올바르지 않습니다.");
-//        }
-//        return "loginForm";
-//    }
+    @GetMapping("/login")
+    public String getLogin(
+        @RequestParam(defaultValue = "false") Boolean error,
+        Model model
+    ) {
+        if (error) {
+            model.addAttribute("errorMessage", "아이디나 패스워드가 올바르지 않습니다.");
+        }
+        return "loginForm";
+    }
     
     
 //    @Override

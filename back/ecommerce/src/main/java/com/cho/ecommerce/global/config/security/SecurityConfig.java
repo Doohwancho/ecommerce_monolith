@@ -1,6 +1,7 @@
 package com.cho.ecommerce.global.config.security;
 
 
+import com.cho.ecommerce.global.config.security.handler.FormAuthenticationFailureHandler;
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationSuccessHandler;
 import com.cho.ecommerce.global.config.security.session.SecuritySessionExpiredStrategy;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     private final FindByIndexNameSessionRepository<S> sessionRepository;
     private final SecuritySessionExpiredStrategy securitySessionExpiredStrategy;
     private final FormAuthenticationSuccessHandler formSuccessHandler;
+    private final FormAuthenticationFailureHandler formFailureHandler;
     
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -53,6 +55,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                     .passwordParameter("password")
                 .failureForwardUrl("/login?error=true")
                 .successHandler(formSuccessHandler)
+                .failureHandler(formFailureHandler)
             )
             .authorizeRequests(f ->
                 f.antMatchers("/login").permitAll()
