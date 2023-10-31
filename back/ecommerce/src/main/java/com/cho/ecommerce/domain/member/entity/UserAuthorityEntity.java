@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.member.entity;
 
+import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +18,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserAuthorityEntity {
+public class UserAuthorityEntity implements Serializable {
+    
+    private static final long serialVersionUID = 1L;  // Add this line
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

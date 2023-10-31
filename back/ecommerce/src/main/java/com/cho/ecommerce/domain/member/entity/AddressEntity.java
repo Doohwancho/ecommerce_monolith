@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.member.entity;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,8 +17,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddressEntity {
+public class AddressEntity implements Serializable {
     
+    private static final long serialVersionUID = 1L;  // Add this line
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ADDRESS_ID")

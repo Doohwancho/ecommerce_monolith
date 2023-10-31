@@ -7,8 +7,6 @@ Yecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserAuthoritySe
 Kecommerce/src/main/java/com/cho/ecommerce/global/util/RestResponsePage.java,a/8/a82ac3887dc1541543a7311b6beaa5ed52a435b3
 è
 _ecommerce/src/main/java/com/cho/ecommerce/domain/member/repository/UserAuthorityRepository.java,8/4/8474c4f0a0b8898eceb4d55683e5204e8bf7f3a8
-á
-Wecommerce/src/main/java/com/cho/ecommerce/domain/member/entity/UserAuthorityEntity.java,b/9/b9318de29854120218cf8e0280697b8e884d5d70
 É
 Secommerce/src/main/java/com/cho/ecommerce/domain/member/entity/AuthorityEntity.java,e/a/ea6af488c95b71b907e0d7d33b2f0882fb35c15b
 ë
