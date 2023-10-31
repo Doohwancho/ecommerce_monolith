@@ -1,6 +1,7 @@
 package com.cho.ecommerce.global.config.security;
 
 
+import com.cho.ecommerce.global.config.security.handler.FormAuthenticationSuccessHandler;
 import com.cho.ecommerce.global.config.security.session.SecuritySessionExpiredStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     private final UserDetailsService userDetailsService;
     private final FindByIndexNameSessionRepository<S> sessionRepository;
     private final SecuritySessionExpiredStrategy securitySessionExpiredStrategy;
+    private final FormAuthenticationSuccessHandler formSuccessHandler;
     
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -45,9 +47,12 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                     .expiredSessionStrategy(securitySessionExpiredStrategy)) //Session 만료됐을 때 가져갈 전략 설정
 //                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // This is the default, but just to be explicit
             .formLogin(f ->
-                f.defaultSuccessUrl("/", true)
-                .loginPage("/login") //custom page 구현한 경우
+//                f.defaultSuccessUrl("/", true)
+                f.loginPage("/login") //custom page 구현한 경우
+                    .usernameParameter("userId")
+                    .passwordParameter("password")
                 .failureForwardUrl("/login?error=true")
+                .successHandler(formSuccessHandler)
             )
             .authorizeRequests(f ->
                 f.antMatchers("/login").permitAll()

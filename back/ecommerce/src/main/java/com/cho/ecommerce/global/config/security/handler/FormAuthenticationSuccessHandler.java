@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     
+    private final Logger logger = LoggerFactory.getLogger(FormAuthenticationSuccessHandler.class);
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     
     //case1) ROLE에 따라 다른 페이지로 redirect
@@ -27,8 +30,9 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String redirectUrl = "/";
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        
+    
         for (GrantedAuthority grantedAuthority : authorities) {
+            
             if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
                 redirectUrl = "/admin";
                 break;

@@ -1,8 +1,6 @@
 package com.cho.ecommerce.domain.member.controller;
 
 import com.cho.ecommerce.api.UserApi;
-import com.cho.ecommerce.api.domain.InlineResponse200;
-import com.cho.ecommerce.api.domain.LoginPostDTO;
 import com.cho.ecommerce.api.domain.RegisterPostDTO;
 import com.cho.ecommerce.api.domain.RegisterResponseDTO;
 import com.cho.ecommerce.domain.member.service.UserService;
@@ -13,13 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RequiredArgsConstructor
 @Controller
@@ -44,28 +37,28 @@ public class UserController implements UserApi {
 //    }
     
     
-    @Override
-    public ResponseEntity<InlineResponse200> loginUser(@RequestBody LoginPostDTO loginPostDTO) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    loginPostDTO.getUserId(),
-                    loginPostDTO.getPassword()
-                )
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            
-            InlineResponse200 response = new InlineResponse200();
-            response.setMessage("Logged in successfully");
-            return ResponseEntity.ok(response);
-            
-        } catch (BadCredentialsException e) {
-            
-            InlineResponse200 response = new InlineResponse200();
-            response.setMessage("Invalid username or password");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
-    }
+//    @Override
+//    public ResponseEntity<InlineResponse200> loginUser(@RequestBody LoginPostDTO loginPostDTO) {
+//        try {
+//            Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                    loginPostDTO.getUserId(),
+//                    loginPostDTO.getPassword()
+//                )
+//            );
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//            InlineResponse200 response = new InlineResponse200();
+//            response.setMessage("Logged in successfully");
+//            return ResponseEntity.ok(response);
+//
+//        } catch (BadCredentialsException e) {
+//
+//            InlineResponse200 response = new InlineResponse200();
+//            response.setMessage("Invalid username or password");
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+//        }
+//    }
 
 //    @GetMapping("/register")
 //    public String showRegistrationForm(Model model) {
