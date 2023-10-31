@@ -1,4 +1,4 @@
-package com.cho.ecommerce.global.config.session;
+package com.cho.ecommerce.global.config.security.session;
 
 import java.io.IOException;
 import javax.servlet.ServletException;

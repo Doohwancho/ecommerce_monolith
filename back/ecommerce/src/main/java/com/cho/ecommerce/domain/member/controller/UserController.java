@@ -98,10 +98,10 @@ public class UserController implements UserApi {
     
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-//
-//    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-//    @GetMapping(value = "/admin")
-//    public String admin() {
-//        return "pageAdmin";
-//    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @GetMapping(value = "/admin")
+    public String admin() {
+        return "pageAdmin";
+    }
 }
