@@ -27,7 +27,7 @@ spring:
       open-in-view: false        # 트랜잭션이 끝난 객체를 준영속 상태로 만들어준다.
       default_batch_fetch_size: 1000
   redis:
-    host: redis
+    host: localhost
     port: 6379
   session:
     store-type: redis

@@ -1,13 +1,10 @@
 package com.cho.ecommerce.global.config.security.handler;
 
-import com.cho.ecommerce.domain.member.repository.UserRepository;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

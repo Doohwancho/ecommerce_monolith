@@ -24,7 +24,7 @@ public class SecuritySessionExpiredStrategy implements SessionInformationExpired
         boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
         
         if (isAjax) { // session 이 만료된 상태에서 Ajax 요청 시 Response 보내기
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN); //http status 403
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write("세션이 만료되었습니다. 다시 로그인 해주세요.");
         } else { // session 이 만료된 상태에서 Web 요청 시 Login Page 로 이동
