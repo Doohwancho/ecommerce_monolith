@@ -7,26 +7,41 @@ import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserAuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
+import com.cho.ecommerce.domain.product.domain.DiscountType;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
+import com.cho.ecommerce.domain.product.entity.DiscountEntity;
 import com.cho.ecommerce.domain.product.entity.OptionEntity;
 import com.cho.ecommerce.domain.product.entity.OptionVariationEntity;
+import com.cho.ecommerce.domain.product.entity.ProductEntity;
+import com.cho.ecommerce.domain.product.entity.ProductItemEntity;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
+import com.cho.ecommerce.domain.product.repository.DiscountRepository;
 import com.cho.ecommerce.domain.product.repository.OptionRepository;
 import com.cho.ecommerce.domain.product.repository.OptionVariationRepository;
+import com.cho.ecommerce.domain.product.repository.ProductItemRepository;
+import com.cho.ecommerce.domain.product.repository.ProductRepository;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import net.datafaker.Faker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
 public class FakeDataGenerator {
+    private final Logger log = LoggerFactory.getLogger(FakeDataGenerator.class);
     
     private final Faker faker = new Faker();
     private final AuthorityRepository authorityRepository;
@@ -39,6 +54,11 @@ public class FakeDataGenerator {
     private final OptionRepository optionRepository;
     
     private final OptionVariationRepository optionVariationRepository;
+    
+    private final ProductRepository productRepository;
+    
+    private final ProductItemRepository productItemRepository;
+    private final DiscountRepository discountRepository;
     
     @Transactional
     public void createAuthorities() {
@@ -150,7 +170,7 @@ public class FakeDataGenerator {
                 OptionEntity option = new OptionEntity();
                 option.setValue(faker.commerce().material());
                 option.setCategory(category);
-                option.setOptionVariations(new HashSet<>());
+                option.setOptionVariations(new ArrayList<>());
                 optionRepository.save(option);
                 options.add(option);
                 
@@ -168,5 +188,71 @@ public class FakeDataGenerator {
             lists.add(category);
         }
         categoryRepository.saveAll(lists);
+    }
+    
+    @Transactional
+    public void generateFake100Products() {
+        for (int i = 0; i < 100; i++) { //카테고리수가 10개니까, 1000개가 max
+            //step1) create product
+            ProductEntity product = new ProductEntity();
+            product.setName(faker.commerce().productName());
+            product.setDescription(faker.lorem().sentence());
+            product.setRating(faker.number().randomDouble(1, 1, 5));
+            product.setRatingCount(faker.number().numberBetween(1, 1000));
+            
+            
+            //step2) get category for the product
+            int index = i % 10;
+            if (index == 0) {
+                index = 10;
+            }
+            CategoryEntity category = categoryRepository.findByCategoryId(Long.valueOf(index)); //10개의 카테고리를 순차적으로 가져온다.
+            product.setCategory(category);
+    
+            
+            //step3) get option and option variations from category
+            Map<OptionEntity, OptionVariationEntity> map = new HashMap<>();
+    
+            List<OptionEntity> optionEntityList = optionRepository.findByCategory_CategoryId(
+                category.getCategoryId());
+            
+            optionEntityList.forEach(e -> {
+                List<OptionVariationEntity> optionVariationList = optionVariationRepository.findByOption_OptionId(
+                    e.getOptionId());
+                if(e.getOptionVariations() == null) {
+                    e.setOptionVariations(new ArrayList<>());
+                }
+                e.getOptionVariations().add(optionVariationList.get(0));
+            });
+    
+            
+            //step4) create productItems for each product
+            Set<ProductItemEntity> productItems = new HashSet<>();
+
+            for (int j = 0; j < 3; j++) {
+                ProductItemEntity productItem = new ProductItemEntity();
+
+                OptionEntity option = optionEntityList.get(j);
+                productItem.setOption(option.getValue());
+                productItem.setOptionVariation(option.getOptionVariations().get(0).getValue());
+                productItem.setQuantity(faker.number().numberBetween(1, 100));
+                productItem.setPrice(faker.number().randomDouble(2, 1, 10000));
+                productItem.setProduct(product);
+                productItemRepository.save(productItem);
+                productItems.add(productItem);
+
+                //step5) Generate discounts for each product item
+                DiscountEntity discount = new DiscountEntity();
+                discount.setDiscountType(
+                    DiscountType.values()[faker.number().numberBetween(0, DiscountType.values().length)]);
+                discount.setDiscountValue(new BigDecimal(faker.number().randomDouble(2, 1, 100)));
+                discount.setStartDate(faker.date().past(10, TimeUnit.DAYS));
+                discount.setEndDate(faker.date().future(10, TimeUnit.DAYS));
+                discount.setProductItem(productItem);
+                discountRepository.save(discount);
+            }
+            product.setProductItems(productItems);
+            productRepository.save(product);
+        }
     }
 }

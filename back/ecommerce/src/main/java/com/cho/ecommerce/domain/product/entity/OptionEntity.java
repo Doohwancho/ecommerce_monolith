@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.product.entity;
 
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,10 +11,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Table(name = "OPTION")
+@Getter
 @Setter
 public class OptionEntity {
     
@@ -30,7 +33,7 @@ public class OptionEntity {
     private CategoryEntity category;
     
     @OneToMany(mappedBy = "option")
-    private Set<OptionVariationEntity> optionVariations;
+    private List<OptionVariationEntity> optionVariations;
     
     public String getValue() {
         return this.value;
@@ -40,7 +43,7 @@ public class OptionEntity {
         this.value = value;
     }
     
-    public Set<OptionVariationEntity> getOptionVariations() {
+    public List<OptionVariationEntity> getOptionVariations() {
         return this.optionVariations;
     }
     

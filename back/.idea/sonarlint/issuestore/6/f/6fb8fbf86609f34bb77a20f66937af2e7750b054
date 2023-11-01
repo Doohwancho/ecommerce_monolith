@@ -1,0 +1,13 @@
+
+„
+java:S14881"gImmediately return this expression instead of assigning it to the temporary variable "savedUserEntity".(úî 8ÿ¿Ã©·1
+O
+java:S1135C"2Complete the task associated to this TODO comment.(†¤ñò8ÀÃ©·1
+j	java:S100X"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‹È®ş8ÀÃ©·1
+]
+java:S2175p"@A "Set<UserAuthorityEntity>" cannot contain a "AuthorityEntity".(å³Ôß8‘ÀÃ©·1
+O
+java:S1135p"2Complete the task associated to this TODO comment.(å³Ôß8’ÀÃ©·1
+]	java:S125w"<This block of commented-out lines of code should be removed.(ã¬Üşÿÿÿÿÿ8’ÀÃ©·1
+X	java:S125{"<This block of commented-out lines of code should be removed.(¾ì™‚8’ÀÃ©·1
+]	java:S125"<This block of commented-out lines of code should be removed.(ÉÀ¿„ùÿÿÿÿ8’ÀÃ©·1

@@ -10,9 +10,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import lombok.Setter;
 
 @Entity
 @Table(name = "PRODUCT")
+@Setter
 public class ProductEntity {
     
     @Id

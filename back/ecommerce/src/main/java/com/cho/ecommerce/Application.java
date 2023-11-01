@@ -24,7 +24,7 @@ public class Application {
             dataGenerator.createFakeAdmin();
             dataGenerator.generateFake1000Users();
             dataGenerator.generateFakeCategoryAndOptions();
+            dataGenerator.generateFake100Products();
         };
     }
-    
 }

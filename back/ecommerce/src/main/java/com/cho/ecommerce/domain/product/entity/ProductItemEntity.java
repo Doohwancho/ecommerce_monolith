@@ -13,15 +13,23 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import lombok.Setter;
 
 @Entity
 @Table(name = "PRODUCT_ITEM")
+@Setter
 public class ProductItemEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PRODUCT_ITEM_ID")
     private Long productItemId;
+    
+    @Column(name = "OPTION")
+    private String option;
+    
+    @Column(name = "OPTION_VARIATION")
+    private String optionVariation;
     
     @Column(name = "QUANTITY")
     private Integer quantity;
