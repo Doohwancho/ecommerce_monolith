@@ -30,12 +30,12 @@ public class CategoryEntity{
     @Column(name = "NAME")
     private String name;
     
-    @ManyToOne
-    @JoinColumn(name = "PARENT_CATEGORY_ID")
-    private CategoryEntity parentCategory;
+//    @ManyToOne
+//    @JoinColumn(name = "PARENT_CATEGORY_ID")
+//    private CategoryEntity parentCategory;
     
-    @OneToMany(mappedBy = "parentCategory")
-    private Set<CategoryEntity> subCategories;
+//    @OneToMany(mappedBy = "parentCategory")
+//    private Set<CategoryEntity> subCategories;
     
     @OneToMany(mappedBy = "category")
     private Set<OptionEntity> optionEntities;
