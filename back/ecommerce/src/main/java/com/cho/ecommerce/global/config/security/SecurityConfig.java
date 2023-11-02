@@ -61,6 +61,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                 f.antMatchers("/login").permitAll()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/h2-console/**").permitAll() //allow h2-console access for developer
+                .antMatchers("/actuator/health").permitAll() //allow h2-console access for developer
                 .anyRequest().authenticated()
                 //Q. what is .anyRequest().authenticated()?
                 //any request not matched by the previous antMatchers should be authenticated.
