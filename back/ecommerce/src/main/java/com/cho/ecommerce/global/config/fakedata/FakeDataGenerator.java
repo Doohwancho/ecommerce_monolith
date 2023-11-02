@@ -14,11 +14,13 @@ import com.cho.ecommerce.domain.product.entity.OptionEntity;
 import com.cho.ecommerce.domain.product.entity.OptionVariationEntity;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.entity.ProductItemEntity;
+import com.cho.ecommerce.domain.product.entity.ProductOptionVariationEntity;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
 import com.cho.ecommerce.domain.product.repository.DiscountRepository;
 import com.cho.ecommerce.domain.product.repository.OptionRepository;
 import com.cho.ecommerce.domain.product.repository.OptionVariationRepository;
 import com.cho.ecommerce.domain.product.repository.ProductItemRepository;
+import com.cho.ecommerce.domain.product.repository.ProductOptionVariationRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -58,6 +60,7 @@ public class FakeDataGenerator {
     
     private final ProductItemRepository productItemRepository;
     private final DiscountRepository discountRepository;
+    private final ProductOptionVariationRepository productOptionVariationRepository;
     
     @Transactional
     public void createAuthorities() {
@@ -190,7 +193,7 @@ public class FakeDataGenerator {
     }
     
     @Transactional
-    public void generateFake100Products(Integer numberOfFakeProducts, Integer numberOfFakeCategories) {
+    public void generateFake100Products(Integer numberOfFakeProducts, Integer numberOfFakeCategories, Integer numberOfFakeProductItems) {
         for (int i = 0; i < numberOfFakeProducts; i++) { //카테고리수가 10개니까, 1000개가 max
             //step1) create product
             ProductEntity product = new ProductEntity();
@@ -210,37 +213,41 @@ public class FakeDataGenerator {
     
             
             //step3) get option and option variations from category
-            Map<OptionEntity, OptionVariationEntity> map = new HashMap<>();
-    
             List<OptionEntity> optionEntityList = optionRepository.findByCategory_CategoryId(
                 category.getCategoryId());
             
-            optionEntityList.forEach(e -> {
+            optionEntityList.forEach(option -> {
                 List<OptionVariationEntity> optionVariationList = optionVariationRepository.findByOption_OptionId(
-                    e.getOptionId());
-                if(e.getOptionVariations() == null) {
-                    e.setOptionVariations(new ArrayList<>());
+                    option.getOptionId());
+                if(option.getOptionVariations() == null) {
+                    option.setOptionVariations(new ArrayList<>());
                 }
-                e.getOptionVariations().add(optionVariationList.get(0));
+                option.getOptionVariations().add(optionVariationList.get(0));
             });
     
             
             //step4) create productItems for each product
             Set<ProductItemEntity> productItems = new HashSet<>();
 
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < numberOfFakeProductItems; j++) {
                 ProductItemEntity productItem = new ProductItemEntity();
 
-                OptionEntity option = optionEntityList.get(j);
-                productItem.setOption(option.getValue());
-                productItem.setOptionVariation(option.getOptionVariations().get(0).getValue());
                 productItem.setQuantity(faker.number().numberBetween(1, 100));
                 productItem.setPrice(faker.number().randomDouble(2, 1, 10000));
                 productItem.setProduct(product);
-                productItemRepository.save(productItem);
+                ProductItemEntity savedProductItem = productItemRepository.save(productItem);
                 productItems.add(productItem);
 
-                //step5) Generate discounts for each product item
+                //step5) create product_option_variation
+                ProductOptionVariationEntity productOptionVariationEntity = new ProductOptionVariationEntity();
+                OptionVariationEntity optionVariations = optionEntityList.get(j)
+                    .getOptionVariations().get(0);
+               productOptionVariationEntity.setOptionVariation(optionVariations);
+               productOptionVariationEntity.setProductItem(savedProductItem);
+                productOptionVariationRepository.save(productOptionVariationEntity);
+                
+                
+                //step6) Generate discounts for each product item
                 DiscountEntity discount = new DiscountEntity();
                 discount.setDiscountType(
                     DiscountType.values()[faker.number().numberBetween(0, DiscountType.values().length)]);

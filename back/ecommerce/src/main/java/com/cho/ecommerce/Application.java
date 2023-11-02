@@ -25,6 +25,7 @@ public class Application {
             Integer numberOfFakeOptions = 3;
             Integer numberOfFakeOptionsVariations = 3;
             Integer numberOfFakeProducts = 10;
+            Integer numberOfFakeProductItems = 3;
             
             //step1) create fake users
             dataGenerator.createAuthorities();
@@ -33,7 +34,7 @@ public class Application {
             
             //step2) create fake products
             dataGenerator.generateFakeCategoryAndOptions(numberOfFakeCategories, numberOfFakeOptions, numberOfFakeOptionsVariations);
-            dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories);
+            dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories, numberOfFakeProductItems );
             
             //step3) create fake orders
         };

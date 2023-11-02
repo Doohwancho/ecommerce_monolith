@@ -25,12 +25,6 @@ public class ProductItemEntity {
     @Column(name = "PRODUCT_ITEM_ID")
     private Long productItemId;
     
-    @Column(name = "OPTION")
-    private String option;
-    
-    @Column(name = "OPTION_VARIATION")
-    private String optionVariation;
-    
     @Column(name = "QUANTITY")
     private Integer quantity;
     

@@ -5,8 +5,6 @@ Kecommerce/src/main/java/com/cho/ecommerce/global/util/RestResponsePage.java,a/
 _ecommerce/src/main/java/com/cho/ecommerce/domain/member/repository/UserAuthorityRepository.java,8/4/8474c4f0a0b8898eceb4d55683e5204e8bf7f3a8
 É
 Secommerce/src/main/java/com/cho/ecommerce/domain/member/entity/AuthorityEntity.java,e/a/ea6af488c95b71b907e0d7d33b2f0882fb35c15b
-ë
-aecommerce/src/main/java/com/cho/ecommerce/domain/product/entity/ProductOptionVariationEntity.java,d/c/dcf5f5309c3fae855fa4cb3965dc53ad2d5fb535
 Å
 Qecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/DiscountType.java,8/4/84cdc348e79f621c0c5e913a3e19e3c588a11302
 Ä
@@ -81,7 +79,5 @@ Secommerce/src/main/java/com/cho/ecommerce/domain/product/service/OptionService.
 Uecommerce/src/main/java/com/cho/ecommerce/domain/product/service/CategoryService.java,3/3/33ea5a964a513ad477ce6ebbd2abbf0e151c71a2
 É
 Secommerce/src/main/java/com/cho/ecommerce/domain/product/entity/DiscountEntity.java,f/7/f77cc7915d3410b71648f707a6c734a1719e3d10
-Ü
-Vecommerce/src/main/java/com/cho/ecommerce/domain/product/entity/ProductItemEntity.java,3/9/39de0d12258cfaaf920d4a7684c4625d962944cc
 ä
 Zecommerce/src/main/java/com/cho/ecommerce/domain/product/entity/OptionVariationEntity.java,4/9/4979e896453958ae02f417a0242a0719555ab4c9
