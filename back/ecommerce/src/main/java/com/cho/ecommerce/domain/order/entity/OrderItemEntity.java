@@ -9,9 +9,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import lombok.Setter;
 
 @Entity
 @Table(name = "ORDER_ITEM")
+@Setter
 public class OrderItemEntity {
     
     @Id

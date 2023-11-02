@@ -1322,10 +1322,10 @@
           }
         ],
         "ui": {
-          "active": false,
+          "active": true,
           "left": 1069.4441,
           "top": 575.9996,
-          "zIndex": 62,
+          "zIndex": 112,
           "widthName": 60,
           "widthComment": 60,
           "color": "#FF8D00"

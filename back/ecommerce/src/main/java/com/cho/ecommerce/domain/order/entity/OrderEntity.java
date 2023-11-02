@@ -25,7 +25,6 @@ import org.springframework.util.Assert;
 
 @Entity
 @Table(name = "orders")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public class OrderEntity {
@@ -39,7 +38,7 @@ public class OrderEntity {
     private LocalDateTime orderDate; //TODO - OffsetDateTime에서 Offset 저장 지원 안되는 db있으니, LocalDateTime랑 Offset까지 별개 column으로 저장해야 함
     
     @Column(name = "ORDER_STATUS")
-    private String orderStatus;
+    private String orderStatus; //PENDING, PROCESSING, CONFIRMED, PAID, ON_HOLD, SHIPPED, OUT_OF_DELIVERY, etc
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
@@ -48,11 +47,11 @@ public class OrderEntity {
     @OneToMany(mappedBy = "order")
     private Set<OrderItemEntity> orderItems;
     
-    public OrderEntity(final UserEntity member, final OrderItemEntity orderItems) {
-        Assert.notNull(member, "주문자는 필수입니다.");
-        Assert.notNull(orderItems, "주문 정보가 필요합니다.");
-        this.member = member;
-        this.orderItems.add(orderItems);
-    }
+//    public OrderEntity(final UserEntity member, final OrderItemEntity orderItems) {
+//        Assert.notNull(member, "주문자는 필수입니다.");
+//        Assert.notNull(orderItems, "주문 정보가 필요합니다.");
+//        this.member = member;
+//        this.orderItems.add(orderItems);
+//    }
  
 }

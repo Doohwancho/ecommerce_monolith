@@ -7,6 +7,10 @@ import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserAuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
+import com.cho.ecommerce.domain.order.entity.OrderEntity;
+import com.cho.ecommerce.domain.order.entity.OrderItemEntity;
+import com.cho.ecommerce.domain.order.repository.OrderItemRepository;
+import com.cho.ecommerce.domain.order.repository.OrderRepository;
 import com.cho.ecommerce.domain.product.domain.DiscountType;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
 import com.cho.ecommerce.domain.product.entity.DiscountEntity;
@@ -23,12 +27,12 @@ import com.cho.ecommerce.domain.product.repository.ProductItemRepository;
 import com.cho.ecommerce.domain.product.repository.ProductOptionVariationRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
@@ -61,6 +65,9 @@ public class FakeDataGenerator {
     private final ProductItemRepository productItemRepository;
     private final DiscountRepository discountRepository;
     private final ProductOptionVariationRepository productOptionVariationRepository;
+    
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
     
     @Transactional
     public void createAuthorities() {
@@ -261,4 +268,48 @@ public class FakeDataGenerator {
             productRepository.save(product);
         }
     }
+    
+    
+    @Transactional
+    public void generateFakeOrdersAndOrderItems(Integer numberOfOrders, Integer numberOfFakeUsers, Integer maxProductItemsPerOrder, Integer numberOfFakeProductionOptionVariations) {
+        for (int i = 0; i < numberOfOrders; i++) {
+            // Create a fake order
+            OrderEntity order = new OrderEntity();
+            // Convert Date to LocalDateTime
+            LocalDateTime orderDate = Instant.ofEpochMilli(faker.date().past(30, TimeUnit.DAYS).getTime())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+            order.setOrderDate(orderDate);
+            order.setOrderStatus("Confirmed");
+            
+            // Assign a random member to the order
+//            Long memberId = Long.valueOf(faker.number().numberBetween(1, numberOfFakeUsers));
+    
+            int index = i % numberOfFakeUsers;
+            if (index == 0) {
+                index = numberOfFakeUsers;
+            }
+            UserEntity member = userRepository.findById(Long.valueOf(index)).orElseThrow(() -> new RuntimeException("Member not found"));
+            order.setMember(member);
+            
+            // Save the order to get an ID
+            OrderEntity savedOrder = orderRepository.save(order);
+            
+            // Create a few order items for each order
+            for (int j = 0; j < faker.number().numberBetween(1, maxProductItemsPerOrder); j++) {
+                OrderItemEntity orderItem = new OrderItemEntity();
+                orderItem.setOrder(savedOrder);
+                
+                // Assign a random product option variation to the order item
+                Long productOptionVariationId = Long.valueOf(faker.number().numberBetween(1, numberOfFakeProductionOptionVariations));
+                ProductOptionVariationEntity productOptionVariation = productOptionVariationRepository.findById(productOptionVariationId)
+                    .orElseThrow(() -> new RuntimeException("ProductOptionVariation not found"));
+                orderItem.setProductOptionVariation(productOptionVariation);
+                
+                // Save the order item
+                orderItemRepository.save(orderItem);
+            }
+        }
+    }
+    
 }
