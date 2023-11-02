@@ -20,11 +20,22 @@ public class Application {
     @Bean
     public CommandLineRunner initData() {
         return args -> {
+            Integer numberOfFakeUsers = 10;
+            Integer numberOfFakeCategories = 10;
+            Integer numberOfFakeOptions = 3;
+            Integer numberOfFakeOptionsVariations = 3;
+            Integer numberOfFakeProducts = 10;
+            
+            //step1) create fake users
             dataGenerator.createAuthorities();
             dataGenerator.createFakeAdmin();
-            dataGenerator.generateFake1000Users();
-            dataGenerator.generateFakeCategoryAndOptions();
-            dataGenerator.generateFake100Products();
+            dataGenerator.generateFakeUsers(numberOfFakeUsers);
+            
+            //step2) create fake products
+            dataGenerator.generateFakeCategoryAndOptions(numberOfFakeCategories, numberOfFakeOptions, numberOfFakeOptionsVariations);
+            dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories);
+            
+            //step3) create fake orders
         };
     }
 }

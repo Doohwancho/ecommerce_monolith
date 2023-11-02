@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import net.datafaker.Faker;
@@ -142,10 +141,10 @@ public class FakeDataGenerator {
     }
     
     @Transactional
-    public void generateFake1000Users() {
+    public void generateFakeUsers(Integer numberOfUsers) {
         List<UserEntity> users = new ArrayList<>();
     
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < numberOfUsers; i++) {
             UserEntity user = generateROLE_USER();
             if (user != null) {
                 users.add(user);
@@ -155,18 +154,18 @@ public class FakeDataGenerator {
     }
     
     @Transactional
-    public void generateFakeCategoryAndOptions() {
+    public void generateFakeCategoryAndOptions(Integer numberOfFakeCategories, Integer numberOfFakeOptions, Integer numberOfFakeOptionsVariations) {
         List<CategoryEntity> lists = new ArrayList<>();
     
         // Generate categories
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < numberOfFakeCategories; i++) {
             CategoryEntity category = new CategoryEntity();
             category.setCategoryCode(faker.code().asin());
             category.setName(faker.commerce().department());
             
             // Generate options for each category
             Set<OptionEntity> options = new HashSet<>();
-            for (int j = 0; j < 5; j++) {
+            for (int j = 0; j < numberOfFakeOptions; j++) {
                 OptionEntity option = new OptionEntity();
                 option.setValue(faker.commerce().material());
                 option.setCategory(category);
@@ -175,7 +174,7 @@ public class FakeDataGenerator {
                 options.add(option);
                 
                 // Generate option variations for each option
-                for (int k = 0; k < 3; k++) {
+                for (int k = 0; k < numberOfFakeOptionsVariations; k++) {
                     OptionVariationEntity optionVariation = new OptionVariationEntity();
                     optionVariation.setValue(faker.color().name());
                     optionVariation.setOption(option);
@@ -191,8 +190,8 @@ public class FakeDataGenerator {
     }
     
     @Transactional
-    public void generateFake100Products() {
-        for (int i = 0; i < 100; i++) { //카테고리수가 10개니까, 1000개가 max
+    public void generateFake100Products(Integer numberOfFakeProducts, Integer numberOfFakeCategories) {
+        for (int i = 0; i < numberOfFakeProducts; i++) { //카테고리수가 10개니까, 1000개가 max
             //step1) create product
             ProductEntity product = new ProductEntity();
             product.setName(faker.commerce().productName());
@@ -202,9 +201,9 @@ public class FakeDataGenerator {
             
             
             //step2) get category for the product
-            int index = i % 10;
+            int index = i % numberOfFakeCategories;
             if (index == 0) {
-                index = 10;
+                index = numberOfFakeCategories;
             }
             CategoryEntity category = categoryRepository.findByCategoryId(Long.valueOf(index)); //10개의 카테고리를 순차적으로 가져온다.
             product.setCategory(category);
