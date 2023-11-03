@@ -63,13 +63,13 @@ public class UserService implements UserDetailsService {
         return saveRoleUser(userEntity);
     }
     
-    public Optional<UserEntity> findUser(String userId) {
-        return userRepository.findByUserId(userId); //TODO 5 - Optional을 반환타입으로 하면 안좋다고 effective java에서 말한거 같은데?
+    public Optional<UserEntity> findUser(String username) {
+        return userRepository.findByUsername(username); //TODO 5 - Optional을 반환타입으로 하면 안좋다고 effective java에서 말한거 같은데?
     }
     
     @Transactional
-    public boolean updateUserName(String userId, String userName) {
-        Optional<UserEntity> userOptional = userRepository.findByUserId(userId);
+    public boolean updateUserName(String username, String userName) {
+        Optional<UserEntity> userOptional = userRepository.findByUsername(username);
         userOptional.ifPresent(user -> {
             user.setName(userName);
             user.setUpdated(LocalDateTime.now());
@@ -79,14 +79,18 @@ public class UserService implements UserDetailsService {
     }
     
     @Override
-    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        return userRepository.findByUserId(userId)
-            .orElseThrow(() -> new UsernameNotFoundException(userId + "이 존재하지 않음"));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException(username + "이 존재하지 않음"));
+    
+        log.info("loadUserByUsername 이에오!");
+        log.info(userEntity.toString());
+        return userEntity;
     }
     
     @Transactional
-    public boolean addAuthorityROLE_USER(String userId, String authority) {
-        Optional<UserEntity> userOptional = userRepository.findByUserId(userId);
+    public boolean addAuthorityROLE_USER(String username, String authority) {
+        Optional<UserEntity> userOptional = userRepository.findByUsername(username);
         userOptional.ifPresent(user -> {
             // Create and save the user's authority
             AuthorityEntity userRole = authorityRepository.findByAuthority(AuthorityEntity.ROLE_USER)
@@ -106,8 +110,8 @@ public class UserService implements UserDetailsService {
     }
     
     @Transactional
-    public boolean removeAuthority(String userId, String authority) {
-        Optional<UserEntity> userOptional = userRepository.findByUserId(userId);
+    public boolean removeAuthority(String username, String authority) {
+        Optional<UserEntity> userOptional = userRepository.findByUsername(username);
         userOptional.ifPresent(user -> {
             user.getUserAuthorities().remove(new AuthorityEntity(authority)); //TODO - 검증: 정말 authority가 지워지는지 확인하기
             user.setUpdated(LocalDateTime.now());

@@ -308,7 +308,7 @@ components:
     RegisterPostDTO:
       type: object
       properties:
-        userId:
+        username:
           type: string
           description: Unique user identifier.
         email:
@@ -345,7 +345,7 @@ components:
 #    LoginPostDTO:
 #      type: object
 #      properties:
-#        userId:
+#        username:
 #          type: string
 #          description: Unique user identifier.
 #        password:

@@ -23,6 +23,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,6 +36,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
 @Setter
 public class UserEntity implements UserDetails { // UserDetailService를 구현한 클래스를 따로 분리해서 만들어서 처리해도 된다.
     
@@ -44,7 +46,7 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     private Long memberId;
     
     @Column(unique = true, name = "USER_ID")
-    private String userId;
+    private String username;
     
     @Column(unique = true)
     private String email;
@@ -91,10 +93,6 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
         return password;
     }
     
-    @Override
-    public String getUsername() {
-        return email;
-    }
     
     @Override
     public boolean isAccountNonExpired() {
@@ -129,12 +127,12 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
         this.userAuthorities.add(userAuthorityEntity);
     }
     
-    public String getUserId(){
-        return this.userId;
+    public String getUsername(){
+        return this.username;
     }
     
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
     
     public String getEmail() {
@@ -173,7 +171,7 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     public String toString() {
         return "User{" +
             "memberId=" + memberId +
-            ", userId='" + userId + '\'' +
+            ", username='" + username + '\'' +
             ", email='" + email + '\'' +
             ", name='" + name + '\'' +
             ", password='" + password + '\'' +
@@ -188,7 +186,7 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     // You can use Objects.hash() and Objects.equals() for simplicity
     @Override
     public int hashCode() {
-        return Objects.hash(memberId, userId, email, name, password, role, enabled, created, updated);
+        return Objects.hash(memberId, username, email, name, password, role, enabled, created, updated);
     }
     
     @Override
@@ -198,7 +196,7 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
         UserEntity userEntity = (UserEntity) obj;
         return enabled == userEntity.enabled &&
             Objects.equals(memberId, userEntity.memberId) &&
-            Objects.equals(userId, userEntity.userId) &&
+            Objects.equals(username, userEntity.username) &&
             Objects.equals(email, userEntity.email) &&
             Objects.equals(name, userEntity.name) &&
             Objects.equals(password, userEntity.password) &&

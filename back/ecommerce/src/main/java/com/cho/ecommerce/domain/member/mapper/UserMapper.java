@@ -22,7 +22,7 @@ public class UserMapper {
     public UserEntity dtoToEntityWithNestedAddress(RegisterPostDTO dto, String role) {
         UserEntity userEntity = new UserEntity();
         
-        userEntity.setUserId(dto.getUserId());
+        userEntity.setUsername(dto.getUsername());
         userEntity.setEmail(dto.getEmail());
         userEntity.setName(dto.getName());
         userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));

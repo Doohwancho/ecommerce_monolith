@@ -40,7 +40,9 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
             .csrf()
                 .ignoringAntMatchers("/h2-console/**") // Disable CSRF for H2 console
                 .disable() //disable csrf for conveniency
-                .headers().frameOptions().disable() //h2-console 접속시 ui error 막기 위해 썼다.
+                .headers()
+                    .frameOptions().disable() //h2-console 접속시 ui error 막기 위해 썼다.
+                    .xssProtection().disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
             .and()
                 .sessionManagement(s -> s
                     .maximumSessions(1) //동일 세션 개수 제한 => 1개로 설정하여 중복 로그인 방지 (localhost:8080에서 로그인하고, localhost:8081로 로그인 시도하면 http status 401 UNAUTHORIZED error 뜬다.
@@ -48,24 +50,25 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                     .maxSessionsPreventsLogin(true) // true : 먼저 사용 중인 사용자의 세션이 유지되며, 새로 접속 한 사람은 로그인이 되지 않음
                     .expiredSessionStrategy(securitySessionExpiredStrategy)) //Session 만료됐을 때 가져갈 전략 설정
 //                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // This is the default, but just to be explicit
-            .formLogin(f ->
-//                f.defaultSuccessUrl("/", true)
-                f.loginPage("/login") //custom page 구현한 경우
-                    .usernameParameter("userId")
-                    .passwordParameter("password")
-                .failureForwardUrl("/login?error=true")
-                .successHandler(formSuccessHandler)
-                .failureHandler(formFailureHandler)
-            )
             .authorizeRequests(f ->
-                f.antMatchers("/login").permitAll()
-                .antMatchers("/register").permitAll()
-                .antMatchers("/h2-console/**").permitAll() //allow h2-console access for developer
-                .antMatchers("/actuator/health").permitAll() //allow h2-console access for developer
-                .anyRequest().authenticated()
+                    f.antMatchers("/login").permitAll()
+                        .antMatchers("/register").permitAll()
+                        .antMatchers("/h2-console/**").permitAll() //allow h2-console access for developer
+                        .antMatchers("/actuator/health").permitAll() //allow h2-console access for developer
+                        .anyRequest().authenticated()
                 //Q. what is .anyRequest().authenticated()?
                 //any request not matched by the previous antMatchers should be authenticated.
                 //In other words, all other URLs in your application require the user to be authenticated.
+            )
+            .formLogin(f -> f
+                .loginPage("/login") //custom page 구현한 경우
+                    .usernameParameter("username")
+                    .passwordParameter("password")
+//                .loginProcessingUrl("/login")
+//                .failureForwardUrl("/login?error=true")
+                .defaultSuccessUrl("/", true)
+                .successHandler(formSuccessHandler)
+//                .failureHandler(formFailureHandler)
             );
     }
     

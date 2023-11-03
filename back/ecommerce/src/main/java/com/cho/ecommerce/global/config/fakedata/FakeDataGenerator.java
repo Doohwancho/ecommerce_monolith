@@ -88,7 +88,7 @@ public class FakeDataGenerator {
     
             //step1) save user "admin"
             UserEntity admin = new UserEntity();
-            admin.setUserId("admin");
+            admin.setUsername("admin");
             admin.setName("admin");
             admin.setEmail("admin@admin.com");
             admin.setPassword(passwordEncoder.encode("admin"));
@@ -117,7 +117,7 @@ public class FakeDataGenerator {
 
         if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
             UserEntity user = new UserEntity();
-            user.setUserId(faker.internet().uuid());
+            user.setUsername(faker.internet().uuid());
             user.setName(faker.name().fullName());
             user.setEmail(faker.internet().emailAddress());
             user.setPassword(passwordEncoder.encode("admin"));

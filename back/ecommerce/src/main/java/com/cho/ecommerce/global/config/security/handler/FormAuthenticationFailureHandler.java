@@ -21,6 +21,11 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
     
     private final Logger logger = LoggerFactory.getLogger(FormAuthenticationSuccessHandler.class);
     
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        logger.info("여기에오!!! on auth failure!");
+    }
+    
     //case1) auth fail시 error message 보내기 위함
 //    @Override
 //    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {

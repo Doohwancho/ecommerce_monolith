@@ -11,6 +11,7 @@ group = 'com.cho.ecommerce'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
+//openapi config
 swaggerSources {
 //    def typeMappings = 'URI=URI, BigDecimal=BigDecimal, EntityModel=EntityModel'
 //    def importMappings = 'URI=java.net.URI, BigDecimal=java.math.BigDecimal, EntityModel=org.springframework.hateoas.EntityModel'
@@ -89,6 +90,7 @@ test {
     useJUnitPlatform()
 }
 
+//query dsl config
 def querydslDir = "$buildDir/generated/querydsl" //TODO - build 하면, build/generated/querydsl은 없고, build/classes/java/main/org/example/jpashop/ 에 QClass생김..
 
 querydsl {
@@ -104,3 +106,4 @@ configurations {
 compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
 }
+

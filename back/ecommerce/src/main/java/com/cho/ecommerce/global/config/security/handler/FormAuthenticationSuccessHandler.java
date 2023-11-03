@@ -27,6 +27,8 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String redirectUrl = "/";
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        
+        logger.info("로그인 성공!!!!!");
     
         for (GrantedAuthority grantedAuthority : authorities) {
             
