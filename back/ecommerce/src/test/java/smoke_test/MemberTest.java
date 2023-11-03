@@ -5,12 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cho.ecommerce.Application;
+import com.cho.ecommerce.api.domain.RegisterPostDTO;
+import com.cho.ecommerce.api.domain.RegisterPostDTOAddress;
+import com.cho.ecommerce.api.domain.RegisterResponseDTO;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.domain.member.service.AuthorityService;
 import com.cho.ecommerce.domain.member.service.UserAuthorityService;
 import com.cho.ecommerce.domain.member.service.UserService;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import com.cho.ecommerce.global.config.redis.RedisConfig;
+import net.datafaker.Faker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -155,7 +159,49 @@ public class MemberTest {
         assertNotNull(location);
         assertTrue(location.endsWith("/login?error"));
     }
-
+    
+    @Test
+    @DisplayName("Register new role user returns 201 CREATED")
+    public void whenRegisterNewRoleUserThenReturnCreatedStatus() {
+        Faker faker = new Faker();
+        
+        // Create RegisterPostDTO object with test data
+        RegisterPostDTO registerPostDTO = new RegisterPostDTO();
+        registerPostDTO.setUsername("newuser");
+        registerPostDTO.setEmail("newuser@example.com");
+        registerPostDTO.setPassword("password");
+        registerPostDTO.setName("name");
+    
+        RegisterPostDTOAddress address = new RegisterPostDTOAddress();
+    
+        address.setStreet(faker.address().streetAddress());
+        address.setCity(faker.address().city());
+        address.setState(faker.address().state());
+        address.setCountry(faker.address().country());
+        address.setZipCode(faker.address().zipCode());
+    
+        registerPostDTO.setAddress(address);
+        
+        
+        // Convert RegisterPostDTO to HttpEntity
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<RegisterPostDTO> request = new HttpEntity<>(registerPostDTO, headers);
+        
+        // Perform POST request to register endpoint
+        ResponseEntity<RegisterResponseDTO> response = restTemplate.postForEntity(
+            "http://localhost:" + port + "/register",
+            request,
+            RegisterResponseDTO.class
+        );
+        
+        // Assert that the response status code is 201 CREATED
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        
+        // Optionally, assert the response body content if necessary
+        assertNotNull(response.getBody());
+        assertEquals("Registration successful", response.getBody().getMessage());
+    }
     
 }
 
