@@ -31,6 +31,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,13 +41,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.Session;
+import org.springframework.session.security.SpringSessionBackedSessionRegistry;
+
 
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {Application.class, RedisConfig.class})
 @ActiveProfiles("test")
 @Tag("smoke") //to run, type "mvn test -Dgroups=smoke"
-public class MemberTest {
+public class MemberTest<S extends Session> {
     @Autowired
     private AuthorityService authorityService;
     @Autowired
@@ -71,16 +76,12 @@ public class MemberTest {
     private final Logger log = LoggerFactory.getLogger(MemberTest.class);
     
     @BeforeEach
-    public void clearSecurityContextBeforeTest() {
+    @AfterEach
+    public void clearSecurityContext() {
         SecurityContextHolder.clearContext();
         flushAllRedisData();
     }
     
-    @AfterEach
-    public void clearSecurityContextAfterTest() {
-        SecurityContextHolder.clearContext();
-        flushAllRedisData();
-    }
 
     public void flushAllRedisData() {
         // clear all data from Redis
@@ -159,6 +160,41 @@ public class MemberTest {
         assertNotNull(location);
         assertTrue(location.endsWith("/login?error"));
     }
+    
+    @Test
+    public void 서버에서는_없는_session인데_client에서_http_request_with_that_session시_login_페이지로_redirect() {
+        //step1) get session cookie after user login
+        ResponseEntity<String> responseWithSession = restTemplate.postForEntity(
+            "http://localhost:" + port + "/login",
+            createHeaders("admin", "admin"),
+            String.class
+        );
+        
+        //Extract Set-Cookie header (session cookie)
+        String setCookieHeader = responseWithSession.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
+        assertNotNull(setCookieHeader, "Set-Cookie header should not be null");
+    
+        //Create new headers and set the Cookie header with the session cookie
+        HttpHeaders headersWithSessionCookie = new HttpHeaders();
+        headersWithSessionCookie.add(HttpHeaders.COOKIE, setCookieHeader);
+    
+    
+        //step2) clear spring security context and redis that stored sessions
+        clearSecurityContext();
+
+        
+        //step3) http request to /user with session included.
+        ResponseEntity<String> response = restTemplate.exchange(
+            "http://localhost:" + port + "/user",
+            HttpMethod.GET,
+            new HttpEntity<>(headersWithSessionCookie),
+            String.class
+        );
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode()); //302 redirect 이후 200, login page로 간다.
+        assertNotNull(response.getBody());
+    }
+    
     
     @Test
     @DisplayName("Register new role user returns 201 CREATED")
