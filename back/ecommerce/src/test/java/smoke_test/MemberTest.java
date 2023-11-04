@@ -14,6 +14,7 @@ import com.cho.ecommerce.domain.member.service.UserAuthorityService;
 import com.cho.ecommerce.domain.member.service.UserService;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import com.cho.ecommerce.global.config.redis.RedisConfig;
+import java.util.List;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
@@ -195,6 +197,39 @@ public class MemberTest<S extends Session> {
         assertNotNull(response.getBody());
     }
     
+    @Test
+    public void whenUserLogsOutThenRedirectedToLoginPage() {
+        ResponseEntity<String> loginResponse = restTemplate.postForEntity(
+            "http://localhost:" + port + "/login",
+            createHeaders("admin", "admin"),
+            String.class
+        );
+        
+        String setCookieHeader = loginResponse.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.COOKIE, setCookieHeader);
+        
+        // Now, we perform the logout
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> logoutResponse = restTemplate.exchange(
+            "http://localhost:" + port + "/logout",
+            HttpMethod.POST,
+            requestEntity,
+            String.class
+        );
+        
+        
+        // Check that we are redirected to the login page with the 'logout' parameter
+        assertEquals(HttpStatus.FOUND, logoutResponse.getStatusCode());
+        String location = logoutResponse.getHeaders().getLocation().toString();
+        assertEquals("http://localhost:" + port + "/login?logout", location);
+        
+        // Optionally, check that the JSESSIONID cookie has been invalidated
+        List<String> cookies = logoutResponse.getHeaders().get(HttpHeaders.SET_COOKIE);
+        boolean cookieInvalidated = cookies.stream().anyMatch(cookie -> cookie.contains("JSESSIONID=;")); //JESSSION=; -> 비어있으니까 invalidated 한거다.
+        
+        assertTrue(cookieInvalidated, "JSESSIONID cookie was invalidated");
+    }
     
     @Test
     @DisplayName("Register new role user returns 201 CREATED")

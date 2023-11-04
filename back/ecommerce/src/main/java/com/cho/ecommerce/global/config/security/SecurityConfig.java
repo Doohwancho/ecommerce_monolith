@@ -5,6 +5,7 @@ import com.cho.ecommerce.global.config.security.handler.FormAuthenticationFailur
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationSuccessHandler;
 import com.cho.ecommerce.global.config.security.session.SecuritySessionExpiredStrategy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -28,6 +29,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     private final SecuritySessionExpiredStrategy securitySessionExpiredStrategy;
     private final FormAuthenticationSuccessHandler formSuccessHandler;
     private final FormAuthenticationFailureHandler formFailureHandler;
+    
     
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -64,12 +66,15 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                 .loginPage("/login") //custom page 구현한 경우
                     .usernameParameter("username")
                     .passwordParameter("password")
-//                .loginProcessingUrl("/login")
-//                .failureForwardUrl("/login?error=true")
                 .defaultSuccessUrl("/", true)
                 .successHandler(formSuccessHandler)
 //                .failureHandler(formFailureHandler)
-            );
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout") // URL to trigger logout
+                .logoutSuccessUrl("/login?logout") // URL to redirect after logout
+                .invalidateHttpSession(true) // Invalidate the session
+                .deleteCookies("JSESSIONID")); // Delete cookies on logout
     }
     
     @Override
