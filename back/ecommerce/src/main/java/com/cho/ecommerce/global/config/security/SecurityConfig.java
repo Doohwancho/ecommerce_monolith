@@ -52,12 +52,12 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                     .maxSessionsPreventsLogin(true) // true : 먼저 사용 중인 사용자의 세션이 유지되며, 새로 접속 한 사람은 로그인이 되지 않음
                     .expiredSessionStrategy(securitySessionExpiredStrategy)) //Session 만료됐을 때 가져갈 전략 설정
 //                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // This is the default, but just to be explicit
-            .authorizeRequests(f ->
-                    f.antMatchers("/login").permitAll()
-                        .antMatchers("/register").permitAll()
-                        .antMatchers("/h2-console/**").permitAll() //allow h2-console access for developer
-                        .antMatchers("/actuator/health").permitAll() //allow h2-console access for developer
-                        .anyRequest().authenticated()
+            .authorizeRequests(f -> f
+                    .antMatchers("/login").permitAll()
+                    .antMatchers("/register").permitAll()
+                    .antMatchers("/h2-console/**").permitAll() //allow h2-console access for developer
+                    .antMatchers("/actuator/health").permitAll() //allow h2-console access for developer
+                    .anyRequest().authenticated()
                 //Q. what is .anyRequest().authenticated()?
                 //any request not matched by the previous antMatchers should be authenticated.
                 //In other words, all other URLs in your application require the user to be authenticated.

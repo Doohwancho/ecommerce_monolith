@@ -142,8 +142,9 @@ public class MemberTest<S extends Session> {
         assertTrue(location.endsWith("/admin"));
     }
     
+    //SecurityConfig.java에 .maxSessionsPreventsLogin(true)를 테스트 한다.
     @Test
-    @DisplayName("login attempt from the same user while his session is alive will redict him to /login page")
+    @DisplayName("login attempt from the same user while his session is alive will redirect him to /login page")
     public void attemptToLoginAgainWhileSessionIsAliveShouldFail() {
         whenLoginWithValidUserThenAuthenticated();
     
