@@ -3,13 +3,16 @@ package com.cho.ecommerce.domain.product.service;
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
 import com.cho.ecommerce.api.domain.ProductListResponse;
+import com.cho.ecommerce.domain.product.entity.CategoryEntity;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
+import com.cho.ecommerce.domain.product.repository.CategoryRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepositoryCustomImpl;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.LogManager;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class ProductService {
     private ProductRepository productRepository;
     
     @Autowired
+    private CategoryRepository categoryRepository;
+    
+    @Autowired
     private ProductRepositoryCustomImpl productRepositoryCustom;
     
     @Autowired
@@ -38,8 +44,12 @@ public class ProductService {
         return productRepository.findById(id);
     }
     
+    @Transactional
     public ProductDTO saveProduct(ProductCreateDTO product) {
         ProductEntity productEntity = productMapper.productCreateDTOToProductEntity(product);
+        CategoryEntity category = categoryRepository.findByCategoryId(
+            Long.valueOf(product.getCategoryId()));
+        productEntity.setCategory(category);
         ProductEntity savedProduct = productRepository.save(productEntity);
         ProductDTO productDTO = productMapper.productEntityToProductDTO(savedProduct);
         return productDTO;
@@ -56,12 +66,10 @@ public class ProductService {
         productRepository.deleteById(id);
     }
     
-    public List<ProductListResponse> findAllProductsByCategory(Long categoryId) {
+    public ProductListResponse findAllProductsByCategory(Long categoryId) {
         List<ProductEntity> allProductsByCategory = productRepositoryCustom.findAllProductsByCategory(
             categoryId);
         
-        log.info("여기 왔다!");
-        log.info(allProductsByCategory.toString());
         return productMapper.productEntitiesToProductListResponses(allProductsByCategory);
     }
 }

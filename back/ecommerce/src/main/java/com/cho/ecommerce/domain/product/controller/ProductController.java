@@ -57,7 +57,7 @@ public class ProductController implements ProductApi {
         if (!productService.getProductById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        product.setPRODUCTID(id); // Ensure the ID is set on the product to update
+        product.setProductId(id); // Ensure the ID is set on the product to update
         return ResponseEntity.ok(productService.saveProduct(product));
     }
     
@@ -71,8 +71,8 @@ public class ProductController implements ProductApi {
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<List<ProductListResponse>> getProductsByCategory(Long categoryId) {
-        List<ProductListResponse> allProductsByCategory = productService.findAllProductsByCategory(
+    public ResponseEntity<ProductListResponse> getProductsByCategory(Long categoryId) {
+        ProductListResponse allProductsByCategory = productService.findAllProductsByCategory(
             categoryId);
     
         return ResponseEntity.ok(allProductsByCategory);

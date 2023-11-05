@@ -22,11 +22,13 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     public List<ProductEntity> findAllProductsByCategory(Long categoryId) {
         QProductEntity product = QProductEntity.productEntity;
         QCategoryEntity category = QCategoryEntity.categoryEntity;
-        
-        return queryFactory
+    
+        List<ProductEntity> result = queryFactory
             .selectFrom(product)
             .join(product.category, category)
             .where(category.categoryId.eq(categoryId))
             .fetch();
+        
+        return result;
     }
 }

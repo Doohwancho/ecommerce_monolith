@@ -1,4 +1,11 @@
 openapi: 3.0.3
+##############################################
+#  주의점                                      #
+##############################################
+# 1. components: schemas: 에 object를 정의할 때, field 이름에 underscore ('_') 가 들어가면,
+#    openapi-codegen이 object를 만들 때, getter에 '_'가 버려지기 때문에,(ex. PRODUCT_ID -> getPRODUCTID() 로 됨)
+#    Mapper library를 쓸 때 에러난다. 따라서 _를 쓰지 말고, camel case를 쓰도록 하자. (ex. userAddress)
+
 info:
   title: User Management API
   version: 1.0.0
@@ -229,9 +236,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProductListResponse'
+                $ref: '#/components/schemas/ProductListResponse'
         '204':
           description: No content, no products found for the category
         '400':
@@ -384,32 +389,29 @@ components:
     ProductCreateDTO:
       type: object
       properties:
-        PRODUCT_ID:
-          type: integer
-          format: int64
-        NAME:
+        name:
           type: string
-        DESCRIPTION:
+        description:
           type: string
-        CATEGORY_ID:
+        categoryId:
           type: integer
       required:
-        - PRODUCT_ID
+        - productId
     ProductDTO:
       type: object
       properties:
-        PRODUCT_ID:
+        productId:
           type: integer
           format: int64
-        NAME:
+        name:
           type: string
-        DESCRIPTION:
+        description:
           type: string
-        RATING:
+        rating:
           type: number
-        RATING_COUNT:
+        ratingCount:
           type: integer
-        CATEGORY_ID:
+        categoryId:
           type: integer
       required:
         - PRODUCT_ID
