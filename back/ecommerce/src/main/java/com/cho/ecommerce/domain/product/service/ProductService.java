@@ -57,6 +57,9 @@ public class ProductService {
     
     public ProductDTO saveProduct(ProductDTO product) {
         ProductEntity productEntity = productMapper.productDTOToProductEntity(product);
+        CategoryEntity category = categoryRepository.findByCategoryId(
+            Long.valueOf(product.getCategoryId()));
+        productEntity.setCategory(category);
         ProductEntity savedProduct = productRepository.save(productEntity);
         ProductDTO productDTO = productMapper.productEntityToProductDTO(savedProduct);
         return productDTO;
