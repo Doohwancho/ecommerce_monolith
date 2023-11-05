@@ -3,19 +3,20 @@ package com.cho.ecommerce.domain.product.controller;
 import com.cho.ecommerce.api.ProductApi;
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
+import com.cho.ecommerce.api.domain.ProductListResponse;
+import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.service.ProductService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/products")
 public class ProductController implements ProductApi {
     
     @Autowired
@@ -24,17 +25,19 @@ public class ProductController implements ProductApi {
     @Autowired
     private ProductMapper productMapper;
     
+    
     @Override
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        List<ProductDTO> productDTOs = productService.getAllProducts()
-            .stream()
-            .map(productMapper::productEntityToProductDTO)
-            .collect(Collectors.toList());
-        
-        return ResponseEntity.ok(productDTOs);
+        List<ProductEntity> allProducts = productService.getAllProducts();
+        List<ProductDTO> productDTOS = productMapper.INSTANCE.productEntitiesToProductDTOs(
+            allProducts);
+    
+        return ResponseEntity.ok(productDTOS);
     }
     
     @Override
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
         return productService.getProductById(id)
             .map(productMapper::productEntityToProductDTO)
@@ -43,11 +46,13 @@ public class ProductController implements ProductApi {
     }
     
     @Override
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductCreateDTO product) {
         return ResponseEntity.ok(productService.saveProduct(product));
     }
     
     @Override
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO product) {
         if (!productService.getProductById(id).isPresent()) {
             return ResponseEntity.notFound().build();
@@ -57,8 +62,19 @@ public class ProductController implements ProductApi {
     }
     
     @Override
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    
+    @Override
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    public ResponseEntity<List<ProductListResponse>> getProductsByCategory(Long categoryId) {
+        List<ProductListResponse> allProductsByCategory = productService.findAllProductsByCategory(
+            categoryId);
+    
+        return ResponseEntity.ok(allProductsByCategory);
     }
 }

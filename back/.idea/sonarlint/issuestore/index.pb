@@ -23,10 +23,6 @@ Necommerce/src/main/java/com/cho/ecommerce/domain/order/mapper/OrderMapper.java
 Yecommerce/src/main/java/com/cho/ecommerce/domain/member/repository/AddressRepository.java,0/6/0631a529ab5c17a8b7cd1dea3b6719d031f3c476
 D
 ecommerce/Dockerfile,4/7/47c2290765aa134253585978bfc5413be1215417
-ä
-Zecommerce/src/main/java/com/cho/ecommerce/domain/product/controller/ProductController.java,8/0/8010cdcd59de16d1085bca69618726359a441af1
-Ü
-Vecommerce/src/main/java/com/cho/ecommerce/domain/order/controller/OrderController.java,4/8/486fb518ebe210e38c1fc4b9780e40bd4d201670
 â
 Yecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserAuthorityService.java,0/6/068d73591816d27c27d41d03d32e3d8fc160b658
 Ö
@@ -35,8 +31,6 @@ Uecommerce/src/main/java/com/cho/ecommerce/domain/member/service/AuthorityServic
 Wecommerce/src/main/java/com/cho/ecommerce/domain/member/entity/UserAuthorityEntity.java,b/9/b9318de29854120218cf8e0280697b8e884d5d70
 Å
 Qecommerce/src/main/java/com/cho/ecommerce/domain/member/entity/AddressEntity.java,9/9/99414073fa739244a120b47b4f95069348e65f18
-É
-Secommerce/src/main/java/com/cho/ecommerce/domain/product/service/OptionService.java,9/d/9ded616e5b371c86dd3a5cdc0de00910692a756a
 É
 Secommerce/src/main/java/com/cho/ecommerce/domain/product/entity/DiscountEntity.java,f/7/f77cc7915d3410b71648f707a6c734a1719e3d10
 ä

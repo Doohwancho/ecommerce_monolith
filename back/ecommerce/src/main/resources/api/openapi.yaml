@@ -208,6 +208,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /products/category/{categoryId}:
+    get:
+      tags:
+        - Product
+      summary: Get products by category
+      description: Returns a list of products belonging to a specific category
+      operationId: getProductsByCategory
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          description: ID of the category to filter by
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductListResponse'
+        '204':
+          description: No content, no products found for the category
+        '400':
+          description: Bad request, invalid category ID
+        '404':
+          description: Not found, category does not exist
   /orders:
     get:
       summary: Get all orders
@@ -383,6 +413,15 @@ components:
           type: integer
       required:
         - PRODUCT_ID
+    ProductListResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDTO'
+      required:
+        - products
     OrderDTO:
       type: object
       properties:

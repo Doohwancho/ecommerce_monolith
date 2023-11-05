@@ -2,19 +2,30 @@ package com.cho.ecommerce.domain.product.service;
 
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
+import com.cho.ecommerce.api.domain.ProductListResponse;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
+import com.cho.ecommerce.domain.product.repository.ProductRepositoryCustomImpl;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
     
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    
+    
     @Autowired
     private ProductRepository productRepository;
+    
+    @Autowired
+    private ProductRepositoryCustomImpl productRepositoryCustom;
     
     @Autowired
     private ProductMapper productMapper;
@@ -43,5 +54,14 @@ public class ProductService {
     
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
+    }
+    
+    public List<ProductListResponse> findAllProductsByCategory(Long categoryId) {
+        List<ProductEntity> allProductsByCategory = productRepositoryCustom.findAllProductsByCategory(
+            categoryId);
+        
+        log.info("여기 왔다!");
+        log.info(allProductsByCategory.toString());
+        return productMapper.productEntitiesToProductListResponses(allProductsByCategory);
     }
 }

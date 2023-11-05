@@ -9,6 +9,8 @@
         - name
         - password
 - 로그인
+    - server에 없는 session으로 요청하면 GET /login으로 redirect with http status 302
+    - set max-age for storing session within cookie inside the client's browser 
 - 상품
 	- CRUD
     - Discount 적용
