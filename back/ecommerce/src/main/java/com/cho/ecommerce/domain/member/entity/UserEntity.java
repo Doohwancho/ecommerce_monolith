@@ -75,6 +75,7 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     
     @JsonIgnore
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
     private Set<OrderEntity> orders = new HashSet<>();
     
     
