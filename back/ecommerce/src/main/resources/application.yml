@@ -14,6 +14,7 @@ spring:
         web-allow-others: true # ?
   # Database Setting Info (Database를 H2로 사용하기 위해 H2연결 정보 입력)
   datasource:
+    platform: h2 #이게 h2이냐, mysql이냐에 따라 DatabaseCleanUp이 데이터베이스 종류에 맞게 다르게 동작한다.
     driver-class-name: org.h2.Driver  # Database를 H2로 사용하겠다.
     url: jdbc:h2:mem:testdb  # H2 접속 정보
     username: sa  # H2 접속 시 입력할 username 정보 (원하는 것으로 입력)
