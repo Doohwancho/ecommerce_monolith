@@ -2,7 +2,9 @@ openapi: 3.0.3
 ##############################################
 #  주의점                                      #
 ##############################################
-# 1. components: schemas: 에 object를 정의할 때, field 이름에 underscore ('_') 가 들어가면,
+# 1. components: schemas: 에 object 이름을 정의할 때, 엔티티 이름이나 도메인 객체 이름과 겹치면, mapstruct에 걸리거나, 도메인 객체와 헤깔릴 수 있으니, 맨 뒤에 DTO를 붙여준다.
+# 2. components: schemas: 에 object 이름을 정의할 때, 객체 이름이 복수면, mapstruct의 복수객체 전환시 장애가 있으니, 단수로 한다.externalDocs:
+# 3. components: schemas: 에 object를 정의할 때, field 이름에 underscore ('_') 가 들어가면,
 #    openapi-codegen이 object를 만들 때, getter에 '_'가 버려지기 때문에,(ex. PRODUCT_ID -> getPRODUCTID() 로 됨)
 #    Mapper library를 쓸 때 에러난다. 따라서 _를 쓰지 말고, camel case를 쓰도록 하자. (ex. userAddress)
 
@@ -139,30 +141,54 @@ paths:
                 $ref: '#/components/schemas/Error'
   /products/{productId}:
     get:
-      summary: Get a specific product by ID
+      summary: Get product details by product ID
+      operationId: getProductDetailsById
       tags:
-        - Product
-      operationId: getProductById
+        - product
       parameters:
         - name: productId
           in: path
           required: true
+          description: The ID of the product to retrieve.
           schema:
             type: integer
             format: int64
       responses:
         '200':
-          description: Successful response
+          description: An array of product objects along with related details.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductDTO'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductDetail'
+        '404':
+          description: Product not found
+#    get:
+#      summary: Get a specific product by ID
+#      tags:
+#        - Product
+#      operationId: getProductById
+#      parameters:
+#        - name: productId
+#          in: path
+#          required: true
+#          schema:
+#            type: integer
+#            format: int64
+#      responses:
+#        '200':
+#          description: Successful response
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/ProductDTO'
+#        default:
+#          description: Unexpected error
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Error'
     put:
       summary: Update a product by ID
       tags:
@@ -424,6 +450,77 @@ components:
             $ref: '#/components/schemas/ProductDTO'
       required:
         - products
+    ProductDetail:
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: Unique identifier of the product
+        name:
+          type: string
+          description: Name of the product
+        description:
+          type: string
+          description: Description of the product
+        rating:
+          type: number
+          format: double
+          description: Average rating of the product
+        ratingCount:
+          type: integer
+          format: int32
+          description: Count of ratings received
+        quantity:
+          type: integer
+          format: int32
+          description: Available quantity of the product
+        price:
+          type: number
+          format: double
+          description: Price of the product
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiscountDTO'
+        categoryId:
+          type: integer
+          format: int64
+          description: Identifier of the category to which the product belongs
+        categoryCode:
+          type: string
+          description: Code of the category
+        categoryName:
+          type: string
+          description: Name of the category
+        optionName:
+          type: string
+          description: Name of the product option
+        optionVariationName:
+          type: string
+          description: Name of the product option variation
+    DiscountDTO:
+      type: object
+      properties:
+        discountId:
+          type: integer
+          format: int64
+          description: Unique identifier of the discount
+        discountType:
+          type: string
+          description: Type of the discount
+        discountValue:
+          type: number
+          format: double
+          description: Value of the discount
+        startDate:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+          description: Start date of the discount
+        endDate:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+          description: End date of the discount
     OrderDTO:
       type: object
       properties:
@@ -433,7 +530,7 @@ components:
           readOnly: true
         orderDate:
           type: string
-          format: date-time
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
         orderStatus:
           type: string
         memberId:

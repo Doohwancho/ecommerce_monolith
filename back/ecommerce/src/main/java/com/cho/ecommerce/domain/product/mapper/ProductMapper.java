@@ -2,10 +2,18 @@ package com.cho.ecommerce.domain.product.mapper;
 
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
+import com.cho.ecommerce.api.domain.ProductDetail;
 import com.cho.ecommerce.api.domain.ProductListResponse;
+import com.cho.ecommerce.api.domain.DiscountDTO;
+import com.cho.ecommerce.domain.product.domain.Discount;
+import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.service.CategoryService;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -65,4 +73,8 @@ public interface ProductMapper {
         productListResponse.setProducts(productEntitiesToProductDTOs(productEntityList));
         return productListResponse;
     }
+
+    ProductDetail productToProductDetail(Product product);
+    
+    List<ProductDetail> productsToProductDetails(List<Product> products);
 }

@@ -258,9 +258,11 @@ public class FakeDataGenerator {
                 DiscountEntity discount = new DiscountEntity();
                 discount.setDiscountType(
                     DiscountType.values()[faker.number().numberBetween(0, DiscountType.values().length)]);
-                discount.setDiscountValue(new BigDecimal(faker.number().randomDouble(2, 1, 100)));
-                discount.setStartDate(faker.date().past(10, TimeUnit.DAYS));
-                discount.setEndDate(faker.date().future(10, TimeUnit.DAYS));
+                discount.setDiscountValue(faker.number().randomDouble(2, 1, 100));
+//                discount.setStartDate(faker.date().past(10, TimeUnit.DAYS));
+                discount.setStartDate(faker.date().past(10, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime());
+//                discount.setEndDate(faker.date().future(10, TimeUnit.DAYS));
+                discount.setEndDate(faker.date().future(10, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime());
                 discount.setProductItem(productItem);
                 discountRepository.save(discount);
             }

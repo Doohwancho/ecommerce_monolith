@@ -10,7 +10,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
@@ -18,6 +20,8 @@ import org.springframework.security.core.GrantedAuthority;
 //@Data //TODO 2 - @Data -> custom getter/setter, toString(), etc
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Builder
 public class AuthorityEntity implements GrantedAuthority {
     

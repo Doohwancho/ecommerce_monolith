@@ -2,13 +2,23 @@ package com.cho.ecommerce.domain.product.service;
 
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
+import com.cho.ecommerce.api.domain.ProductDetail;
 import com.cho.ecommerce.api.domain.ProductListResponse;
+import com.cho.ecommerce.domain.product.domain.Discount;
+import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
+import com.cho.ecommerce.domain.product.entity.DiscountEntity;
+import com.cho.ecommerce.domain.product.entity.OptionEntity;
+import com.cho.ecommerce.domain.product.entity.OptionVariationEntity;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
+import com.cho.ecommerce.domain.product.entity.ProductItemEntity;
+import com.cho.ecommerce.domain.product.entity.ProductOptionVariationEntity;
+import com.cho.ecommerce.domain.product.mapper.DiscountMapper;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepositoryCustomImpl;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.LogManager;
@@ -36,12 +46,67 @@ public class ProductService {
     @Autowired
     private ProductMapper productMapper;
     
+    @Autowired
+    private DiscountMapper discountMapper;
+    
     public List<ProductEntity> getAllProducts() {
         return productRepository.findAll();
     }
     
     public Optional<ProductEntity> getProductById(Long id) {
         return productRepository.findById(id);
+    }
+    
+    public List<Product> getProductDetailsById(Long productId) {
+        ProductEntity queryResult = productRepository.findProductDetailsById(
+            productId).get(0);
+        
+        List<ProductOptionVariationEntity> AllProducts = new ArrayList<>();
+        List<Product> productList = new ArrayList<>();
+        
+        if (queryResult.getProductItems() != null) {
+            for (ProductItemEntity productItem : queryResult.getProductItems()) {
+                for (ProductOptionVariationEntity productOptionVariation : productItem.getProductOptionVariations()) {
+                    AllProducts.add(productOptionVariation);
+                }
+            }
+        }
+        
+        for(ProductOptionVariationEntity productOptionVariationEntity : AllProducts) {
+            ProductItemEntity productItemEntity = productOptionVariationEntity.getProductItem();
+            ProductEntity productEntity = productItemEntity.getProduct();
+            List<DiscountEntity> discounts = productItemEntity.getDiscounts();
+            OptionVariationEntity optionVariationEntity = productOptionVariationEntity.getOptionVariation();
+            OptionEntity optionEntity = optionVariationEntity.getOption();
+            CategoryEntity categoryEntity = optionEntity.getCategory();
+    
+            
+            Product product = new Product.Builder()
+                .productId(productEntity.getProductId())
+                .name(productEntity.getName())
+                .description(productEntity.getDescription())
+                .rating(productEntity.getRating())
+                .ratingCount(productEntity.getRatingCount())
+                .quantity(productItemEntity.getQuantity())
+                .price(productItemEntity.getPrice())
+                .discounts(discountMapper.discountEntitiesToDiscounts(discounts))
+                .categoryId(categoryEntity.getCategoryId())
+                .categoryCode(categoryEntity.getCategoryCode())
+                .categoryName(categoryEntity.getName())
+                .optionName(optionEntity.getValue())
+                .optionVariationName(optionVariationEntity.getValue())
+                .build();
+            productList.add(product);
+        }
+        
+        return productList;
+    };
+    
+    public List<ProductDetail> findProductDetailsById(Long productId) {
+        List<Product> productDetailsList = getProductDetailsById(productId);
+        List<ProductDetail> productDetails = productMapper.productsToProductDetails(
+            productDetailsList);
+        return productDetails;
     }
     
     @Transactional

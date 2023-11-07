@@ -2,6 +2,7 @@ package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.domain.product.domain.DiscountType;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,10 +16,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Table(name = "DISCOUNT")
+@Getter
 @Setter
 public class DiscountEntity {
     
@@ -32,15 +35,13 @@ public class DiscountEntity {
     private DiscountType discountType;
     
     @Column(name = "DISCOUNT_VALUE", nullable = false, precision = 10, scale = 2)
-    private BigDecimal discountValue;
+    private Double discountValue;
     
     @Column(name = "START_DATE", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date startDate;
+    private OffsetDateTime startDate;
     
     @Column(name = "END_DATE", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date endDate;
+    private OffsetDateTime endDate;
     
     @ManyToOne
     @JoinColumn(name = "PRODUCT_ITEM_ID") //PRODUCT_ITEM_ID column이 대신 생성된다.

@@ -2,6 +2,7 @@ package com.cho.ecommerce.domain.product.controller;
 
 import com.cho.ecommerce.api.ProductApi;
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
+import com.cho.ecommerce.api.domain.ProductDetail;
 import com.cho.ecommerce.api.domain.ProductDTO;
 import com.cho.ecommerce.api.domain.ProductListResponse;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
@@ -10,6 +11,7 @@ import com.cho.ecommerce.domain.product.service.ProductService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,12 +40,12 @@ public class ProductController implements ProductApi {
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
-        return productService.getProductById(id)
-            .map(productMapper::productEntityToProductDTO)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<List<ProductDetail>> getProductDetailsById(Long id) {
+        List<ProductDetail> productList = productService.findProductDetailsById(id);
+        
+        return new ResponseEntity<>(productList, HttpStatus.CREATED);
     }
+
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
