@@ -37,7 +37,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
     
     @Override
-    public List<ProductEntity> findProductDetailsById(Long productId) {
+    public List<ProductEntity> findProductDetailDTOsById(Long productId) {
         QProductEntity qProduct = QProductEntity.productEntity;
         QCategoryEntity qCategory = QCategoryEntity.categoryEntity;
 //        QOptionEntity qOption = QOptionEntity.optionEntity;

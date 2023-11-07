@@ -13,6 +13,7 @@
     - set max-age for storing session within cookie inside the client's browser 
 - 상품
 	- CRUD
+        - detailed product information read query by product Id
     - Discount 적용
 	- Category 적용
 		- parent caregory, 자식 카테고리 구현

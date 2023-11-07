@@ -2,8 +2,8 @@ package com.cho.ecommerce.domain.product.mapper;
 
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
-import com.cho.ecommerce.api.domain.ProductDetail;
-import com.cho.ecommerce.api.domain.ProductListResponse;
+import com.cho.ecommerce.api.domain.ProductDetailDTO;
+import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.api.domain.DiscountDTO;
 import com.cho.ecommerce.domain.product.domain.Discount;
 import com.cho.ecommerce.domain.product.domain.Product;
@@ -68,13 +68,13 @@ public interface ProductMapper {
     ProductEntity productCreateDTOToProductEntity(ProductCreateDTO productCreateDTO);
     
 
-    default ProductListResponse productEntitiesToProductListResponses(List<ProductEntity> productEntityList) {
-        ProductListResponse productListResponse = new ProductListResponse();
-        productListResponse.setProducts(productEntitiesToProductDTOs(productEntityList));
-        return productListResponse;
+    default ProductListResponseDTO productEntitiesToProductListResponseDTOs(List<ProductEntity> productEntityList) {
+        ProductListResponseDTO ProductListResponseDTO = new ProductListResponseDTO();
+        ProductListResponseDTO.setProducts(productEntitiesToProductDTOs(productEntityList));
+        return ProductListResponseDTO;
     }
 
-    ProductDetail productToProductDetail(Product product);
+    ProductDetailDTO productToProductDetailDTO(Product product);
     
-    List<ProductDetail> productsToProductDetails(List<Product> products);
+    List<ProductDetailDTO> productsToProductDetailDTOs(List<Product> products);
 }

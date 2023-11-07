@@ -2,9 +2,9 @@ package com.cho.ecommerce.domain.product.controller;
 
 import com.cho.ecommerce.api.ProductApi;
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
-import com.cho.ecommerce.api.domain.ProductDetail;
+import com.cho.ecommerce.api.domain.ProductDetailDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
-import com.cho.ecommerce.api.domain.ProductListResponse;
+import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.service.ProductService;
@@ -40,8 +40,8 @@ public class ProductController implements ProductApi {
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<List<ProductDetail>> getProductDetailsById(Long id) {
-        List<ProductDetail> productList = productService.findProductDetailsById(id);
+    public ResponseEntity<List<ProductDetailDTO>> getProductDetailDTOsById(Long id) {
+        List<ProductDetailDTO> productList = productService.findProductDetailDTOsById(id);
         
         return new ResponseEntity<>(productList, HttpStatus.CREATED);
     }
@@ -73,8 +73,8 @@ public class ProductController implements ProductApi {
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<ProductListResponse> getProductsByCategory(Long categoryId) {
-        ProductListResponse allProductsByCategory = productService.findAllProductsByCategory(
+    public ResponseEntity<ProductListResponseDTO> getProductsByCategory(Long categoryId) {
+        ProductListResponseDTO allProductsByCategory = productService.findAllProductsByCategory(
             categoryId);
     
         return ResponseEntity.ok(allProductsByCategory);

@@ -2,8 +2,8 @@ package com.cho.ecommerce.domain.product.service;
 
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
-import com.cho.ecommerce.api.domain.ProductDetail;
-import com.cho.ecommerce.api.domain.ProductListResponse;
+import com.cho.ecommerce.api.domain.ProductDetailDTO;
+import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.domain.product.domain.Discount;
 import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
@@ -57,8 +57,8 @@ public class ProductService {
         return productRepository.findById(id);
     }
     
-    public List<Product> getProductDetailsById(Long productId) {
-        ProductEntity queryResult = productRepository.findProductDetailsById(
+    public List<Product> getProductDetailDTOsById(Long productId) {
+        ProductEntity queryResult = productRepository.findProductDetailDTOsById(
             productId).get(0);
         
         List<ProductOptionVariationEntity> AllProducts = new ArrayList<>();
@@ -102,11 +102,11 @@ public class ProductService {
         return productList;
     };
     
-    public List<ProductDetail> findProductDetailsById(Long productId) {
-        List<Product> productDetailsList = getProductDetailsById(productId);
-        List<ProductDetail> productDetails = productMapper.productsToProductDetails(
-            productDetailsList);
-        return productDetails;
+    public List<ProductDetailDTO> findProductDetailDTOsById(Long productId) {
+        List<Product> ProductDetailDTOsList = getProductDetailDTOsById(productId);
+        List<ProductDetailDTO> ProductDetailDTOs = productMapper.productsToProductDetailDTOs(
+            ProductDetailDTOsList);
+        return ProductDetailDTOs;
     }
     
     @Transactional
@@ -134,10 +134,10 @@ public class ProductService {
         productRepository.deleteById(id);
     }
     
-    public ProductListResponse findAllProductsByCategory(Long categoryId) {
+    public ProductListResponseDTO findAllProductsByCategory(Long categoryId) {
         List<ProductEntity> allProductsByCategory = productRepositoryCustom.findAllProductsByCategory(
             categoryId);
         
-        return productMapper.productEntitiesToProductListResponses(allProductsByCategory);
+        return productMapper.productEntitiesToProductListResponseDTOs(allProductsByCategory);
     }
 }

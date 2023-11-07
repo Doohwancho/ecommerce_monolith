@@ -114,7 +114,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorDTO'
     post:
       summary: Create a new product
       tags:
@@ -138,11 +138,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorDTO'
   /products/{productId}:
     get:
       summary: Get product details by product ID
-      operationId: getProductDetailsById
+      operationId: getProductDetailDTOsById
       tags:
         - product
       parameters:
@@ -161,7 +161,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ProductDetail'
+                  $ref: '#/components/schemas/ProductDetailDTO'
         '404':
           description: Product not found
 #    get:
@@ -188,7 +188,7 @@ paths:
 #          content:
 #            application/json:
 #              schema:
-#                $ref: '#/components/schemas/Error'
+#                $ref: '#/components/schemas/ErrorDTO'
     put:
       summary: Update a product by ID
       tags:
@@ -219,7 +219,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorDTO'
     delete:
       summary: Delete a product by ID
       tags:
@@ -240,7 +240,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/ErrorDTO'
   /products/category/{categoryId}:
     get:
       tags:
@@ -262,7 +262,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductListResponse'
+                $ref: '#/components/schemas/ProductListResponseDTO'
         '204':
           description: No content, no products found for the category
         '400':
@@ -359,7 +359,7 @@ paths:
           description: Order deleted
 components:
   schemas:
-    Error:
+    ErrorDTO:
       type: object
       properties:
         code:
@@ -441,7 +441,7 @@ components:
           type: integer
       required:
         - PRODUCT_ID
-    ProductListResponse:
+    ProductListResponseDTO:
       type: object
       properties:
         products:
@@ -450,7 +450,7 @@ components:
             $ref: '#/components/schemas/ProductDTO'
       required:
         - products
-    ProductDetail:
+    ProductDetailDTO:
       type: object
       properties:
         productId:

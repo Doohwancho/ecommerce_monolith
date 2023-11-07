@@ -45,7 +45,7 @@ Etc
 1. docs : 문서 수정에 대한 커밋
 2. build : changes that affect the build system or external dependencies
 3. ci : CI 관련 설정 수정에 대한 커밋
-3. chore : 그 외 자잘한 수정에 대한 커밋(ex. 툴링, 오타수정)
-4. revert : reverts the previous commit
-4. bump: 버전업에 대한 커밋
+4. chore : 그 외 자잘한 수정에 대한 커밋(ex. 툴링, 오타수정)
+5. revert : reverts the previous commit
+6. bump: 버전업에 대한 커밋
 

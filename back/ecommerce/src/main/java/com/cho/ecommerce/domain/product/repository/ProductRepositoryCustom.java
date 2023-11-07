@@ -6,5 +6,5 @@ import java.util.List;
 public interface ProductRepositoryCustom {
     List<ProductEntity> findAllProductsByCategory(Long categoryId);
     
-    List<ProductEntity> findProductDetailsById(Long productId);
+    List<ProductEntity> findProductDetailDTOsById(Long productId);
 }
