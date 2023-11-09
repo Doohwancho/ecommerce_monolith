@@ -17,6 +17,8 @@ public class Discount {
     private OffsetDateTime endDate;
     
     public Double applyDiscount(Double originalPrice) {
+        if(OffsetDateTime.now().isAfter(endDate)) return originalPrice;
+        
         switch (discountType) {
             case PERCENTAGE:
                 return originalPrice * (1 - discountValue / 100);
