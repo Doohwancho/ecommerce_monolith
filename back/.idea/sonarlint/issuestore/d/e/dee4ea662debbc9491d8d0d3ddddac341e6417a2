@@ -1,16 +1,0 @@
-
-f	java:S117A"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ã¯öÄ
-f	java:S117k"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(˜èá
-k	java:S117l"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(³÷è—úÿÿÿÿ
-„
-java:S1488l"iImmediately return this expression instead of assigning it to the temporary variable "ProductDetailDTOs".(³÷è—úÿÿÿÿ
-}
-java:S1488x"bImmediately return this expression instead of assigning it to the temporary variable "productDTO".(Î´şÇûÿÿÿÿ
-~
-java:S1488‚"bImmediately return this expression instead of assigning it to the temporary variable "productDTO".(Î´şÇûÿÿÿÿ
-‚
-java:S2229k"e"getProductDetailDTOsById's" @Transactional requirement is incompatible with the one for this method.(˜èá8ıä‚ñº1
-7
-java:S1116h"Remove this empty statement.(ôŸìúÿÿÿÿ
-=
-java:S1068""'Remove this unused "log" private field.(ù˜í°
