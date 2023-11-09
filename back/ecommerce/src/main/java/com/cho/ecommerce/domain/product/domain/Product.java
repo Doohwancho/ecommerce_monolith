@@ -42,12 +42,14 @@ public class Product{
         this.quantity = quantity;
         this.discounts = discounts;
     }
+    
     public Double getDiscountedPrice() {
         Double discountedPrice = price;
         
         for (Discount discount : discounts) {
             discountedPrice = discount.applyDiscount(discountedPrice);
         }
+        Assert.isTrue(discountedPrice >= 0, "할인된 상품 가격은 0보다 같거나 커야 합니다.");
         
         return discountedPrice;
     }

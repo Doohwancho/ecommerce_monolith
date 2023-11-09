@@ -23,7 +23,11 @@ public class Discount {
             case PERCENTAGE:
                 return originalPrice * (1 - discountValue / 100);
             case FLAT_RATE:
-                return originalPrice - discountValue;
+                double discountedPrice = originalPrice - discountValue;
+                if (discountedPrice < 0) {
+                    discountedPrice = 0.0;
+                }
+                return discountedPrice;
             default:
                 return originalPrice;
         }
