@@ -1,8 +1,6 @@
 package com.cho.ecommerce.domain.product.domain;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.Assert;

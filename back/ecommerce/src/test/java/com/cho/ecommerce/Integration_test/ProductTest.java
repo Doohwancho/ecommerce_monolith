@@ -57,7 +57,7 @@ import org.springframework.util.MultiValueMap;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {Application.class})
 @ActiveProfiles("test")
-@Tag("integration") //to run, type "mvn test -Dgroups=smoke"
+@Tag("integration") //to run, type "mvn test -Dgroups=integration"
 public class ProductTest {
     
     private final Logger log = LoggerFactory.getLogger(MemberTest.class);

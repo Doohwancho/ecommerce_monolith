@@ -1,9 +1,7 @@
 package com.cho.ecommerce.domain.product.domain;
 
 import java.util.List;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.util.Assert;
@@ -49,7 +47,7 @@ public class Product{
         for (Discount discount : discounts) {
             discountedPrice = discount.applyDiscount(discountedPrice);
         }
-        Assert.isTrue(discountedPrice >= 0, "할인된 상품 가격은 0보다 같거나 커야 합니다.");
+        discountedPrice = Math.max(discountedPrice, 0);
         
         return discountedPrice;
     }
@@ -137,8 +135,8 @@ public class Product{
         }
         
         public Product build() {
-            Assert.isTrue(price > 0, "상품 가격은 0보다 커야 합니다.");
-            Assert.isTrue(quantity > 0, "상품 수량은 0보다 커야 합니다.");
+            Assert.isTrue(price >= 0, "상품 가격은 음수가 될 수 없습니다.");
+            Assert.isTrue(quantity >= 0, "상품 수량은 음수가 될 수 없습니다.");
             Assert.notNull(name, "상품 이름은 null이 될 수 없습니다.");
             Assert.notNull(categoryId, "카테고리 Id는 null이 될 수 없습니다.");
             Assert.notNull(categoryCode, "카테고리 코드는 null이 될 수 없습니다.");
