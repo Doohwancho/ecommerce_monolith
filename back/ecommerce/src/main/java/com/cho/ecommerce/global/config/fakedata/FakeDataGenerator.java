@@ -93,7 +93,7 @@ public class FakeDataGenerator {
             admin.setPassword(passwordEncoder.encode("admin"));
             admin.setCreated(LocalDateTime.now());
             admin.setUpdated(LocalDateTime.now());
-            admin.setRole("ADMIN");
+            admin.setRole("ROLE_ADMIN");
             admin.setEnabled(true);
     
             UserEntity savedUserEntity = userRepository.save(admin);
@@ -116,21 +116,21 @@ public class FakeDataGenerator {
         if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
         
             //step1) save user "admin"
-            UserEntity admin = new UserEntity();
-            admin.setUsername("testUser");
-            admin.setName("testUser");
-            admin.setEmail("testUser@testUser.com");
-            admin.setPassword(passwordEncoder.encode("password"));
-            admin.setCreated(LocalDateTime.now());
-            admin.setUpdated(LocalDateTime.now());
-            admin.setRole("USER");
-            admin.setEnabled(true);
+            UserEntity user = new UserEntity();
+            user.setUsername("testUser");
+            user.setName("testUser");
+            user.setEmail("testUser@testUser.com");
+            user.setPassword(passwordEncoder.encode("password"));
+            user.setCreated(LocalDateTime.now());
+            user.setUpdated(LocalDateTime.now());
+            user.setRole("ROLE_USER");
+            user.setEnabled(true);
         
-            UserEntity savedUserEntity = userRepository.save(admin);
+            UserEntity savedUserEntity = userRepository.save(user);
         
             //step2) save AuthorityEntity "ROLE_ADMIN"
             AuthorityEntity userRole = authorityRepository.findByAuthority(
-                    AuthorityEntity.ROLE_ADMIN)
+                    AuthorityEntity.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
         
             UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
@@ -152,7 +152,7 @@ public class FakeDataGenerator {
             user.setPassword(passwordEncoder.encode("password"));
             user.setCreated(LocalDateTime.now());
             user.setUpdated(LocalDateTime.now());
-            user.setRole("USER");
+            user.setRole("ROLE_USER");
             user.setEnabled(true);
     
             AddressEntity address = new AddressEntity();

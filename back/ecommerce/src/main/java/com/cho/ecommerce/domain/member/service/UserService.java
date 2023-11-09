@@ -53,13 +53,13 @@ public class UserService implements UserDetailsService {
     
     @Transactional
     public UserEntity saveRoleUser(RegisterPostDTO registerPostDTO) {
-        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO, "USER");
+        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO, "ROLE_USER");
         return saveRoleUser(userEntity);
     }
     
     @Transactional
     public UserEntity saveRoleAdmin(RegisterPostDTO registerPostDTO) {
-        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO, "ADMIN");
+        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO, "ROLE_ADMIN");
         return saveRoleUser(userEntity);
     }
     

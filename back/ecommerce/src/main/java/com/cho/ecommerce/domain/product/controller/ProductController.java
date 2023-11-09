@@ -39,7 +39,8 @@ public class ProductController implements ProductApi {
     }
     
     @Override
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<List<ProductDetailDTO>> getProductDetailDTOsById(Long id) {
         List<ProductDetailDTO> productList = productService.findProductDetailDTOsById(id);
         

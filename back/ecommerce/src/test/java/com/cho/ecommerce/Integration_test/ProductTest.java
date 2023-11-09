@@ -151,10 +151,9 @@ public class ProductTest {
     @Test
     public void testgetProductDetailDTOsById() {
         //given
-        //get session cookie after user login
         ResponseEntity<String> responseWithSession = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
-            createHeaders("admin", "admin"),
+            createHeaders("testUser", "password"),
             String.class
         );
     
