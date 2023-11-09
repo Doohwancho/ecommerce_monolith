@@ -33,9 +33,6 @@ public class DatabaseCleanupTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
     
-//    @Autowired
-//    private TestEntityManager entityManager;
-    
     @PersistenceContext
     private EntityManager entityManager;
     
@@ -56,7 +53,6 @@ public class DatabaseCleanupTest {
         order.setOrderStatus("PENDING");
     
         // When
-//        order = entityManager.persistAndFlush(order); // Insert into database and flush changes
         entityManager.persist(order);
         entityManager.flush();
         

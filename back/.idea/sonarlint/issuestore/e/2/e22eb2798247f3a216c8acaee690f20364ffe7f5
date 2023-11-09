@@ -1,0 +1,19 @@
+
+f	java:S117H"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ùÑ¨Þ
+[
+java:S1128"ERemove this unused import 'com.cho.ecommerce.api.domain.DiscountDTO'.(ïåÌø
+h
+java:S1128"MRemove this unused import 'com.cho.ecommerce.domain.product.domain.Discount'.(ô–ý›ýÿÿÿÿ
+n
+java:S1128
+"SRemove this unused import 'com.cho.ecommerce.domain.product.entity.CategoryEntity'.(½ß¢õüÿÿÿÿ
+p
+java:S1128"URemove this unused import 'com.cho.ecommerce.domain.product.service.CategoryService'.(â­«’ùÿÿÿÿ
+K
+java:S1128"0Remove this unused import 'java.time.LocalDate'.(›‘¬èýÿÿÿÿ
+C
+java:S1128"-Remove this unused import 'java.time.ZoneId'.( Æ½“
+F
+java:S1128"0Remove this unused import 'java.util.ArrayList'.(÷‰îƒ
+A
+java:S1128"+Remove this unused import 'java.util.Date'.(¸…¼ü

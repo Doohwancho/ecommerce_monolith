@@ -194,8 +194,14 @@ public class MemberTest<S extends Session> {
             String.class
         );
         
+        
+//        assertEquals(HttpStatus.FOUND, response.getStatusCode()); //302 redirect
+//        assertTrue(response.getHeaders().containsKey("Location"));
+//        String location = response.getHeaders().getFirst("Location");
+//        assertNotNull(location);
+//        assertTrue(location.endsWith("/login"));
         assertEquals(HttpStatus.OK, response.getStatusCode()); //302 redirect 이후 200, login page로 간다.
-        assertNotNull(response.getBody());
+        assertNotNull(response.getBody()); //login page
     }
     
     @Test
