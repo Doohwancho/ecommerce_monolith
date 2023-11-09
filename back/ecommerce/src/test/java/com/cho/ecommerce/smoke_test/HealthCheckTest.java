@@ -1,4 +1,4 @@
-package smoke_test;
+package com.cho.ecommerce.smoke_test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

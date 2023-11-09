@@ -57,6 +57,7 @@ public class ProductService {
         return productRepository.findById(id);
     }
     
+    @Transactional
     public List<Product> getProductDetailDTOsById(Long productId) {
         ProductEntity queryResult = productRepository.findProductDetailDTOsById(
             productId).get(0);

@@ -1,4 +1,4 @@
-package util_test;
+package com.cho.ecommerce.util_test;
 
 import com.cho.ecommerce.Application;
 import com.cho.ecommerce.domain.order.entity.OrderEntity;

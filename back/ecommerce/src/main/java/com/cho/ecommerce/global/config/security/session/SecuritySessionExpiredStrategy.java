@@ -5,6 +5,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.web.session.SessionInformationExpiredEvent;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 import org.springframework.stereotype.Component;
@@ -13,10 +15,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecuritySessionExpiredStrategy implements SessionInformationExpiredStrategy {
     
+    
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private static final String defaultUrl = "/login";
     
     @Override
     public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {
+        log.info("여기에오! SecuritySessionExpiredStrategy.onExpiredSessionDetected()");
+        
         HttpServletRequest request = event.getRequest();
         HttpServletResponse response = event.getResponse();
         

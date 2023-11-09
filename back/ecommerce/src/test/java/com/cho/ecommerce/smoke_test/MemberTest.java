@@ -1,4 +1,4 @@
-package smoke_test;
+package com.cho.ecommerce.smoke_test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -84,7 +84,7 @@ public class MemberTest<S extends Session> {
         flushAllRedisData();
     }
     
-
+    
     public void flushAllRedisData() {
         // clear all data from Redis
         redisTemplate.getConnectionFactory().getConnection().flushAll();
@@ -134,7 +134,7 @@ public class MemberTest<S extends Session> {
         
         //step1) login success, http status 302 redirect
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
-    
+        
         //step2) redirect to / page
         assertTrue(response.getHeaders().containsKey("Location"));
         String location = response.getHeaders().getFirst("Location");
@@ -147,16 +147,16 @@ public class MemberTest<S extends Session> {
     @DisplayName("login attempt from the same user while his session is alive will redirect him to /login page")
     public void attemptToLoginAgainWhileSessionIsAliveShouldFail() {
         whenLoginWithValidUserThenAuthenticated();
-    
+        
         ResponseEntity<String> response = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
             createHeaders("admin", "admin"),
             String.class
         );
-    
+        
         //step1) login success, http status 302 redirect
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
-    
+        
         //step2) redirect to / page
         assertTrue(response.getHeaders().containsKey("Location"));
         String location = response.getHeaders().getFirst("Location");
@@ -176,15 +176,15 @@ public class MemberTest<S extends Session> {
         //Extract Set-Cookie header (session cookie)
         String setCookieHeader = responseWithSession.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
         assertNotNull(setCookieHeader, "Set-Cookie header should not be null");
-    
+        
         //Create new headers and set the Cookie header with the session cookie
         HttpHeaders headersWithSessionCookie = new HttpHeaders();
         headersWithSessionCookie.add(HttpHeaders.COOKIE, setCookieHeader);
-    
-    
+        
+        
         //step2) clear spring security context and redis that stored sessions
         clearSecurityContext();
-
+        
         
         //step3) http request to /user with session included.
         ResponseEntity<String> response = restTemplate.exchange(
@@ -194,14 +194,8 @@ public class MemberTest<S extends Session> {
             String.class
         );
         
-        
-//        assertEquals(HttpStatus.FOUND, response.getStatusCode()); //302 redirect
-//        assertTrue(response.getHeaders().containsKey("Location"));
-//        String location = response.getHeaders().getFirst("Location");
-//        assertNotNull(location);
-//        assertTrue(location.endsWith("/login"));
         assertEquals(HttpStatus.OK, response.getStatusCode()); //302 redirect 이후 200, login page로 간다.
-        assertNotNull(response.getBody()); //login page
+        assertNotNull(response.getBody());
     }
     
     @Test
@@ -249,15 +243,15 @@ public class MemberTest<S extends Session> {
         registerPostDTO.setEmail("newuser@example.com");
         registerPostDTO.setPassword("password");
         registerPostDTO.setName("name");
-    
+        
         RegisterPostDTOAddress address = new RegisterPostDTOAddress();
-    
+        
         address.setStreet(faker.address().streetAddress());
         address.setCity(faker.address().city());
         address.setState(faker.address().state());
         address.setCountry(faker.address().country());
         address.setZipCode(faker.address().zipCode());
-    
+        
         registerPostDTO.setAddress(address);
         
         
@@ -282,5 +276,3 @@ public class MemberTest<S extends Session> {
     }
     
 }
-
-

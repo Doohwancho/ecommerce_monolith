@@ -26,7 +26,6 @@ import com.cho.ecommerce.domain.product.repository.OptionVariationRepository;
 import com.cho.ecommerce.domain.product.repository.ProductItemRepository;
 import com.cho.ecommerce.domain.product.repository.ProductOptionVariationRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -112,15 +111,45 @@ public class FakeDataGenerator {
         }
     }
     
+    @Transactional
+    public void createFakeUser() {
+        if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
+        
+            //step1) save user "admin"
+            UserEntity admin = new UserEntity();
+            admin.setUsername("testUser");
+            admin.setName("testUser");
+            admin.setEmail("testUser@testUser.com");
+            admin.setPassword(passwordEncoder.encode("password"));
+            admin.setCreated(LocalDateTime.now());
+            admin.setUpdated(LocalDateTime.now());
+            admin.setRole("USER");
+            admin.setEnabled(true);
+        
+            UserEntity savedUserEntity = userRepository.save(admin);
+        
+            //step2) save AuthorityEntity "ROLE_ADMIN"
+            AuthorityEntity userRole = authorityRepository.findByAuthority(
+                    AuthorityEntity.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
+        
+            UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
+            userAuthorityEntity.setUserEntity(savedUserEntity);
+            userAuthorityEntity.setAuthorityEntity(userRole);
+        
+            userAuthorityRepository.save(userAuthorityEntity);
+        }
+    }
     
-    public UserEntity generateROLE_USER() {
+    
+    public UserEntity generateRandomROLE_USER() {
 
         if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
             UserEntity user = new UserEntity();
             user.setUsername(faker.internet().uuid());
             user.setName(faker.name().fullName());
             user.setEmail(faker.internet().emailAddress());
-            user.setPassword(passwordEncoder.encode("admin"));
+            user.setPassword(passwordEncoder.encode("password"));
             user.setCreated(LocalDateTime.now());
             user.setUpdated(LocalDateTime.now());
             user.setRole("USER");
@@ -149,19 +178,21 @@ public class FakeDataGenerator {
         }
         return null;
     }
+
     
     @Transactional
     public void generateFakeUsers(Integer numberOfUsers) {
         List<UserEntity> users = new ArrayList<>();
     
         for(int i = 0; i < numberOfUsers; i++) {
-            UserEntity user = generateROLE_USER();
+            UserEntity user = generateRandomROLE_USER();
             if (user != null) {
                 users.add(user);
             }
         }
         userRepository.saveAll(users);
     }
+    
     
     @Transactional
     public void generateFakeCategoryAndOptions(Integer numberOfFakeCategories, Integer numberOfFakeOptions, Integer numberOfFakeOptionsVariations) {

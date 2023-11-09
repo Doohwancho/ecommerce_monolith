@@ -33,6 +33,7 @@ public class Application {
             //step1) create fake users
             dataGenerator.createAuthorities();
             dataGenerator.createFakeAdmin();
+            dataGenerator.createFakeUser();
             dataGenerator.generateFakeUsers(numberOfFakeUsers);
             
             //step2) create fake products
