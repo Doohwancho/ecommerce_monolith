@@ -35,8 +35,8 @@ public class Product{
     
     
     public void update(final Double price, final int quantity, final List<Discount> discounts) {
-        Assert.isTrue(price > 0, "상품 가격은 0보다 커야 합니다.");
-        Assert.isTrue(quantity > 0, "상품 수량은 0보다 커야 합니다.");
+        Assert.isTrue(price >= 0, "상품 가격은 음수일 수 없습니다.");
+        Assert.isTrue(quantity >= 0, "상품 수량은 음수일 수 없습니다.");
 //        Assert.notNull(discounts, "할인 정책은 필수입니다.");
         this.price = price;
         this.quantity = quantity;
@@ -46,10 +46,10 @@ public class Product{
         Double discountedPrice = price;
         
         for (Discount discount : discounts) {
-            discountedPrice = discount.applyDiscount(discountedPrice.doubleValue());
+            discountedPrice = discount.applyDiscount(discountedPrice);
         }
         
-        return discountedPrice.doubleValue();
+        return discountedPrice;
     }
     
     
