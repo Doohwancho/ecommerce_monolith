@@ -5,6 +5,7 @@ import java.time.OffsetDateTime;
 import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.Assert;
 
 @Getter
 @Setter
@@ -30,6 +31,54 @@ public class Discount {
                 return discountedPrice;
             default:
                 return originalPrice;
+        }
+    }
+    
+    // Static inner Builder class
+    public static class Builder {
+        private Long discountId;
+        private DiscountType discountType;
+        private Double discountValue;
+        private OffsetDateTime startDate;
+        private OffsetDateTime endDate;
+        
+        public Builder discountId(Long discountId) {
+            this.discountId = discountId;
+            return this;
+        }
+        
+        public Builder discountType(DiscountType discountType) {
+            this.discountType = discountType;
+            return this;
+        }
+        
+        public Builder discountValue(Double discountValue) {
+            this.discountValue = discountValue;
+            return this;
+        }
+        
+        public Builder startDate(OffsetDateTime startDate) {
+            this.startDate = startDate;
+            return this;
+        }
+        
+        public Builder endDate(OffsetDateTime endDate) {
+            this.endDate = endDate;
+            return this;
+        }
+        
+        public Discount build() {
+            Assert.notNull(discountType, "discount type이 null이 될 수 없습니다.");
+            Assert.notNull(discountValue, "discount value가 null이 될 수 없습니다.");
+            Assert.isTrue(discountValue >= 0, "discount률은 음수가 될 수 없습니다.");
+            
+            Discount discount = new Discount();
+            discount.setDiscountId(discountId);
+            discount.setDiscountType(discountType);
+            discount.setDiscountValue(discountValue);
+            discount.setStartDate(startDate);
+            discount.setEndDate(endDate);
+            return discount;
         }
     }
 }
