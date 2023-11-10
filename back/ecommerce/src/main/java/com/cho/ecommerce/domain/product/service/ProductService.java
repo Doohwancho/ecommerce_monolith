@@ -18,6 +18,7 @@ import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepositoryCustomImpl;
+import com.cho.ecommerce.global.error.exception.common.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +61,7 @@ public class ProductService {
     @Transactional
     public List<Product> getProductDetailDTOsById(Long productId) {
         ProductEntity queryResult = productRepository.findProductDetailDTOsById(
-            productId).get(0);
+            productId).get().get(0);
         
         List<ProductOptionVariationEntity> AllProducts = new ArrayList<>();
         List<Product> productList = new ArrayList<>();

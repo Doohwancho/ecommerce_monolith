@@ -1,14 +1,18 @@
 package com.cho.ecommerce.domain.product.repository;
 
+import static com.google.common.base.Predicates.not;
+
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.entity.QCategoryEntity;
 import com.cho.ecommerce.domain.product.entity.QDiscountEntity;
 import com.cho.ecommerce.domain.product.entity.QProductEntity;
 import com.cho.ecommerce.domain.product.entity.QProductItemEntity;
 import com.cho.ecommerce.domain.product.entity.QProductOptionVariationEntity;
+import com.cho.ecommerce.global.error.exception.common.ResourceNotFoundException;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -37,7 +41,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
     
     @Override
-    public List<ProductEntity> findProductDetailDTOsById(Long productId) {
+    public Optional<List<ProductEntity>> findProductDetailDTOsById(Long productId) {
         QProductEntity qProduct = QProductEntity.productEntity;
         QCategoryEntity qCategory = QCategoryEntity.categoryEntity;
 //        QOptionEntity qOption = QOptionEntity.optionEntity;
@@ -59,6 +63,10 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         // Fetch the results
         List<ProductEntity> products = query.fetch();
         
-        return products;
+    
+        return Optional.ofNullable(Optional.ofNullable(products)
+            .filter(not(List::isEmpty)) //if empty, returns Optional
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Product not found: " + productId))); //throw Exception if result is Optional
     }
 }
