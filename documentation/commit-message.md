@@ -37,6 +37,7 @@ Actions
 5. style : 코드 스타일 혹은 포맷 등에 관한 커밋
 6. refactor : 코드 리팩토링에 대한 커밋
 7. fix : error 수정에 대한 커밋
+8. defensive : defensive programming에 대한 커밋
 
 
 ---\

@@ -1,6 +1,7 @@
 package com.cho.ecommerce.global.error;
 
 import com.cho.ecommerce.global.error.exception.business.BusinessException;
+import com.cho.ecommerce.global.error.exception.member.MemberException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,12 +73,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException e) {
-        log.error("handleEntityNotFoundException", e);
+        log.error("Business Exception Occured!", e);
         final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
-
+    
+    @ExceptionHandler(MemberException.class)
+    protected ResponseEntity<ErrorResponse> handleBusinessException(final MemberException e) {
+        log.error("Member Exception Occured!", e);
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handleException(Exception e) {

@@ -128,7 +128,7 @@ public class ProductTest {
         
         // When
         List<Product> products = productService.getProductDetailDTOsById(productId);
-        Product product = products.get(0);
+        Product product = products.get(0); //여러개의 products중에 임의로 하나만 골라서 테스트한다.
     
         // Then
         assertNotNull(products);

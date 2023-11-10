@@ -1,12 +1,11 @@
 package com.cho.ecommerce.domain.order.service;
 
 import com.cho.ecommerce.api.domain.OrderDTO;
-import com.cho.ecommerce.domain.order.domain.Order;
 import com.cho.ecommerce.domain.order.entity.OrderEntity;
 import com.cho.ecommerce.domain.order.mapper.OrderMapper;
 import com.cho.ecommerce.domain.order.mapper.TimeMapper;
 import com.cho.ecommerce.domain.order.repository.OrderRepository;
-import com.cho.ecommerce.global.error.ResourceNotFoundException;
+import com.cho.ecommerce.global.error.exception.common.ResourceNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
