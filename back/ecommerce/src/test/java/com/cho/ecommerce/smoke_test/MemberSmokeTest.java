@@ -37,15 +37,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
-import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -53,7 +50,7 @@ import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 @ContextConfiguration(classes = {Application.class, RedisConfig.class})
 @ActiveProfiles("test")
 @Tag("smoke") //to run, type "mvn test -Dgroups=smoke"
-public class MemberTest<S extends Session> {
+public class MemberSmokeTest<S extends Session> {
     @Autowired
     private AuthorityService authorityService;
     @Autowired
@@ -75,7 +72,7 @@ public class MemberTest<S extends Session> {
     @LocalServerPort
     private int port;
     
-    private final Logger log = LoggerFactory.getLogger(MemberTest.class);
+    private final Logger log = LoggerFactory.getLogger(MemberSmokeTest.class);
     
     @BeforeEach
     @AfterEach

@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.cho.ecommerce.api.domain.ProductDetailDTO;
-
 import com.cho.ecommerce.Application;
 
 import com.cho.ecommerce.domain.product.domain.Product;
@@ -14,29 +12,23 @@ import com.cho.ecommerce.domain.product.service.ProductService;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import com.cho.ecommerce.global.config.parser.OffsetDateTimeDeserializer;
 import com.cho.ecommerce.global.util.DatabaseCleanup;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.awt.event.WindowFocusListener;
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
-import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -45,10 +37,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import com.cho.ecommerce.smoke_test.MemberTest;
+import com.cho.ecommerce.smoke_test.MemberSmokeTest;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -58,9 +49,9 @@ import org.springframework.util.MultiValueMap;
 @ContextConfiguration(classes = {Application.class})
 @ActiveProfiles("test")
 @Tag("integration") //to run, type "mvn test -Dgroups=integration"
-public class ProductTest {
+public class ProductIntegrationTest {
     
-    private final Logger log = LoggerFactory.getLogger(MemberTest.class);
+    private final Logger log = LoggerFactory.getLogger(MemberSmokeTest.class);
     
     @Autowired
     private TestRestTemplate restTemplate;
@@ -112,44 +103,9 @@ public class ProductTest {
         return new HttpEntity<>(map, headers);
     }
     
+
     @Test
-    public void TestGetProductDetailDTOsById() {
-        // Given
-        Long productId = 1L;
-    
-        final Integer numberOfFakeCategories = 10;
-        final Integer numberOfFakeOptions = 3;
-        final Integer numberOfFakeOptionsVariations = 3;
-        final Integer numberOfFakeProducts = 10;
-        final Integer numberOfFakeProductItems = 3;
-    
-        dataGenerator.generateFakeCategoryAndOptions(numberOfFakeCategories, numberOfFakeOptions, numberOfFakeOptionsVariations);
-        dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories, numberOfFakeProductItems );
-        
-        // When
-        List<Product> products = productService.getProductDetailDTOsById(productId);
-        Product product = products.get(0); //여러개의 products중에 임의로 하나만 골라서 테스트한다.
-    
-        // Then
-        assertNotNull(products);
-        assertEquals(products.size(), numberOfFakeProductItems);
-        assertNotNull(product.getProductId());
-        assertNotNull(product.getName());
-        assertNotNull(product.getDescription());
-        assertNotNull(product.getRating());
-        assertNotNull(product.getRatingCount());
-        assertNotNull(product.getQuantity());
-        assertNotNull(product.getPrice());
-        assertNotNull(product.getDiscounts());
-        assertNotNull(product.getCategoryId());
-        assertNotNull(product.getCategoryCode());
-        assertNotNull(product.getCategoryName());
-        assertNotNull(product.getOptionName());
-        assertNotNull(product.getOptionVariationName());
-    }
-    
-    @Test
-    public void testgetProductDetailDTOsById() {
+    public void GetProductDetailDTOsByIdIntegrationTest() {
         //given
         ResponseEntity<String> responseWithSession = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
