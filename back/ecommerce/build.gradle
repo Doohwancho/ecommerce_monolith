@@ -69,10 +69,7 @@ test {
     jvmArgs '--enable-preview'
     //start of jqwik config
     useJUnitPlatform {
-        includeEngines 'jqwik'
-
-        // Or include several Junit engines if you use them
-        // includeEngines 'jqwik', 'junit-jupiter', 'junit-vintage'
+         includeEngines 'jqwik', 'junit-jupiter', 'junit-vintage'
 
         // includeTags 'fast', 'medium'
         // excludeTags 'slow'
