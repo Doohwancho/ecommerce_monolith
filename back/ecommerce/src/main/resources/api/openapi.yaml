@@ -164,31 +164,16 @@ paths:
                   $ref: '#/components/schemas/ProductDetailDTO'
         '404':
           description: Product not found
-#    get:
-#      summary: Get a specific product by ID
-#      tags:
-#        - Product
-#      operationId: getProductById
-#      parameters:
-#        - name: productId
-#          in: path
-#          required: true
-#          schema:
-#            type: integer
-#            format: int64
-#      responses:
-#        '200':
-#          description: Successful response
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/ProductDTO'
-#        default:
-#          description: Unexpected error
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/ErrorDTO'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        default: #ensures any unexpected errors are handled in a consistent format, providing a clear and standardized method
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
     put:
       summary: Update a product by ID
       tags:
@@ -366,6 +351,23 @@ components:
           type: integer
         message:
           type: string
+    ErrorResponseDTO:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "User already exists"
+        status:
+          type: integer
+          example: 400
+        errors:
+          type: array
+          items:
+            type: string
+          example: ["Detailed error message or validation issue"]
+        code:
+          type: string
+          example: "M003"
     RegisterPostDTO:
       type: object
       properties:

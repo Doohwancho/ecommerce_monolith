@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(MemberException.class)
     protected ResponseEntity<ErrorResponse> handleBusinessException(final MemberException e) {
-        log.error("Member Exception Occured!", e);
+        log.error("Member Exception Occured!", e); //exception이 발생하면 에러 로그를 남긴다!
         final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
@@ -89,7 +89,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handleException(Exception e) {
-        log.error("handleEntityNotFoundException", e);
+        log.error("handleEntityNotFoundException", e); //exception이 발생하면 에러 로그를 남긴다!
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }

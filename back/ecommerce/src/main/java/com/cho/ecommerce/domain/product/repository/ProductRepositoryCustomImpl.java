@@ -8,14 +8,13 @@ import com.cho.ecommerce.domain.product.entity.QDiscountEntity;
 import com.cho.ecommerce.domain.product.entity.QProductEntity;
 import com.cho.ecommerce.domain.product.entity.QProductItemEntity;
 import com.cho.ecommerce.domain.product.entity.QProductOptionVariationEntity;
-import com.cho.ecommerce.global.error.exception.common.ResourceNotFoundException;
+import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     
@@ -67,6 +66,6 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         return Optional.ofNullable(Optional.ofNullable(products)
             .filter(not(List::isEmpty)) //if empty, returns Optional
             .orElseThrow(
-                () -> new ResourceNotFoundException("Product not found: " + productId))); //throw Exception if result is Optional
+                () -> new ResourceNotFoundException("Product not found, productId: " + productId))); //throw Exception if result is Optional
     }
 }
