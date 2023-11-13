@@ -1,6 +1,8 @@
 package com.cho.ecommerce.domain.member.service;
 
 import com.cho.ecommerce.api.domain.RegisterPostDTO;
+import com.cho.ecommerce.api.domain.UserDetailsDTO;
+import com.cho.ecommerce.domain.member.domain.User;
 import com.cho.ecommerce.domain.member.entity.AuthorityEntity;
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.entity.UserAuthorityEntity;
@@ -8,6 +10,7 @@ import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserAuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.domain.member.mapper.UserMapper;
+import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.transaction.Transactional;
@@ -63,9 +66,24 @@ public class UserService implements UserDetailsService {
         return saveRoleUser(userEntity);
     }
     
-    public Optional<UserEntity> findUser(String username) {
-        return userRepository.findByUsername(username); //TODO 5 - Optional을 반환타입으로 하면 안좋다고 effective java에서 말한거 같은데?
+    public User findUserByUsername(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(
+            () -> new ResourceNotFoundException("User not found, userId: "
+                + username));//TODO 5 - Optional을 반환타입으로 하면 안좋다고 effective java에서 말한거 같은데?
+    
+        User user = userMapper.toUser(userEntity);
+        
+        return user;
     }
+    
+    public UserDetailsDTO findUserDetailsDTOByUsername(String username) {
+        User user = findUserByUsername(username);
+        UserDetailsDTO userDetailsDTO = userMapper.toUserDetailsDTO(user);
+        return userDetailsDTO;
+    }
+    
+    
+    
     
     @Transactional
     public boolean updateUserName(String username, String userName) {

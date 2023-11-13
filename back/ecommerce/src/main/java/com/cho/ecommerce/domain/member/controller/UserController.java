@@ -3,6 +3,7 @@ package com.cho.ecommerce.domain.member.controller;
 import com.cho.ecommerce.api.UserApi;
 import com.cho.ecommerce.api.domain.RegisterPostDTO;
 import com.cho.ecommerce.api.domain.RegisterResponseDTO;
+import com.cho.ecommerce.api.domain.UserDetailsDTO;
 import com.cho.ecommerce.domain.member.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
@@ -98,5 +100,13 @@ public class UserController implements UserApi {
     @GetMapping(value = "/admin")
     public String admin() {
         return "pageAdmin";
+    }
+    
+    @Override
+    public ResponseEntity<UserDetailsDTO> getUserByUsername(@PathVariable String username) {
+        UserDetailsDTO userDetailsDTOByUsername = userService.findUserDetailsDTOByUsername(
+            username);
+    
+        return new ResponseEntity<>(userDetailsDTOByUsername, HttpStatus.OK);
     }
 }

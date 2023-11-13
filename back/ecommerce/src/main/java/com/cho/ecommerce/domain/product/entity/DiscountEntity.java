@@ -38,7 +38,7 @@ public class DiscountEntity {
     private Double discountValue;
     
     @Column(name = "START_DATE", nullable = false)
-    private OffsetDateTime startDate;
+    private OffsetDateTime startDate; //TODO - OffsetDateTime으로 h2 db에 저장되지 않고 LocalDateTime으로 저장되는 문제가 있다.
     
     @Column(name = "END_DATE", nullable = false)
     private OffsetDateTime endDate;

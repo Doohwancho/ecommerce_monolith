@@ -70,7 +70,7 @@
             "id": "725972e0-abec-4fb0-a9c1-3b60d8584b8a"
           },
           {
-            "name": "USER_ID",
+            "name": "USERNAME",
             "comment": "UNIQUE",
             "dataType": "VARCHAR(100)",
             "default": "",
@@ -85,7 +85,7 @@
               "pk": false,
               "fk": false,
               "pfk": false,
-              "widthName": 60,
+              "widthName": 65.72593688964844,
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
@@ -255,10 +255,10 @@
           }
         ],
         "ui": {
-          "active": false,
+          "active": true,
           "left": 1097.2223,
           "top": 264.4445,
-          "zIndex": 79,
+          "zIndex": 15,
           "widthName": 60,
           "widthComment": 120,
           "color": "#EB4747"
@@ -321,7 +321,7 @@
           "active": false,
           "left": 22.8892,
           "top": 110.0007,
-          "zIndex": 35,
+          "zIndex": 2,
           "widthName": 67.90994262695312,
           "widthComment": 60,
           "color": "#C49763"
@@ -562,7 +562,7 @@
           "active": false,
           "left": 55.4446,
           "top": 310.5563,
-          "zIndex": 94,
+          "zIndex": 8,
           "widthName": 60,
           "widthComment": 60,
           "color": "#97FF00"
@@ -648,7 +648,7 @@
           "active": false,
           "left": 538.7786,
           "top": 256.1128,
-          "zIndex": 95,
+          "zIndex": 9,
           "widthName": 62.64494323730469,
           "widthComment": 60,
           "color": "#00FF97"
@@ -757,7 +757,7 @@
           "active": false,
           "left": 46.5557,
           "top": 561.7788,
-          "zIndex": 111,
+          "zIndex": 12,
           "widthName": 89.3209228515625,
           "widthComment": 60,
           "color": "#0055FF"
@@ -843,7 +843,7 @@
           "active": false,
           "left": 542.5565,
           "top": 463.3337,
-          "zIndex": 97,
+          "zIndex": 10,
           "widthName": 60,
           "widthComment": 60,
           "color": "#5F00FF"
@@ -929,7 +929,7 @@
           "active": false,
           "left": 550.3339,
           "top": 668.8893,
-          "zIndex": 55,
+          "zIndex": 3,
           "widthName": 111.43388366699219,
           "widthComment": 60,
           "color": "#FF00FF"
@@ -1015,7 +1015,7 @@
           "active": false,
           "left": 496.8886,
           "top": 865.5562,
-          "zIndex": 56,
+          "zIndex": 4,
           "widthName": 170.81784057617188,
           "widthComment": 60,
           "color": "#FF0000"
@@ -1170,7 +1170,7 @@
           "active": false,
           "left": 18.4445,
           "top": 816.7777,
-          "zIndex": 107,
+          "zIndex": 11,
           "widthName": 60.88993835449219,
           "widthComment": 60,
           "color": "#FF8000"
@@ -1325,7 +1325,7 @@
           "active": false,
           "left": 1069.4441,
           "top": 575.9996,
-          "zIndex": 112,
+          "zIndex": 13,
           "widthName": 60,
           "widthComment": 60,
           "color": "#FF8D00"
@@ -1411,7 +1411,7 @@
           "active": false,
           "left": 1056.1106,
           "top": 841.5551,
-          "zIndex": 61,
+          "zIndex": 5,
           "widthName": 73.82493591308594,
           "widthComment": 60,
           "color": "#FFEC00"
@@ -1589,7 +1589,7 @@
           "active": false,
           "left": 1062.1111,
           "top": 9.9999,
-          "zIndex": 82,
+          "zIndex": 7,
           "widthName": 60,
           "widthComment": 60,
           "color": "#3F51B5"

@@ -94,6 +94,39 @@ paths:
 #                  message:
 #                    type: string
 #                    example: "An unexpected error occurred."
+  /users/{username}:
+    get:
+      tags:
+        - User
+      summary: Get user information by username
+      description: Returns user details for a given username
+      operationId: getUserByUsername
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: The username of the user to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetailsDTO'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
   /products:
     get:
       summary: Get all products
@@ -144,7 +177,7 @@ paths:
       summary: Get product details by product ID
       operationId: getProductDetailDTOsById
       tags:
-        - product
+        - Product
       parameters:
         - name: productId
           in: path
@@ -414,6 +447,62 @@ components:
 #        password:
 #          type: string
 #          description: User's password.
+    UserDetailsDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Username of the user
+        email:
+          type: string
+          format: email
+          description: Email address of the user
+        name:
+          type: string
+          description: Full name of the user
+        address:
+          $ref: '#/components/schemas/AddressDTO'
+        role:
+          type: string
+          description: Role of the user
+        enabled:
+          type: boolean
+          description: Indicates whether the user account is enabled
+        created:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+          description: The date and time when the user account was created
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the user account was last updated
+        authorities:
+          type: array
+          items:
+            type: string
+          description: List of authorities granted to the user
+      required:
+        - username
+        - email
+        - name
+    AddressDTO:
+      type: object
+      properties:
+        street:
+          type: string
+          description: Street name and number
+        city:
+          type: string
+          description: City name
+        state:
+          type: string
+          description: State or province name
+        country:
+          type: string
+          description: Country name
+        zipCode:
+          type: string
+          description: Postal or ZIP code
     ProductCreateDTO:
       type: object
       properties:
