@@ -2,10 +2,13 @@ package com.cho.ecommerce.Integration_test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cho.ecommerce.Application;
+import com.cho.ecommerce.domain.member.entity.UserEntity;
+import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.domain.product.domain.Product;
+import com.cho.ecommerce.api.domain.UserDetailsDTO;
+import com.cho.ecommerce.domain.product.service.ProductService;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import com.cho.ecommerce.global.config.parser.OffsetDateTimeDeserializer;
 import com.cho.ecommerce.global.util.DatabaseCleanup;
@@ -13,7 +16,7 @@ import com.cho.ecommerce.smoke_test.MemberSmokeTest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -39,13 +42,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {Application.class})
 @ActiveProfiles("test")
 @Tag("integration") //to run, type "mvn test -Dgroups=integration"
-public class ProductIntegrationTest {
+public class MemberIntegrationTest {
     
     private final Logger log = LoggerFactory.getLogger(MemberSmokeTest.class);
     
@@ -58,6 +60,9 @@ public class ProductIntegrationTest {
     private DatabaseCleanup databaseCleanup;
     @Autowired
     private FakeDataGenerator dataGenerator;
+    
+    @Autowired
+    private UserRepository userRepository;
     
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -96,9 +101,9 @@ public class ProductIntegrationTest {
         return new HttpEntity<>(map, headers);
     }
     
-
+    @Transactional
     @Test
-    public void GetProductDetailDTOsByIdIntegrationTest() {
+    public void testGetUserDetails() {
         //given
         ResponseEntity<String> responseWithSession = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
@@ -114,16 +119,20 @@ public class ProductIntegrationTest {
         HttpHeaders headersWithSessionCookie = new HttpHeaders();
         headersWithSessionCookie.add(HttpHeaders.COOKIE, setCookieHeader);
     
+        //get User from database in order to get userID
+        UserEntity targetUser = userRepository.getById(3L);
     
+        
         //when
         //http request to /user with session included.
         ResponseEntity<String> response = restTemplate.exchange(
-            "http://localhost:" + port + "/products/1",
+            "http://localhost:" + port + "/users/" + targetUser.getUsername(),
             HttpMethod.GET,
             new HttpEntity<>(headersWithSessionCookie),
             String.class
         );
     
+        
         //then
         //parse json http response into Product.java
         String jsonInput = response.getBody();
@@ -132,26 +141,23 @@ public class ProductIntegrationTest {
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeDeserializer())
             .create();
     
-        Product[] products = gson.fromJson(jsonInput, Product[].class);
-        Product product = products[0];
-        
+        UserDetailsDTO userDetails = gson.fromJson(jsonInput, UserDetailsDTO.class);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertTrue(Arrays.stream(products).count() > 0);
-        assertNotNull(product.getProductId());
-        assertNotNull(product.getName());
-        assertNotNull(product.getDescription());
-        assertNotNull(product.getRating());
-        assertNotNull(product.getRatingCount());
-        assertNotNull(product.getQuantity());
-        assertNotNull(product.getPrice());
-        assertNotNull(product.getDiscounts());
-        assertNotNull(product.getCategoryId());
-        assertNotNull(product.getCategoryName());
-        assertNotNull(product.getCategoryCode());
-        assertNotNull(product.getOptionName());
-        assertNotNull(product.getOptionVariationName());
+        assertNotNull(userDetails.getUsername());
+        assertNotNull(userDetails.getEmail());
+        assertNotNull(userDetails.getName());
+        assertNotNull(userDetails.getAddress().getCity());
+        assertNotNull(userDetails.getAddress().getCountry());
+        assertNotNull(userDetails.getAddress().getState());
+        assertNotNull(userDetails.getAddress().getStreet());
+        assertNotNull(userDetails.getAddress().getZipCode());
+        assertNotNull(userDetails.getRole());
+        assertNotNull(userDetails.getEnabled());
+        assertNotNull(userDetails.getCreated());
+        assertNotNull(userDetails.getUpdated());
+        assertNotNull(userDetails.getAuthorities());
     }
-
+    
 }
