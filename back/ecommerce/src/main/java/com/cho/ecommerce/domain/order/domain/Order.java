@@ -2,12 +2,9 @@ package com.cho.ecommerce.domain.order.domain;
 
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.order.entity.OrderItemEntity;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter

@@ -4,11 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.cho.ecommerce.Application;
+import com.cho.ecommerce.api.domain.UserDetailsDTO;
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
-import com.cho.ecommerce.domain.product.domain.Product;
-import com.cho.ecommerce.api.domain.UserDetailsDTO;
-import com.cho.ecommerce.domain.product.service.ProductService;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import com.cho.ecommerce.global.config.parser.OffsetDateTimeDeserializer;
 import com.cho.ecommerce.global.util.DatabaseCleanup;
@@ -47,7 +45,7 @@ import org.springframework.util.MultiValueMap;
 @ContextConfiguration(classes = {Application.class})
 @ActiveProfiles("test")
 @Tag("integration") //to run, type "mvn test -Dgroups=integration"
-public class MemberIntegrationTest {
+class MemberIntegrationTest {
     
     private final Logger log = LoggerFactory.getLogger(MemberSmokeTest.class);
     
@@ -90,7 +88,8 @@ public class MemberIntegrationTest {
         assert size == 0 : "Redis database is not empty!";
     }
     
-    private HttpEntity<MultiValueMap<String, String>> createHeaders(String username, String password) {
+    private HttpEntity<MultiValueMap<String, String>> createHeaders(String username,
+        String password) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         
@@ -103,25 +102,24 @@ public class MemberIntegrationTest {
     
     @Transactional
     @Test
-    public void testGetUserDetails() {
+    void testGetUserDetails() {
         //given
         ResponseEntity<String> responseWithSession = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
             createHeaders("testUser", "password"),
             String.class
         );
-    
+        
         //Extract Set-Cookie header (session cookie)
         String setCookieHeader = responseWithSession.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
         assertNotNull(setCookieHeader, "Set-Cookie header should not be null");
-    
+        
         //Create new headers and set the Cookie header with the session cookie
         HttpHeaders headersWithSessionCookie = new HttpHeaders();
         headersWithSessionCookie.add(HttpHeaders.COOKIE, setCookieHeader);
-    
+        
         //get User from database in order to get userID
         UserEntity targetUser = userRepository.getById(3L);
-    
         
         //when
         //http request to /user with session included.
@@ -131,16 +129,15 @@ public class MemberIntegrationTest {
             new HttpEntity<>(headersWithSessionCookie),
             String.class
         );
-    
         
         //then
         //parse json http response into Product.java
         String jsonInput = response.getBody();
-    
+        
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeDeserializer())
             .create();
-    
+        
         UserDetailsDTO userDetails = gson.fromJson(jsonInput, UserDetailsDTO.class);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());

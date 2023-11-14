@@ -48,7 +48,9 @@ public interface OrderMapper {
     @Mapping(source = "updatedAt", target = "updatedAt")
     OrderItemDetails orderItemDetailsDTOToOrderItemDetails(OrderItemDetailsDTO orderItemDetailsDTO);
     
-    List<OrderItemDetailsDTO> orderItemDetailsListToDTOList(List<OrderItemDetails> orderItemDetailsList);
+    List<OrderItemDetailsDTO> orderItemDetailsListToDTOList(
+        List<OrderItemDetails> orderItemDetailsList);
     
-    List<OrderItemDetails> dtoListToOrderItemDetailsList(List<OrderItemDetailsDTO> orderItemDetailsDTOList);
+    List<OrderItemDetails> dtoListToOrderItemDetailsList(
+        List<OrderItemDetailsDTO> orderItemDetailsDTOList);
 }

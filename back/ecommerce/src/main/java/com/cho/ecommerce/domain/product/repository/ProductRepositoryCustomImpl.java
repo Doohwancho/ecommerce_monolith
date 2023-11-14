@@ -29,22 +29,18 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     public List<ProductEntity> findAllProductsByCategory(Long categoryId) {
         QProductEntity product = QProductEntity.productEntity;
         QCategoryEntity category = QCategoryEntity.categoryEntity;
-    
-        List<ProductEntity> result = queryFactory
+        
+        return queryFactory
             .selectFrom(product)
             .join(product.category, category)
             .where(category.categoryId.eq(categoryId))
             .fetch();
-        
-        return result;
     }
     
     @Override
     public Optional<List<ProductEntity>> findProductDetailDTOsById(Long productId) {
         QProductEntity qProduct = QProductEntity.productEntity;
         QCategoryEntity qCategory = QCategoryEntity.categoryEntity;
-//        QOptionEntity qOption = QOptionEntity.optionEntity;
-//        QOptionVariationEntity qOptionVariation = QOptionVariationEntity.optionVariationEntity;
         QProductItemEntity qProductItem = QProductItemEntity.productItemEntity;
         QProductOptionVariationEntity qProductOptionVariation = QProductOptionVariationEntity.productOptionVariationEntity;
         QDiscountEntity qDiscount = QDiscountEntity.discountEntity;
@@ -62,10 +58,11 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         // Fetch the results
         List<ProductEntity> products = query.fetch();
         
-    
-        return Optional.ofNullable(Optional.ofNullable(products) //Optional can also be null, therefore wrap Optional with Optional (???!)
+        return Optional.ofNullable(Optional.ofNullable(
+                products) //Optional can also be null, therefore wrap Optional with Optional (???!)
             .filter(not(List::isEmpty)) //if empty, returns Optional
             .orElseThrow(
-                () -> new ResourceNotFoundException("Product not found, productId: " + productId))); //throw Exception if result is Optional
+                () -> new ResourceNotFoundException("Product not found, productId: "
+                    + productId))); //throw Exception if result is Optional
     }
 }

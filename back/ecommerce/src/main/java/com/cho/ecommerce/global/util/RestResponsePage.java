@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 
 
 public class RestResponsePage<T> extends PageImpl<T> {
+    
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public RestResponsePage(@JsonProperty("content") List<T> content,
         @JsonProperty("number") int number,
@@ -29,7 +30,7 @@ public class RestResponsePage<T> extends PageImpl<T> {
         super(content, PageRequest.of(number, size), totalElements);
     }
     
-    public static <U> RestResponsePage of(Page<U> page){
+    public static <U> RestResponsePage of(Page<U> page) {
         return new RestResponsePage<U>(page);
     }
     
@@ -45,7 +46,7 @@ public class RestResponsePage<T> extends PageImpl<T> {
         super(content);
     }
     
-    public RestResponsePage(T ... array) {
+    public RestResponsePage(T... array) {
         super(Stream.of(array).collect(Collectors.toList()));
     }
     

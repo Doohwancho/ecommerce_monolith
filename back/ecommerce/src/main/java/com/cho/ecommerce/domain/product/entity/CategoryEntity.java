@@ -6,8 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -17,7 +15,7 @@ import lombok.Setter;
 @Table(name = "CATEGORY")
 @Getter
 @Setter
-public class CategoryEntity{
+public class CategoryEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,26 +27,19 @@ public class CategoryEntity{
     
     @Column(name = "NAME")
     private String name;
-    
-//    @ManyToOne
-//    @JoinColumn(name = "PARENT_CATEGORY_ID")
-//    private CategoryEntity parentCategory;
-    
-//    @OneToMany(mappedBy = "parentCategory")
-//    private Set<CategoryEntity> subCategories;
-    
+
     @OneToMany(mappedBy = "category")
     private Set<OptionEntity> optionEntities;
     
     @OneToMany(mappedBy = "category")
     private Set<ProductEntity> products;
- 
+    
     public void update(String categoryCode, String name) {
         this.categoryCode = categoryCode;
         this.name = name;
     }
     
-    public String getCategoryCode(){
+    public String getCategoryCode() {
         return this.categoryCode;
     }
     

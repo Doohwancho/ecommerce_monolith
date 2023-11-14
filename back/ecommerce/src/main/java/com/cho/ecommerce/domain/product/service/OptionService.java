@@ -49,10 +49,12 @@ public class OptionService {
     
     public OptionVariationEntity getOptionVariationById(Long optionVariationId) {
         return optionVariationRepository.findById(optionVariationId)
-            .orElseThrow(() -> new RuntimeException("Option Variation not found with ID: " + optionVariationId));
+            .orElseThrow(() -> new RuntimeException(
+                "Option Variation not found with ID: " + optionVariationId));
     }
     
-    public OptionVariationEntity updateOptionVariation(Long optionVariationId, OptionVariationEntity updatedOptionVariation) {
+    public OptionVariationEntity updateOptionVariation(Long optionVariationId,
+        OptionVariationEntity updatedOptionVariation) {
         OptionVariationEntity existingOptionVariation = getOptionVariationById(optionVariationId);
         existingOptionVariation.setValue(updatedOptionVariation.getValue());
         return optionVariationRepository.save(existingOptionVariation);

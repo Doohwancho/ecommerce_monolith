@@ -37,12 +37,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.session.Session;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import org.springframework.session.Session;
 
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -50,7 +49,8 @@ import org.springframework.session.Session;
 @ContextConfiguration(classes = {Application.class, RedisConfig.class})
 @ActiveProfiles("test")
 @Tag("smoke") //to run, type "mvn test -Dgroups=smoke"
-public class MemberSmokeTest<S extends Session> {
+class MemberSmokeTest<S extends Session> {
+    
     @Autowired
     private AuthorityService authorityService;
     @Autowired
@@ -91,7 +91,8 @@ public class MemberSmokeTest<S extends Session> {
         assert size == 0 : "Redis database is not empty!";
     }
     
-    private HttpEntity<MultiValueMap<String, String>> createHeaders(String username, String password) {
+    private HttpEntity<MultiValueMap<String, String>> createHeaders(String username,
+        String password) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         
@@ -104,10 +105,11 @@ public class MemberSmokeTest<S extends Session> {
     
     @Test
     @DisplayName("failed login attempt redirects user to /login page with HTTP status 302")
-    public void whenLoginWithInvalidUserThenUnauthenticated() {
+    void whenLoginWithInvalidUserThenUnauthenticated() {
         ResponseEntity<String> response = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
-            new HttpEntity<>(createHeaders("invalidUser-asdfasdfasdf", "invalidPassword-asdfasdfasdf")),
+            new HttpEntity<>(
+                createHeaders("invalidUser-asdfasdfasdf", "invalidPassword-asdfasdfasdf")),
             String.class
         );
         
@@ -120,9 +122,10 @@ public class MemberSmokeTest<S extends Session> {
         assertNotNull(location);
         assertTrue(location.endsWith("/login?error"));
     }
+    
     @Test
     @DisplayName("login success with 'admin' returns 302 redirect and redirect to '/admin'")
-    public void whenLoginWithValidUserThenAuthenticated() {
+    void whenLoginWithValidUserThenAuthenticated() {
         ResponseEntity<String> response = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
             createHeaders("admin", "admin"),
@@ -142,7 +145,7 @@ public class MemberSmokeTest<S extends Session> {
     //SecurityConfig.java에 .maxSessionsPreventsLogin(true)를 테스트 한다.
     @Test
     @DisplayName("login attempt from the same user while his session is alive will redirect him to /login page")
-    public void attemptToLoginAgainWhileSessionIsAliveShouldFail() {
+    void attemptToLoginAgainWhileSessionIsAliveShouldFail() {
         whenLoginWithValidUserThenAuthenticated();
         
         ResponseEntity<String> response = restTemplate.postForEntity(
@@ -162,7 +165,7 @@ public class MemberSmokeTest<S extends Session> {
     }
     
     @Test
-    public void 서버에서는_없는_session인데_client에서_http_request_with_that_session시_login_페이지로_redirect() {
+    void 서버에서는_없는_session인데_client에서_http_request_with_that_session시_login_페이지로_redirect() {
         //step1) get session cookie after user login
         ResponseEntity<String> responseWithSession = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
@@ -178,10 +181,8 @@ public class MemberSmokeTest<S extends Session> {
         HttpHeaders headersWithSessionCookie = new HttpHeaders();
         headersWithSessionCookie.add(HttpHeaders.COOKIE, setCookieHeader);
         
-        
         //step2) clear spring security context and redis that stored sessions
         clearSecurityContext();
-        
         
         //step3) http request to /user with session included.
         ResponseEntity<String> response = restTemplate.exchange(
@@ -191,12 +192,13 @@ public class MemberSmokeTest<S extends Session> {
             String.class
         );
         
-        assertEquals(HttpStatus.OK, response.getStatusCode()); //302 redirect 이후 200, login page로 간다.
+        assertEquals(HttpStatus.OK,
+            response.getStatusCode()); //302 redirect 이후 200, login page로 간다.
         assertNotNull(response.getBody());
     }
     
     @Test
-    public void whenUserLogsOutThenRedirectedToLoginPage() {
+    void whenUserLogsOutThenRedirectedToLoginPage() {
         ResponseEntity<String> loginResponse = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
             createHeaders("admin", "admin"),
@@ -216,7 +218,6 @@ public class MemberSmokeTest<S extends Session> {
             String.class
         );
         
-        
         // Check that we are redirected to the login page with the 'logout' parameter
         assertEquals(HttpStatus.FOUND, logoutResponse.getStatusCode());
         String location = logoutResponse.getHeaders().getLocation().toString();
@@ -224,14 +225,15 @@ public class MemberSmokeTest<S extends Session> {
         
         // Optionally, check that the JSESSIONID cookie has been invalidated
         List<String> cookies = logoutResponse.getHeaders().get(HttpHeaders.SET_COOKIE);
-        boolean cookieInvalidated = cookies.stream().anyMatch(cookie -> cookie.contains("JSESSIONID=;")); //JESSSION=; -> 비어있으니까 invalidated 한거다.
+        boolean cookieInvalidated = cookies.stream().anyMatch(
+            cookie -> cookie.contains("JSESSIONID=;")); //JESSSION=; -> 비어있으니까 invalidated 한거다.
         
         assertTrue(cookieInvalidated, "JSESSIONID cookie was invalidated");
     }
     
     @Test
     @DisplayName("Register new role user returns 201 CREATED")
-    public void whenRegisterNewRoleUserThenReturnCreatedStatus() {
+    void whenRegisterNewRoleUserThenReturnCreatedStatus() {
         Faker faker = new Faker();
         
         // Create RegisterPostDTO object with test data
@@ -250,7 +252,6 @@ public class MemberSmokeTest<S extends Session> {
         address.setZipCode(faker.address().zipCode());
         
         registerPostDTO.setAddress(address);
-        
         
         // Convert RegisterPostDTO to HttpEntity
         HttpHeaders headers = new HttpHeaders();

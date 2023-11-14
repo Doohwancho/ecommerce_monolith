@@ -44,6 +44,7 @@ public class UserAuthorityEntity implements Serializable {
     public void setUserEntity(UserEntity userEntity) {
         this.userEntity = userEntity;
     }
+    
     public void setAuthorityEntity(AuthorityEntity authorityEntity) {
         this.authorityEntity = authorityEntity;
     }
@@ -64,8 +65,12 @@ public class UserAuthorityEntity implements Serializable {
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
         UserAuthorityEntity that = (UserAuthorityEntity) obj;
         return Objects.equals(id, that.id) &&
             Objects.equals(authorityEntity, that.authorityEntity);

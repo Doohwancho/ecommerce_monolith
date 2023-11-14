@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Getter
@@ -49,7 +48,8 @@ public class ErrorResponse {
     
     public static ErrorResponse of(MethodArgumentTypeMismatchException e) {
         final String value = e.getValue() == null ? "" : e.getValue().toString();
-        final List<ErrorResponse.FieldError> errors = ErrorResponse.FieldError.of(e.getName(), value, e.getErrorCode());
+        final List<ErrorResponse.FieldError> errors = ErrorResponse.FieldError.of(e.getName(),
+            value, e.getErrorCode());
         return new ErrorResponse(ErrorCode.INVALID_TYPE_VALUE, errors);
     }
     
@@ -57,6 +57,7 @@ public class ErrorResponse {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class FieldError {
+        
         private String field;
         private String value;
         private String reason;
@@ -67,7 +68,8 @@ public class ErrorResponse {
             this.reason = reason;
         }
         
-        public static List<FieldError> of(final String field, final String value, final String reason) {
+        public static List<FieldError> of(final String field, final String value,
+            final String reason) {
             List<FieldError> fieldErrors = new ArrayList<>();
             fieldErrors.add(new FieldError(field, value, reason));
             return fieldErrors;

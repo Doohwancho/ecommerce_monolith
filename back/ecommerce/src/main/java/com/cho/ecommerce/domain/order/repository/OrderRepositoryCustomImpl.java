@@ -11,14 +11,12 @@ import com.cho.ecommerce.domain.product.entity.OptionEntity;
 import com.cho.ecommerce.domain.product.entity.OptionVariationEntity;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.entity.ProductItemEntity;
-import com.cho.ecommerce.domain.product.entity.ProductOptionVariationEntity;
 import com.cho.ecommerce.domain.product.entity.QOptionEntity;
 import com.cho.ecommerce.domain.product.entity.QOptionVariationEntity;
 import com.cho.ecommerce.domain.product.entity.QProductEntity;
 import com.cho.ecommerce.domain.product.entity.QProductItemEntity;
 import com.cho.ecommerce.domain.product.entity.QProductOptionVariationEntity;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +24,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
+public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     
     private final JPAQueryFactory queryFactory;
     
@@ -48,7 +46,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         QOptionVariationEntity optionVariation = QOptionVariationEntity.optionVariationEntity;
         
         List<Tuple> queryResult = queryFactory
-            .select(order, member, orderItem, productOptionVariation, productItem, product, option, optionVariation)
+            .select(order, member, orderItem, productOptionVariation, productItem, product, option,
+                optionVariation)
             .from(orderItem)
             .join(orderItem.order, order)
             .join(order.member, member)
@@ -59,19 +58,17 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
             .join(optionVariation.option, option)
             .where(member.username.eq(username))
             .fetch();
-    
+        
         List<OrderItemDetails> result = queryResult.stream()
             .map(tuple -> {
                 OrderEntity orderEntity = tuple.get(order);
                 UserEntity userEntity = tuple.get(member);
                 OrderItemEntity orderItemEntity = tuple.get(orderItem);
-                ProductOptionVariationEntity productOptionVariationEntity = tuple.get(
-                    productOptionVariation);
                 ProductItemEntity productItemEntity = tuple.get(productItem);
                 ProductEntity productEntity = tuple.get(product);
                 OptionEntity optionEntity = tuple.get(option);
                 OptionVariationEntity optionVariationEntity = tuple.get(optionVariation);
-            
+                
                 return new OrderItemDetails(
                     orderItemEntity.getOrderItemId(),
                     orderEntity.getOrderId(),

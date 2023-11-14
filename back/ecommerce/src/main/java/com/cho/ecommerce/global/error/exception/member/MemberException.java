@@ -5,7 +5,7 @@ import com.cho.ecommerce.global.error.ErrorCode;
 public class MemberException extends RuntimeException {
     
     private static final long serialVersionUID = 1L;
-    private ErrorCode errorCode;
+    private final ErrorCode errorCode;
     
     public MemberException(String message, ErrorCode errorCode) {
         super(message);

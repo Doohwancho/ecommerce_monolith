@@ -1,6 +1,5 @@
 package com.cho.ecommerce.domain.product.domain;
 
-import com.cho.ecommerce.domain.product.entity.DiscountEntity;
 import com.cho.ecommerce.domain.product.entity.ProductOptionVariationEntity;
 import java.util.Set;
 import lombok.Getter;
@@ -10,6 +9,7 @@ import org.springframework.util.Assert;
 @Getter
 @Setter
 public class ProductItem {
+    
     private Product product;
     private Integer quantity;
     private Double price;

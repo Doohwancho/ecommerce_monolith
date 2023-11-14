@@ -15,12 +15,10 @@ public enum ErrorCode {
     
     // Business
     
-    
-//     Member
+    //     Member
     EMAIL_DUPLICATION(400, "M001", "Email is Duplication"),
     LOGIN_INPUT_INVALID(400, "M002", "Login input is invalid"),
     USER_ALREADY_EXIST(400, "M003", "User already exists"),
-    
     
     // Coupon
 //    COUPON_ALREADY_USE(400, "CO001", "Coupon was already used"),

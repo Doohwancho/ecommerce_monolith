@@ -9,7 +9,7 @@ import org.springframework.util.Assert;
 @ToString
 @Setter
 @Getter
-public class Product{
+public class Product {
     
     //product
     private Long productId;
@@ -35,7 +35,6 @@ public class Product{
     public void update(final Double price, final int quantity, final List<Discount> discounts) {
         Assert.isTrue(price >= 0, "상품 가격은 음수일 수 없습니다.");
         Assert.isTrue(quantity >= 0, "상품 수량은 음수일 수 없습니다.");
-//        Assert.notNull(discounts, "할인 정책은 필수입니다.");
         this.price = price;
         this.quantity = quantity;
         this.discounts = discounts;
@@ -55,6 +54,7 @@ public class Product{
     
     // Static inner Builder class
     public static class Builder {
+        
         private Long productId;
         private String name;
         private String description;
@@ -142,7 +142,6 @@ public class Product{
             Assert.notNull(categoryCode, "카테고리 코드는 null이 될 수 없습니다.");
             Assert.notNull(categoryName, "카테고리 이름은 null이 될 수 없습니다.");
             Assert.notNull(optionName, "옵션 이름은 null이 될 수 없습니다.");
-            
             
             Product product = new Product();
             product.productId = this.productId;

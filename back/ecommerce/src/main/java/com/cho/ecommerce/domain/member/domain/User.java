@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class User {
+    
     private Long memberId;
     private String username;
     private String email;
@@ -38,6 +39,7 @@ public class User {
     // Getters and setters
     
     public static class Builder {
+        
         private Long memberId;
         private String username;
         private String email;

@@ -1,8 +1,8 @@
 package com.cho.ecommerce.domain.member.mapper;
 
+import com.cho.ecommerce.api.domain.AddressDTO;
 import com.cho.ecommerce.api.domain.RegisterPostDTO;
 import com.cho.ecommerce.api.domain.UserDetailsDTO;
-import com.cho.ecommerce.api.domain.AddressDTO;
 import com.cho.ecommerce.domain.member.domain.Address;
 import com.cho.ecommerce.domain.member.domain.User;
 import com.cho.ecommerce.domain.member.entity.AddressEntity;
@@ -22,7 +22,8 @@ public class UserMapper {
     private final BCryptPasswordEncoder passwordEncoder;
     
     @Autowired
-    public UserMapper(@Lazy BCryptPasswordEncoder passwordEncoder) { //added @Lazy to avoid circular reference
+    public UserMapper(
+        @Lazy BCryptPasswordEncoder passwordEncoder) { //added @Lazy to avoid circular reference
         this.passwordEncoder = passwordEncoder;
     }
     
@@ -33,7 +34,7 @@ public class UserMapper {
         userEntity.setEmail(dto.getEmail());
         userEntity.setName(dto.getName());
         userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
-    
+        
         // Map Address
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setStreet(dto.getAddress().getStreet());
@@ -94,7 +95,8 @@ public class UserMapper {
     }
     
     private static OffsetDateTime convertToLocalDateTimeViaInstant(LocalDateTime dateToConvert) {
-        return dateToConvert == null ? null : dateToConvert.atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        return dateToConvert == null ? null
+            : dateToConvert.atZone(ZoneId.systemDefault()).toOffsetDateTime();
     }
     
     public UserDetailsDTO toUserDetailsDTO(User user) {

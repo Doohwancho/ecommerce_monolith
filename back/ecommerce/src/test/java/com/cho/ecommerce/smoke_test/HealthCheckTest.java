@@ -17,7 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(classes = Application.class)
 @ActiveProfiles("test")
 @Tag("smoke") //to run, type "mvn test -Dgroups=smoke"
-public class HealthCheckTest {
+class HealthCheckTest {
     
     @LocalServerPort
     private int port;
@@ -26,8 +26,9 @@ public class HealthCheckTest {
     private TestRestTemplate restTemplate;
     
     @Test
-    public void healthCheck() {
-        ResponseEntity<String> entity = restTemplate.getForEntity("http://localhost:" + port + "/actuator/health", String.class);
+    void healthCheck() {
+        ResponseEntity<String> entity = restTemplate.getForEntity(
+            "http://localhost:" + port + "/actuator/health", String.class);
         assertThat(entity.getStatusCode().is2xxSuccessful()).isTrue();
         assertThat(entity.getBody()).contains("\"status\":\"UP\"");
     }

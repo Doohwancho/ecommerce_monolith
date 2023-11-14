@@ -16,7 +16,9 @@ public class Discount {
     private OffsetDateTime endDate;
     
     public Double applyDiscount(Double originalPrice) {
-        if(OffsetDateTime.now().isAfter(endDate)) return originalPrice;
+        if (OffsetDateTime.now().isAfter(endDate)) {
+            return originalPrice;
+        }
         
         switch (discountType) {
             case PERCENTAGE:
@@ -34,6 +36,7 @@ public class Discount {
     
     // Static inner Builder class
     public static class Builder {
+        
         private Long discountId;
         private DiscountType discountType;
         private Double discountValue;

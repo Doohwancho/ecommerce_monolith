@@ -5,7 +5,6 @@ import com.cho.ecommerce.global.config.security.handler.FormAuthenticationFailur
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationSuccessHandler;
 import com.cho.ecommerce.global.config.security.session.SecuritySessionExpiredStrategy;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -40,17 +39,20 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     protected void configure(HttpSecurity http) throws Exception {
         http
             .csrf()
-                .ignoringAntMatchers("/h2-console/**") // Disable CSRF for H2 console
-                .disable() //disable csrf for conveniency
-                .headers()
-                    .frameOptions().disable() //h2-console 접속시 ui error 막기 위해 썼다.
-                    .xssProtection().disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
+            .ignoringAntMatchers("/h2-console/**") // Disable CSRF for H2 console
+            .disable() //disable csrf for conveniency
+            .headers()
+            .frameOptions().disable() //h2-console 접속시 ui error 막기 위해 썼다.
+            .xssProtection()
+            .disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
             .and()
-                .sessionManagement(s -> s
-                    .maximumSessions(1) //동일 세션 개수 제한 => 1개로 설정하여 중복 로그인 방지 (localhost:8080에서 로그인하고, localhost:8081로 로그인 시도하면 http status 401 UNAUTHORIZED error 뜬다.
-                    .sessionRegistry(sessionRegistry())
-                    .maxSessionsPreventsLogin(true) // true : 먼저 사용 중인 사용자의 세션이 유지되며, 새로 접속 한 사람은 로그인이 되지 않음
-                    .expiredSessionStrategy(securitySessionExpiredStrategy)) //Session 만료됐을 때 가져갈 전략 설정
+            .sessionManagement(s -> s
+                .maximumSessions(
+                    1) //동일 세션 개수 제한 => 1개로 설정하여 중복 로그인 방지 (localhost:8080에서 로그인하고, localhost:8081로 로그인 시도하면 http status 401 UNAUTHORIZED error 뜬다.
+                .sessionRegistry(sessionRegistry())
+                .maxSessionsPreventsLogin(
+                    true) // true : 먼저 사용 중인 사용자의 세션이 유지되며, 새로 접속 한 사람은 로그인이 되지 않음
+                .expiredSessionStrategy(securitySessionExpiredStrategy)) //Session 만료됐을 때 가져갈 전략 설정
 //                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // This is the default, but just to be explicit
             .authorizeRequests(f -> f
                     .antMatchers("/login").permitAll()
@@ -63,11 +65,11 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                 //In other words, all other URLs in your application require the user to be authenticated.
             )
             .formLogin(f -> f
-                .loginPage("/login") //custom page 구현한 경우
+                    .loginPage("/login") //custom page 구현한 경우
                     .usernameParameter("username")
                     .passwordParameter("password")
-                .defaultSuccessUrl("/", true)
-                .successHandler(formSuccessHandler)
+                    .defaultSuccessUrl("/", true)
+                    .successHandler(formSuccessHandler)
 //                .failureHandler(formFailureHandler)
             )
             .logout(logout -> logout

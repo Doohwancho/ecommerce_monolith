@@ -3,7 +3,6 @@ package com.cho.ecommerce.domain.order.controller;
 import com.cho.ecommerce.api.OrderApi;
 import com.cho.ecommerce.api.domain.OrderDTO;
 import com.cho.ecommerce.api.domain.OrderItemDetailsDTO;
-import com.cho.ecommerce.domain.order.domain.OrderItemDetails;
 import com.cho.ecommerce.domain.order.service.OrderService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class OrderController implements OrderApi {
+    
     private final OrderService orderService;
     
     @Autowired
@@ -24,7 +24,8 @@ public class OrderController implements OrderApi {
     }
     
     @Override
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')") //TODO - 모든 controller method에 @PreAuthorize 하는 방식 말고, SecurityConfig에서 설정하는 방법 찾기
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    //TODO - 모든 controller method에 @PreAuthorize 하는 방식 말고, SecurityConfig에서 설정하는 방법 찾기
     public ResponseEntity<List<OrderDTO>> ordersGet() {
         List<OrderDTO> orders = orderService.getAllOrders();
         return new ResponseEntity<>(orders, HttpStatus.OK);
@@ -60,8 +61,10 @@ public class OrderController implements OrderApi {
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<List<OrderItemDetailsDTO>> getOrderItemDetailsByUsername(@PathVariable String username) {
-        List<OrderItemDetailsDTO> orderItemDetails = orderService.findOrderItemDetailsByUsername(username);
+    public ResponseEntity<List<OrderItemDetailsDTO>> getOrderItemDetailsByUsername(
+        @PathVariable String username) {
+        List<OrderItemDetailsDTO> orderItemDetails = orderService.findOrderItemDetailsByUsername(
+            username);
         if (orderItemDetails.isEmpty()) {
             return ResponseEntity.notFound().build();
         }

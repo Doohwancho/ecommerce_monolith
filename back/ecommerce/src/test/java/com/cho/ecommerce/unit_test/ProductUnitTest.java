@@ -22,7 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(classes = {Application.class})
 @ActiveProfiles("test")
 @Tag("unit") //to run, type "mvn test -Dgroups=integration"
-public class ProductUnitTest {
+class ProductUnitTest {
     
     @Autowired
     private ProductService productService;
@@ -30,7 +30,7 @@ public class ProductUnitTest {
     private FakeDataGenerator dataGenerator;
     
     @Test
-    public void GetProductDetailDTOsByIdUnitTest() {
+    void GetProductDetailDTOsByIdUnitTest() {
         // Given
         Long productId = 1L;
         
@@ -40,8 +40,10 @@ public class ProductUnitTest {
         final Integer numberOfFakeProducts = 10;
         final Integer numberOfFakeProductItems = 3;
         
-        dataGenerator.generateFakeCategoryAndOptions(numberOfFakeCategories, numberOfFakeOptions, numberOfFakeOptionsVariations);
-        dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories, numberOfFakeProductItems );
+        dataGenerator.generateFakeCategoryAndOptions(numberOfFakeCategories, numberOfFakeOptions,
+            numberOfFakeOptionsVariations);
+        dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories,
+            numberOfFakeProductItems);
         
         // When
         List<Product> products = productService.getProductDetailDTOsById(productId);

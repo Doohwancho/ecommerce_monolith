@@ -33,6 +33,7 @@ public class OptionVariationEntity {
     
     @OneToMany(mappedBy = "optionVariation")
     private Set<ProductOptionVariationEntity> productOptionVariations;
+    
     public String getValue() {
         return this.value;
     }

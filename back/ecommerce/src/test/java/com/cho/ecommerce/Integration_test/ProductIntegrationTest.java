@@ -45,7 +45,7 @@ import org.springframework.util.MultiValueMap;
 @ContextConfiguration(classes = {Application.class})
 @ActiveProfiles("test")
 @Tag("integration") //to run, type "mvn test -Dgroups=integration"
-public class ProductIntegrationTest {
+class ProductIntegrationTest {
     
     private final Logger log = LoggerFactory.getLogger(MemberSmokeTest.class);
     
@@ -85,7 +85,8 @@ public class ProductIntegrationTest {
         assert size == 0 : "Redis database is not empty!";
     }
     
-    private HttpEntity<MultiValueMap<String, String>> createHeaders(String username, String password) {
+    private HttpEntity<MultiValueMap<String, String>> createHeaders(String username,
+        String password) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         
@@ -96,25 +97,24 @@ public class ProductIntegrationTest {
         return new HttpEntity<>(map, headers);
     }
     
-
+    
     @Test
-    public void GetProductDetailDTOsByIdIntegrationTest() {
+    void GetProductDetailDTOsByIdIntegrationTest() {
         //given
         ResponseEntity<String> responseWithSession = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
             createHeaders("testUser", "password"),
             String.class
         );
-    
+        
         //Extract Set-Cookie header (session cookie)
         String setCookieHeader = responseWithSession.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
         assertNotNull(setCookieHeader, "Set-Cookie header should not be null");
-    
+        
         //Create new headers and set the Cookie header with the session cookie
         HttpHeaders headersWithSessionCookie = new HttpHeaders();
         headersWithSessionCookie.add(HttpHeaders.COOKIE, setCookieHeader);
-    
-    
+        
         //when
         //http request to /user with session included.
         ResponseEntity<String> response = restTemplate.exchange(
@@ -123,18 +123,18 @@ public class ProductIntegrationTest {
             new HttpEntity<>(headersWithSessionCookie),
             String.class
         );
-    
+        
         //then
         //parse json http response into Product.java
         String jsonInput = response.getBody();
-    
+        
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeDeserializer())
             .create();
-    
+        
         Product[] products = gson.fromJson(jsonInput, Product[].class);
         
-        for(Product product : products){
+        for (Product product : products) {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
             assertTrue(Arrays.stream(products).count() > 0);
@@ -153,5 +153,5 @@ public class ProductIntegrationTest {
             assertNotNull(product.getOptionVariationName());
         }
     }
-
+    
 }

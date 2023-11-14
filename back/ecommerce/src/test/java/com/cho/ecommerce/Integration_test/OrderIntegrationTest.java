@@ -3,13 +3,11 @@ package com.cho.ecommerce.Integration_test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cho.ecommerce.Application;
+import com.cho.ecommerce.api.domain.OrderItemDetailsDTO;
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
-import com.cho.ecommerce.api.domain.OrderItemDetailsDTO;
-import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import com.cho.ecommerce.global.config.parser.OffsetDateTimeDeserializer;
 import com.cho.ecommerce.global.util.DatabaseCleanup;
@@ -17,8 +15,6 @@ import com.cho.ecommerce.smoke_test.MemberSmokeTest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -49,7 +45,8 @@ import org.springframework.util.MultiValueMap;
 @ContextConfiguration(classes = {Application.class})
 @ActiveProfiles("test")
 @Tag("integration") //to run, type "mvn test -Dgroups=integration"
-public class OrderIntegrationTest {
+class OrderIntegrationTest {
+    
     private final Logger log = LoggerFactory.getLogger(MemberSmokeTest.class);
     
     @Autowired
@@ -91,7 +88,8 @@ public class OrderIntegrationTest {
         assert size == 0 : "Redis database is not empty!";
     }
     
-    private HttpEntity<MultiValueMap<String, String>> createHeaders(String username, String password) {
+    private HttpEntity<MultiValueMap<String, String>> createHeaders(String username,
+        String password) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         
@@ -103,7 +101,7 @@ public class OrderIntegrationTest {
     }
     
     @Test
-    public void GetOrderItemsDetailDTOsByUsername() {
+    void GetOrderItemsDetailDTOsByUsername() {
         //given
         ResponseEntity<String> responseWithSession = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
@@ -139,10 +137,10 @@ public class OrderIntegrationTest {
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeDeserializer())
             .create();
-    
+        
         OrderItemDetailsDTO[] orderItems = gson.fromJson(jsonInput, OrderItemDetailsDTO[].class);
         
-        for(OrderItemDetailsDTO orderItem : orderItems) {
+        for (OrderItemDetailsDTO orderItem : orderItems) {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
             assertNotNull(orderItem.getOrderItemId());

@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="ADDRESS")
+@Table(name = "ADDRESS")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +22,7 @@ public class AddressEntity implements Serializable {
     private static final long serialVersionUID = 1L;  // Add this line
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="ADDRESS_ID")
+    @Column(name = "ADDRESS_ID")
     private Long addressId;
     
     private String street;

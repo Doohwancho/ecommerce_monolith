@@ -1,6 +1,5 @@
 package com.cho.ecommerce.global.config.security.handler;
 
-import com.cho.ecommerce.domain.member.repository.UserRepository;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +21,8 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
     private final Logger logger = LoggerFactory.getLogger(FormAuthenticationSuccessHandler.class);
     
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+        AuthenticationException exception) throws IOException, ServletException {
         logger.info("여기에오!!! on auth failure!");
     }
     
@@ -46,7 +46,7 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
 //        log.warn("Failed login attempt by user: {}", email);
 //        super.onAuthenticationFailure(request, response, exception);
 //    }
-
+    
     //case3) account lock
 //    private final UserRepository userRepository;
 //

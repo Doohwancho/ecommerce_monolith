@@ -17,7 +17,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "AUTHORITY")
-//@Data //TODO 2 - @Data -> custom getter/setter, toString(), etc
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -32,7 +31,7 @@ public class AuthorityEntity implements GrantedAuthority {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="AUTHORITY_ID")
+    @Column(name = "AUTHORITY_ID")
     private Long id;
     
     private String authority;
@@ -63,8 +62,12 @@ public class AuthorityEntity implements GrantedAuthority {
     // Implementing equals()
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
         AuthorityEntity authorityEntity1 = (AuthorityEntity) obj;
         return Objects.equals(id, authorityEntity1.id) &&
             Objects.equals(authority, authorityEntity1.authority);

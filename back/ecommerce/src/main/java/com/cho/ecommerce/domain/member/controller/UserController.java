@@ -28,74 +28,39 @@ public class UserController implements UserApi {
     private final AuthenticationManager authenticationManager;
     
     
-    
     @GetMapping("/login")
-    public String getLogin(
-        @RequestParam(defaultValue = "false") Boolean error,
-        Model model
-    ) {
+    public String getLogin(@RequestParam(defaultValue = "false") Boolean error, Model model) {
         if (error) {
             model.addAttribute("errorMessage", "아이디나 패스워드가 올바르지 않습니다.");
         }
         return "loginForm";
     }
     
-    
-//    @Override
-//    public ResponseEntity<InlineResponse200> loginUser(@RequestBody LoginPostDTO loginPostDTO) {
-//        try {
-//            Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                    loginPostDTO.getUserId(),
-//                    loginPostDTO.getPassword()
-//                )
-//            );
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//            InlineResponse200 response = new InlineResponse200();
-//            response.setMessage("Logged in successfully");
-//            return ResponseEntity.ok(response);
-//
-//        } catch (BadCredentialsException e) {
-//
-//            InlineResponse200 response = new InlineResponse200();
-//            response.setMessage("Invalid username or password");
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-//        }
-//    }
-
-//    @GetMapping("/register")
-//    public String showRegistrationForm(Model model) {
-//        model.addAttribute("user", new UserEntity());
-//        return "register";
-//    }
-    
-    
     @Override
     public ResponseEntity<RegisterResponseDTO> registerRoleUser(RegisterPostDTO registerPostDTO) {
         try {
             userService.saveRoleUser(registerPostDTO);
-    
+            
             // Creating a response
             RegisterResponseDTO response = new RegisterResponseDTO();
             response.setMessage("Registration successful");
-        
+            
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (Exception e) {
             // Handle the exception, maybe return a 400 Bad Request or similar
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
+    
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @GetMapping(value = "/user")
     public ResponseEntity<RegisterResponseDTO> user() {
         RegisterResponseDTO response = new RegisterResponseDTO();
         response.setMessage("test user page! with ROLE_USER!");
-    
+        
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-
+    
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     @GetMapping(value = "/admin")
     public String admin() {
@@ -106,7 +71,7 @@ public class UserController implements UserApi {
     public ResponseEntity<UserDetailsDTO> getUserByUsername(@PathVariable String username) {
         UserDetailsDTO userDetailsDTOByUsername = userService.findUserDetailsDTOByUsername(
             username);
-    
+        
         return new ResponseEntity<>(userDetailsDTOByUsername, HttpStatus.OK);
     }
 }

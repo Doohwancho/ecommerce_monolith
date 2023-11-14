@@ -11,6 +11,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class OrderItemDetails {
+    
     private Long orderItemId;
     private Long orderId;
     private LocalDateTime orderDate;

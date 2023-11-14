@@ -45,6 +45,7 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class FakeDataGenerator {
+    
     private final Logger log = LoggerFactory.getLogger(FakeDataGenerator.class);
     
     private final Faker faker = new Faker();
@@ -80,11 +81,11 @@ public class FakeDataGenerator {
             authorityRepository.save(adminRole);
         }
     }
-
+    
     @Transactional
     public void createFakeAdmin() {
         if (authorityRepository.findByAuthority("ROLE_ADMIN").isPresent()) {
-    
+            
             //step1) save user "admin"
             UserEntity admin = new UserEntity();
             admin.setUsername("admin");
@@ -95,18 +96,18 @@ public class FakeDataGenerator {
             admin.setUpdated(LocalDateTime.now());
             admin.setRole("ROLE_ADMIN");
             admin.setEnabled(true);
-    
+            
             UserEntity savedUserEntity = userRepository.save(admin);
-    
+            
             //step2) save AuthorityEntity "ROLE_ADMIN"
             AuthorityEntity userRole = authorityRepository.findByAuthority(
                     AuthorityEntity.ROLE_ADMIN)
                 .orElseThrow(() -> new RuntimeException("ROLE_ADMIN not found"));
-    
+            
             UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
             userAuthorityEntity.setUserEntity(savedUserEntity);
             userAuthorityEntity.setAuthorityEntity(userRole);
-    
+            
             userAuthorityRepository.save(userAuthorityEntity);
         }
     }
@@ -114,7 +115,7 @@ public class FakeDataGenerator {
     @Transactional
     public void createFakeUser() {
         if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
-        
+            
             //step1) save user "admin"
             UserEntity user = new UserEntity();
             user.setUsername("testUser");
@@ -125,25 +126,25 @@ public class FakeDataGenerator {
             user.setUpdated(LocalDateTime.now());
             user.setRole("ROLE_USER");
             user.setEnabled(true);
-        
+            
             UserEntity savedUserEntity = userRepository.save(user);
-        
+            
             //step2) save AuthorityEntity "ROLE_ADMIN"
             AuthorityEntity userRole = authorityRepository.findByAuthority(
                     AuthorityEntity.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
-        
+            
             UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
             userAuthorityEntity.setUserEntity(savedUserEntity);
             userAuthorityEntity.setAuthorityEntity(userRole);
-        
+            
             userAuthorityRepository.save(userAuthorityEntity);
         }
     }
     
     
     public UserEntity generateRandomROLE_USER() {
-
+        
         if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
             UserEntity user = new UserEntity();
             user.setUsername(faker.internet().uuid());
@@ -154,7 +155,7 @@ public class FakeDataGenerator {
             user.setUpdated(LocalDateTime.now());
             user.setRole("ROLE_USER");
             user.setEnabled(true);
-    
+            
             AddressEntity address = new AddressEntity();
             address.setUser(user);
             address.setStreet(faker.address().streetAddress());
@@ -164,9 +165,9 @@ public class FakeDataGenerator {
             address.setZipCode(faker.address().zipCode());
             
             user.setAddress(address);
-    
-    
-            AuthorityEntity userRole = authorityRepository.findByAuthority(AuthorityEntity.ROLE_USER)
+            
+            AuthorityEntity userRole = authorityRepository.findByAuthority(
+                    AuthorityEntity.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
             UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
             userAuthorityEntity.setUserEntity(user);
@@ -178,13 +179,13 @@ public class FakeDataGenerator {
         }
         return null;
     }
-
+    
     
     @Transactional
     public void generateFakeUsers(Integer numberOfUsers) {
         List<UserEntity> users = new ArrayList<>();
-    
-        for(int i = 0; i < numberOfUsers; i++) {
+        
+        for (int i = 0; i < numberOfUsers; i++) {
             UserEntity user = generateRandomROLE_USER();
             if (user != null) {
                 users.add(user);
@@ -195,9 +196,10 @@ public class FakeDataGenerator {
     
     
     @Transactional
-    public void generateFakeCategoryAndOptions(Integer numberOfFakeCategories, Integer numberOfFakeOptions, Integer numberOfFakeOptionsVariations) {
+    public void generateFakeCategoryAndOptions(Integer numberOfFakeCategories,
+        Integer numberOfFakeOptions, Integer numberOfFakeOptionsVariations) {
         List<CategoryEntity> lists = new ArrayList<>();
-    
+        
         // Generate categories
         for (int i = 0; i < numberOfFakeCategories; i++) {
             CategoryEntity category = new CategoryEntity();
@@ -231,7 +233,8 @@ public class FakeDataGenerator {
     }
     
     @Transactional
-    public void generateFake100Products(Integer numberOfFakeProducts, Integer numberOfFakeCategories, Integer numberOfFakeProductItems) {
+    public void generateFake100Products(Integer numberOfFakeProducts,
+        Integer numberOfFakeCategories, Integer numberOfFakeProductItems) {
         for (int i = 0; i < numberOfFakeProducts; i++) { //카테고리수가 10개니까, 1000개가 max
             //step1) create product
             ProductEntity product = new ProductEntity();
@@ -240,15 +243,14 @@ public class FakeDataGenerator {
             product.setRating(faker.number().randomDouble(1, 1, 5));
             product.setRatingCount(faker.number().numberBetween(1, 1000));
             
-            
             //step2) get category for the product
             int index = i % numberOfFakeCategories;
             if (index == 0) {
                 index = numberOfFakeCategories;
             }
-            CategoryEntity category = categoryRepository.findByCategoryId(Long.valueOf(index)); //10개의 카테고리를 순차적으로 가져온다.
+            CategoryEntity category = categoryRepository.findByCategoryId(
+                Long.valueOf(index)); //10개의 카테고리를 순차적으로 가져온다.
             product.setCategory(category);
-    
             
             //step3) get option and option variations from category
             List<OptionEntity> optionEntityList = optionRepository.findByCategory_CategoryId(
@@ -257,43 +259,45 @@ public class FakeDataGenerator {
             optionEntityList.forEach(option -> {
                 List<OptionVariationEntity> optionVariationList = optionVariationRepository.findByOption_OptionId(
                     option.getOptionId());
-                if(option.getOptionVariations() == null) {
+                if (option.getOptionVariations() == null) {
                     option.setOptionVariations(new ArrayList<>());
                 }
                 option.getOptionVariations().add(optionVariationList.get(0));
             });
-    
             
             //step4) create productItems for each product
             Set<ProductItemEntity> productItems = new HashSet<>();
-
+            
             for (int j = 0; j < numberOfFakeProductItems; j++) {
                 ProductItemEntity productItem = new ProductItemEntity();
-
+                
                 productItem.setQuantity(faker.number().numberBetween(1, 100));
                 productItem.setPrice(faker.number().randomDouble(2, 1, 10000));
                 productItem.setProduct(product);
                 ProductItemEntity savedProductItem = productItemRepository.save(productItem);
                 productItems.add(productItem);
-
+                
                 //step5) create product_option_variation
                 ProductOptionVariationEntity productOptionVariationEntity = new ProductOptionVariationEntity();
                 OptionVariationEntity optionVariations = optionEntityList.get(j)
                     .getOptionVariations().get(0);
-               productOptionVariationEntity.setOptionVariation(optionVariations);
-               productOptionVariationEntity.setProductItem(savedProductItem);
+                productOptionVariationEntity.setOptionVariation(optionVariations);
+                productOptionVariationEntity.setProductItem(savedProductItem);
                 productOptionVariationRepository.save(productOptionVariationEntity);
-                
                 
                 //step6) Generate discounts for each product item
                 DiscountEntity discount = new DiscountEntity();
                 discount.setDiscountType(
-                    DiscountType.values()[faker.number().numberBetween(0, DiscountType.values().length)]);
+                    DiscountType.values()[faker.number()
+                        .numberBetween(0, DiscountType.values().length)]);
                 discount.setDiscountValue(faker.number().randomDouble(2, 1, 100));
 //                discount.setStartDate(faker.date().past(10, TimeUnit.DAYS));
-                discount.setStartDate(faker.date().past(10, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime());
+                discount.setStartDate(
+                    faker.date().past(10, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault())
+                        .toOffsetDateTime());
 //                discount.setEndDate(faker.date().future(10, TimeUnit.DAYS));
-                discount.setEndDate(faker.date().future(10, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime());
+                discount.setEndDate(faker.date().future(10, TimeUnit.DAYS).toInstant()
+                    .atZone(ZoneId.systemDefault()).toOffsetDateTime());
                 discount.setProductItem(productItem);
                 discountRepository.save(discount);
             }
@@ -304,12 +308,14 @@ public class FakeDataGenerator {
     
     
     @Transactional
-    public void generateFakeOrdersAndOrderItems(Integer numberOfOrders, Integer numberOfFakeUsers, Integer maxProductItemsPerOrder, Integer numberOfFakeProductionOptionVariations) {
+    public void generateFakeOrdersAndOrderItems(Integer numberOfOrders, Integer numberOfFakeUsers,
+        Integer maxProductItemsPerOrder, Integer numberOfFakeProductionOptionVariations) {
         for (int i = 0; i < numberOfOrders; i++) {
             // Create a fake order
             OrderEntity order = new OrderEntity();
             // Convert Date to LocalDateTime
-            LocalDateTime orderDate = Instant.ofEpochMilli(faker.date().past(30, TimeUnit.DAYS).getTime())
+            LocalDateTime orderDate = Instant.ofEpochMilli(
+                    faker.date().past(30, TimeUnit.DAYS).getTime())
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
             order.setOrderDate(orderDate);
@@ -317,12 +323,13 @@ public class FakeDataGenerator {
             
             // Assign a random member to the order
 //            Long memberId = Long.valueOf(faker.number().numberBetween(1, numberOfFakeUsers));
-    
+            
             int index = i % numberOfFakeUsers;
             if (index == 0) {
                 index = numberOfFakeUsers;
             }
-            UserEntity member = userRepository.findById(Long.valueOf(index)).orElseThrow(() -> new RuntimeException("Member not found"));
+            UserEntity member = userRepository.findById(Long.valueOf(index))
+                .orElseThrow(() -> new RuntimeException("Member not found"));
             order.setMember(member);
             
             // Save the order to get an ID
@@ -334,8 +341,10 @@ public class FakeDataGenerator {
                 orderItem.setOrder(savedOrder);
                 
                 // Assign a random product option variation to the order item
-                Long productOptionVariationId = Long.valueOf(faker.number().numberBetween(1, numberOfFakeProductionOptionVariations));
-                ProductOptionVariationEntity productOptionVariation = productOptionVariationRepository.findById(productOptionVariationId)
+                Long productOptionVariationId = Long.valueOf(
+                    faker.number().numberBetween(1, numberOfFakeProductionOptionVariations));
+                ProductOptionVariationEntity productOptionVariation = productOptionVariationRepository.findById(
+                        productOptionVariationId)
                     .orElseThrow(() -> new RuntimeException("ProductOptionVariation not found"));
                 orderItem.setProductOptionVariation(productOptionVariation);
                 

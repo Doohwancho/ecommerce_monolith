@@ -9,7 +9,6 @@ import com.cho.ecommerce.domain.order.mapper.TimeMapper;
 import com.cho.ecommerce.domain.order.repository.OrderRepository;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +32,8 @@ public class OrderService {
     }
     
     public OrderEntity getOrderById(Long orderId) {
-        return orderRepository.findById(orderId)
-            .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+        return orderRepository.findById(orderId).orElseThrow(
+            () -> new ResourceNotFoundException("Order not found with id: " + orderId));
     }
     
     public OrderDTO getOrderByIdForOrderDTO(Long orderId) {
@@ -44,17 +43,16 @@ public class OrderService {
     
     public List<OrderItemDetailsDTO> findOrderItemDetailsByUsername(String username) {
         List<OrderItemDetails> orderItemDetails = orderRepository.getOrderItemDetailsByUsername(
-            username).orElseThrow(() -> new ResourceNotFoundException("No order details found for username: " + username));
+            username).orElseThrow(() -> new ResourceNotFoundException(
+            "No order details found for username: " + username));
         
-        List<OrderItemDetailsDTO> orderItemDetailsDTOS = orderMapper.orderItemDetailsListToDTOList(
-            orderItemDetails);
-        
-        return orderItemDetailsDTOS;
+        return orderMapper.orderItemDetailsListToDTOList(orderItemDetails);
     }
     
     public List<OrderDTO> getAllOrders() {
         List<OrderEntity> orderEntityList = orderRepository.findAll();
-        return orderEntityList.stream().map(orderMapper::orderEntityToOrderDTO).collect(Collectors.toList());
+        return orderEntityList.stream().map(orderMapper::orderEntityToOrderDTO)
+            .collect(Collectors.toList());
     }
     
     public OrderDTO updateOrder(Long orderId, OrderDTO orderDetails) {
@@ -65,14 +63,6 @@ public class OrderService {
         OrderDTO orderToSave = orderMapper.orderEntityToOrderDTO(orderEntity);
         
         //TODO - what to update?
-    
-
-//        Order order = orderMapper.orderEntityToOrder(orderEntity);
-//
-//        order.setOrderDate(timeMapper.offsetDateTimeToLocalDateTime(orderDetails.getOrderDate()));
-//        order.setOrderStatus(orderDetails.getOrderStatus());
-//
-//        OrderEntity orderEntityToBeSaved = orderMapper.orderToOrderEntity(order);
         
         return createOrder(orderToSave);
     }

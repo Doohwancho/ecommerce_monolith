@@ -24,12 +24,13 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
     
     //case1) ROLE에 따라 다른 페이지로 redirect
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+        Authentication authentication) throws IOException, ServletException {
         String redirectUrl = "/";
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         
         logger.info("로그인 성공!!!!!");
-    
+        
         for (GrantedAuthority grantedAuthority : authorities) {
             
             if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
@@ -51,7 +52,7 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
 //        logger.info("User {} logged in successfully", authentication.getName());
 //        super.onAuthenticationSuccess(request, response, authentication);
 //    }
-
+    
     //case3) session에 필드 추가
 //    @Override
 //    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -59,8 +60,7 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
 //        session.setAttribute("welcomeMessage", "Welcome back, " + authentication.getName() + "!");
 //        super.onAuthenticationSuccess(request, response, authentication);
 //    }
-
-
+    
     //case4) storing last login timestamp
 //    private final UserRepository userRepository;
 //

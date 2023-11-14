@@ -28,7 +28,7 @@ public class OrderUnitTest {
         // Given: a username and corresponding data in the database
         
         // When: calling getOrderItemDetailsByUsername
-        List<OrderItemDetails> results = orderRepositoryCustom.getOrderItemDetailsByUsername("testUser");
+        List<OrderItemDetails> results = orderRepositoryCustom.getOrderItemDetailsByUsername("testUser").get();
         
         // Then: verify the results
         assertNotNull(results);

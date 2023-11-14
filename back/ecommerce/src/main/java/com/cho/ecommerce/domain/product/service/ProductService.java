@@ -21,16 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
-    
-    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
-    
     
     @Autowired
     private ProductRepository productRepository;
@@ -60,25 +55,24 @@ public class ProductService {
         ProductEntity queryResult = productRepository.findProductDetailDTOsById(
             productId).get().get(0);
         
-        List<ProductOptionVariationEntity> AllProducts = new ArrayList<>();
+        List<ProductOptionVariationEntity> allProducts = new ArrayList<>();
         List<Product> productList = new ArrayList<>();
         
         if (queryResult.getProductItems() != null) {
             for (ProductItemEntity productItem : queryResult.getProductItems()) {
                 for (ProductOptionVariationEntity productOptionVariation : productItem.getProductOptionVariations()) {
-                    AllProducts.add(productOptionVariation);
+                    allProducts.add(productOptionVariation);
                 }
             }
         }
         
-        for(ProductOptionVariationEntity productOptionVariationEntity : AllProducts) {
+        for (ProductOptionVariationEntity productOptionVariationEntity : allProducts) {
             ProductItemEntity productItemEntity = productOptionVariationEntity.getProductItem();
             ProductEntity productEntity = productItemEntity.getProduct();
             List<DiscountEntity> discounts = productItemEntity.getDiscounts();
             OptionVariationEntity optionVariationEntity = productOptionVariationEntity.getOptionVariation();
             OptionEntity optionEntity = optionVariationEntity.getOption();
             CategoryEntity categoryEntity = optionEntity.getCategory();
-    
             
             Product product = new Product.Builder()
                 .productId(productEntity.getProductId())
@@ -99,13 +93,12 @@ public class ProductService {
         }
         
         return productList;
-    };
+    }
     
     public List<ProductDetailDTO> findProductDetailDTOsById(Long productId) {
-        List<Product> ProductDetailDTOsList = getProductDetailDTOsById(productId);
-        List<ProductDetailDTO> ProductDetailDTOs = productMapper.productsToProductDetailDTOs(
-            ProductDetailDTOsList);
-        return ProductDetailDTOs;
+        List<Product> productDetailDTOsList = getProductDetailDTOsById(productId);
+        return productMapper.productsToProductDetailDTOs(
+            productDetailDTOsList);
     }
     
     @Transactional
@@ -115,8 +108,7 @@ public class ProductService {
             Long.valueOf(product.getCategoryId()));
         productEntity.setCategory(category);
         ProductEntity savedProduct = productRepository.save(productEntity);
-        ProductDTO productDTO = productMapper.productEntityToProductDTO(savedProduct);
-        return productDTO;
+        return productMapper.productEntityToProductDTO(savedProduct);
     }
     
     public ProductDTO saveProduct(ProductDTO product) {
@@ -125,8 +117,7 @@ public class ProductService {
             Long.valueOf(product.getCategoryId()));
         productEntity.setCategory(category);
         ProductEntity savedProduct = productRepository.save(productEntity);
-        ProductDTO productDTO = productMapper.productEntityToProductDTO(savedProduct);
-        return productDTO;
+        return productMapper.productEntityToProductDTO(savedProduct);
     }
     
     public void deleteProduct(Long id) {

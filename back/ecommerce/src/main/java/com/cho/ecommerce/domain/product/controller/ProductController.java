@@ -2,14 +2,13 @@ package com.cho.ecommerce.domain.product.controller;
 
 import com.cho.ecommerce.api.ProductApi;
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
-import com.cho.ecommerce.api.domain.ProductDetailDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
+import com.cho.ecommerce.api.domain.ProductDetailDTO;
 import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.service.ProductService;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +31,9 @@ public class ProductController implements ProductApi {
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         List<ProductEntity> allProducts = productService.getAllProducts();
-        List<ProductDTO> productDTOS = productMapper.INSTANCE.productEntitiesToProductDTOs(
+        List<ProductDTO> productDTOS = productMapper.productEntitiesToProductDTOs(
             allProducts);
-    
+        
         return ResponseEntity.ok(productDTOS);
     }
     
@@ -45,7 +44,7 @@ public class ProductController implements ProductApi {
         
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
-
+    
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
@@ -55,7 +54,8 @@ public class ProductController implements ProductApi {
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO product) {
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id,
+        @RequestBody ProductDTO product) {
         if (!productService.getProductById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
@@ -76,7 +76,7 @@ public class ProductController implements ProductApi {
     public ResponseEntity<ProductListResponseDTO> getProductsByCategory(Long categoryId) {
         ProductListResponseDTO allProductsByCategory = productService.findAllProductsByCategory(
             categoryId);
-    
+        
         return ResponseEntity.ok(allProductsByCategory);
     }
 }

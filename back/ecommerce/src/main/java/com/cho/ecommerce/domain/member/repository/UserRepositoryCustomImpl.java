@@ -10,7 +10,7 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-public class UserRepositoryCustomImpl implements UserRepositoryCustom{
+public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     
     @PersistenceContext
     private EntityManager em;

@@ -31,18 +31,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Table(name="MEMBER")
-//@Data //TODO 2 - @Data -> custom getter/setter, toString(), etc
+@Table(name = "MEMBER")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter
 @Setter
-public class UserEntity implements UserDetails { // UserDetailService를 구현한 클래스를 따로 분리해서 만들어서 처리해도 된다.
+public class UserEntity implements
+    UserDetails { // UserDetailService를 구현한 클래스를 따로 분리해서 만들어서 처리해도 된다.
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="MEMBER_ID")
+    @Column(name = "MEMBER_ID")
     private Long memberId;
     
     @Column(unique = true, name = "USER_ID")
@@ -57,7 +57,8 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     @JoinColumn(name = "ADDRESS_ID")
     private AddressEntity address;
     
-    @JsonIgnore //prevent the password from being included when the object is serialized into JSON format
+    @JsonIgnore
+    //prevent the password from being included when the object is serialized into JSON format
     private String password;
     private String role;
     private boolean enabled; //attribute is a flag to indicate the user's status. If enabled is true, the user can log in. If enabled is false, the user cannot log in. This is useful in scenarios where you might want to temporarily (or permanently) deactivate a user's account without deleting it.
@@ -66,10 +67,10 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     @OneToMany(mappedBy = "userEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<UserAuthorityEntity> userAuthorities;
     
-    @Column(name="CREATED_AT")
+    @Column(name = "CREATED_AT")
     private LocalDateTime created;
     
-    @Column(name="UPDATED_AT")
+    @Column(name = "UPDATED_AT")
     private LocalDateTime updated;
     
     
@@ -80,13 +81,12 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     
     
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { //TODO 7 - <? extends GrantedAuthority> 가 왜 안되는가?
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         if (userAuthorities == null || userAuthorities.isEmpty()) {
             return Collections.emptyList();
         }
-        return userAuthorities.stream()
-            .map(userAuthority -> new SimpleGrantedAuthority(userAuthority.getAuthorityEntity().getAuthority()))
-            .collect(Collectors.toList());
+        return userAuthorities.stream().map(userAuthority -> new SimpleGrantedAuthority(
+            userAuthority.getAuthorityEntity().getAuthority())).collect(Collectors.toList());
     }
     
     @Override
@@ -114,7 +114,9 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     }
     
     @Override
-    public boolean isEnabled() { return enabled; }
+    public boolean isEnabled() {
+        return enabled;
+    }
     
     
     public Set<UserAuthorityEntity> getUserAuthorities() {
@@ -122,13 +124,13 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     }
     
     public void setUserAuthorities(UserAuthorityEntity userAuthorityEntity) {
-        if(this.userAuthorities == null) {
+        if (this.userAuthorities == null) {
             this.userAuthorities = new HashSet<>();
         }
         this.userAuthorities.add(userAuthorityEntity);
     }
     
-    public String getUsername(){
+    public String getUsername() {
         return this.username;
     }
     
@@ -170,39 +172,33 @@ public class UserEntity implements UserDetails { // UserDetailService를 구현�
     
     @Override
     public String toString() {
-        return "User{" +
-            "memberId=" + memberId +
-            ", username='" + username + '\'' +
-            ", email='" + email + '\'' +
-            ", name='" + name + '\'' +
-            ", password='" + password + '\'' +
-            ", role='" + role + '\'' +
-            ", enabled=" + enabled +
-            ", created=" + created +
-            ", updated=" + updated +
-            '}';
+        return "User{" + "memberId=" + memberId + ", username='" + username + '\'' + ", email='"
+            + email + '\'' + ", name='" + name + '\'' + ", password='" + password + '\''
+            + ", role='" + role + '\'' + ", enabled=" + enabled + ", created=" + created
+            + ", updated=" + updated + '}';
     }
     
     // Implementing hashCode() and equals() without referencing userAuthorities to avoid recursion
     // You can use Objects.hash() and Objects.equals() for simplicity
     @Override
     public int hashCode() {
-        return Objects.hash(memberId, username, email, name, password, role, enabled, created, updated);
+        return Objects.hash(memberId, username, email, name, password, role, enabled, created,
+            updated);
     }
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
         UserEntity userEntity = (UserEntity) obj;
-        return enabled == userEntity.enabled &&
-            Objects.equals(memberId, userEntity.memberId) &&
-            Objects.equals(username, userEntity.username) &&
-            Objects.equals(email, userEntity.email) &&
-            Objects.equals(name, userEntity.name) &&
-            Objects.equals(password, userEntity.password) &&
-            Objects.equals(role, userEntity.role) &&
-            Objects.equals(created, userEntity.created) &&
-            Objects.equals(updated, userEntity.updated);
+        return enabled == userEntity.enabled && Objects.equals(memberId, userEntity.memberId)
+            && Objects.equals(username, userEntity.username) && Objects.equals(email,
+            userEntity.email) && Objects.equals(name, userEntity.name) && Objects.equals(password,
+            userEntity.password) && Objects.equals(role, userEntity.role) && Objects.equals(created,
+            userEntity.created) && Objects.equals(updated, userEntity.updated);
     }
 }
