@@ -133,25 +133,25 @@ public class ProductIntegrationTest {
             .create();
     
         Product[] products = gson.fromJson(jsonInput, Product[].class);
-        Product product = products[0];
         
-        
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(Arrays.stream(products).count() > 0);
-        assertNotNull(product.getProductId());
-        assertNotNull(product.getName());
-        assertNotNull(product.getDescription());
-        assertNotNull(product.getRating());
-        assertNotNull(product.getRatingCount());
-        assertNotNull(product.getQuantity());
-        assertNotNull(product.getPrice());
-        assertNotNull(product.getDiscounts());
-        assertNotNull(product.getCategoryId());
-        assertNotNull(product.getCategoryName());
-        assertNotNull(product.getCategoryCode());
-        assertNotNull(product.getOptionName());
-        assertNotNull(product.getOptionVariationName());
+        for(Product product : products){
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertTrue(Arrays.stream(products).count() > 0);
+            assertNotNull(product.getProductId());
+            assertNotNull(product.getName());
+            assertNotNull(product.getDescription());
+            assertNotNull(product.getRating());
+            assertNotNull(product.getRatingCount());
+            assertNotNull(product.getQuantity());
+            assertNotNull(product.getPrice());
+            assertNotNull(product.getDiscounts());
+            assertNotNull(product.getCategoryId());
+            assertNotNull(product.getCategoryName());
+            assertNotNull(product.getCategoryCode());
+            assertNotNull(product.getOptionName());
+            assertNotNull(product.getOptionVariationName());
+        }
     }
 
 }
