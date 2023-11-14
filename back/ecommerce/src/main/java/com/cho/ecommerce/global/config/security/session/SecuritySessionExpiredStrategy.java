@@ -15,8 +15,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecuritySessionExpiredStrategy implements SessionInformationExpiredStrategy {
     
-    
-    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private static final String defaultUrl = "/login";
     
     @Override

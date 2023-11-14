@@ -1,6 +1,8 @@
 package com.cho.ecommerce.domain.order.service;
 
 import com.cho.ecommerce.api.domain.OrderDTO;
+import com.cho.ecommerce.api.domain.OrderItemDetailsDTO;
+import com.cho.ecommerce.domain.order.domain.OrderItemDetails;
 import com.cho.ecommerce.domain.order.entity.OrderEntity;
 import com.cho.ecommerce.domain.order.mapper.OrderMapper;
 import com.cho.ecommerce.domain.order.mapper.TimeMapper;
@@ -37,6 +39,16 @@ public class OrderService {
     public OrderDTO getOrderByIdForOrderDTO(Long orderId) {
         OrderEntity orderEntity = getOrderById(orderId);
         return orderMapper.orderEntityToOrderDTO(orderEntity);
+    }
+    
+    public List<OrderItemDetailsDTO> findOrderItemDetailsByUsername(String username) {
+        List<OrderItemDetails> orderItemDetails = orderRepository.getOrderItemDetailsByUsername(
+            username);
+    
+        List<OrderItemDetailsDTO> orderItemDetailsDTOS = orderMapper.orderItemDetailsListToDTOList(
+            orderItemDetails);
+        
+        return orderItemDetailsDTOS;
     }
     
     public List<OrderDTO> getAllOrders() {

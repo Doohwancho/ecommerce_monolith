@@ -63,7 +63,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         List<ProductEntity> products = query.fetch();
         
     
-        return Optional.ofNullable(Optional.ofNullable(products)
+        return Optional.ofNullable(Optional.ofNullable(products) //Optional can also be null, therefore wrap Optional with Optional (???!)
             .filter(not(List::isEmpty)) //if empty, returns Optional
             .orElseThrow(
                 () -> new ResourceNotFoundException("Product not found, productId: " + productId))); //throw Exception if result is Optional
