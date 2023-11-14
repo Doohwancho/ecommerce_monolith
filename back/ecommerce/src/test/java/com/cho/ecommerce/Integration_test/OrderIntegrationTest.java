@@ -11,7 +11,6 @@ import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import com.cho.ecommerce.global.config.parser.OffsetDateTimeDeserializer;
 import com.cho.ecommerce.global.util.DatabaseCleanup;
-import com.cho.ecommerce.smoke_test.MemberSmokeTest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.time.OffsetDateTime;
@@ -21,8 +20,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -46,8 +43,6 @@ import org.springframework.util.MultiValueMap;
 @ActiveProfiles("test")
 @Tag("integration") //to run, type "mvn test -Dgroups=integration"
 class OrderIntegrationTest {
-    
-    private final Logger log = LoggerFactory.getLogger(MemberSmokeTest.class);
     
     @Autowired
     private TestRestTemplate restTemplate;

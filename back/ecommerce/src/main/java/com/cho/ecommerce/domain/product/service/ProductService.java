@@ -28,6 +28,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductService {
     
+    private ProductService self;
+    
     @Autowired
     private ProductRepository productRepository;
     
@@ -42,6 +44,11 @@ public class ProductService {
     
     @Autowired
     private DiscountMapper discountMapper;
+    
+    @Autowired
+    public void setSelf(ProductService self) {
+        this.self = self;
+    }
     
     public List<ProductEntity> getAllProducts() {
         return productRepository.findAll();
@@ -81,21 +88,15 @@ public class ProductService {
             OptionEntity optionEntity = optionVariationEntity.getOption();
             CategoryEntity categoryEntity = optionEntity.getCategory();
             
-            Product product = new Product.Builder()
-                .productId(productEntity.getProductId())
-                .name(productEntity.getName())
-                .description(productEntity.getDescription())
-                .rating(productEntity.getRating())
-                .ratingCount(productEntity.getRatingCount())
-                .quantity(productItemEntity.getQuantity())
-                .price(productItemEntity.getPrice())
+            Product product = new Product.Builder().productId(productEntity.getProductId())
+                .name(productEntity.getName()).description(productEntity.getDescription())
+                .rating(productEntity.getRating()).ratingCount(productEntity.getRatingCount())
+                .quantity(productItemEntity.getQuantity()).price(productItemEntity.getPrice())
                 .discounts(discountMapper.discountEntitiesToDiscounts(discounts))
                 .categoryId(categoryEntity.getCategoryId())
                 .categoryCode(categoryEntity.getCategoryCode())
-                .categoryName(categoryEntity.getName())
-                .optionName(optionEntity.getValue())
-                .optionVariationName(optionVariationEntity.getValue())
-                .build();
+                .categoryName(categoryEntity.getName()).optionName(optionEntity.getValue())
+                .optionVariationName(optionVariationEntity.getValue()).build();
             productList.add(product);
         }
         
@@ -103,9 +104,8 @@ public class ProductService {
     }
     
     public List<ProductDetailDTO> findProductDetailDTOsById(Long productId) {
-        List<Product> productDetailDTOsList = getProductDetailDTOsById(productId);
-        return productMapper.productsToProductDetailDTOs(
-            productDetailDTOsList);
+        List<Product> productDetailDTOsList = self.getProductDetailDTOsById(productId); //fix: solution to "Methods should not call same-class methods with incompatible @Transactional"
+        return productMapper.productsToProductDetailDTOs(productDetailDTOsList);
     }
     
     @Transactional
