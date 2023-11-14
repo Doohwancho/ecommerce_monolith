@@ -9,6 +9,7 @@ import com.cho.ecommerce.domain.order.mapper.TimeMapper;
 import com.cho.ecommerce.domain.order.repository.OrderRepository;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,8 +44,8 @@ public class OrderService {
     
     public List<OrderItemDetailsDTO> findOrderItemDetailsByUsername(String username) {
         List<OrderItemDetails> orderItemDetails = orderRepository.getOrderItemDetailsByUsername(
-            username);
-    
+            username).orElseThrow(() -> new ResourceNotFoundException("No order details found for username: " + username));
+        
         List<OrderItemDetailsDTO> orderItemDetailsDTOS = orderMapper.orderItemDetailsListToDTOList(
             orderItemDetails);
         

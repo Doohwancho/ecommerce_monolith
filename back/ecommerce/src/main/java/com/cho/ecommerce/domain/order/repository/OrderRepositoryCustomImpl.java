@@ -21,6 +21,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
     
     
     @Override
-    public List<OrderItemDetails> getOrderItemDetailsByUsername(String username) {
+    public Optional<List<OrderItemDetails>> getOrderItemDetailsByUsername(String username) {
         QOrderEntity order = QOrderEntity.orderEntity;
         QUserEntity member = QUserEntity.userEntity;
         QOrderItemEntity orderItem = QOrderItemEntity.orderItemEntity;
@@ -46,7 +47,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
         QOptionEntity option = QOptionEntity.optionEntity;
         QOptionVariationEntity optionVariation = QOptionVariationEntity.optionVariationEntity;
         
-        List<Tuple> results = queryFactory
+        List<Tuple> queryResult = queryFactory
             .select(order, member, orderItem, productOptionVariation, productItem, product, option, optionVariation)
             .from(orderItem)
             .join(orderItem.order, order)
@@ -58,18 +59,19 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
             .join(optionVariation.option, option)
             .where(member.username.eq(username))
             .fetch();
-        
-        return results.stream()
+    
+        List<OrderItemDetails> result = queryResult.stream()
             .map(tuple -> {
                 OrderEntity orderEntity = tuple.get(order);
                 UserEntity userEntity = tuple.get(member);
                 OrderItemEntity orderItemEntity = tuple.get(orderItem);
-                ProductOptionVariationEntity productOptionVariationEntity = tuple.get(productOptionVariation);
+                ProductOptionVariationEntity productOptionVariationEntity = tuple.get(
+                    productOptionVariation);
                 ProductItemEntity productItemEntity = tuple.get(productItem);
                 ProductEntity productEntity = tuple.get(product);
                 OptionEntity optionEntity = tuple.get(option);
                 OptionVariationEntity optionVariationEntity = tuple.get(optionVariation);
-    
+            
                 return new OrderItemDetails(
                     orderItemEntity.getOrderItemId(),
                     orderEntity.getOrderId(),
@@ -95,5 +97,6 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom{
                 );
             })
             .collect(Collectors.toList());
+        return Optional.ofNullable(queryResult.isEmpty() ? null : result);
     }
 }
