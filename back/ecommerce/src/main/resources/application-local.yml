@@ -9,9 +9,11 @@ spring:
   datasource:
     platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ecommerce-database?serverTimezone=Asia/Seoul
+#    url: jdbc:mysql://localhost:3306/ecommerce-database?serverTimezone=Asia/Seoul #for local development
+    url: jdbc:mysql://mysql:3306/ecommerce-database?serverTimezone=Asia/Seoul #for docker
     username: root
-    password:
+    password: root #mysql로 접속시 root유저의 비밀번호 또한 root로 설정함.
+#    password: #local에서 접속시엔 root user's password is null
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
@@ -19,10 +21,12 @@ spring:
     properties.hibernate:
       format_sql: true
       show-sql: true
+      generate_statistics: true
       open-in-view: false
       default_batch_fetch_size: 1000
   redis:
-    host: localhost
+#    host: localhost #for local development
+    host: redis #for docker
     port: 6379
   session:
     store-type: redis

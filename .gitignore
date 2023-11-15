@@ -194,3 +194,5 @@ back/.idea/sonarlint/
 
 
 debugFile
+mysql-data/**
+!mysql-data/testFile

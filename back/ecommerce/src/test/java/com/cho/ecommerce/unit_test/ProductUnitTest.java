@@ -47,23 +47,24 @@ class ProductUnitTest {
         
         // When
         List<Product> products = productService.getProductDetailDTOsById(productId);
-        Product product = products.get(0); //여러개의 products중에 임의로 하나만 골라서 테스트한다.
-        
+    
         // Then
-        assertNotNull(products);
-        assertEquals(products.size(), numberOfFakeProductItems);
-        assertNotNull(product.getProductId());
-        assertNotNull(product.getName());
-        assertNotNull(product.getDescription());
-        assertNotNull(product.getRating());
-        assertNotNull(product.getRatingCount());
-        assertNotNull(product.getQuantity());
-        assertNotNull(product.getPrice());
-        assertNotNull(product.getDiscounts());
-        assertNotNull(product.getCategoryId());
-        assertNotNull(product.getCategoryCode());
-        assertNotNull(product.getCategoryName());
-        assertNotNull(product.getOptionName());
-        assertNotNull(product.getOptionVariationName());
+        for(Product product : products) {
+            assertNotNull(products);
+            assertEquals(products.size(), numberOfFakeProductItems);
+            assertNotNull(product.getProductId());
+            assertNotNull(product.getName());
+            assertNotNull(product.getDescription());
+            assertNotNull(product.getRating());
+            assertNotNull(product.getRatingCount());
+            assertNotNull(product.getQuantity());
+            assertNotNull(product.getPrice());
+            assertNotNull(product.getDiscounts());
+            assertNotNull(product.getCategoryId());
+            assertNotNull(product.getCategoryCode());
+            assertNotNull(product.getCategoryName());
+            assertNotNull(product.getOptionName());
+            assertNotNull(product.getOptionVariationName());
+        }
     }
 }
