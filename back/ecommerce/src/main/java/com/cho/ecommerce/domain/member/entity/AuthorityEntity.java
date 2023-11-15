@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +35,7 @@ public class AuthorityEntity implements GrantedAuthority {
     @Column(name = "AUTHORITY_ID")
     private Long id;
     
+    @NotBlank(message = "Authority is required")
     private String authority;
     
     public AuthorityEntity(String authority) {

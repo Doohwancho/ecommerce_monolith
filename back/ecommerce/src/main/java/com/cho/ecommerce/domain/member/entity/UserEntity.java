@@ -21,6 +21,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,32 +49,46 @@ public class UserEntity implements
     @Column(name = "MEMBER_ID")
     private Long memberId;
     
+    @NotBlank(message = "Username is required")
     @Column(unique = true, name = "USER_ID")
     private String username;
     
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
     @Column(unique = true)
     private String email;
+    
+    @NotBlank(message = "Name is required")
     private String name;
+    
 //    private String picUrl; //TODO 1 - user picture?
     
+    @NotNull(message = "Address is required")
     @OneToOne(cascade = CascadeType.ALL) //Casecade로 지정하면, UserEntity를 저장하면 AddressEntity도 자동 저장된다.
     @JoinColumn(name = "ADDRESS_ID")
     private AddressEntity address;
     
+    @NotBlank(message = "Password is required")
     @JsonIgnore
     //prevent the password from being included when the object is serialized into JSON format
     private String password;
+    
+    @NotBlank(message = "Role is required")
     private String role;
+    
     private boolean enabled; //attribute is a flag to indicate the user's status. If enabled is true, the user can log in. If enabled is false, the user cannot log in. This is useful in scenarios where you might want to temporarily (or permanently) deactivate a user's account without deleting it.
     
     @JsonIgnore //for error - "Could not write JSON: (was java.lang.NullPointerException)"
+    @NotEmpty(message = "User must have at least one authority")
     @OneToMany(mappedBy = "userEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<UserAuthorityEntity> userAuthorities;
     
     @Column(name = "CREATED_AT")
+    @NotEmpty(message = "User must have created datetime")
     private LocalDateTime created;
     
     @Column(name = "UPDATED_AT")
+    @NotEmpty(message = "User must have updated datetime")
     private LocalDateTime updated;
     
     

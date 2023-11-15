@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,13 +26,16 @@ public class OptionVariationEntity {
     @Column(name = "OPTION_VARIATION_ID")
     private Long optionVariationId;
     
+    @NotBlank(message = "Value is required")
     @Column(name = "VALUE")
     private String value;
     
+    @NotNull(message = "Option is required")
     @ManyToOne
     @JoinColumn(name = "OPTION_ID")
     private OptionEntity option;
     
+//    @NotEmpty(message = "Option variation must have at least one product option variation") //optionVariation may not have product option variations
     @OneToMany(mappedBy = "optionVariation")
     private Set<ProductOptionVariationEntity> productOptionVariations;
     

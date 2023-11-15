@@ -13,6 +13,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,9 +31,11 @@ public class OrderEntity {
     private Long orderId;
     
     @Column(name = "ORDER_DATE")
+    @NotNull(message = "Order date cannot be null")
     private LocalDateTime orderDate; //TODO - OffsetDateTime에서 Offset 저장 지원 안되는 db있으니, LocalDateTime랑 Offset까지 별개 column으로 저장해야 함
     
     @Column(name = "ORDER_STATUS")
+    @NotBlank(message = "Order status is required")
     private String orderStatus; //PENDING, PROCESSING, CONFIRMED, PAID, ON_HOLD, SHIPPED, OUT_OF_DELIVERY, etc
     
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,6 +43,7 @@ public class OrderEntity {
     private UserEntity member;
     
     @OneToMany(mappedBy = "order")
+    @NotEmpty(message = "Order must have at least one item")
     private Set<OrderItemEntity> orderItems;
-
+    
 }

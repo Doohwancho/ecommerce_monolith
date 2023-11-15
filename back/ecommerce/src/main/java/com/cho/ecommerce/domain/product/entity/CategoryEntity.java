@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,15 +24,19 @@ public class CategoryEntity {
     @Column(name = "CATEGORY_ID")
     private Long categoryId;
     
+    @NotBlank(message = "Category code is required")
     @Column(name = "CATEGORY_CODE")
     private String categoryCode;
     
+    @NotBlank(message = "Name is required")
     @Column(name = "NAME")
     private String name;
-
+    
+    @NotEmpty(message = "Category must have at least one option")
     @OneToMany(mappedBy = "category")
     private Set<OptionEntity> optionEntities;
     
+    @NotEmpty(message = "Category must have at least one product")
     @OneToMany(mappedBy = "category")
     private Set<ProductEntity> products;
     

@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,21 +29,25 @@ public class ProductItemEntity {
     @Column(name = "PRODUCT_ITEM_ID")
     private Long productItemId;
     
+    @NotNull(message = "Quantity is required")
     @Column(name = "QUANTITY")
     private Integer quantity;
     
+    @NotNull(message = "Price is required")
     @Column(name = "PRICE")
     private Double price;
+    
+    @NotNull(message = "Product is required")
     @ManyToOne
     @JoinColumn(name = "PRODUCT_ID")
     private ProductEntity product;
     
+    @NotEmpty(message = "Product item must have at least one product option variation")
     @OneToMany(mappedBy = "productItem")
     private Set<ProductOptionVariationEntity> productOptionVariations;
     
+//    @NotEmpty(message = "Product item must have at least one discount") //product may not have discount
     @OneToMany(mappedBy = "productItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DiscountEntity> discounts = new ArrayList<>();
-    
-    // getters, setters, and other methods
 }
 

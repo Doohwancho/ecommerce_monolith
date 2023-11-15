@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,12 +27,22 @@ public class AddressEntity implements Serializable {
     @Column(name = "ADDRESS_ID")
     private Long addressId;
     
+    @NotBlank(message = "Street is required")
     private String street;
+    
+    @NotBlank(message = "City is required")
     private String city;
+    
+    @NotBlank(message = "State is required")
     private String state;
+    
+    @NotBlank(message = "Country is required")
     private String country;
+    
+    @NotBlank(message = "Zip code is required")
     private String zipCode;
     
+    @NotNull
     @OneToOne(mappedBy = "address")
     private UserEntity user;
 }
