@@ -10,7 +10,9 @@ import com.cho.ecommerce.domain.member.mapper.UserMapper;
 import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserAuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
+import com.cho.ecommerce.global.error.ErrorCode;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
+import com.cho.ecommerce.global.error.exception.member.LockedAccountUserFailedToAuthenticate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.transaction.Transactional;
@@ -56,6 +58,7 @@ public class UserService implements UserDetailsService {
     public UserEntity saveRoleUser(RegisterPostDTO registerPostDTO) {
         UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO,
             "ROLE_USER");
+        userEntity.setEnabled(true);
         return saveRoleUser(userEntity);
     }
     
@@ -63,6 +66,7 @@ public class UserService implements UserDetailsService {
     public UserEntity saveRoleAdmin(RegisterPostDTO registerPostDTO) {
         UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO,
             "ROLE_ADMIN");
+        userEntity.setEnabled(true);
         return saveRoleUser(userEntity);
     }
     
@@ -93,8 +97,17 @@ public class UserService implements UserDetailsService {
     
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
+        UserEntity userEntity = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException(username + "이 존재하지 않음"));
+        
+        if (!(userEntity.isEnabled() && userEntity.isAccountNonExpired()
+            && userEntity.isAccountNonLocked() && userEntity.isCredentialsNonExpired())) {
+            log.error("locked account user authentication failed! username: " + username);
+            throw new LockedAccountUserFailedToAuthenticate(
+                ErrorCode.LOCKED_USER_FAILED_TO_AUTHENTICATE);
+        }
+        
+        return userEntity;
     }
     
     @Transactional

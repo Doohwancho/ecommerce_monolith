@@ -160,6 +160,10 @@ public class UserEntity implements
         return this.email;
     }
     
+    public boolean getEnabled() {
+        return this.enabled;
+    }
+    
     public void setEmail(String email) {
         this.email = email;
     }
