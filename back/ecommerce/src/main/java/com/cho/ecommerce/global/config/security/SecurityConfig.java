@@ -51,9 +51,13 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                     1) //동일 세션 개수 제한 => 1개로 설정하여 중복 로그인 방지 (localhost:8080에서 로그인하고, localhost:8081로 로그인 시도하면 http status 401 UNAUTHORIZED error 뜬다.
                 .sessionRegistry(sessionRegistry())
                 .maxSessionsPreventsLogin(
-                    true) // true : 먼저 사용 중인 사용자의 세션이 유지되며, 새로 접속 한 사람은 로그인이 되지 않음
-                .expiredSessionStrategy(securitySessionExpiredStrategy)) //Session 만료됐을 때 가져갈 전략 설정
+                    true) // true : 먼저 사용 중인 사용자의 세션이 유지되며, 새로 접속 한 사람은 로그인이 되지 않음. false: it expires the oldest session
+                .expiredSessionStrategy(securitySessionExpiredStrategy) //Session 만료됐을 때 가져갈 전략 설정
 //                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // This is the default, but just to be explicit
+                .and()
+                .invalidSessionUrl("/login") //Specifies the URL to redirect to if the session is invalid.
+                .sessionAuthenticationErrorUrl("/login") //Specifies the URL to redirect to if an authentication error occurs due to maximum sessions.
+            )
             .authorizeRequests(f -> f
                     .antMatchers("/login").permitAll()
                     .antMatchers("/register").permitAll()
