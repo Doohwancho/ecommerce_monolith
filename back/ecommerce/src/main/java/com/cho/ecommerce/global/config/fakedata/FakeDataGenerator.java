@@ -26,6 +26,7 @@ import com.cho.ecommerce.domain.product.repository.OptionVariationRepository;
 import com.cho.ecommerce.domain.product.repository.ProductItemRepository;
 import com.cho.ecommerce.domain.product.repository.ProductOptionVariationRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import net.datafaker.Faker;
+import org.hibernate.dialect.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -96,6 +98,7 @@ public class FakeDataGenerator {
             admin.setUpdated(LocalDateTime.now());
             admin.setRole("ROLE_ADMIN");
             admin.setEnabled(true);
+            admin.setFailedAttempt(0);
             
             UserEntity savedUserEntity = userRepository.save(admin);
             
@@ -126,6 +129,7 @@ public class FakeDataGenerator {
             user.setUpdated(LocalDateTime.now());
             user.setRole("ROLE_USER");
             user.setEnabled(true);
+            user.setFailedAttempt(0);
             
             UserEntity savedUserEntity = userRepository.save(user);
             
@@ -142,27 +146,38 @@ public class FakeDataGenerator {
         }
     }
     
-    
     public UserEntity generateRandomROLE_USER() {
         
         if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
             UserEntity user = new UserEntity();
-            user.setUsername(faker.internet().uuid());
-            user.setName(faker.name().fullName());
-            user.setEmail(faker.internet().emailAddress());
+            String userName = sizeTrimmer(faker.funnyName().toString(), DatabaseConstants.MEMBER_USERNAME_SIZE);
+            String name = sizeTrimmer(faker.name().fullName(), DatabaseConstants.MEMBER_NAME_SIZE);
+            String email = sizeTrimmer(faker.internet().emailAddress(), DatabaseConstants.EMAIL_SIZE);
+            
+            user.setUsername(userName);
+            user.setName(name);
+            user.setEmail(email);
             user.setPassword(passwordEncoder.encode("password"));
             user.setCreated(LocalDateTime.now());
             user.setUpdated(LocalDateTime.now());
             user.setRole("ROLE_USER");
             user.setEnabled(true);
+            user.setFailedAttempt(0);
             
             AddressEntity address = new AddressEntity();
             address.setUser(user);
-            address.setStreet(faker.address().streetAddress());
-            address.setCity(faker.address().city());
-            address.setState(faker.address().state());
-            address.setCountry(faker.address().country());
-            address.setZipCode(faker.address().zipCode());
+            
+            String streetAddress = sizeTrimmer(faker.address().streetAddress(), DatabaseConstants.STREET_SIZE);
+            String city = sizeTrimmer(faker.address().city(), DatabaseConstants.CITY_SIZE);
+            String state = sizeTrimmer(faker.address().state(), DatabaseConstants.STATE_SIZE);
+            String country = sizeTrimmer(faker.address().country(), DatabaseConstants.COUNTRY_SIZE);
+            String zipCode = sizeTrimmer(faker.address().zipCode(), DatabaseConstants.ZIPCODE_SIZE);
+            
+            address.setStreet(streetAddress);
+            address.setCity(city);
+            address.setState(state);
+            address.setCountry(country);
+            address.setZipCode(zipCode);
             
             user.setAddress(address);
             
@@ -203,14 +218,19 @@ public class FakeDataGenerator {
         // Generate categories
         for (int i = 0; i < numberOfFakeCategories; i++) {
             CategoryEntity category = new CategoryEntity();
-            category.setCategoryCode(faker.code().asin());
-            category.setName(faker.commerce().department());
+            String categoryCode = sizeTrimmer(faker.code().asin(), DatabaseConstants.CATEGORY_CODE_SIZE);
+            String categoryName = sizeTrimmer(faker.commerce().department(), DatabaseConstants.CATEGORY_NAME_SIZE);
+            
+            category.setCategoryCode(categoryCode);
+            category.setName(categoryName);
             
             // Generate options for each category
             Set<OptionEntity> options = new HashSet<>();
             for (int j = 0; j < numberOfFakeOptions; j++) {
                 OptionEntity option = new OptionEntity();
-                option.setValue(faker.commerce().material());
+                String optionValue = sizeTrimmer(faker.commerce().material(), DatabaseConstants.OPTION_VALUE_SIZE);
+                
+                option.setValue(optionValue);
                 option.setCategory(category);
                 option.setOptionVariations(new ArrayList<>());
                 optionRepository.save(option);
@@ -219,8 +239,12 @@ public class FakeDataGenerator {
                 // Generate option variations for each option
                 for (int k = 0; k < numberOfFakeOptionsVariations; k++) {
                     OptionVariationEntity optionVariation = new OptionVariationEntity();
-                    optionVariation.setValue(faker.color().name());
+                    
+                    String optionVariationValue = sizeTrimmer(faker.color().name(), DatabaseConstants.OPTION_VARIATION_VALUE_SIZE);
+                    
+                    optionVariation.setValue(optionVariationValue);
                     optionVariation.setOption(option);
+                    
                     optionVariationRepository.save(optionVariation);
                     
                     option.getOptionVariations().add(optionVariation);
@@ -238,10 +262,16 @@ public class FakeDataGenerator {
         for (int i = 0; i < numberOfFakeProducts; i++) { //카테고리수가 10개니까, 1000개가 max
             //step1) create product
             ProductEntity product = new ProductEntity();
-            product.setName(faker.commerce().productName());
-            product.setDescription(faker.lorem().sentence());
-            product.setRating(faker.number().randomDouble(1, 1, 5));
-            product.setRatingCount(faker.number().numberBetween(1, 1000));
+            
+            String productName = sizeTrimmer(faker.commerce().productName(), DatabaseConstants.PRODUCT_NAME_SIZE);
+            String productDescription = sizeTrimmer(faker.lorem().sentence(), DatabaseConstants.PRODUCT_DESCRIPTION_SIZE);
+            Double productRating = faker.number().randomDouble(1, 1, 5);
+            Integer productRatingCount =faker.number().numberBetween(1, 1000);
+            
+            product.setName(productName);
+            product.setDescription(productDescription);
+            product.setRating(productRating);
+            product.setRatingCount(productRatingCount);
             
             //step2) get category for the product
             int index = i % numberOfFakeCategories;
@@ -271,9 +301,13 @@ public class FakeDataGenerator {
             for (int j = 0; j < numberOfFakeProductItems; j++) {
                 ProductItemEntity productItem = new ProductItemEntity();
                 
-                productItem.setQuantity(faker.number().numberBetween(1, 100));
-                productItem.setPrice(faker.number().randomDouble(2, 1, 10000));
+                Integer productItemQuantity = faker.number().numberBetween(1, 100);
+                Double productItemPrice = faker.number().randomDouble(2, 1, 10000);
+                
+                productItem.setQuantity(productItemQuantity);
+                productItem.setPrice(productItemPrice);
                 productItem.setProduct(product);
+                
                 ProductItemEntity savedProductItem = productItemRepository.save(productItem);
                 productItems.add(productItem);
                 
@@ -354,4 +388,11 @@ public class FakeDataGenerator {
         }
     }
     
+    public String sizeTrimmer(String str, int size){
+        int len = str.length();
+        if(len >= size) {
+            return str.substring(len-size, len-1);
+        }
+        return str;
+    }
 }

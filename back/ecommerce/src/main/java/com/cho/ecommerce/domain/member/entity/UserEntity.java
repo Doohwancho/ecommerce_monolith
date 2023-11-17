@@ -2,6 +2,7 @@ package com.cho.ecommerce.domain.member.entity;
 
 
 import com.cho.ecommerce.domain.order.entity.OrderEntity;
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -50,15 +51,18 @@ public class UserEntity implements
     private Long memberId;
     
     @NotBlank(message = "Username is required")
-    @Column(unique = true, name = "USER_ID")
+//    @Column(unique = true) //TODO - datafaker는 unique기능 제공 안하니 일단 꺼두자
+    @Column(name = "USER_ID", length = DatabaseConstants.MEMBER_USERNAME_SIZE) //MYSQL의 utf8mb4은 최대 764byte(== 191 * 4) 까지 저장 가능
     private String username;
     
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email is required")
-    @Column(unique = true)
+//    @Column(unique = true) //datafaker는 unique기능 제공 안하니 일단 꺼두자
+    @Column(length = DatabaseConstants.EMAIL_SIZE) //MYSQL의 utf8mb4은 최대 764byte(== 191 * 4) 까지 저장 가능
     private String email;
     
     @NotBlank(message = "Name is required")
+    @Column(length = DatabaseConstants.MEMBER_NAME_SIZE)
     private String name;
     
 //    private String picUrl; //TODO 1 - user picture?
@@ -70,13 +74,17 @@ public class UserEntity implements
     
     @NotBlank(message = "Password is required")
     @JsonIgnore
+    @Column(length = DatabaseConstants.PASSWORD_SIZE)
     //prevent the password from being included when the object is serialized into JSON format
     private String password;
     
     @NotBlank(message = "Role is required")
+    @Column(length = DatabaseConstants.ROLE_SIZE)
     private String role;
     
     private boolean enabled; //attribute is a flag to indicate the user's status. If enabled is true, the user can log in. If enabled is false, the user cannot log in. This is useful in scenarios where you might want to temporarily (or permanently) deactivate a user's account without deleting it.
+    
+    private Integer failedAttempt;
     
     @JsonIgnore //for error - "Could not write JSON: (was java.lang.NullPointerException)"
     @NotEmpty(message = "User must have at least one authority")

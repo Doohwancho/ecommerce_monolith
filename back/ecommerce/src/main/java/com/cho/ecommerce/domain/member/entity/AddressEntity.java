@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.member.entity;
 
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,18 +29,23 @@ public class AddressEntity implements Serializable {
     private Long addressId;
     
     @NotBlank(message = "Street is required")
+    @Column(length = DatabaseConstants.STREET_SIZE)
     private String street;
     
     @NotBlank(message = "City is required")
+    @Column(length = DatabaseConstants.CITY_SIZE)
     private String city;
     
     @NotBlank(message = "State is required")
+    @Column(length = DatabaseConstants.STATE_SIZE)
     private String state;
     
     @NotBlank(message = "Country is required")
+    @Column(length = DatabaseConstants.COUNTRY_SIZE)
     private String country;
     
     @NotBlank(message = "Zip code is required")
+    @Column(length = DatabaseConstants.ZIPCODE_SIZE)
     private String zipCode;
     
     @NotNull

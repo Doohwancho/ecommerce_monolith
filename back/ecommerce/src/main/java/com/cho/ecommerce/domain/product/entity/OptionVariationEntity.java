@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.product.entity;
 
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,7 +28,7 @@ public class OptionVariationEntity {
     private Long optionVariationId;
     
     @NotBlank(message = "Value is required")
-    @Column(name = "VALUE")
+    @Column(name = "VALUE", length = DatabaseConstants.OPTION_VARIATION_VALUE_SIZE)
     private String value;
     
     @NotNull(message = "Option is required")

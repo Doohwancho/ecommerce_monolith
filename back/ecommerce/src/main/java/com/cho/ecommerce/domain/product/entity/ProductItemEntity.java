@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.product.entity;
 
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -30,11 +31,11 @@ public class ProductItemEntity {
     private Long productItemId;
     
     @NotNull(message = "Quantity is required")
-    @Column(name = "QUANTITY")
+    @Column(name = "QUANTITY", length = DatabaseConstants.PRODUCT_ITEM_QUANTITY_SIZE)
     private Integer quantity;
     
     @NotNull(message = "Price is required")
-    @Column(name = "PRICE")
+    @Column(name = "PRICE", length = DatabaseConstants.PRODUCT_ITEM_PRICE_SIZE)
     private Double price;
     
     @NotNull(message = "Product is required")

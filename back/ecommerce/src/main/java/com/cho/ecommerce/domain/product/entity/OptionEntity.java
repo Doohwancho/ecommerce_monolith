@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.product.entity;
 
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "`OPTION`")
+@Table(name = "`OPTION`") //mysql에 OPTION 이름의 테이블 생성 불가라 `OPTION`으로 적었지만, h2에서는 "OPTION"으로 생성되어 문제가 생긴다.
 @Getter
 @Setter
 public class OptionEntity {
@@ -28,7 +29,7 @@ public class OptionEntity {
     private Long optionId;
     
     @NotBlank(message = "Value is required")
-    @Column(name = "VALUE")
+    @Column(name = "VALUE", length = DatabaseConstants.OPTION_VALUE_SIZE)
     private String value;
     
     @NotNull(message = "Category is required")

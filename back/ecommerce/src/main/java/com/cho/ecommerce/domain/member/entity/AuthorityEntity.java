@@ -1,6 +1,7 @@
 package com.cho.ecommerce.domain.member.entity;
 
 
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,6 +37,7 @@ public class AuthorityEntity implements GrantedAuthority {
     private Long id;
     
     @NotBlank(message = "Authority is required")
+    @Column(length = DatabaseConstants.AUTHORITY_SIZE)
     private String authority;
     
     public AuthorityEntity(String authority) {

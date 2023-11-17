@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.product.entity;
 
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,19 +29,19 @@ public class ProductEntity {
     private Long productId;
     
     @NotBlank(message = "Name is required")
-    @Column(name = "NAME")
+    @Column(name = "NAME", length = DatabaseConstants.PRODUCT_NAME_SIZE)
     private String name;
     
     @NotBlank(message = "Description is required")
-    @Column(name = "DESCRIPTION")
+    @Column(name = "DESCRIPTION", length = DatabaseConstants.PRODUCT_DESCRIPTION_SIZE)
     private String description;
     
     @NotBlank(message = "rating is required")
-    @Column(name = "RATING")
+    @Column(name = "RATING", length = DatabaseConstants.PRODUCT_RATING_SIZE)
     private Double rating;
     
     @NotBlank(message = "rating count is required")
-    @Column(name = "RATING_COUNT")
+    @Column(name = "RATING_COUNT", length = DatabaseConstants.PRODUCT_RATING_COUNT_SIZE)
     private Integer ratingCount;
     
     @NotNull(message = "Category is required")

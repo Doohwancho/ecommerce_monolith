@@ -1,6 +1,7 @@
 package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.domain.product.domain.DiscountType;
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.time.OffsetDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,11 +30,11 @@ public class DiscountEntity {
     
     @NotNull(message = "Discount type is required")
     @Enumerated(EnumType.STRING) //String 형태로 "Percentage", "Flat Rate"로 저장된다.
-    @Column(name = "DISCOUNT_TYPE", nullable = false)
+    @Column(name = "DISCOUNT_TYPE", length = DatabaseConstants.DISCOUNT_TYPE_SIZE, nullable = false)
     private DiscountType discountType;
     
     @NotNull(message = "Discount value is required")
-    @Column(name = "DISCOUNT_VALUE", nullable = false, precision = 10, scale = 2)
+    @Column(name = "DISCOUNT_VALUE", length = DatabaseConstants.DISCOUNT_VALUE_SIZE, nullable = false, precision = 10, scale = 2)
     private Double discountValue;
     
     @NotNull(message = "Start date is required")

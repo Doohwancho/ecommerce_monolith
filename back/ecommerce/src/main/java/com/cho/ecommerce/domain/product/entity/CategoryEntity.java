@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.product.entity;
 
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,11 +26,11 @@ public class CategoryEntity {
     private Long categoryId;
     
     @NotBlank(message = "Category code is required")
-    @Column(name = "CATEGORY_CODE")
+    @Column(name = "CATEGORY_CODE", length = DatabaseConstants.CATEGORY_CODE_SIZE)
     private String categoryCode;
     
     @NotBlank(message = "Name is required")
-    @Column(name = "NAME")
+    @Column(name = "NAME", length = DatabaseConstants.CATEGORY_NAME_SIZE)
     private String name;
     
     @NotEmpty(message = "Category must have at least one option")
