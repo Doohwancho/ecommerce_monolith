@@ -51,13 +51,11 @@ public class UserEntity implements
     private Long memberId;
     
     @NotBlank(message = "Username is required")
-//    @Column(unique = true) //TODO - datafaker는 unique기능 제공 안하니 일단 꺼두자
-    @Column(name = "USER_ID", length = DatabaseConstants.MEMBER_USERNAME_SIZE) //MYSQL의 utf8mb4은 최대 764byte(== 191 * 4) 까지 저장 가능
+    @Column(name = "USER_ID", length = DatabaseConstants.MEMBER_USERNAME_SIZE, unique = true) //MYSQL의 utf8mb4은 최대 764byte(== 191 * 4) 까지 저장 가능
     private String username;
     
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email is required")
-//    @Column(unique = true) //datafaker는 unique기능 제공 안하니 일단 꺼두자
     @Column(length = DatabaseConstants.EMAIL_SIZE) //MYSQL의 utf8mb4은 최대 764byte(== 191 * 4) 까지 저장 가능
     private String email;
     

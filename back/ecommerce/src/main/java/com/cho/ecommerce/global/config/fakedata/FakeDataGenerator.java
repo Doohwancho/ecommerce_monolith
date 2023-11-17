@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -150,7 +151,7 @@ public class FakeDataGenerator {
         
         if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
             UserEntity user = new UserEntity();
-            String userName = sizeTrimmer(faker.funnyName().toString(), DatabaseConstants.MEMBER_USERNAME_SIZE);
+            String userName = sizeTrimmer(UUID.randomUUID().toString(), DatabaseConstants.MEMBER_USERNAME_SIZE); //use UUID to avoid duplicate of userId
             String name = sizeTrimmer(faker.name().fullName(), DatabaseConstants.MEMBER_NAME_SIZE);
             String email = sizeTrimmer(faker.internet().emailAddress(), DatabaseConstants.EMAIL_SIZE);
             
