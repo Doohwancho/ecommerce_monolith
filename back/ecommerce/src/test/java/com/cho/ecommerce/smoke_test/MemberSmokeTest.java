@@ -46,6 +46,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.session.Session;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -78,6 +80,8 @@ class MemberSmokeTest<S extends Session> {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     
+    @Autowired
+    private SessionRegistry sessionRegistry;
     @Autowired
     private EntityManager entityManager;
     
@@ -303,12 +307,16 @@ class MemberSmokeTest<S extends Session> {
         }
     
         //then
-        //check account is locked
+        //1. check account is locked
         entityManager.refresh(user);
         assertFalse(user.getEnabled());
     
-        //check user authentication fails because the account is locked
-        log.info("여기에오~!~! step3");
+        //2. Check if user sessions are invalidated
+        List<SessionInformation> sessions = sessionRegistry.getAllSessions(user, false);
+        assertTrue(sessions.isEmpty(), "User sessions should be empty after account lock");
+    
+    
+        //3. check user authentication fails because the account is locked
         ResponseEntity<String> loginResponseThatShouldFail= restTemplate.postForEntity(
             "http://localhost:" + port + "/login",
             createHeaders(user.getUsername(), "password"),
