@@ -16,7 +16,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private EntityManager em;
     
     @Override
-    public Optional<UserEntity> findByUsername(String username) {
+    public Optional<UserEntity> findUserDetailsByUsername(String username) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         
         QUserEntity user = QUserEntity.userEntity;

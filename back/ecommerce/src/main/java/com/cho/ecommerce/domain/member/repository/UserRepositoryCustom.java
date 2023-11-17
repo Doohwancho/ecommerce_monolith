@@ -4,6 +4,6 @@ import com.cho.ecommerce.domain.member.entity.UserEntity;
 import java.util.Optional;
 
 public interface UserRepositoryCustom {
-    Optional<UserEntity> findByUsername(String username);
+    Optional<UserEntity> findUserDetailsByUsername(String username);
 
 }

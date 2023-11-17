@@ -1,6 +1,7 @@
 package com.cho.ecommerce.smoke_test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,6 +10,7 @@ import com.cho.ecommerce.Application;
 import com.cho.ecommerce.api.domain.RegisterPostDTO;
 import com.cho.ecommerce.api.domain.RegisterPostDTOAddress;
 import com.cho.ecommerce.api.domain.RegisterResponseDTO;
+import com.cho.ecommerce.domain.member.domain.User;
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.domain.member.service.AuthorityService;
@@ -20,6 +22,8 @@ import com.cho.ecommerce.global.error.ErrorCode;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,6 +77,9 @@ class MemberSmokeTest<S extends Session> {
     
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    
+    @Autowired
+    private EntityManager entityManager;
     
     @LocalServerPort
     private int port;
@@ -278,4 +285,39 @@ class MemberSmokeTest<S extends Session> {
         assertEquals("Registration successful", response.getBody().getMessage());
     }
     
+    @Transactional
+    @Test
+    void failedLoginAttemptsFiveTimesShouldLockUserAccount() {
+        //given
+        UserEntity user = userRepository.findById(4L).get();
+        assertTrue(user.getEnabled());
+    
+        //when
+        //5 times of failed login attempt with wrong password
+        for(int i = 0; i < 5; i++) {
+            ResponseEntity<String> loginResponse = restTemplate.postForEntity(
+                "http://localhost:" + port + "/login",
+                createHeaders(user.getUsername(), "wrong-password-asdfasdfasdfsadg"),
+                String.class
+            );
+        }
+    
+        //then
+        //check account is locked
+        entityManager.refresh(user);
+        assertFalse(user.getEnabled());
+    
+        //check user authentication fails because the account is locked
+        log.info("여기에오~!~! step3");
+        ResponseEntity<String> loginResponseThatShouldFail= restTemplate.postForEntity(
+            "http://localhost:" + port + "/login",
+            createHeaders(user.getUsername(), "password"),
+            String.class
+        );
+        
+        // Check that we are redirected to the login page with the 'logout' parameter
+        assertEquals(HttpStatus.FOUND, loginResponseThatShouldFail.getStatusCode());
+        String location = loginResponseThatShouldFail.getHeaders().getLocation().toString();
+        assertEquals("http://localhost:" + port + "/login", location);
+    }
 }

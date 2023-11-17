@@ -19,7 +19,8 @@ public enum ErrorCode {
     EMAIL_DUPLICATION(400, "M001", "Email is Duplication"),
     LOGIN_INPUT_INVALID(400, "M002", "Login input is invalid"),
     USER_ALREADY_EXIST(400, "M003", "User already exists"),
-    LOCKED_USER_FAILED_TO_AUTHENTICATE(403, "M004", "locked account user tried to authenticate and failed")
+    LOCKED_USER_FAILED_TO_AUTHENTICATE(403, "M004", "locked account user tried to authenticate and failed"),
+    INVALIDATING_SESSION_FOR_USER(500, "M005", "Error invalidating sessions for user")
     
     // Coupon
 //    COUPON_ALREADY_USE(400, "CO001", "Coupon was already used"),
