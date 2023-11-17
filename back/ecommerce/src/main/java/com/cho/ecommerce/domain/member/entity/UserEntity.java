@@ -82,6 +82,7 @@ public class UserEntity implements
     
     private boolean enabled; //attribute is a flag to indicate the user's status. If enabled is true, the user can log in. If enabled is false, the user cannot log in. This is useful in scenarios where you might want to temporarily (or permanently) deactivate a user's account without deleting it.
     
+    @NotBlank(message = "failedAttempt is required")
     private Integer failedAttempt;
     
     @JsonIgnore //for error - "Could not write JSON: (was java.lang.NullPointerException)"

@@ -19,6 +19,7 @@ public class User {
     private Address address;
     private String role;
     private Boolean enabled;
+    private Integer failedAttempt;
     private OffsetDateTime created;
     private OffsetDateTime updated;
     private List<String> authorities;
@@ -31,6 +32,7 @@ public class User {
         this.address = builder.address;
         this.role = builder.role;
         this.enabled = builder.enabled;
+        this.failedAttempt = builder.failedAttempt;
         this.created = builder.created;
         this.updated = builder.updated;
         this.authorities = builder.authorities;
@@ -47,6 +49,7 @@ public class User {
         private Address address;
         private String role;
         private Boolean enabled;
+        private Integer failedAttempt;
         private OffsetDateTime created;
         private OffsetDateTime updated;
         private List<String> authorities;
@@ -87,6 +90,11 @@ public class User {
         
         public Builder enabled(Boolean enabled) {
             this.enabled = enabled;
+            return this;
+        }
+        
+        public Builder failedAttempt(Integer failedAttempt) {
+            this.failedAttempt = failedAttempt;
             return this;
         }
         

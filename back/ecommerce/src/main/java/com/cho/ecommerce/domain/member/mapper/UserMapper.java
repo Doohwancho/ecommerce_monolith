@@ -69,6 +69,7 @@ public class UserMapper {
         user.setAddress(toAddress(userEntity.getAddress()));
         user.setRole(userEntity.getRole());
         user.setEnabled(userEntity.isEnabled());
+        user.setFailedAttempt(userEntity.getFailedAttempt());
         user.setCreated(convertToLocalDateTimeViaInstant(userEntity.getCreated()));
         user.setUpdated(convertToLocalDateTimeViaInstant(userEntity.getUpdated()));
         user.setAuthorities(userEntity.getUserAuthorities().stream()
