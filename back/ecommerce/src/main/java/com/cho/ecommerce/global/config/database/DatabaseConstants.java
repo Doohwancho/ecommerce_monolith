@@ -10,6 +10,7 @@ public enum DatabaseConstants {
     public static final int PASSWORD_SIZE = 255;
     public static final int ROLE_SIZE = 20;
     
+    
     //AddressEntity.java
     public static final int STREET_SIZE = 255;
     public static final int CITY_SIZE = 100;

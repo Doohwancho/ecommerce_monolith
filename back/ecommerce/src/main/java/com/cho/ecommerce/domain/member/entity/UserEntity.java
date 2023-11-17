@@ -3,6 +3,7 @@ package com.cho.ecommerce.domain.member.entity;
 
 import com.cho.ecommerce.domain.order.entity.OrderEntity;
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
+import com.cho.ecommerce.global.config.security.SecurityConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -23,6 +24,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -82,6 +85,8 @@ public class UserEntity implements
     
     private boolean enabled; //attribute is a flag to indicate the user's status. If enabled is true, the user can log in. If enabled is false, the user cannot log in. This is useful in scenarios where you might want to temporarily (or permanently) deactivate a user's account without deleting it.
     
+    @Min(0)
+    @Max(SecurityConstants.MAX_LOGIN_ATTEMPTS + 1)
     @NotBlank(message = "failedAttempt is required")
     private Integer failedAttempt;
     

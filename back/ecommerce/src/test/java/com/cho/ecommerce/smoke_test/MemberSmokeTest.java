@@ -14,8 +14,10 @@ import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.domain.member.service.AuthorityService;
 import com.cho.ecommerce.domain.member.service.UserAuthorityService;
 import com.cho.ecommerce.domain.member.service.UserService;
+import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import com.cho.ecommerce.global.config.redis.RedisConfig;
+import com.cho.ecommerce.global.config.security.SecurityConstants;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.EntityManager;
@@ -289,6 +291,7 @@ class MemberSmokeTest<S extends Session> {
     @Test
     void failedLoginAttemptsFiveTimesShouldLockUserAccount() {
         //given
+        //유저 정보를 가져온다.
         UserEntity user = userRepository.findById(4L).get();
         assertTrue(user.getEnabled());
         
@@ -307,7 +310,7 @@ class MemberSmokeTest<S extends Session> {
         
         //when
         //5 times of failed login attempt with wrong password
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < SecurityConstants.MAX_LOGIN_ATTEMPTS; i++) {
             ResponseEntity<String> loginResponse = restTemplate.postForEntity(
                 "http://localhost:" + port + "/login",
                 createHeaders(user.getUsername(), "wrong-password-asdfasdfasdfsadg"),
@@ -331,7 +334,7 @@ class MemberSmokeTest<S extends Session> {
             String.class
         );
         
-        // Check that we are redirected to the login page with the 'logout' parameter
+        // Check that we are redirected to the login page
         assertEquals(HttpStatus.FOUND, loginResponseThatShouldFail.getStatusCode());
         String location = loginResponseThatShouldFail.getHeaders().getLocation().toString();
         assertEquals("http://localhost:" + port + "/login", location);
