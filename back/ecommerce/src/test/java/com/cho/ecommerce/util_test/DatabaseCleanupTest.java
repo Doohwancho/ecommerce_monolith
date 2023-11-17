@@ -24,7 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 //@DataJpaTest
 @ContextConfiguration(classes = {Application.class})
-@ActiveProfiles("test")
+@ActiveProfiles("local")
 @Tag("util") //to run, type "mvn test -Dgroups=smoke"
 @Transactional
 class DatabaseCleanupTest {

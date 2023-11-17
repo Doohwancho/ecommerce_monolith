@@ -2,6 +2,7 @@ package com.cho.ecommerce.smoke_test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cho.ecommerce.Application;
@@ -15,6 +16,8 @@ import com.cho.ecommerce.domain.member.service.UserAuthorityService;
 import com.cho.ecommerce.domain.member.service.UserService;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import com.cho.ecommerce.global.config.redis.RedisConfig;
+import com.cho.ecommerce.global.error.ErrorCode;
+import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import net.datafaker.Faker;
@@ -49,7 +52,7 @@ import org.springframework.util.MultiValueMap;
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {Application.class, RedisConfig.class})
-@ActiveProfiles("test")
+@ActiveProfiles("local")
 @Tag("smoke") //to run, type "mvn test -Dgroups=smoke"
 class MemberSmokeTest<S extends Session> {
     
@@ -122,7 +125,7 @@ class MemberSmokeTest<S extends Session> {
         assertTrue(response.getHeaders().containsKey("Location"));
         String location = response.getHeaders().getFirst("Location");
         assertNotNull(location);
-        assertTrue(location.endsWith("/login?error"));
+        assertTrue(location.endsWith("/login"));
     }
     
     @Test
@@ -163,7 +166,7 @@ class MemberSmokeTest<S extends Session> {
         assertTrue(response.getHeaders().containsKey("Location"));
         String location = response.getHeaders().getFirst("Location");
         assertNotNull(location);
-        assertTrue(location.endsWith("/login?error"));
+        assertTrue(location.endsWith("/login"));
     }
     
     @Test

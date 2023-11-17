@@ -55,8 +55,8 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                 .expiredSessionStrategy(securitySessionExpiredStrategy) //Session 만료됐을 때 가져갈 전략 설정
 //                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // This is the default, but just to be explicit
                 .and()
-                .invalidSessionUrl("/login") //Specifies the URL to redirect to if the session is invalid.
                 .sessionAuthenticationErrorUrl("/login") //Specifies the URL to redirect to if an authentication error occurs due to maximum sessions.
+//                .invalidSessionUrl("/login") //fix error: redirect를 20번 이상해서 주석처리 했음. Specifies the URL to redirect to if the session is invalid.
             )
             .authorizeRequests(f -> f
                     .antMatchers("/login").permitAll()
@@ -74,7 +74,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                     .passwordParameter("password")
                     .defaultSuccessUrl("/", true)
                     .successHandler(formSuccessHandler)
-//                .failureHandler(formFailureHandler)
+                    .failureHandler(formFailureHandler)
             )
             .logout(logout -> logout
                 .logoutUrl("/logout") // URL to trigger logout

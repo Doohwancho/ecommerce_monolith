@@ -40,7 +40,7 @@ import org.springframework.util.MultiValueMap;
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {Application.class})
-@ActiveProfiles("test")
+@ActiveProfiles("local")
 @Tag("integration") //to run, type "mvn test -Dgroups=integration"
 class MemberIntegrationTest {
     

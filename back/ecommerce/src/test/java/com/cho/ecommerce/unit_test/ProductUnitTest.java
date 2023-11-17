@@ -20,7 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = {Application.class})
-@ActiveProfiles("test")
+@ActiveProfiles("local")
 @Tag("unit") //to run, type "mvn test -Dgroups=integration"
 class ProductUnitTest {
     

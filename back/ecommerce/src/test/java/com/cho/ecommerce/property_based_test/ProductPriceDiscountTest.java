@@ -25,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 @PropertyDefaults(tries = 100)
 @SpringBootTest
 @ContextConfiguration(classes = {Application.class})
-@ActiveProfiles("test")
+@ActiveProfiles("local")
 @Tag("pbt") //to run, type "mvn test -Dgroups=pbt"
 public class ProductPriceDiscountTest {
     
