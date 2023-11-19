@@ -88,62 +88,70 @@ public class FakeDataGenerator {
     @Transactional
     public void createFakeAdmin() {
         if (authorityRepository.findByAuthority("ROLE_ADMIN").isPresent()) {
-            
-            //step1) save user "admin"
-            UserEntity admin = new UserEntity();
-            admin.setUsername("admin");
-            admin.setName("admin");
-            admin.setEmail("admin@admin.com");
-            admin.setPassword(passwordEncoder.encode("admin"));
-            admin.setCreated(LocalDateTime.now());
-            admin.setUpdated(LocalDateTime.now());
-            admin.setRole("ROLE_ADMIN");
-            admin.setEnabled(true);
-            admin.setFailedAttempt(0);
-            
-            UserEntity savedUserEntity = userRepository.save(admin);
-            
-            //step2) save AuthorityEntity "ROLE_ADMIN"
-            AuthorityEntity userRole = authorityRepository.findByAuthority(
-                    AuthorityEntity.ROLE_ADMIN)
-                .orElseThrow(() -> new RuntimeException("ROLE_ADMIN not found"));
-            
-            UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
-            userAuthorityEntity.setUserEntity(savedUserEntity);
-            userAuthorityEntity.setAuthorityEntity(userRole);
-            
-            userAuthorityRepository.save(userAuthorityEntity);
+    
+            UserEntity existingAdmin = userRepository.findByUsername("admin");
+    
+            if (existingAdmin == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
+                //step1) save user "admin"
+                UserEntity admin = new UserEntity();
+                admin.setUsername("admin");
+                admin.setName("admin");
+                admin.setEmail("admin@admin.com");
+                admin.setPassword(passwordEncoder.encode("admin"));
+                admin.setCreated(LocalDateTime.now());
+                admin.setUpdated(LocalDateTime.now());
+                admin.setRole("ROLE_ADMIN");
+                admin.setEnabled(true);
+                admin.setFailedAttempt(0);
+    
+                UserEntity savedUserEntity = userRepository.save(admin);
+    
+                //step2) save AuthorityEntity "ROLE_ADMIN"
+                AuthorityEntity userRole = authorityRepository.findByAuthority(
+                        AuthorityEntity.ROLE_ADMIN)
+                    .orElseThrow(() -> new RuntimeException("ROLE_ADMIN not found"));
+    
+                UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
+                userAuthorityEntity.setUserEntity(savedUserEntity);
+                userAuthorityEntity.setAuthorityEntity(userRole);
+    
+                userAuthorityRepository.save(userAuthorityEntity);
+            }
         }
     }
     
     @Transactional
     public void createFakeUser() {
         if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
-            
-            //step1) save user "admin"
-            UserEntity user = new UserEntity();
-            user.setUsername("testUser");
-            user.setName("testUser");
-            user.setEmail("testUser@testUser.com");
-            user.setPassword(passwordEncoder.encode("password"));
-            user.setCreated(LocalDateTime.now());
-            user.setUpdated(LocalDateTime.now());
-            user.setRole("ROLE_USER");
-            user.setEnabled(true);
-            user.setFailedAttempt(0);
-            
-            UserEntity savedUserEntity = userRepository.save(user);
-            
-            //step2) save AuthorityEntity "ROLE_ADMIN"
-            AuthorityEntity userRole = authorityRepository.findByAuthority(
-                    AuthorityEntity.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
-            
-            UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
-            userAuthorityEntity.setUserEntity(savedUserEntity);
-            userAuthorityEntity.setAuthorityEntity(userRole);
-            
-            userAuthorityRepository.save(userAuthorityEntity);
+    
+            UserEntity existingAdmin = userRepository.findByUsername("testUser");
+    
+            if (existingAdmin == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
+                //step1) save user "testUser"
+                UserEntity user = new UserEntity();
+                user.setUsername("testUser");
+                user.setName("testUser");
+                user.setEmail("testUser@testUser.com");
+                user.setPassword(passwordEncoder.encode("password"));
+                user.setCreated(LocalDateTime.now());
+                user.setUpdated(LocalDateTime.now());
+                user.setRole("ROLE_USER");
+                user.setEnabled(true);
+                user.setFailedAttempt(0);
+    
+                UserEntity savedUserEntity = userRepository.save(user);
+    
+                //step2) save AuthorityEntity "ROLE_USER"
+                AuthorityEntity userRole = authorityRepository.findByAuthority(
+                        AuthorityEntity.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
+    
+                UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
+                userAuthorityEntity.setUserEntity(savedUserEntity);
+                userAuthorityEntity.setAuthorityEntity(userRole);
+    
+                userAuthorityRepository.save(userAuthorityEntity);
+            }
         }
     }
     

@@ -24,6 +24,10 @@ spring:
 #      generate_statistics: true
       open-in-view: false
       default_batch_fetch_size: 1000
+  batch:
+    initialize-schema: always
+    job:
+      enabled: true
   redis:
     host: localhost #for local development
 #    host: redis #for docker
