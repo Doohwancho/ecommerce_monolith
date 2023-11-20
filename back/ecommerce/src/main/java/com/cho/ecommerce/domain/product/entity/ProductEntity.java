@@ -2,6 +2,7 @@ package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -50,8 +51,7 @@ public class ProductEntity {
     private CategoryEntity category;
     
 //    @NotEmpty(message = "Product must have at least one item") //product may not have product-items
-    @OneToMany(mappedBy = "product")
+//    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductItemEntity> productItems;
-    
-    // getters, setters, and other methods
 }

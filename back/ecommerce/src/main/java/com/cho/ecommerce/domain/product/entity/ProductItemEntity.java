@@ -44,7 +44,7 @@ public class ProductItemEntity {
     private ProductEntity product;
     
     @NotEmpty(message = "Product item must have at least one product option variation")
-    @OneToMany(mappedBy = "productItem")
+    @OneToMany(mappedBy = "productItem", cascade = CascadeType.ALL, orphanRemoval = true) //TODO - CascadeType.ALL 말고 뭘 쓸지 고려하기
     private Set<ProductOptionVariationEntity> productOptionVariations;
     
 //    @NotEmpty(message = "Product item must have at least one discount") //product may not have discount

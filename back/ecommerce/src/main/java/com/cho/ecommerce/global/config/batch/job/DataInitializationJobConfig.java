@@ -19,7 +19,12 @@ public class DataInitializationJobConfig {
     private JobDurationListener jobDurationListener;
  
     @Bean
-    public Job dataInitializationJob(Step createAuthoritiesStep, Step createAdminStep, Step createTestUserStep, Step insertUserWithROLE_USERStep) {
+    public Job dataInitializationJob(Step createAuthoritiesStep
+        , Step createAdminStep
+        , Step createTestUserStep
+        , Step insertUserWithROLE_USERStep
+        , Step createCategoriesAndOptionsStep
+        , Step generateFakeProductStep) {
         return jobBuilderFactory.get("data-initialization-job")
             .incrementer(new RunIdIncrementer())
             .listener(jobDurationListener)
@@ -27,6 +32,8 @@ public class DataInitializationJobConfig {
             .next(createAdminStep)
             .next(createTestUserStep)
             .next(insertUserWithROLE_USERStep)
+//            .next(createCategoriesAndOptionsStep)
+            .next(generateFakeProductStep)
             .build();
     }
 
