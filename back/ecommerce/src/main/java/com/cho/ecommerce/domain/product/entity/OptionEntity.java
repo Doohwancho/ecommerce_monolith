@@ -2,6 +2,7 @@ package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,7 +39,7 @@ public class OptionEntity {
     private CategoryEntity category;
     
 //    @NotEmpty(message = "Option must have at least one variation") //option may not have option variations
-    @OneToMany(mappedBy = "option")
+    @OneToMany(mappedBy = "option",  cascade = CascadeType.ALL)
     private List<OptionVariationEntity> optionVariations;
     
     public String getValue() {

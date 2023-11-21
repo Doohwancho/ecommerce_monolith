@@ -2,6 +2,7 @@ package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -34,7 +35,7 @@ public class CategoryEntity {
     private String name;
     
     @NotEmpty(message = "Category must have at least one option")
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private Set<OptionEntity> optionEntities;
     
     @NotEmpty(message = "Category must have at least one product")
