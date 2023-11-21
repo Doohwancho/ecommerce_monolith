@@ -28,7 +28,6 @@ public class Application {
     
     private final Job dataInitializationJob; // SimpleBatch에 firstJob 메서드 명과 이름이 일치해야 한다.
     
-    
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
@@ -42,8 +41,7 @@ public class Application {
                 .toJobParameters();
             try {
                 //여러 배치 잡들을 실행하기
-                jobLauncher.run(dataInitializationJob, parameters); // Launch first job
-//                jobLauncher.run(secondJob, new JobParameters()); // Launch second job
+                jobLauncher.run(dataInitializationJob, parameters);
             } catch (JobExecutionException e) {
                 e.printStackTrace();
             }

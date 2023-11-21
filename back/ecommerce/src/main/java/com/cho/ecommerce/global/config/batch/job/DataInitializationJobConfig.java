@@ -32,7 +32,7 @@ public class DataInitializationJobConfig {
             .next(createAdminStep)
             .next(createTestUserStep)
             .next(insertUserWithROLE_USERStep)
-//            .next(createCategoriesAndOptionsStep)
+//            .next(createCategoriesAndOptionsStep) //generateFakeProductStep에 녹아져있어서 주석처리한다.
             .next(generateFakeProductStep)
             .build();
     }

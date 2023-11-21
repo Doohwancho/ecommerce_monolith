@@ -33,7 +33,6 @@ public class InsertAdminStep {
     private StepBuilderFactory stepBuilderFactory;
     
     
-//    @Transactional
     @Bean
     public Tasklet createAdminTasklet() {
         return (contribution, chunkContext) -> {

@@ -10,7 +10,10 @@ import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import javax.persistence.EntityManager;
 import net.datafaker.Faker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemReader;
@@ -22,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 public class InsertFakeUsersStep {
+    private final Logger log = LoggerFactory.getLogger(InsertFakeUsersStep.class);
     
     @Autowired
     private AuthorityRepository authorityRepository;
@@ -116,22 +120,33 @@ public class InsertFakeUsersStep {
     }
     
     @Bean
-    public ItemWriter<UserEntity> InsertUsersWriter() {
+    public ItemWriter<UserEntity> InsertUsersWriter(EntityManager entityManager) {
         return new ItemWriter<UserEntity>() {
             @Override
-//            @Transactional
             public void write(List<? extends UserEntity> users) {
                 userRepository.saveAll(users);
+//                entityManager.flush(); //오해: Flushing within a transaction does not commit the transaction
             }
         };
     }
     
     @Bean
-    public Step insertUserWithROLE_USERStep(StepBuilderFactory stepBuilderFactory, ItemReader<UserEntity> generateRandomROLE_USERReader, ItemWriter<UserEntity> InsertUsersWriter) {
+    public Step insertUserWithROLE_USERStep(StepBuilderFactory stepBuilderFactory,
+//        PlatformTransactionManager transactionManager,
+        ItemReader<UserEntity> generateRandomROLE_USERReader,
+        ItemWriter<UserEntity> InsertUsersWriter) {
+        
+//        DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
+//        attribute.setIsolationLevel(TransactionDefinition.ISOLATION_REPEATABLE_READ);
+//        attribute.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+//        attribute.setTimeout(30); // 30 seconds
+        
         return stepBuilderFactory.get("insertUserWithROLE_USERStep")
-            .<UserEntity, UserEntity>chunk(5000) //<UserEntity, UserEntity>에서 첫번째 인자는 .reader()가 리턴하는 인자이고, 두번째 인자는 writer()가 리턴하는 인자이다.
-            .reader(generateRandomROLE_USERReader)
+            .<UserEntity, UserEntity>chunk(1) //<UserEntity, UserEntity>에서 첫번째 인자는 .reader()가 리턴하는 인자이고, 두번째 인자는 writer()가 리턴하는 인자이다.
+            .reader(generateRandomROLE_USERReader) //Spring Batch manages transactions at the chunk level
             .writer(InsertUsersWriter)
+//            .transactionManager(transactionManager)
+//            .transactionAttribute(attribute)
             .build();
     }
 }

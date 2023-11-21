@@ -1,5 +1,7 @@
 package com.cho.ecommerce.global.config.batch.step;
 
+import com.cho.ecommerce.domain.member.entity.UserEntity;
+import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.domain.product.domain.DiscountType;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
 import com.cho.ecommerce.domain.product.entity.DiscountEntity;
@@ -23,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import net.datafaker.Faker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,12 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 @Configuration
 public class InsertFakeProductStep {
@@ -45,12 +52,6 @@ public class InsertFakeProductStep {
     private final Faker faker = new Faker();
     @Autowired
     private ProductRepository productRepository;
-    @Autowired
-    private ProductItemRepository productItemRepository;
-    @Autowired
-    private DiscountRepository discountRepository;
-    @Autowired
-    private ProductOptionVariationRepository productOptionVariationRepository;
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
@@ -65,61 +66,60 @@ public class InsertFakeProductStep {
         }
         return str;
     }
-
-    @Transactional
+    
     @Bean
     public ItemReader<List<CategoryEntity>> generateCategoryAndOptionsReader() {
-        List<CategoryEntity> categoryList = new ArrayList<>();
-        
-        for(int i = 0; i < 10; i++) {
-            CategoryEntity category = new CategoryEntity();
-            String categoryCode = sizeTrimmer(faker.code().asin(),
-                DatabaseConstants.CATEGORY_CODE_SIZE);
-            String categoryName = sizeTrimmer(faker.commerce().department(),
-                DatabaseConstants.CATEGORY_NAME_SIZE);
-    
-            category.setCategoryCode(categoryCode);
-            category.setName(categoryName);
-    
-            // Generate options for each category
-            Set<OptionEntity> options = new HashSet<>();
-            for (int j = 0; j < 3; j++) {
-                OptionEntity option = new OptionEntity();
-                String optionValue = sizeTrimmer(faker.commerce().material(),
-                    DatabaseConstants.OPTION_VALUE_SIZE);
-        
-                option.setValue(optionValue);
-                option.setCategory(category);
-                option.setOptionVariations(new ArrayList<>());
-                optionRepository.save(option);
-                options.add(option);
-        
-                // Generate option variations for each option
-                for (int k = 0; k < 3; k++) {
-                    OptionVariationEntity optionVariation = new OptionVariationEntity();
-            
-                    String optionVariationValue = sizeTrimmer(faker.color().name(),
-                        DatabaseConstants.OPTION_VARIATION_VALUE_SIZE);
-            
-                    optionVariation.setValue(optionVariationValue);
-                    optionVariation.setOption(option);
-            
-                    optionVariationRepository.save(optionVariation);
-            
-                    option.getOptionVariations().add(optionVariation);
-                }
-            }
-            category.setOptionEntities(options);
-            categoryList.add(category);
-        }
-        
-        categoryRepository.saveAll(categoryList);
-        
         return new ItemReader<List<CategoryEntity>>() {
             boolean batchDataRead = false;
     
             @Override
-            public List<CategoryEntity> read() throws Exception {
+            public List<CategoryEntity> read() throws Exception { //주의! @Override read()안에 코드 써야 chunk의 @Transaction이 올바르게 적용된다. 밖에 쓰면 다른 chunk의 transaction, 서순이 꼬일 수 있다.
+                List<CategoryEntity> categoryList = new ArrayList<>();
+    
+                for(int i = 0; i < 10; i++) {
+                    CategoryEntity category = new CategoryEntity();
+                    String categoryCode = sizeTrimmer(faker.code().asin(),
+                        DatabaseConstants.CATEGORY_CODE_SIZE);
+                    String categoryName = sizeTrimmer(faker.commerce().department(),
+                        DatabaseConstants.CATEGORY_NAME_SIZE);
+        
+                    category.setCategoryCode(categoryCode);
+                    category.setName(categoryName);
+        
+                    // Generate options for each category
+                    Set<OptionEntity> options = new HashSet<>();
+                    for (int j = 0; j < 3; j++) {
+                        OptionEntity option = new OptionEntity();
+                        String optionValue = sizeTrimmer(faker.commerce().material(),
+                            DatabaseConstants.OPTION_VALUE_SIZE);
+            
+                        option.setValue(optionValue);
+                        option.setCategory(category);
+                        option.setOptionVariations(new ArrayList<>());
+                        optionRepository.save(option);
+                        options.add(option);
+            
+                        // Generate option variations for each option
+                        for (int k = 0; k < 3; k++) {
+                            OptionVariationEntity optionVariation = new OptionVariationEntity();
+                
+                            String optionVariationValue = sizeTrimmer(faker.color().name(),
+                                DatabaseConstants.OPTION_VARIATION_VALUE_SIZE);
+                
+                            optionVariation.setValue(optionVariationValue);
+                            optionVariation.setOption(option);
+                
+                            optionVariationRepository.save(optionVariation);
+                
+                            option.getOptionVariations().add(optionVariation);
+                        }
+                    }
+                    category.setOptionEntities(options);
+                    categoryList.add(category);
+                }
+    
+                categoryRepository.saveAll(categoryList);
+                
                 if (!batchDataRead) { //딱 한번만 보내고 이후부터는 null을 보내 reader()를 끝낸다.
                     batchDataRead = true;
                     return categoryList;
@@ -132,7 +132,6 @@ public class InsertFakeProductStep {
     
     @Bean
     public ItemProcessor<List<CategoryEntity>, List<ProductEntity>> generateFakeProductProcessor() {
-        
         return new ItemProcessor<List<CategoryEntity>, List<ProductEntity>>() {
             @Override
             public List<ProductEntity> process(List<CategoryEntity> categoryList) throws Exception {
@@ -233,15 +232,25 @@ public class InsertFakeProductStep {
     
     @Bean
     public Step generateFakeProductStep(StepBuilderFactory stepBuilderFactory,
+//        PlatformTransactionManager transactionManager,
         ItemReader<List<CategoryEntity>> queryCategoryAndOptionsReader,
         ItemProcessor<List<CategoryEntity>, List<ProductEntity>> generateFakeProductProcessor,
         ItemWriter<List<ProductEntity>> InsertFakeProductWriter) {
+    
+        // note! - spring batch는 외부 transaction을 허용하지 않는다. Step에서 트랜젝션 만들어서 넣어줘야 한다.
+//        DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
+//        attribute.setIsolationLevel(TransactionDefinition.ISOLATION_REPEATABLE_READ);
+//        attribute.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+//        attribute.setTimeout(30); // 30 seconds
+        
         return stepBuilderFactory.get("insertFakeProductStep")
             .<List<CategoryEntity>, List<ProductEntity>>chunk(
                 1000) //<?, ?>에서 첫번째 인자는 .reader()가 리턴하는 인자이고, 두번째 인자는 writer()가 리턴하는 인자이다.
             .reader(queryCategoryAndOptionsReader)
             .processor(generateFakeProductProcessor)
             .writer(InsertFakeProductWriter)
+//            .transactionManager(transactionManager)
+//            .transactionAttribute(attribute)
             .build();
     }
 }

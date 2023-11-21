@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 import javax.transaction.Transactional;
 import net.datafaker.Faker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -23,6 +25,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class InsertCategoriesAndOptionsStep {
+    
+    private final Logger log = LoggerFactory.getLogger(InsertCategoriesAndOptionsStep.class);
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
     
@@ -45,6 +49,11 @@ public class InsertCategoriesAndOptionsStep {
         return str;
     }
     
+    //note! -
+    // spring batch에서 tasklet과 chunk의 transaction 관리가 다르게 된다.
+    // tasklet은 개별 tasklet 단위로 trasnactional 되는것 같고,
+    // chunk는 step에서 .chunk(size) 단위로 transaction 이 되는 듯 하다. 따라서 100개 단위 chunk로 insert하다가 fail나면, 전체를 rollback 하는게 아니라, 가장 최근 chunk만 롤백하는 듯 하다.
+    // 이 transaction 적용 범위가 tasklet vs chunk 에서 후자가 bulk-insert에 더욱 유리하게끔 작용하는 듯 하다.
     @Bean
     public Tasklet createCategoriesAndOptionsTasklet() {
         return (contribution, chunkContext) -> {
