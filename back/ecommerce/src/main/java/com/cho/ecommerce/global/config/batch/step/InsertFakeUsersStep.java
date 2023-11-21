@@ -131,7 +131,7 @@ public class InsertFakeUsersStep {
     }
     
     @Bean
-    public Step insertUserWithROLE_USERStep(StepBuilderFactory stepBuilderFactory,
+    public Step generateFakeUserStep(StepBuilderFactory stepBuilderFactory,
 //        PlatformTransactionManager transactionManager,
         ItemReader<UserEntity> generateRandomROLE_USERReader,
         ItemWriter<UserEntity> InsertUsersWriter) {
@@ -141,7 +141,7 @@ public class InsertFakeUsersStep {
 //        attribute.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 //        attribute.setTimeout(30); // 30 seconds
         
-        return stepBuilderFactory.get("insertUserWithROLE_USERStep")
+        return stepBuilderFactory.get("insertFakeUserStep")
             .<UserEntity, UserEntity>chunk(1) //<UserEntity, UserEntity>에서 첫번째 인자는 .reader()가 리턴하는 인자이고, 두번째 인자는 writer()가 리턴하는 인자이다.
             .reader(generateRandomROLE_USERReader) //Spring Batch manages transactions at the chunk level
             .writer(InsertUsersWriter)
