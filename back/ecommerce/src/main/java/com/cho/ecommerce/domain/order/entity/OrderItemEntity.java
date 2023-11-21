@@ -1,6 +1,7 @@
 package com.cho.ecommerce.domain.order.entity;
 
 import com.cho.ecommerce.domain.product.entity.ProductOptionVariationEntity;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,7 +28,7 @@ public class OrderItemEntity {
     @JoinColumn(name = "ORDER_ID")
     private OrderEntity order;
     
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PRODUCT_OPTION_VARIATION_ID")
     private ProductOptionVariationEntity productOptionVariation;
     

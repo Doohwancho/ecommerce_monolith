@@ -24,7 +24,9 @@ public class DataInitializationJobConfig {
         , Step createTestUserStep
         , Step insertUserWithROLE_USERStep
         , Step createCategoriesAndOptionsStep
-        , Step generateFakeProductStep) {
+        , Step generateFakeProductStep
+        , Step generateFakeOrderStep
+    ) {
         return jobBuilderFactory.get("data-initialization-job")
             .incrementer(new RunIdIncrementer())
             .listener(jobDurationListener)
@@ -34,7 +36,7 @@ public class DataInitializationJobConfig {
             .next(insertUserWithROLE_USERStep)
 //            .next(createCategoriesAndOptionsStep) //generateFakeProductStep에 녹아져있어서 주석처리한다.
             .next(generateFakeProductStep)
+            .next(generateFakeOrderStep)
             .build();
     }
-
 }

@@ -4,6 +4,7 @@ import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.time.LocalDateTime;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -43,7 +44,7 @@ public class OrderEntity {
     @JoinColumn(name = "MEMBER_ID")
     private UserEntity member;
     
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @NotEmpty(message = "Order must have at least one item")
     private Set<OrderItemEntity> orderItems;
     
