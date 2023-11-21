@@ -34,8 +34,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class InsertFakeOrderStep {
-    private final Logger log = LoggerFactory.getLogger(InsertFakeOrderStep.class);
+public class InsertFakeOrderStepConfig {
+    private final Logger log = LoggerFactory.getLogger(InsertFakeOrderStepConfig.class);
     private final Faker faker = new Faker();
     
     @Autowired

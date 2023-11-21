@@ -20,9 +20,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class Application {
     
-    private final Logger log = LoggerFactory.getLogger(Application.class);
-    
-    private final FakeDataGenerator dataGenerator;
+//    private final FakeDataGenerator dataGenerator;
     
     private final JobLauncher jobLauncher;
     
@@ -40,7 +38,6 @@ public class Application {
 //                .addLong("numberOfFakeUsers", 10L)
                 .toJobParameters();
             try {
-                //여러 배치 잡들을 실행하기
                 jobLauncher.run(dataInitializationJob, parameters);
             } catch (JobExecutionException e) {
                 e.printStackTrace();

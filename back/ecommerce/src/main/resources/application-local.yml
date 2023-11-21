@@ -27,7 +27,7 @@ spring:
   batch:
     initialize-schema: always
     job:
-      enabled: true
+      enabled: false #true로 하면 @Bean으로 등록된 cron batch steps들이 시작과 동시에 자동 실행되니까 false로 꺼둔다.
   redis:
     host: localhost #for local development
 #    host: redis #for docker

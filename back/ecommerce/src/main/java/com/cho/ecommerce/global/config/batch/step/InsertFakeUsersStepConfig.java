@@ -24,8 +24,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
-public class InsertFakeUsersStep {
-    private final Logger log = LoggerFactory.getLogger(InsertFakeUsersStep.class);
+public class InsertFakeUsersStepConfig {
+    private final Logger log = LoggerFactory.getLogger(InsertFakeUsersStepConfig.class);
     
     @Autowired
     private AuthorityRepository authorityRepository;
@@ -36,6 +36,7 @@ public class InsertFakeUsersStep {
     private final Faker faker = new Faker();
     
     private AuthorityEntity roleUserAuthority;
+    private boolean enabled;
     
     
     private AuthorityEntity getRoleUserAuthority() {
@@ -67,7 +68,8 @@ public class InsertFakeUsersStep {
         user.setCreated(LocalDateTime.now());
         user.setUpdated(LocalDateTime.now());
         user.setRole("ROLE_USER");
-        user.setEnabled(true);
+        user.setEnabled(enabled);
+        enabled = !enabled;
         user.setFailedAttempt(0);
     
         AddressEntity address = new AddressEntity();
@@ -142,7 +144,7 @@ public class InsertFakeUsersStep {
 //        attribute.setTimeout(30); // 30 seconds
         
         return stepBuilderFactory.get("insertFakeUserStep")
-            .<UserEntity, UserEntity>chunk(1) //<UserEntity, UserEntity>에서 첫번째 인자는 .reader()가 리턴하는 인자이고, 두번째 인자는 writer()가 리턴하는 인자이다.
+            .<UserEntity, UserEntity>chunk(1000) //<UserEntity, UserEntity>에서 첫번째 인자는 .reader()가 리턴하는 인자이고, 두번째 인자는 writer()가 리턴하는 인자이다.
             .reader(generateRandomROLE_USERReader) //Spring Batch manages transactions at the chunk level
             .writer(InsertUsersWriter)
 //            .transactionManager(transactionManager)

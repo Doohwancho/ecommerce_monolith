@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.transaction.Transactional;
 import net.datafaker.Faker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +23,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class InsertCategoriesAndOptionsStep {
+public class InsertCategoriesAndOptionsStepConfig {
     
-    private final Logger log = LoggerFactory.getLogger(InsertCategoriesAndOptionsStep.class);
+    private final Logger log = LoggerFactory.getLogger(InsertCategoriesAndOptionsStepConfig.class);
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
     

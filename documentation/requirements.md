@@ -9,6 +9,7 @@
     - server에 없는 session으로 요청하면 GET /login으로 redirect with http status 302
     - set max-age for storing session within cookie inside the client's browser 
     - 로그인 시도 5회 틀리면 account lock
+    - 휴면(잠긴) 계정을 매주 일요일 오전 3시에 INACTIVE_MEMBER 테이블로 이관
 - 상품
 	- CRUD
         - detailed product information read query by product Id

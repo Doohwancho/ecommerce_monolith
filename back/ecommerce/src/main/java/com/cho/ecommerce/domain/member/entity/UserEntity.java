@@ -70,7 +70,7 @@ public class UserEntity implements
     
     @NotNull(message = "Address is required")
     @OneToOne(cascade = CascadeType.ALL) //Casecade로 지정하면, UserEntity를 저장하면 AddressEntity도 자동 저장된다.
-    @JoinColumn(name = "ADDRESS_ID")
+    @JoinColumn(name = "ADDRESS_ID", referencedColumnName = "ADDRESS_ID")
     private AddressEntity address;
     
     @NotBlank(message = "Password is required")

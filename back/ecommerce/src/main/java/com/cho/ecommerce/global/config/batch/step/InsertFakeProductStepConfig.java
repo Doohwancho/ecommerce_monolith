@@ -1,7 +1,5 @@
 package com.cho.ecommerce.global.config.batch.step;
 
-import com.cho.ecommerce.domain.member.entity.UserEntity;
-import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.domain.product.domain.DiscountType;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
 import com.cho.ecommerce.domain.product.entity.DiscountEntity;
@@ -11,11 +9,8 @@ import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.entity.ProductItemEntity;
 import com.cho.ecommerce.domain.product.entity.ProductOptionVariationEntity;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
-import com.cho.ecommerce.domain.product.repository.DiscountRepository;
 import com.cho.ecommerce.domain.product.repository.OptionRepository;
 import com.cho.ecommerce.domain.product.repository.OptionVariationRepository;
-import com.cho.ecommerce.domain.product.repository.ProductItemRepository;
-import com.cho.ecommerce.domain.product.repository.ProductOptionVariationRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.time.ZoneId;
@@ -36,17 +31,11 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 @Configuration
-public class InsertFakeProductStep {
+public class InsertFakeProductStepConfig {
     
-    private final Logger log = LoggerFactory.getLogger(InsertFakeProductStep.class);
+    private final Logger log = LoggerFactory.getLogger(InsertFakeProductStepConfig.class);
     
     
     private final Faker faker = new Faker();

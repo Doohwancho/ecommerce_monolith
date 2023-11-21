@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class InsertROLEsStep {
+public class InsertROLEsStepConfig {
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
     

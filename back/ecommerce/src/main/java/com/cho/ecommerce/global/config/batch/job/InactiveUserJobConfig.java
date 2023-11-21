@@ -10,33 +10,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class DataInitializationJobConfig {
-    
+public class InactiveUserJobConfig {
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
     
     @Autowired
     private JobDurationListenerConfig jobDurationListenerConfig;
- 
+    
     @Bean
-    public Job dataInitializationJob(Step createAuthoritiesStep
-        , Step createAdminStep
-        , Step createTestUserStep
-        , Step generateFakeUserStep
-//        , Step createCategoriesAndOptionsStep
-        , Step generateFakeProductStep
-        , Step generateFakeOrderStep
-    ) {
-        return jobBuilderFactory.get("dataInitializationJob")
+    public Job inactiveUserJob(Step userToInactiveMemberStep) {
+        return jobBuilderFactory.get("userToInactiveUserJob")
             .incrementer(new RunIdIncrementer())
             .listener(jobDurationListenerConfig)
-            .start(createAuthoritiesStep)
-            .next(createAdminStep)
-            .next(createTestUserStep)
-            .next(generateFakeUserStep)
-//            .next(createCategoriesAndOptionsStep) //generateFakeProductStep에 녹아져있어서 주석처리한다.
-            .next(generateFakeProductStep)
-            .next(generateFakeOrderStep)
+            .start(userToInactiveMemberStep)
             .build();
     }
 }
