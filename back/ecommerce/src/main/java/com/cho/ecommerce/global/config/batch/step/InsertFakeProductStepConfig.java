@@ -25,10 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -57,7 +59,12 @@ public class InsertFakeProductStepConfig {
     }
     
     @Bean
-    public ItemReader<List<CategoryEntity>> generateCategoryAndOptionsReader() {
+    @StepScope
+    public ItemReader<List<CategoryEntity>> generateCategoryAndOptionsReader(
+        @Value("#{jobParameters['numberOfFakeCategories']}") Long numberOfFakeCategories,
+        @Value("#{jobParameters['numberOfFakeOptionsPerCategory']}") Long numberOfFakeOptionsPerCategory,
+        @Value("#{jobParameters['numberOfFakeOptionVariationsPerOption']}") Long numberOfFakeOptionVariationsPerOption
+    ) {
         return new ItemReader<List<CategoryEntity>>() {
             boolean batchDataRead = false;
     
@@ -65,7 +72,7 @@ public class InsertFakeProductStepConfig {
             public List<CategoryEntity> read() throws Exception { //주의! @Override read()안에 코드 써야 chunk의 @Transaction이 올바르게 적용된다. 밖에 쓰면 다른 chunk의 transaction, 서순이 꼬일 수 있다.
                 List<CategoryEntity> categoryList = new ArrayList<>();
     
-                for(int i = 0; i < 10; i++) {
+                for(int i = 0; i < numberOfFakeCategories.intValue(); i++) { //TODO - error: 이상하게 카테고리만 x2로 넣어진다. (ex. 5개 넣으면 10개 들어감)
                     CategoryEntity category = new CategoryEntity();
                     String categoryCode = sizeTrimmer(faker.code().asin(),
                         DatabaseConstants.CATEGORY_CODE_SIZE);
@@ -77,7 +84,7 @@ public class InsertFakeProductStepConfig {
         
                     // Generate options for each category
                     Set<OptionEntity> options = new HashSet<>();
-                    for (int j = 0; j < 3; j++) {
+                    for (int j = 0; j < numberOfFakeOptionsPerCategory.intValue(); j++) {
                         OptionEntity option = new OptionEntity();
                         String optionValue = sizeTrimmer(faker.commerce().material(),
                             DatabaseConstants.OPTION_VALUE_SIZE);
@@ -89,7 +96,7 @@ public class InsertFakeProductStepConfig {
                         options.add(option);
             
                         // Generate option variations for each option
-                        for (int k = 0; k < 3; k++) {
+                        for (int k = 0; k < numberOfFakeOptionVariationsPerOption.intValue(); k++) {
                             OptionVariationEntity optionVariation = new OptionVariationEntity();
                 
                             String optionVariationValue = sizeTrimmer(faker.color().name(),
@@ -120,13 +127,17 @@ public class InsertFakeProductStepConfig {
     }
     
     @Bean
-    public ItemProcessor<List<CategoryEntity>, List<ProductEntity>> generateFakeProductProcessor() {
+    @StepScope
+    public ItemProcessor<List<CategoryEntity>, List<ProductEntity>> generateFakeProductProcessor(
+        @Value("#{jobParameters['numberOfFakeProducts']}") Long numberOfFakeProducts,
+        @Value("#{jobParameters['numberOfFakeProductItemsPerProduct']}") Long numberOfFakeProductItemsPerProduct
+    ) {
         return new ItemProcessor<List<CategoryEntity>, List<ProductEntity>>() {
             @Override
             public List<ProductEntity> process(List<CategoryEntity> categoryList) throws Exception {
                 List<ProductEntity> productList = new ArrayList<>();
                 
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < numberOfFakeProducts.intValue(); i++) {
                     //product 생성
                     ProductEntity product = new ProductEntity();
                     
@@ -151,7 +162,7 @@ public class InsertFakeProductStepConfig {
                     Set<ProductItemEntity> productItems = new HashSet<>();
                     product.setProductItems(productItems);
                     
-                    for (int j = 0; j < 3; j++) {
+                    for (int j = 0; j < numberOfFakeProductItemsPerProduct.intValue(); j++) {
                         ProductItemEntity productItem = new ProductItemEntity();
                         productItems.add(productItem);
                         

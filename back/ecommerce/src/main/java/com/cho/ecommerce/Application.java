@@ -35,7 +35,13 @@ public class Application {
         return args -> {
             JobParameters parameters = new JobParametersBuilder()
                 .addLong("run.id", System.currentTimeMillis()) // Unique parameter for each run
-//                .addLong("numberOfFakeUsers", 10L)
+                .addLong("numberOfFakeUsers", 10L)
+                .addLong("numberOfFakeCategories", 10L)
+                .addLong("numberOfFakeOptionsPerCategory", 3L)
+                .addLong("numberOfFakeOptionVariationsPerOption", 3L)
+                .addLong("numberOfFakeProducts", 10L)
+                .addLong("numberOfFakeProductItemsPerProduct", 3L)
+                .addLong("numberOfFakeOrderItemsPerOrder", 3L)
                 .toJobParameters();
             try {
                 jobLauncher.run(dataInitializationJob, parameters);

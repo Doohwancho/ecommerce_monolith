@@ -23,7 +23,7 @@ dependencies {
     compileOnly 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly 'org.openapitools:jackson-databind-nullable:0.2.1'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
-//    implementation 'org.springframework.boot:spring-boot-starter-hateoas' //TODO - hateoas
+//    implementation 'org.springframework.boot:spring-boot-starter-hateoas' //TODO - hateoas 적용하기
     // OpenAPI Ends
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -123,7 +123,7 @@ sourceSets.main.resources.srcDir "${swaggerSources.ecommerce.code.outputDir}"
 
 
 //query dsl config
-def querydslDir = "$buildDir/generated/querydsl" //TODO - build 하면, build/generated/querydsl은 없고, build/classes/java/main/org/example/jpashop/ 에 QClass생김..
+def querydslDir = "$buildDir/generated/querydsl"
 
 querydsl {
     jpa = true

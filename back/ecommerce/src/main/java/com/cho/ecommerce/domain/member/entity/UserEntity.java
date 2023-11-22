@@ -66,7 +66,7 @@ public class UserEntity implements
     @Column(length = DatabaseConstants.MEMBER_NAME_SIZE)
     private String name;
     
-//    private String picUrl; //TODO 1 - user picture?
+//    private String picUrl; //TODO - apply user picture
     
     @NotNull(message = "Address is required")
     @OneToOne(cascade = CascadeType.ALL) //Casecade로 지정하면, UserEntity를 저장하면 AddressEntity도 자동 저장된다.

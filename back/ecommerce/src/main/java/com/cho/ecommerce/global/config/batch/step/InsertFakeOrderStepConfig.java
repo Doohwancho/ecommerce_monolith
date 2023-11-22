@@ -26,10 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -80,12 +82,16 @@ public class InsertFakeOrderStepConfig {
     
     //make order and orderITems
     @Bean
-    public ItemProcessor<List<UserEntity>, List<OrderEntity>> generateFakeOrderProcessor() {
+    @StepScope
+    public ItemProcessor<List<UserEntity>, List<OrderEntity>> generateFakeOrderProcessor(
+        @Value("#{jobParameters['numberOfFakeOrderItemsPerOrder']}") Long numberOfFakeOrderItemsPerOrder
+    ) {
         return new ItemProcessor<List<UserEntity>, List<OrderEntity>>() {
             @Override
             public List<OrderEntity> process(List<UserEntity> userList) throws Exception {
                 List<ProductOptionVariationEntity> productOptionVariationList = productOptionVariationRepository.findAll();
                 int productOptionVariationIndex = 0;
+                int productOptionVariationSize = productOptionVariationList.size();
                 
                 List<OrderEntity> orderList = new ArrayList<>();
     
@@ -108,13 +114,13 @@ public class InsertFakeOrderStepConfig {
                     order.setOrderStatus("Confirmed");
                     
                     //order 한개당 user수 대비 3개의 orderItems를 저장한다
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < numberOfFakeOrderItemsPerOrder.intValue(); i++) {
                         OrderItemEntity orderItem = new OrderItemEntity();
                         order.getOrderItems().add(orderItem);
                         orderItem.setOrder(order);
         
                         ProductOptionVariationEntity productOptionVariation = productOptionVariationList.get(productOptionVariationIndex);
-                        productOptionVariationIndex = (productOptionVariationIndex + 1) % 30; //index 초과 안나도록 한다.
+                        productOptionVariationIndex = (productOptionVariationIndex + 1) % productOptionVariationSize; //index 초과 안나도록 한다.
                         orderItem.setProductOptionVariation(productOptionVariation);
                     }
                 }

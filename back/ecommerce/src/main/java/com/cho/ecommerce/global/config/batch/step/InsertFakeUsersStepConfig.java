@@ -16,9 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -100,13 +102,10 @@ public class InsertFakeUsersStepConfig {
     
     
     @Bean
-//    @StepScope
-//    public ItemReader<UserEntity> generateRandomROLE_USERReader(@Value("#{jobParameters['numberOfFakeUsers']}") Long numberOfFakeUsers) { //TODO - error: @StepScope과 JobParameter를 쓰면, 마지막 chunk에 있던 UserEntity까지 저장되는 문제가 있다.
-    public ItemReader<UserEntity> generateRandomROLE_USERReader() {
+    @StepScope
+    public ItemReader<UserEntity> generateRandomROLE_USERReader(@Value("#{jobParameters['numberOfFakeUsers']}") Long numberOfFakeUsers) {
         return new ItemReader<UserEntity>() {
-//            private final int numberOfFakeUsers = jobParameters.getLong("numberOfFakeUsers").intValue();
-//            private final int NUMBER_OF_FAKE_USERS = numberOfFakeUsers.intValue();
-            private final int NUMBER_OF_FAKE_USERS = 10;
+            private final int NUMBER_OF_FAKE_USERS = numberOfFakeUsers.intValue();
             private int userCount = 0;
         
             @Override

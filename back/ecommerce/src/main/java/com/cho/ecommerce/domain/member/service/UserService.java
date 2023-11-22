@@ -95,7 +95,7 @@ public class UserService implements UserDetailsService {
     public User findUserByUsername(String username) {
         UserEntity userEntity = userRepository.findUserDetailsByUsername(username).orElseThrow(
             () -> new ResourceNotFoundException("User not found, userId: "
-                + username));//TODO 5 - Optional을 반환타입으로 하면 안좋다고 effective java에서 말한거 같은데?
+                + username));
         
         return userMapper.toUser(userEntity);
     }
