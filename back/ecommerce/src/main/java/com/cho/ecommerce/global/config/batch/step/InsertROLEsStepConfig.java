@@ -2,7 +2,6 @@ package com.cho.ecommerce.global.config.batch.step;
 
 import com.cho.ecommerce.domain.member.entity.AuthorityEntity;
 import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
-import javax.transaction.Transactional;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -19,7 +18,6 @@ public class InsertROLEsStepConfig {
     @Autowired
     private AuthorityRepository authorityRepository;
     
-    @Transactional
     @Bean
     public Tasklet createAuthoritiesTasklet() {
         return (contribution, chunkContext) -> {
