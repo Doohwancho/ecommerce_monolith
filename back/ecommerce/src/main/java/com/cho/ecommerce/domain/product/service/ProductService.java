@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.product.service;
 
+import com.cho.ecommerce.api.domain.PaginatedProductResponse;
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
 import com.cho.ecommerce.api.domain.ProductDetailDTO;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,8 +53,11 @@ public class ProductService {
         this.self = self;
     }
     
-    public List<ProductEntity> getAllProducts() {
-        return productRepository.findAll();
+    public PaginatedProductResponse getProductsWithPagination(int page, int size) {
+        Page<ProductEntity> productsWithPaginations = productRepository.findAll(
+            PageRequest.of(page, size));
+        return productMapper.buildPaginatedProductResponse(
+            productsWithPaginations);
     }
     
     public Optional<ProductEntity> getProductById(Long id) {
@@ -104,7 +110,8 @@ public class ProductService {
     }
     
     public List<ProductDetailDTO> findProductDetailDTOsById(Long productId) {
-        List<Product> productDetailDTOsList = self.getProductDetailDTOsById(productId); //fix: solution to "Methods should not call same-class methods with incompatible @Transactional"
+        List<Product> productDetailDTOsList = self.getProductDetailDTOsById(
+            productId); //fix: solution to "Methods should not call same-class methods with incompatible @Transactional"
         return productMapper.productsToProductDetailDTOs(productDetailDTOsList);
     }
     

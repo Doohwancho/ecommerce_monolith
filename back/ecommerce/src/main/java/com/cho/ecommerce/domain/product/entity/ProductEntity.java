@@ -50,8 +50,6 @@ public class ProductEntity {
     @JoinColumn(name = "CATEGORY_ID")
     private CategoryEntity category;
     
-//    @NotEmpty(message = "Product must have at least one item") //product may not have product-items
-//    @OneToMany(mappedBy = "product")
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductItemEntity> productItems;
 }

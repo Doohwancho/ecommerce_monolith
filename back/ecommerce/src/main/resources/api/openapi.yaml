@@ -129,19 +129,32 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseDTO'
   /products:
     get:
-      summary: Get all products
+      summary: Get all products with pagination
       tags:
         - Product
-      operationId: getAllProducts
+      operationId: getProductsWithPagiation
+      parameters:
+        - name: page
+          in: query
+          description: Page number of the requested page
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProductDTO'
+                $ref: '#/components/schemas/PaginatedProductResponse'
         default:
           description: Unexpected error
           content:
@@ -575,6 +588,26 @@ components:
             $ref: '#/components/schemas/ProductDTO'
       required:
         - products
+    PaginatedProductResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDTO'
+        totalPages:
+          type: integer
+          example: 5
+        totalElements:
+          type: integer
+          example: 50
+        size:
+          type: integer
+          example: 10
+        number:
+          type: integer
+          description: Current page number
+          example: 0
     ProductDetailDTO:
       type: object
       properties:

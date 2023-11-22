@@ -1,6 +1,7 @@
 package com.cho.ecommerce.domain.product.controller;
 
 import com.cho.ecommerce.api.ProductApi;
+import com.cho.ecommerce.api.domain.PaginatedProductResponse;
 import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
 import com.cho.ecommerce.api.domain.ProductDetailDTO;
@@ -10,11 +11,13 @@ import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.service.ProductService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,12 +32,14 @@ public class ProductController implements ProductApi {
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        List<ProductEntity> allProducts = productService.getAllProducts();
-        List<ProductDTO> productDTOS = productMapper.productEntitiesToProductDTOs(
-            allProducts);
+    public ResponseEntity<PaginatedProductResponse> getProductsWithPagiation(
+        Integer page,
+        Integer size
+    ) {
+        PaginatedProductResponse productsWithPagination = productService.getProductsWithPagination(
+            page, size);
         
-        return ResponseEntity.ok(productDTOS);
+        return ResponseEntity.ok(productsWithPagination);
     }
     
     @Override

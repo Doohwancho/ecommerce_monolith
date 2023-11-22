@@ -126,7 +126,7 @@ public class InsertFakeProductStepConfig {
             public List<ProductEntity> process(List<CategoryEntity> categoryList) throws Exception {
                 List<ProductEntity> productList = new ArrayList<>();
                 
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 100; i++) {
                     //product 생성
                     ProductEntity product = new ProductEntity();
                     

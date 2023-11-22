@@ -6,10 +6,13 @@ import com.cho.ecommerce.api.domain.ProductDetailDTO;
 import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
+import com.cho.ecommerce.api.domain.PaginatedProductResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
@@ -74,4 +77,19 @@ public interface ProductMapper {
     ProductDetailDTO productToProductDetailDTO(Product product);
     
     List<ProductDetailDTO> productsToProductDetailDTOs(List<Product> products);
+    
+    default PaginatedProductResponse buildPaginatedProductResponse(Page<ProductEntity> page) {
+        List<ProductDTO> productDTOs = page.getContent().stream()
+            .map(this::productEntityToProductDTO)
+            .collect(Collectors.toList());
+        
+        PaginatedProductResponse response = new PaginatedProductResponse();
+        response.setContent(productDTOs);
+        response.setTotalPages(page.getTotalPages());
+        response.setTotalElements((int) page.getTotalElements());
+        response.setSize(page.getSize());
+        response.setNumber(page.getNumber());
+        
+        return response;
+    }
 }
