@@ -9,6 +9,8 @@ import com.cho.ecommerce.domain.member.repository.UserRepository;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Builder;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Step;
@@ -19,6 +21,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 public class UserToInactiveMemberStepConfig {
@@ -32,6 +35,13 @@ public class UserToInactiveMemberStepConfig {
     private AddressRepository addressRepository;
     @Autowired
     private UserAuthorityRepository userAuthorityRepository;
+    
+    @Getter
+    @Builder
+    public static class UserInactiveMemberDTO {
+        private UserEntity userEntity;
+        private InactiveMemberEntity inactiveMemberEntity;
+    }
     
     // Reader: Read all users, filter only inactive users
     @Bean
@@ -60,11 +70,11 @@ public class UserToInactiveMemberStepConfig {
     
     // Processor: Process and filter out inactive users
     @Bean
-    public ItemProcessor<UserEntity, InactiveMemberEntity> inactiveUserProcessor() {
-        return new ItemProcessor<UserEntity, InactiveMemberEntity>() {
+    public ItemProcessor<UserEntity, UserInactiveMemberDTO> inactiveUserProcessor() {
+        return new ItemProcessor<UserEntity, UserInactiveMemberDTO>() {
     
             @Override
-            public InactiveMemberEntity process(UserEntity user) throws Exception {
+            public UserInactiveMemberDTO process(UserEntity user) throws Exception {
                 //member + authorities + address를 inactiveMember에 옮겨닮기
                 InactiveMemberEntity inactiveMember = InactiveMemberEntity.builder()
                     .username(user.getUsername())
@@ -83,39 +93,54 @@ public class UserToInactiveMemberStepConfig {
                     .zipCode(user.getAddress().getZipCode())
                     .build();
     
-                
-                //TODO - writer()에서 실패시, processor()에 delete가 rollback 되는지 확인
-                //user 지우기 (userAuthority, address, order, orderItems, productOptionVariation을 cascade로 지운다)
-                userRepository.deleteById(user.getMemberId());
+                UserInactiveMemberDTO memberDTO = UserInactiveMemberDTO.builder()
+                    .userEntity(user)
+                    .inactiveMemberEntity(inactiveMember)
+                    .build();
     
-                return inactiveMember;
+                return memberDTO;
             }
         };
     }
     
     // Writer: Write inactive users to INACTIVE_MEMBER table
     @Bean
-    public ItemWriter<InactiveMemberEntity> inactiveMemberWriter() {
-        return new ItemWriter<InactiveMemberEntity>() {
+    public ItemWriter<UserInactiveMemberDTO> inactiveMemberWriter() {
+        return new ItemWriter<UserInactiveMemberDTO>() {
             @Override
-            public void write(List<? extends InactiveMemberEntity> inactiveUsers) {
-                inactiveMemberRepository.saveAll(inactiveUsers);
+            public void write(List<? extends UserInactiveMemberDTO> memberDTOs) throws Exception {
+                for (UserInactiveMemberDTO dto : memberDTOs) {
+                    inactiveMemberRepository.save(dto.getInactiveMemberEntity());
+                    userRepository.deleteById(dto.getUserEntity().getMemberId());
+//                    throw new Exception("안돼!"); //TODO - error: write()시 delete은 rollback이 되는데 save한건 롤백이 안됨
+                }
             }
         };
     }
     
     // Define the step
     @Bean
-    public Step userToInactiveMemberStep(StepBuilderFactory stepBuilderFactory,
+    public Step userToInactiveMemberStep(
+        StepBuilderFactory stepBuilderFactory,
+        PlatformTransactionManager transactionManager,
         ItemReader<UserEntity> queryAllUsersReader,
-        ItemProcessor<UserEntity, InactiveMemberEntity> inactiveUserProcessor,
-        ItemWriter<InactiveMemberEntity> inactiveMemberWriter) {
+        ItemProcessor<UserEntity, UserInactiveMemberDTO> inactiveUserProcessor,
+        ItemWriter<UserInactiveMemberDTO> inactiveMemberWriter) {
+    
+        // note! - spring batch는 외부 transaction을 허용하지 않는다. Step에서 트랜젝션 만들어서 넣어줘야 한다.
+//        DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
+//        attribute.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
+//        attribute.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+//        attribute.rollbackOn(new Exception());
+//        attribute.setTimeout(30); // 30 seconds
         
         return stepBuilderFactory.get("userToInactiveMemberStep")
-            .<UserEntity, InactiveMemberEntity>chunk(1000)
+            .<UserEntity, UserInactiveMemberDTO>chunk(1000)
             .reader(queryAllUsersReader)
             .processor(inactiveUserProcessor)
             .writer(inactiveMemberWriter)
+//            .transactionManager(transactionManager)
+//            .transactionAttribute(attribute)
             .build();
     }
 }

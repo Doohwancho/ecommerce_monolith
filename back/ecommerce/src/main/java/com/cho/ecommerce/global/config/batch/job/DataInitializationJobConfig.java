@@ -25,6 +25,7 @@ public class DataInitializationJobConfig {
         , Step generateFakeUserStep
         , Step generateFakeProductStep
         , Step generateFakeOrderStep
+        , Step userToInactiveMemberStep
     ) {
         return jobBuilderFactory.get("dataInitializationJob")
             .incrementer(new RunIdIncrementer())
@@ -35,6 +36,7 @@ public class DataInitializationJobConfig {
             .next(generateFakeUserStep)
             .next(generateFakeProductStep)
             .next(generateFakeOrderStep)
+            .next(userToInactiveMemberStep)
             .build();
     }
 }
