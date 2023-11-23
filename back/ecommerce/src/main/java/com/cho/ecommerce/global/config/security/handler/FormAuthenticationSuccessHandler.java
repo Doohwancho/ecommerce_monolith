@@ -29,8 +29,6 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
         String redirectUrl = "/";
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         
-        logger.info("로그인 성공!!!!!");
-        
         for (GrantedAuthority grantedAuthority : authorities) {
             
             if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
