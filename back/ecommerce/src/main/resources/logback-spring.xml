@@ -37,7 +37,7 @@
 
 
   <springProfile name="local"> <!-- 로컬 개발환경에서 로깅 설정 -->
-    <include resource="console-appender.xml"/> <!-- info | debug | trace 레벨의 로그를 터미널에 출력 -->
+    <include resource="log/console-appender.xml"/> <!-- info | debug | trace 레벨의 로그를 터미널에 출력 -->
 
     <root level="INFO"> <!-- 개발 환경에서는 콘솔에서 info | debug | trace 레벨 이상 로그 출력 -->
       <appender-ref ref="CONSOLE"/>
@@ -45,10 +45,10 @@
   </springProfile>
 
   <springProfile name="prod">
-    <include resource="console-appender.xml"/> <!-- info | debug | trace 레벨의 로그를 터미널에 출력 -->
-    <include resource="file-info-appender.xml"/>
-    <include resource="file-warn-appender.xml"/>
-    <include resource="file-error-appender.xml"/>
+    <include resource="log/console-appender.xml"/> <!-- info | debug | trace 레벨의 로그를 터미널에 출력 -->
+    <include resource="log/file-info-appender.xml"/>
+    <include resource="log/file-warn-appender.xml"/>
+    <include resource="log/file-error-appender.xml"/>
 
     <root level="INFO"> <!-- production 환경에서는 콘솔에서 info | debug | trace 레벨 이상 로그 출력 -->
       <appender-ref ref="FILE-INFO"/>
