@@ -17,7 +17,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
-      ddl_auto: create
+      ddl_auto: update
     properties.hibernate:
       format_sql: true
       show-sql: true
@@ -29,9 +29,7 @@ spring:
     job:
       enabled: false #true로 하면 @Bean으로 등록된 cron batch steps들이 시작과 동시에 자동 실행되니까 false로 꺼둔다.
   redis:
-    host: my-redis-cluster-01.4mu9pu.clustercfg.apn2.cache.amazonaws.com #for aws
-#    host: localhost #for local development
-#    host: redis #for docker
+    host: my-redis-cluster-01.4mu9pu.clustercfg.apn2.cache.amazonaws.com
     port: 6379
   session:
     store-type: redis
