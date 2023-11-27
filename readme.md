@@ -35,29 +35,32 @@ H. [Trouble Shooting](#h-trouble-shooting)\
 
 # B. 사용 기술
 
-- spring 2.5.6
-    - jdk 1.8
-    - spring security
-    - spring data jpa
-    - spring batch
-- external java library
-    - querydsl
-    - openapi-codegen
-    - jqwik
-    - mapstruct
-    - datafaker
-- database
-    - mysql 8
-    - redis
-- aws
-- docker
-- etc (개발 툴)
-    - intellij
-    - mysql workbench
-    - postman
-    - redoc
-    - VSC plugin - Draw.io Integration
-    - VSC plugin - ERD Editor 
+| Category             | Tool/Library           | Version |
+|----------------------|------------------------|---------|
+| Java                 | JDK                    | 1.8     |
+| Spring               | spring-boot-starter-web| 2.5.6   |
+|                      | Spring Security        | 2.5.6   |
+|                      | Spring Data JPA        | 2.5.6   |
+|                      | Spring Batch           | 2.5.6   |
+|                      | Spring Quartz          | 2.5.6   |
+| External Java Library| QueryDSL               | 4.4.0   |
+|                      | OpenAPI-Codegen        | 4.3.1   |
+|                      | Jqwik                  | 1.8.1   |
+|                      | MapStruct              | 1.5.5   |
+|                      | Datafaker              | 1.9.0   |
+| Database             | MySQL                  | 8.0.23  |
+|                      | Redis                  | 7.0.9   |
+| Test                 | junit                  | 5.9.2   |
+|                      | hamcrest               | 2.2     |
+| Deploy               | AWS                    |         |
+|                      | Docker                 |         |
+| Development Tools    | IntelliJ               |         |
+|                      | MySQL Workbench        |         |
+|                      | Postman                |         |
+|                      | Redoc                  |         |
+|                      | VSC Plugin - Draw.io Integration |         |
+|                      | VSC Plugin - ERD Editor|         |
+
 
 
 # C. 프로젝트 구조
@@ -151,7 +154,7 @@ VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 �
 ## a. 정규화
 
 ### 가. 방법론1. product를 비정규화 한 방식
-![](documentation/images/정규화-1.Png)
+![](documentation/images/정규화-1.png)
 
 #### 가-1. pros
 개별 제품 상세 페이지 쿼리는 빠름
@@ -172,7 +175,7 @@ erd 설계 한번하면 쭉 가는줄 알았는데, 의외로 서비스 초기 �
 ---
 
 ### 나. 방법론2. order_item 테이블에 모든 비정규화한 상품테이블 리스트의 FK를 받는 방식
-![](documentation/images/정규화-2.Png)
+![](documentation/images/정규화-2.png)
 
 #### 나-1. pros
 방법론 1과 같이, 개별 상품 페이지 쿼리는 빠름.
@@ -193,7 +196,7 @@ b. 또한,
 
 
 ### 다. 방법론3. 상품별 옵션을 정규화 해서 쪼개놓은 경우
-![](documentation/images/정규화-3.Png)
+![](documentation/images/정규화-3.png)
 
 #### 다-1. pros
 
