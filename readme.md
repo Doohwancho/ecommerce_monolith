@@ -269,7 +269,6 @@ A. database, 버전, 옵티마이저에 따라 다르긴 하겠지만, 요즘 �
 
 https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java#L28-L153
 
-> [bulk insert code link](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java)
 
 
 
@@ -313,7 +312,6 @@ redocly preview-docs back/ecommerce/src/main/resources/api/openapi.yaml
 
 https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L26-L146
 
-> [batch code link](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java)
 
 
 
@@ -386,7 +384,6 @@ compileQuerydsl시 아직 컴파일 안된 openapi-codegen 코드부분 때문�
 
 https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/ecommerce/build.gradle#L143-L145
 
-> [해결한 커밋 link](https://github.com/Doohwancho/ecommerce/commit/ffb5355069d127ba1e6745626bbbcd6da4fbc4ac)
 
 ### 4. 이 트러블 슈팅이 기억에 남는 이유
 기능 만들고 싶은데 어떻게 만드는지 모르거나, 프레임워크에서 에러나는건 \

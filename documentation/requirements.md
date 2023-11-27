@@ -17,7 +17,6 @@
     - Discount 적용
 	- Category 적용
 		- 해당 카테고리 하위 옵션 1,2 구현
-    - 
 - 주문
     - CRUD
         - userId로 유저가 주문한 모든 주문리스트 read
