@@ -246,10 +246,6 @@ A. database, 버전, 옵티마이저에 따라 다르긴 하겠지만, 요즘 �
 1. 문제: 가데이터를 for-loop으로 넣던게 약 14분 30초 정도 걸림. 
 2. 해결책: spring batch + jpa bulk insert로 변경해서 4분30초 로 10분 단축
 
-https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java#L28-L132
-
-> [bulk insert code link](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java)
-
 ```
 ...for inserting
 
@@ -270,6 +266,11 @@ https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/c
 2. after (bulk insert)
     - 4m 30s 436ms
     - Job: [SimpleJob: [name=dataInitializationJob]] completed with the following parameters: [{run.id=1700922576191, numberOfFakeUsers=3000, numberOfFakeCategories=10, numberOfFakeOptionsPerCategory=3, numberOfFakeOptionVariationsPerOption=3, numberOfFakeProducts=3000, numberOfFakeProductItemsPerProduct=3, numberOfFakeOrderItemsPerOrder=5}] and the following status: [COMPLETED] in 4m30s436ms
+
+https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java#L28-L153
+
+> [bulk insert code link](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java)
+
 
 
 
@@ -310,7 +311,7 @@ redocly preview-docs back/ecommerce/src/main/resources/api/openapi.yaml
 4. 기존 유저 테이블에서 제거하는 배치 생성
 
 
-https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L26-L146
+https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L26-L146
 
 > [batch code link](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java)
 
@@ -383,7 +384,7 @@ compileQuerydsl시 아직 컴파일 안된 openapi-codegen 코드부분 때문�
 2. queryDSL이 다음에 실행되고,
 3. 마지막으로 compileJava가 실행되도록 변경했다.
 
-https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/build.gradle#L143-L145
+https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/ecommerce/build.gradle#L143-L145
 
 > [해결한 커밋 link](https://github.com/Doohwancho/ecommerce/commit/ffb5355069d127ba1e6745626bbbcd6da4fbc4ac)
 
