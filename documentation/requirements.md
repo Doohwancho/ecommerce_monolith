@@ -1,22 +1,23 @@
 ---\
 요구사항
 
-- 회원가입
-    - 권한 나누기(ex. ROLE_USER, ROLE_ADMIN)
-    - CRUD 
-        - username(userID)로 유저 정보 read
-- 로그인
-    - server에 없는 session으로 요청하면 GET /login으로 redirect with http status 302
-    - set max-age for storing session within cookie inside the client's browser 
-    - 로그인 시도 5회 틀리면 account lock
-    - 휴면(잠긴) 계정을 매주 일요일 오전 3시에 INACTIVE_MEMBER 테이블로 이관
+- 인증
+    - 회원가입
+        - 권한 나누기(ex. ROLE_USER, ROLE_ADMIN)
+        - Member CRUD 
+            - username(userID)로 유저 정보 read
+    - 로그인
+        - server에 없는 session으로 요청하면 GET /login으로 redirect with http status 302
+        - set max-age for storing session within cookie inside the client's browser 
+        - 로그인 시도 5회 틀리면 account lock
+        - 휴면(잠긴) 계정을 매주 일요일 오전 3시에 INACTIVE_MEMBER 테이블로 이관
 - 상품
-	- CRUD
+	- Product CRUD
         - detailed product information read query by product Id
         - pagination on getAllProducts()
     - Discount 적용
 	- Category 적용
 		- 해당 카테고리 하위 옵션 1,2 구현
 - 주문
-    - CRUD
+    - Order CRUD
         - userId로 유저가 주문한 모든 주문리스트 read

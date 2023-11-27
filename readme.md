@@ -6,7 +6,6 @@
 - D. [AWS architecture](#d-aws-architecture)
 - E. [ERD diagram](#e-erd-diagram)
 - F. [Sequence Diagram](#f-sequence-diagram)
-    - a. [spring security + redis로 세션관리 하면서 이상행동 감지시 invalidate session + account lock](#a-spring-security--redis로-세션관리-하면서-이상행동-감지시-invalidate-session--account-lock) -- yet
 - G. [기술적 도전](#g-기술적-도전)
     - a. [정규화](#a-정규화)
     - b. [bulk insert](#b-bulk-insert)
@@ -143,8 +142,12 @@ VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 �
 
 # F. Sequence Diagram
 
-## a. spring security + redis로 세션관리 하면서 이상행동 감지시 invalidate session + account lock
-?
+## a. authentication
+1. spring security + redis(session clustering)로 세션관리 하면서
+2. 이상행동 감지시(로그인 5회 틀림) invalidate session + account lock
+3. 매주 일요일 새벽 3시에 cron + batch로 locked account를 MEMBER table에서 INACTIVE_MEMBER table로 이전
+
+![](documentation/sequence-diagram/authentication-sequence.png)
 
 
 
@@ -244,7 +247,7 @@ A. database, 버전, 옵티마이저에 따라 다르긴 하겠지만, 요즘 �
 ## b. bulk insert
 
 1. 문제: 가데이터를 for-loop으로 넣던게 약 14분 30초 정도 걸림. 
-2. 해결책: spring batch + jpa bulk insert로 변경해서 4분30초 로 10분 단축
+2. 해결책: spring batch(chunk size 1000) + jpa bulk insert로 변경해서 4분30초 로 10분 단축
 
 ```
 ...for inserting
