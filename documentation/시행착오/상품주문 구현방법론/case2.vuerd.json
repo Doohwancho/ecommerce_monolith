@@ -1202,12 +1202,12 @@
   "memo": {
     "memos": [
       {
-        "value": "방법론2. \n\bitem 테이블 까지 없앰. order_item에서 구매하지 않는 아이템은 null값으로 채워진",
+        "value": "방법론2. \n\nitem 테이블 까지 없앰. order_item에서 구매하지 않는 아이템은 null값으로 채워진다.",
         "ui": {
           "active": true,
           "left": 95,
           "top": 27.25,
-          "zIndex": 12,
+          "zIndex": 9,
           "width": 285,
           "height": 101
         },
@@ -1217,9 +1217,9 @@
         "value": "pros\n이 방법을 쓰면, 개발 상품 페이지 쿼리는 빠른데, \n\n\ncons\n\n---\na. 주문목록 query하려면, \n1. null check 먼저 하고,\n2. 해당 아이템의 fk 가지고 아이템 찾는 식일텐데, \n\n테이블에 null값 들어가는게 마음에 안듬. \n뭔가 null 처리 잘못되면 서버 터질거 같고,\nnull checking 하려고 서비스단에 exception handling 해야할 것 같음.\n(코드상 깔끔하지 못함)\n\n\n---\nb. 또한, 상품 종류가 100가지라 상품 테이블이 100가지면, order_item가 받는 상품들의 fk가 100개+가 될텐데, 필드값이 100개인 테이블 개오버인 것 같다.",
         "ui": {
           "active": false,
-          "left": 1332.5,
-          "top": 333.5,
-          "zIndex": 8,
+          "left": 1353.75,
+          "top": 329.75,
+          "zIndex": 7,
           "width": 464,
           "height": 328
         },

@@ -3,7 +3,7 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -1,
+    "scrollTop": 0,
     "scrollLeft": 0,
     "zoomLevel": 1,
     "show": {
@@ -258,7 +258,7 @@
           "active": false,
           "left": 68,
           "top": 291,
-          "zIndex": 6,
+          "zIndex": 5,
           "widthName": 60,
           "widthComment": 120,
           "color": "#EB4747"
@@ -470,7 +470,7 @@
           "active": false,
           "left": 21,
           "top": 639,
-          "zIndex": 5,
+          "zIndex": 4,
           "widthName": 66.700927734375,
           "widthComment": 60,
           "color": "#00FF5F"
@@ -533,7 +533,7 @@
           "active": false,
           "left": 35,
           "top": 796,
-          "zIndex": 14,
+          "zIndex": 6,
           "widthName": 60,
           "widthComment": 60,
           "color": "#FF7A00"
@@ -562,9 +562,9 @@
         "value": "방법\n\n1. Distributor, Dropshipper는 추후 필요가 생기면, 요구 컬럼 조사 후, 새로운 테이블을 만들어 Member 테이블과 1대1 관계를 맺어준다.\n2. AUTHORITY는 ROLE_GUEST, ROLE_MEMBER, ROLE_MERCHANT, ROLE_VIP, ROLE_ADMIN이 있다.\n3. ROLE_GUEST는 회원가입만 한 상태이며, google OAuth 인증이나, 외부 인증 모듈을 pass하면 ROLE_MEMBER로 승격시켜주는 로직을 추후 작성한다.\n4. 모든 유저는 MEMBER 테이블에 등록되고 (구매자든 판매자든), 개인 인증 후 ROLE_MEMBER가 되면 구매신청이 가능하다. \n5. 판매자의 경우, ROLE_MEMBER인 상태에서, 판매자 등록페이지에서 MERCHANT/AFFILIATE/DISTRIBUTOR/DROPSHIPPER/ETC 등으로 판매자 등록하면, 해당 테이블에 정보가 들어간다.\n6. ",
         "ui": {
           "active": false,
-          "left": 492,
-          "top": 660,
-          "zIndex": 15,
+          "left": 914,
+          "top": 607,
+          "zIndex": 9,
           "width": 634,
           "height": 180
         },
@@ -573,10 +573,10 @@
       {
         "value": "Q. 왜 ID의 자료형을 BIGINT 안쓰고 INT 씀?\n\nINT: 4byte\nBIGINT: 8byte\n\n2,147,483,648 이 넘어갈 떄 즘 BIGINT로 마이그레이션 (4byte -> 8byte)\n\n2147483647 * 4 = 8589934588 bytes\n... / 1024 = 8388608 KB\n... / 1024 = 8191 MB\n... / 1024 = 8GB\n\n유저수 2억 1천명 기준, 단 하나의 컬럼에 8GB를 아낄 수 있다..\n",
         "ui": {
-          "active": true,
+          "active": false,
           "left": 973,
           "top": 271,
-          "zIndex": 21,
+          "zIndex": 8,
           "width": 380,
           "height": 224
         },
@@ -588,7 +588,7 @@
           "active": false,
           "left": 531,
           "top": 301,
-          "zIndex": 20,
+          "zIndex": 7,
           "width": 349,
           "height": 117
         },

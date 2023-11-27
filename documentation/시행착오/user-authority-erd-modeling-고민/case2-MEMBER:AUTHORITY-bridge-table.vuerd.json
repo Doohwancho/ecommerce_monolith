@@ -423,10 +423,10 @@
       {
         "value": "Q. 왜 @ManyToMany 안쓰고 bridge table을 따로 만들었음?\n\n\n1. 확장가능성, flexibility - 나중에 timestamp같은 meta-data 들어갈 column 자리가 필요할 수 도 있기 때문\n(ex. timestamp for when user was granted particular authority)\n\n\n2. @ManyToMany는 N+1 문제 가능성이 존재하는데, bridge table + fetch join으로 해결한다.\n\nQ. solve N+1 problem using bridge table && fetch join?\n만약 User:Authority = N:M, 인데,\njpa에 [[@ManyToMany]]를 써서 User를 가져왔다면,\n\n```java\nList<User> users = entityManager.createQuery(\"from User\", User.class).getResultList();\n\nfor (User user : users) {\n    Set<Authority> authorities = user.getAuthorities();\n    // ...\n}\n```\n\n`select * from user` 할 떈 쿼리 한번에 모든 유저정보 가져오는데,\n[[@ManyToMany]]는 태생적으로 [[FetchType EAGER, LAZY|FetchType Lazy]]라, \nuser의 authority 꺼내려면, 유저 수 만큼, 다시 authority table에 쿼리날림.\n\n이게 N+1 problem\n\nQ. 이걸 고치려면?\n\nUser:UserAuthority:Authority = 1:N:M:1 \nbridge table을 만들고, \nUserAuthority를 쿼리하는걸 \"fetch join\"을 써서 가져오면,\n\n```java\nList<User> users = entityManager.createQuery(\"from User u JOIN FETCH u.userAuthorities\", User.class).getResultList();\n```\n\nN+1 problem 문제 없이,\ndb에서 조인 한 후, 한방에 가져온다.\n",
         "ui": {
-          "active": false,
-          "left": 616,
-          "top": 285,
-          "zIndex": 5,
+          "active": true,
+          "left": 798,
+          "top": 304,
+          "zIndex": 6,
           "width": 631,
           "height": 590
         },

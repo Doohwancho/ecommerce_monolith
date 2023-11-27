@@ -3,8 +3,8 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": 0,
-    "scrollLeft": -159,
+    "scrollTop": -8,
+    "scrollLeft": -70,
     "zoomLevel": 1,
     "show": {
       "tableComment": true,
@@ -187,9 +187,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 195.889,
-          "top": 344.4446,
-          "zIndex": 11,
+          "left": 126.889,
+          "top": 470.4446,
+          "zIndex": 19,
           "widthName": 60,
           "widthComment": 60
         },
@@ -272,9 +272,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 429.2499,
-          "top": 104.389,
-          "zIndex": 9,
+          "left": 119.2499,
+          "top": 237.389,
+          "zIndex": 20,
           "widthName": 60,
           "widthComment": 60
         },
@@ -357,9 +357,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 687,
-          "top": 305,
-          "zIndex": 1,
+          "left": 603,
+          "top": 251,
+          "zIndex": 21,
           "widthName": 60,
           "widthComment": 60
         },
@@ -442,9 +442,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 621.8615,
-          "top": 560.6108,
-          "zIndex": 12,
+          "left": 575.8615,
+          "top": 462.6108,
+          "zIndex": 22,
           "widthName": 89.13880920410156,
           "widthComment": 60
         },
@@ -550,9 +550,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 208.5553,
-          "top": 667.3326,
-          "zIndex": 2,
+          "left": 142.5553,
+          "top": 740.3326,
+          "zIndex": 18,
           "widthName": 73.82490539550781,
           "widthComment": 60
         },
@@ -635,9 +635,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 695.6667,
-          "top": 788.7774,
-          "zIndex": 4,
+          "left": 587.6667,
+          "top": 718.7774,
+          "zIndex": 23,
           "widthName": 136.52374267578125,
           "widthComment": 60
         },
@@ -789,9 +789,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 1223.4458,
-          "top": 507.8882,
-          "zIndex": 5,
+          "left": 146.4458,
+          "top": 928.8882,
+          "zIndex": 31,
           "widthName": 60,
           "widthComment": 60
         },
@@ -874,9 +874,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 1223.9991,
-          "top": 768.8877,
-          "zIndex": 3,
+          "left": 571.9991,
+          "top": 937.8877,
+          "zIndex": 24,
           "widthName": 60.33091735839844,
           "widthComment": 60
         },
@@ -892,22 +892,22 @@
         "value": "Q. update는 row단위로 lock 거는데, insert나 delete는 table 단위로 lock 걸지 않나? (이건 그냥 추측임) 만약 그렇다면, 테이블 하나에 모든 상품 때려박는게 상품별로 테이블 다 쪼개놓는 것 보다 안좋지 않나?\n\n단일 테이블에 상품 등록/삭제시 걸리는 락 떄문에 query 성능 떨어질 수 있으니까?",
         "ui": {
           "active": false,
-          "left": 1131.5000000000025,
-          "top": 294.2777777777794,
-          "zIndex": 8,
-          "width": 337,
-          "height": 105
+          "left": 1099.5000000000025,
+          "top": 822.2777777777794,
+          "zIndex": 35,
+          "width": 433,
+          "height": 101
         },
         "id": "b1b12b71-018e-4a65-b305-5099d9b7912b"
       },
       {
-        "value": "방법론3. 상품별 옵션을 정규화 해서 쪼개놓은 경우",
+        "value": "방법론3. \n\n상품별 옵션을 정규화 해서 쪼개놓은 경우",
         "ui": {
-          "active": false,
-          "left": 183.58333333333326,
-          "top": 39.58333333333332,
-          "zIndex": 7,
-          "width": 158,
+          "active": true,
+          "left": 112.58333333333326,
+          "top": 70.58333333333331,
+          "zIndex": 40,
+          "width": 262,
           "height": 100
         },
         "id": "9a727d29-3d9a-470e-b916-2e931eeaa85a"
@@ -916,9 +916,9 @@
         "value": "pros\n\n정규화가 잘 되있어서 아름다움\n\n\ncons\n1. 개발 상품 페이지 쿼리할 떄 subquery & join 겁나 많이 해야 해서 느림. \n\n2. 주문목록 query할 때도 join 8 subquery 많이 해야 해서 느림.\n\n3. 상품 등록/업데이트/삭제 시, product/product_item/category/option/option_variation/product_option_variation 이 6개 테이블에 트랜잭션/lock 걸릴텐데, 너무 느릴 것 같음.",
         "ui": {
           "active": false,
-          "left": 1119.555555555555,
-          "top": 16.666666666666462,
-          "zIndex": 6,
+          "left": 1082.555555555555,
+          "top": 21.666666666666462,
+          "zIndex": 34,
           "width": 405,
           "height": 217
         },
@@ -928,11 +928,11 @@
         "value": "solution. \ncase3 >> case1,2\n\nwhy?\n\n---\n1. 확장성 우선\n\n비정규화는 일종의 최적화이고 되돌리기 힘든 과정임, 서비스 초기 단계라면 구현된 기능 자체가 수정&삭제가 빈번한데 이렁 경우 정규화된 구조를 사용하여 기능의 수정&삭제같은 유지보수를 저렴한 비용으로 유연하게 할 수 있도록 하는 것이 맞음 서비스가 더 커진다 해도 캐싱, 인덱싱, 분산처리(가용영역 추가, 비쌈)같은 테크닉을 쓸 수 있고\n\n나중에 서비스가 커져서 비정규화나 MSA같이 RDBMS가 보장해주는 것 일부를 포기하고 더 최적화를 해야할 경우가 오면 이때 해당 프로젝트 진행하면됨(비용 장난아님)\n\n결론: 정규화하고 최적화는 나중에 병목이 생기면 그 때 반정규화 하라.\n\n\n---\n2. 의외로 간단한 쿼리에 join 여러번하는건 보통 걱정 안한다더라. 캐싱 때문.\n\n\n간단한 쿼리의 조인 속도는 보통 걱정 안함. \n조회수 순, 추천제품 순으로 캐싱해버리니까 걱정하던거의 1000배는 빨라짐.\n확장성이 우선임.\n",
         "ui": {
           "active": false,
-          "left": 178.02777777777783,
-          "top": 940.5833333333334,
-          "zIndex": 13,
-          "width": 608,
-          "height": 299
+          "left": 1085.0277777777778,
+          "top": 307.58333333333337,
+          "zIndex": 32,
+          "width": 610,
+          "height": 414
         },
         "id": "9b8083f1-0ee6-4515-ab03-0132ae182193"
       }
@@ -949,8 +949,8 @@
           "columnIds": [
             "1362c8c1-216e-4fd9-b537-061b2c621a5c"
           ],
-          "x": 800.0787269042969,
-          "y": 104.389,
+          "x": 490.0787269042969,
+          "y": 237.389,
           "direction": "top"
         },
         "end": {
@@ -958,8 +958,8 @@
           "columnIds": [
             "8f8e1450-eea9-4360-a116-5db73ebcd43f"
           ],
-          "x": 820.0787269042969,
-          "y": 137.014,
+          "x": 510.0787269042969,
+          "y": 270.014,
           "direction": "right"
         },
         "constraintName": "fk_cateogory_to_cateogory",
@@ -975,17 +975,17 @@
           "columnIds": [
             "1362c8c1-216e-4fd9-b537-061b2c621a5c"
           ],
-          "x": 429.2499,
-          "y": 169.639,
-          "direction": "left"
+          "x": 314.66431345214846,
+          "y": 367.889,
+          "direction": "bottom"
         },
         "end": {
           "tableId": "0f82ec35-3a89-4135-8adb-703e2aeaf9d5",
           "columnIds": [
             "1f4f5123-8ed7-48c5-b455-9236f798b22f"
           ],
-          "x": 373.9419327392578,
-          "y": 344.4446,
+          "x": 304.9419327392578,
+          "y": 470.4446,
           "direction": "top"
         },
         "constraintName": "fk_cateogory_to_product",
@@ -1001,8 +1001,8 @@
           "columnIds": [
             "1362c8c1-216e-4fd9-b537-061b2c621a5c"
           ],
-          "x": 820.0787269042969,
-          "y": 202.264,
+          "x": 510.0787269042969,
+          "y": 335.264,
           "direction": "right"
         },
         "end": {
@@ -1010,9 +1010,9 @@
           "columnIds": [
             "5fbb7940-d46e-441f-a6d3-156a0ffcf36f"
           ],
-          "x": 862.361946105957,
-          "y": 305,
-          "direction": "top"
+          "x": 603,
+          "y": 316.25,
+          "direction": "left"
         },
         "constraintName": "fk_cateogory_to_option",
         "visible": true,
@@ -1027,8 +1027,8 @@
           "columnIds": [
             "1e2699f0-126e-42da-8d41-24963f77665e"
           ],
-          "x": 862.361946105957,
-          "y": 435.5,
+          "x": 778.361946105957,
+          "y": 381.5,
           "direction": "bottom"
         },
         "end": {
@@ -1036,8 +1036,8 @@
           "columnIds": [
             "032ed00c-d248-4b86-a51d-4e233c3a84af"
           ],
-          "x": 795.3615,
-          "y": 560.6108,
+          "x": 749.3615,
+          "y": 462.6108,
           "direction": "top"
         },
         "constraintName": "fk_option_to_option_variation",
@@ -1053,8 +1053,8 @@
           "columnIds": [
             "45cce526-d5c9-4009-9893-5083d8f753ba"
           ],
-          "x": 373.9419327392578,
-          "y": 536.4446,
+          "x": 304.9419327392578,
+          "y": 662.4446,
           "direction": "bottom"
         },
         "end": {
@@ -1062,8 +1062,8 @@
           "columnIds": [
             "71ca89c6-d22d-4285-bde2-732360b86606"
           ],
-          "x": 382.0553,
-          "y": 667.3326,
+          "x": 316.0553,
+          "y": 740.3326,
           "direction": "top"
         },
         "constraintName": "fk_product_to_product_item",
@@ -1079,8 +1079,8 @@
           "columnIds": [
             "27e41693-0108-4a12-a84f-8a825a24ded6"
           ],
-          "x": 795.3615,
-          "y": 691.1108,
+          "x": 749.3615,
+          "y": 593.1107999999999,
           "direction": "bottom"
         },
         "end": {
@@ -1088,8 +1088,8 @@
           "columnIds": [
             "b02f8cd8-3e65-449c-a4f0-ee90095d12b7"
           ],
-          "x": 890.9380928222656,
-          "y": 788.7774,
+          "x": 782.9380928222656,
+          "y": 718.7774,
           "direction": "top"
         },
         "constraintName": "fk_option_variation_to_product_option_variation",
@@ -1105,8 +1105,8 @@
           "columnIds": [
             "70bec15f-f223-4195-b5bf-e74cb7af6ddf"
           ],
-          "x": 555.5553,
-          "y": 742.8326,
+          "x": 489.5553,
+          "y": 815.8326,
           "direction": "right"
         },
         "end": {
@@ -1114,8 +1114,8 @@
           "columnIds": [
             "fd106b95-a32f-4bac-8b62-c2b9c51efd49"
           ],
-          "x": 695.6667,
-          "y": 854.0274,
+          "x": 587.6667,
+          "y": 784.0274,
           "direction": "left"
         },
         "constraintName": "fk_product_item_to_product_option_variation",
@@ -1131,18 +1131,18 @@
           "columnIds": [
             "222c022f-4a73-4b47-a919-d260183921b6"
           ],
-          "x": 1401.3492423828125,
-          "y": 699.8882,
-          "direction": "bottom"
+          "x": 502.25268476562496,
+          "y": 1024.8881999999999,
+          "direction": "right"
         },
         "end": {
           "tableId": "ca4a6f8d-c1f5-4a00-a64a-a79d04d61af7",
           "columnIds": [
             "97acdf71-ac6a-4e25-91fb-6f79af60e21f"
           ],
-          "x": 1442.9629595581055,
-          "y": 768.8877,
-          "direction": "top"
+          "x": 571.9991,
+          "y": 1003.1377,
+          "direction": "left"
         },
         "constraintName": "fk_order_to_order_item",
         "visible": true,
@@ -1157,18 +1157,18 @@
           "columnIds": [
             "50a82943-240f-4f51-9da0-1eeb22d92edb"
           ],
-          "x": 1086.2094856445312,
-          "y": 854.0274,
-          "direction": "right"
+          "x": 782.9380928222656,
+          "y": 849.2774,
+          "direction": "bottom"
         },
         "end": {
           "tableId": "ca4a6f8d-c1f5-4a00-a64a-a79d04d61af7",
           "columnIds": [
             "f9a5b8de-71ac-4c1e-b07a-8fadff63fb89"
           ],
-          "x": 1223.9991,
-          "y": 834.1377,
-          "direction": "left"
+          "x": 790.9629595581055,
+          "y": 937.8877,
+          "direction": "top"
         },
         "constraintName": "fk_product_option_variation_to_order_item",
         "visible": true,

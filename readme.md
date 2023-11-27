@@ -1,28 +1,28 @@
 # index
 
-1. [프로젝트 소개](#a-프로젝트-소개)
-2. [사용 기술](#b-사용-기술)
-3. [프로젝트 구조](#c-프로젝트-구조)
-4. [AWS architecture](#d-aws-architecture)
-5. [ERD diagram](#e-erd-diagram)
-6. [sequence diagram](#f-sequence-diagram)
-    1. [spring security + redis로 세션관리 하면서 이상행동 감지시 invalidate session + account lock](#a-spring-security--redis로-세션관리-하면서-이상행동-감지시-invalidate-session--account-lock) -- yet
-7. [기술적 도전](#g-기술적-도전)
-    1. [정규화](#a-정규화) -- yet
-    2. [bulk insert](#b-bulk-insert)
-    3. [API first design](#c-api-first-design)
-    4. [spring batch](#d-spring-batch)
-    5. [query tuning](#e-query-tuning) -- yet 
-    6. [defensive programming](#f-defensive-programming)
-    7. [clean code](#g-clean-code)
-8. [trouble shooting](#h-trouble-shooting)
-    1. [queryDSL library와 openapi-codegen이 build.gradle에서 컴파일시 깨지는 문제 해결](#a-querydsl-library와-openapi-codegen이-컴파일시-깨지는-문제-해결)
-    2. [그 외 trouble shooting 내역](#b-그-외-trouble-shooting-커밋-내역들)
+A. [프로젝트 소개](#a-프로젝트-소개)\
+B. [사용 기술](#b-사용-기술)\
+C. [프로젝트 구조](#c-프로젝트-구조)\
+D. [AWS architecture](#d-aws-architecture)\
+E. [ERD diagram](#e-erd-diagram)\
+F. [Sequence Diagram](#f-sequence-diagram)\
+&emsp;a. [spring security + redis로 세션관리 하면서 이상행동 감지시 invalidate session + account lock](#a-spring-security--redis로-세션관리-하면서-이상행동-감지시-invalidate-session--account-lock) -- yet\
+G. [기술적 도전](#g-기술적-도전)\
+&emsp;a. [정규화](#a-정규화)\
+&emsp;b. [bulk insert](#b-bulk-insert)\
+&emsp;c. [API first design](#c-api-first-design)\
+&emsp;d. [spring batch](#d-spring-batch)\
+&emsp;e. [query tuning](#e-query-tuning) -- yet\
+&emsp;f. [defensive programming](#f-defensive-programming)\
+&emsp;g. [clean code](#g-clean-code)\
+H. [Trouble Shooting](#h-trouble-shooting)\
+&emsp;a. [queryDSL library와 openapi-codegen이 build.gradle에서 컴파일시 깨지는 문제 해결](#a-querydsl-library와-openapi-codegen이-컴파일시-깨지는-문제-해결)\
+&emsp;b. [그 외 trouble shooting 내역](#b-그-외-trouble-shooting-커밋-내역들)
 
 
 # A. 프로젝트 소개
 
-쇼핑몰 MVP
+쇼핑몰 MVP.
 
 인증, 상품, 주문 관련 기능이 존재한다.
 
@@ -56,9 +56,8 @@
     - mysql workbench
     - postman
     - redoc
-    - VSC plugin: Draw.io Integration
-    - VSC plugin: ERD Editor 
-    - **Vim**
+    - VSC plugin - Draw.io Integration
+    - VSC plugin - ERD Editor 
 
 
 # C. 프로젝트 구조
@@ -129,17 +128,17 @@
 │   └── warn
 ```
 
-# D. aws architecture
+# D. AWS architecture
 ![](documentation/images/aws-architecture.png)
 
 
-# E. erd diagram
+# E. ERD diagram
 ![](documentation/images/erd.png)
 
 VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 열 수 있다.
 
 
-# F. sequence diagram
+# F. Sequence Diagram
 
 ## a. spring security + redis로 세션관리 하면서 이상행동 감지시 invalidate session + account lock
 ?
@@ -150,6 +149,93 @@ VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 �
 # G. 기술적 도전
 
 ## a. 정규화
+
+### 가. 방법론1. product를 비정규화 한 방식
+![](documentation/images/정규화-1.Png)
+
+#### 가-1. pros
+개별 제품 상세 페이지 쿼리는 빠름
+
+---
+
+#### 가-2. cons
+
+1. 구매자가 주문목록 query하려면, 모든 상품 테이블들 다 돌면서 product_id 찾아야 하니까 엄청 느림.
+이걸 완화하기 위해, 모든 상품테이블에 들어았는 product_id를 인덱스 거는게 최선일지 모르겠음.
+
+
+2. 또한, 상품 카테고리별로 테이블 만들어줘야 해서 테이블 갯수가 수십~수백개로 늘어남. 
+검색해보니, 의외로 테이블 갯수 자체가 늘어나는건 별 문제가 아니라고 한다.
+다만, 그보다 비정규화 했을 때, 상품 끼리 통일된 구조가 아닌게 더 문제라고 함. 통일된 구조가 아니면 나중에 확장할 때 merge, 변형 등이 힘들어지기 떄문. 
+erd 설계 한번하면 쭉 가는줄 알았는데, 의외로 서비스 초기 때에도 db 변경을 자주 할 수 있다고 한다. 유연한 설계를 하자.
+
+---
+
+### 나. 방법론2. order_item 테이블에 모든 비정규화한 상품테이블 리스트의 FK를 받는 방식
+![](documentation/images/정규화-2.Png)
+
+#### 나-1. pros
+방법론 1과 같이, 개별 상품 페이지 쿼리는 빠름.
+
+---
+
+#### 나-2. cons
+
+1. 상품 종류가 100가지라 상품 테이블이 100가지면, order_item가 받는 상품들의 fk가 100개+가 될텐데,\
+필드값이 100개인 테이블을 만든다는게 좀 이상한 것 같다.
+2. 주문목록 query하려면, null check 먼저 하고,해당 아이템의 fk 가지고 아이템 찾는 식 일텐데, 100개 컬럼 중 99개 컬럼이 Null인데 하나씩 Null비교해서 값을 꺼내는 방식은 안좋은 방식 같고, Null처리 잘못할 수 있어서 에러날 가능성이 있는 코드구조가 될 수 있음.
+
+
+---
+b. 또한, 
+100개의 컬럼 중 99개가 null이 들어가는 테이블을 만든다는게 조금 이상할 것 같다.
+
+
+
+### 다. 방법론3. 상품별 옵션을 정규화 해서 쪼개놓은 경우
+![](documentation/images/정규화-3.Png)
+
+#### 다-1. pros
+
+정규화가 잘 되있어서 변경에 유용하고 확장성이 좋은 설계이다. 
+
+
+#### 다-2. cons
+1. 개발 상품 페이지 쿼리할 떄 subquery & join 겁나 많이 해야 해서 느림. 
+2. 주문목록 query할 때도 join & subquery 많이 해야 해서 느림.
+3. 상품 등록/업데이트/삭제 시, product/product_item/category/option/option_variation/product_option_variation 이 6개 테이블에 트랜잭션/lock 걸릴텐데, 너무 느릴 것 같음.
+
+
+#### 다-3. solution
+방법론3을 택한다. 이유는 후술.
+
+
+##### 다-3-1. 확장성 우선
+
+비정규화는 일종의 최적화이고 되돌리기 힘든 과정이다.\
+서비스 초기 단계라면 구현된 기능 자체가 수정&삭제가 빈번한데 이럴 경우 정규화된 구조를 사용하여 기능의 수정 & 삭제같은 유지보수를 저렴한 비용으로 유연하게 할 수 있도록 하는 것이 맞다.
+
+서비스가 더 커진다 해도 캐싱, 인덱싱, 분산처리(가용영역 추가, 비쌈)같은 테크닉을 쓸 수 있고,\
+나중에 서비스가 커져서 비정규화나 MSA같이 RDBMS가 보장해주는 것 일부를 포기하고 더 최적화를 해야할 경우가 오면 이때 해당 프로젝트 진행하면 된다.
+
+결론: 정규화하고 최적화는 나중에 병목이 생기면 그 때 반정규화 하라.
+
+
+---
+##### 다-3-2. 의외로 간단한 쿼리에 join 여러번하는건 보통 걱정 안한다고 한다. 캐싱이 있기 때문이다.
+
+
+간단한 쿼리의 조인 속도는 보통 걱정 안한다.\
+조회수 순, 추천제품 순으로 캐싱해버리니까 걱정하던거의 1000배는 빨라진다.\
+확장성이 우선이다.
+
+
+---
+##### 다-3-3. 의문점: 정규화 한 결과로 여러 테이블을 join 해야하면, lock & transaction 때문에 쿼리 성능이 떨어지지 않을까?
+
+A. database, 버전, 옵티마이저에 따라 다르긴 하겠지만, 요즘 데이터베이스는 테이블 단위로 락 거는 경우는 드물고, row 단위로 락 걸기 때문에 괜찮다고 한다. (TODO - 정말 그런지 확인해보기)
+
+
 
 
 ## b. bulk insert
@@ -272,7 +358,7 @@ redocly preview-docs back/ecommerce/src/main/resources/api/openapi.yaml
 2. checkstyle
 3. code-style-formatter ([google style java format 적용](https://google.github.io/styleguide/javaguide.html))
 
-# H. trouble shooting
+# H. Trouble Shooting
 
 ## a. queryDSL library와 openapi-codegen이 컴파일시 깨지는 문제 해결
 

@@ -3,8 +3,8 @@
     "version": "2.2.11",
     "width": 2500,
     "height": 2500,
-    "scrollTop": -252,
-    "scrollLeft": -308,
+    "scrollTop": -125,
+    "scrollLeft": -94,
     "zoomLevel": 0.9,
     "show": {
       "tableComment": true,
@@ -1264,12 +1264,12 @@
   "memo": {
     "memos": [
       {
-        "value": "방법론1. product를 비정규화 하면, 개별 상품 query할 떄, join 여러번 안해서 더 좋지 않을까?",
+        "value": "방법론1. \n\nproduct를 비정규화 하면, 개별 상품 query할 떄, join 여러번 안해서 더 좋지 않을까?",
         "ui": {
           "active": true,
           "left": 127.5,
           "top": 42.25,
-          "zIndex": 9,
+          "zIndex": 13,
           "width": 221,
           "height": 100
         },
@@ -1279,9 +1279,9 @@
         "value": "pros\n개별 제품 상세 페이지 쿼리는 빠름\n\ncons\n\n1. 구매자가 주문목록 query하려면, 모든 상품 테이블들 다 돌면서 product_id 찾아야 하니까 엄청 느림.\n이걸 완화하기 위해, 모든 상품테이블에 들어았는 product_id를 인덱스 거는게 최선일지 모르겠음.\n\n\n2. 또한, 상품 카테고리별로 테이블 만들어줘야 해서 테이블 갯수가 수십~수백개로 늘어남. \n찾아보니, 의외로 테이블 갯수 자체가 늘어나는건 별 문제가 아니라고 한다.\n다만, 그보다 비정규화 했을 때, 상품 끼리 통일된 구조가 아닌게 더 문제라고 함. 통일된 구조가 아니면 나중에 확장할 때 merge, 변형 등이 힘들어지기 떄문. \nerd 설계 한번하면 쭉 가는줄 알았는데, 의외로 서비스 초기 때에도 db 변경을 자주 할 수 있다고 한다. 유연한 설계를 하자.\n",
         "ui": {
           "active": false,
-          "left": 1332.5,
-          "top": 333.5,
-          "zIndex": 8,
+          "left": 1518.0555555555559,
+          "top": 293.5000000000005,
+          "zIndex": 11,
           "width": 459,
           "height": 301
         },
