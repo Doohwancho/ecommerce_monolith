@@ -1,23 +1,23 @@
 # index
 
-A. [프로젝트 소개](#a-프로젝트-소개)\
-B. [사용 기술](#b-사용-기술)\
-C. [프로젝트 구조](#c-프로젝트-구조)\
-D. [AWS architecture](#d-aws-architecture)\
-E. [ERD diagram](#e-erd-diagram)\
-F. [Sequence Diagram](#f-sequence-diagram)\
-&emsp;a. [spring security + redis로 세션관리 하면서 이상행동 감지시 invalidate session + account lock](#a-spring-security--redis로-세션관리-하면서-이상행동-감지시-invalidate-session--account-lock) -- yet\
-G. [기술적 도전](#g-기술적-도전)\
-&emsp;a. [정규화](#a-정규화)\
-&emsp;b. [bulk insert](#b-bulk-insert)\
-&emsp;c. [API first design](#c-api-first-design)\
-&emsp;d. [spring batch](#d-spring-batch)\
-&emsp;e. [query tuning](#e-query-tuning) -- yet\
-&emsp;f. [defensive programming](#f-defensive-programming)\
-&emsp;g. [clean code](#g-clean-code)\
-H. [Trouble Shooting](#h-trouble-shooting)\
-&emsp;a. [queryDSL library와 openapi-codegen이 build.gradle에서 컴파일시 깨지는 문제 해결](#a-querydsl-library와-openapi-codegen이-컴파일시-깨지는-문제-해결)\
-&emsp;b. [그 외 trouble shooting 내역](#b-그-외-trouble-shooting-커밋-내역들)
+- A. [프로젝트 소개](#a-프로젝트-소개)
+- B. [사용 기술](#b-사용-기술)
+- C. [프로젝트 구조](#c-프로젝트-구조)
+- D. [AWS architecture](#d-aws-architecture)
+- E. [ERD diagram](#e-erd-diagram)
+- F. [Sequence Diagram](#f-sequence-diagram)
+    - a. [spring security + redis로 세션관리 하면서 이상행동 감지시 invalidate session + account lock](#a-spring-security--redis로-세션관리-하면서-이상행동-감지시-invalidate-session--account-lock) -- yet
+- G. [기술적 도전](#g-기술적-도전)
+    - a. [정규화](#a-정규화)
+    - b. [bulk insert](#b-bulk-insert)
+    - c. [API first design](#c-api-first-design)
+    - d. [spring batch](#d-spring-batch)
+    - e. [query tuning](#e-query-tuning) -- yet
+    - f. [defensive programming](#f-defensive-programming)
+    - g. [clean code](#g-clean-code)
+- H. [Trouble Shooting](#h-trouble-shooting)
+    - a. [queryDSL library와 openapi-codegen이 build.gradle에서 컴파일시 깨지는 문제 해결](#a-querydsl-library와-openapi-codegen이-컴파일시-깨지는-문제-해결)
+    - b. [그 외 trouble shooting 내역](#b-그-외-trouble-shooting-커밋-내역들)
 
 
 # A. 프로젝트 소개
@@ -38,7 +38,7 @@ H. [Trouble Shooting](#h-trouble-shooting)\
 | Category             | Tool/Library           | Version |
 |----------------------|------------------------|---------|
 | Java                 | JDK                    | 1.8     |
-| Spring               | spring-boot-starter-web| 2.5.6   |
+| Spring               | Spring Boot Starter Web| 2.5.6   |
 |                      | Spring Security        | 2.5.6   |
 |                      | Spring Data JPA        | 2.5.6   |
 |                      | Spring Batch           | 2.5.6   |
@@ -246,6 +246,8 @@ A. database, 버전, 옵티마이저에 따라 다르긴 하겠지만, 요즘 �
 1. 문제: 가데이터를 for-loop으로 넣던게 약 14분 30초 정도 걸림. 
 2. 해결책: spring batch + jpa bulk insert로 변경해서 4분30초 로 10분 단축
 
+https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java#L28-L132
+
 > [bulk insert code link](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java)
 
 ```
@@ -307,6 +309,8 @@ redocly preview-docs back/ecommerce/src/main/resources/api/openapi.yaml
 3. INACTIVE_USER로 옮기고, 
 4. 기존 유저 테이블에서 제거하는 배치 생성
 
+
+https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L26-L146
 
 > [batch code link](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java)
 
@@ -378,6 +382,8 @@ compileQuerydsl시 아직 컴파일 안된 openapi-codegen 코드부분 때문�
 1. gradle 빌드 순서를 openapi-codegen 컴파일이 먼저 실행되고,
 2. queryDSL이 다음에 실행되고,
 3. 마지막으로 compileJava가 실행되도록 변경했다.
+
+https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/build.gradle#L143-L145
 
 > [해결한 커밋 link](https://github.com/Doohwancho/ecommerce/commit/ffb5355069d127ba1e6745626bbbcd6da4fbc4ac)
 
