@@ -322,6 +322,7 @@ https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c
 ?
 
 
+
 ## f. defensive programming
 
 ### 1. testing 전략
@@ -358,7 +359,7 @@ https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c
 ## g. clean code
 
 ### 1. protocol 설정
-1. [commit-message protocol](https://github.com/Doohwancho/ecommerce/blob/main/documentation/commit-message.md)
+1. [commit-message protocol](https://github.com/Doohwancho/ecommerce/blob/main/documentation/protocols/commit-message.md)
 2. [error code protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java)
 3. [common / business / member 용 exception 구분](https://github.com/Doohwancho/ecommerce/tree/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/error/exception)
 

@@ -23,18 +23,20 @@ public class DataInitializationJobConfig {
         , Step createAdminStep
         , Step createTestUserStep
         , Step generateFakeUserStep
+        , Step createCategoriesAndOptionsStep
         , Step generateFakeProductStep
         , Step generateFakeOrderStep
     ) {
         return jobBuilderFactory.get("dataInitializationJob")
             .incrementer(new RunIdIncrementer())
             .listener(jobDurationListenerConfig)
-            .start(createAuthoritiesStep)
-            .next(createAdminStep)
-            .next(createTestUserStep)
-            .next(generateFakeUserStep)
+//            .start(createAuthoritiesStep)
+//            .next(createAdminStep)
+//            .next(createTestUserStep)
+//            .next(generateFakeUserStep)
+            .start(createCategoriesAndOptionsStep)
             .next(generateFakeProductStep)
-            .next(generateFakeOrderStep)
+//            .next(generateFakeOrderStep)
             .build();
     }
 }

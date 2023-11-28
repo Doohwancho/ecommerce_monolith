@@ -2,6 +2,7 @@ package com.cho.ecommerce;
 
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -15,12 +16,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+@Slf4j
 @EnableBatchProcessing
 @AllArgsConstructor
 @SpringBootApplication
 public class Application {
-    
-//    private final FakeDataGenerator dataGenerator;
+    private final FakeDataGenerator dataGenerator;
     
     private final JobLauncher jobLauncher;
     
@@ -35,13 +36,13 @@ public class Application {
         return args -> {
             JobParameters parameters = new JobParametersBuilder()
                 .addLong("run.id", System.currentTimeMillis()) // Unique parameter for each run
-                .addLong("numberOfFakeUsers", 10L)
+                .addLong("numberOfFakeUsers", 3000L)
                 .addLong("numberOfFakeCategories", 10L)
                 .addLong("numberOfFakeOptionsPerCategory", 3L)
                 .addLong("numberOfFakeOptionVariationsPerOption", 3L)
-                .addLong("numberOfFakeProducts", 10L)
+                .addLong("numberOfFakeProducts", 3000L)
                 .addLong("numberOfFakeProductItemsPerProduct", 3L)
-                .addLong("numberOfFakeOrderItemsPerOrder", 3L)
+                .addLong("numberOfFakeOrderItemsPerOrder", 5L)
                 .toJobParameters();
             try {
                 jobLauncher.run(dataInitializationJob, parameters);
@@ -56,15 +57,15 @@ public class Application {
 //        return args -> {
 //            long startTime = System.currentTimeMillis();
 //
-//            Integer numberOfFakeUsers = 5000;
+//            Integer numberOfFakeUsers = 3000;
 //            Integer numberOfFakeCategories = 10;
 //            Integer numberOfFakeOptions = 3;
 //            Integer numberOfFakeOptionsVariations = 3;
-//            Integer numberOfFakeProducts = 10;
+//            Integer numberOfFakeProducts = 3000;
 //            Integer numberOfFakeProductItems = 3;
 //            Integer numberOfFakeProductionOptionVariations = numberOfFakeProducts * numberOfFakeProductItems;
-//            Integer numberOfFakeOrders = 10;
-//            Integer maxProductItemsPerOrder = 3;
+//            Integer numberOfFakeOrders = 3000;
+//            Integer maxProductItemsPerOrder = 5;
 //
 //            //step1) create fake users
 //            dataGenerator.createAuthorities();
@@ -73,11 +74,11 @@ public class Application {
 //            dataGenerator.generateFakeUsers(numberOfFakeUsers);
 //
 //            //step2) create fake products
-////            dataGenerator.generateFakeCategoryAndOptions(numberOfFakeCategories, numberOfFakeOptions, numberOfFakeOptionsVariations);
-////            dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories, numberOfFakeProductItems );
+//            dataGenerator.generateFakeCategoryAndOptions(numberOfFakeCategories, numberOfFakeOptions, numberOfFakeOptionsVariations);
+//            dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories, numberOfFakeProductItems );
 //
 //            //step3) create fake orders
-////            dataGenerator.generateFakeOrdersAndOrderItems(numberOfFakeOrders, numberOfFakeUsers, maxProductItemsPerOrder, numberOfFakeProductionOptionVariations);
+//            dataGenerator.generateFakeOrdersAndOrderItems(numberOfFakeOrders, numberOfFakeUsers, maxProductItemsPerOrder, numberOfFakeProductionOptionVariations);
 //
 //            long endTime = System.currentTimeMillis();
 //            long duration = endTime - startTime;
