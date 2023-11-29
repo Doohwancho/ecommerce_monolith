@@ -30,13 +30,13 @@ public class DataInitializationJobConfig {
         return jobBuilderFactory.get("dataInitializationJob")
             .incrementer(new RunIdIncrementer())
             .listener(jobDurationListenerConfig)
-//            .start(createAuthoritiesStep)
-//            .next(createAdminStep)
-//            .next(createTestUserStep)
-//            .next(generateFakeUserStep)
-            .start(createCategoriesAndOptionsStep)
+            .start(createAuthoritiesStep)
+            .next(createAdminStep)
+            .next(createTestUserStep)
+            .next(generateFakeUserStep)
+            .next(createCategoriesAndOptionsStep)
             .next(generateFakeProductStep)
-//            .next(generateFakeOrderStep)
+            .next(generateFakeOrderStep)
             .build();
     }
 }

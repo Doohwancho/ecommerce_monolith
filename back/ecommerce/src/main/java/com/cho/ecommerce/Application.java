@@ -36,11 +36,11 @@ public class Application {
         return args -> {
             JobParameters parameters = new JobParametersBuilder()
                 .addLong("run.id", System.currentTimeMillis()) // Unique parameter for each run
-                .addLong("numberOfFakeUsers", 3000L)
+                .addLong("numberOfFakeUsers", 30L)
                 .addLong("numberOfFakeCategories", 10L)
                 .addLong("numberOfFakeOptionsPerCategory", 3L)
                 .addLong("numberOfFakeOptionVariationsPerOption", 3L)
-                .addLong("numberOfFakeProducts", 3000L)
+                .addLong("numberOfFakeProducts", 30L)
                 .addLong("numberOfFakeProductItemsPerProduct", 3L)
                 .addLong("numberOfFakeOrderItemsPerOrder", 5L)
                 .toJobParameters();

@@ -4,10 +4,13 @@ import com.cho.ecommerce.api.domain.OrderDTO;
 import com.cho.ecommerce.api.domain.OrderItemDetailsDTO;
 import com.cho.ecommerce.domain.order.domain.OrderItemDetails;
 import com.cho.ecommerce.domain.order.entity.OrderEntity;
+import com.cho.ecommerce.api.domain.OrderSalesStatisticsDTO;
+import com.cho.ecommerce.domain.order.entity.nativeQuery.OrderSalesStatisticsInterface;
 import com.cho.ecommerce.domain.order.mapper.OrderMapper;
 import com.cho.ecommerce.domain.order.mapper.TimeMapper;
 import com.cho.ecommerce.domain.order.repository.OrderRepository;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,5 +73,26 @@ public class OrderService {
     public void deleteOrder(Long orderId) {
         OrderEntity order = getOrderById(orderId);
         orderRepository.delete(order);
+    }
+    
+    public List<OrderSalesStatisticsDTO> findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
+        List<OrderSalesStatisticsInterface> queryResults = orderRepository.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths();
+        List<OrderSalesStatisticsDTO> list = new ArrayList<>();
+    
+        queryResults.forEach(result -> {
+            OrderSalesStatisticsDTO dto = new OrderSalesStatisticsDTO();
+            dto.setCategoryId(result.getCategoryId());
+            dto.setCategoryName(result.getCategoryName());
+            dto.setNumberOfProductsPerCategory(result.getNumberOfProductsPerCategory());
+            dto.setAverageRating(result.getAverageRating());
+            dto.setTotalSalesPerCategory(result.getTotalSalesPerCategory());
+            dto.setProductId(result.getProductId());
+            dto.setTopSalesProductName(result.getTopSalesProductName());
+            dto.setTopSalesOfProduct(result.getTopSalesOfProduct());
+            
+            list.add(dto);
+        });
+        
+        return list;
     }
 }

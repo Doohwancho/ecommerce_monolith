@@ -422,6 +422,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
+  /orders/statistics/sales:
+    get:
+      summary: Get order statistics
+      description: Retrieve statistics for orders including category, product sales.
+      operationId: getMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths
+      tags:
+        - Order
+      responses:
+        '200':
+          description: A list of order statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderSalesStatisticsDTO'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
 components:
   schemas:
     ErrorDTO:
@@ -755,3 +775,36 @@ components:
         price:
           type: number
           format: double
+    OrderSalesStatisticsDTO:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+          format: int64
+          description: Unique identifier for the category
+        categoryName:
+          type: string
+          description: Name of the category
+        numberOfProductsPerCategory:
+          type: integer
+          format: int32
+          description: Number of products in the category
+        averageRating:
+          type: number
+          format: double
+          description: Average rating of products in the category
+        totalSalesPerCategory:
+          type: number
+          format: double
+          description: Total sales for the category
+        productId:
+          type: integer
+          format: int64
+          description: Unique identifier for the top selling product
+        topSalesProductName:
+          type: string
+          description: Name of the top selling product
+        topSalesOfProduct:
+          type: number
+          format: double
+          description: Total sales of the top selling product

@@ -1,4 +1,4 @@
-package com.cho.ecommerce.global.config.batch.step;
+package com.cho.ecommerce.global.config.batch.step.deprecated;
 
 import org.springframework.context.annotation.Configuration;
 

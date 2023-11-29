@@ -4,6 +4,7 @@ import com.cho.ecommerce.api.OrderApi;
 import com.cho.ecommerce.api.domain.OrderDTO;
 import com.cho.ecommerce.api.domain.OrderItemDetailsDTO;
 import com.cho.ecommerce.domain.order.service.OrderService;
+import com.cho.ecommerce.api.domain.OrderSalesStatisticsDTO;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -71,4 +72,15 @@ public class OrderController implements OrderApi {
         return ResponseEntity.ok(orderItemDetails);
     }
     
+    @Override
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<OrderSalesStatisticsDTO>> getMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
+        List<OrderSalesStatisticsDTO> orderSalesStatisticsDTOs = orderService.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths();
+        
+        if(orderSalesStatisticsDTOs.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        return ResponseEntity.ok(orderSalesStatisticsDTOs);
+    }
 }

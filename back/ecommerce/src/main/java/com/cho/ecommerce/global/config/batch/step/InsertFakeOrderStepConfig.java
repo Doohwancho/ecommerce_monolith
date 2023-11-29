@@ -107,7 +107,7 @@ public class InsertFakeOrderStepConfig {
                     
                     // Convert Date to LocalDateTime
                     LocalDateTime orderDate = Instant.ofEpochMilli(
-                            faker.date().past(30, TimeUnit.DAYS).getTime())
+                            faker.date().past(730, TimeUnit.DAYS).getTime())
                         .atZone(ZoneId.systemDefault())
                         .toLocalDateTime();
                     order.setOrderDate(orderDate);
