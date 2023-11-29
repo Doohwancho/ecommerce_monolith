@@ -11,7 +11,7 @@
     - b. [bulk insert](#b-bulk-insert)
     - c. [API first design](#c-api-first-design)
     - d. [spring batch](#d-spring-batch)
-    - e. [query tuning](#e-query-tuning) -- yet
+    - e. [통계 쿼리](#e-통계-쿼리)
     - f. [defensive programming](#f-defensive-programming)
     - g. [clean code](#g-clean-code)
 - H. [Trouble Shooting](#h-trouble-shooting)
@@ -318,8 +318,100 @@ https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c
 
 
 
-## e. query tuning
-?
+## e. 통계 쿼리
+### 1. 요구사항
+1. 23년 6월 ~ 23년 12월 사이에
+2. 카테고리 별 상품 갯수
+3. 해당 카테고리의 상품들의 평균 평점
+4. 해당 카테고리의 총 상품 판매액
+5. 해당 카테고리에서 가장 많이 팔린 상품의 productId
+6. 해당 카테고리에서 가장 많이 팔린 상품의 이름
+7. 해당 카테고리에서 가장 많이 팔린 상품의 총 판매액
+
+...을 query 한다.
+
+### 2. sql query 문
+
+![](documentation/images/통계쿼리.png)
+
+```sql
+SELECT
+	tmp1.CategoryId,
+    tmp1.CategoryName,
+    tmp1.NumberOfProductsPerCategory,
+    tmp1.AverageRating,
+    tmp1.TotalSalesPerCategory,
+    tmp2.ProductId,
+    tmp2.ProductName AS TopSalesProduct,
+    tmp2.TopSalesOfProduct
+FROM (
+	SELECT 
+		c.CATEGORY_ID AS CategoryId,
+		c.NAME AS CategoryName,
+		COUNT(DISTINCT p.PRODUCT_ID) AS NumberOfProductsPerCategory,
+		ROUND(AVG(p.RATING), 1) AS AverageRating,
+		ROUND(SUM(pi.Quantity * pi.PRICE), 1) AS TotalSalesPerCategory
+	FROM CATEGORY c
+	JOIN PRODUCT p ON c.CATEGORY_ID = p.CATEGORY_ID
+	JOIN PRODUCT_ITEM pi ON p.PRODUCT_ID = pi.PRODUCT_ID
+	JOIN product_option_variation pov ON pi.PRODUCT_ITEM_ID = pov.PRODUCT_ITEM_ID
+	JOIN ORDER_ITEM oi ON pov.PRODUCT_OPTION_VARIATION_ID = oi.PRODUCT_OPTION_VARIATION_ID
+	JOIN `ORDER` o ON oi.ORDER_ID = o.ORDER_ID
+	WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
+	GROUP BY c.CATEGORY_ID
+) AS tmp1
+JOIN
+	(
+	SELECT
+		a.CategoryId AS CategoryId,
+		b.ProductId As ProductId,
+		b.ProductName As ProductName,
+		a.TopSalesOfProduct AS TopSalesOfProduct
+	FROM
+		(SELECT 
+			Sub.CategoryId,
+			Sub.CategoryName,
+			MAX(Sub.TotalSalesPerProduct) as TopSalesOfProduct
+		FROM
+			(SELECT 
+				c.CATEGORY_ID as CategoryId,
+				c.name as CategoryName,
+				p2.PRODUCT_ID,
+				ROUND(SUM(pi2.Quantity * pi2.PRICE), 1) as TotalSalesPerProduct
+			FROM CATEGORY c
+			JOIN PRODUCT p2 ON c.CATEGORY_ID = p2.CATEGORY_ID
+			INNER JOIN PRODUCT_ITEM pi2 ON p2.PRODUCT_ID = pi2.PRODUCT_ID
+			INNER JOIN PRODUCT_OPTION_VARIATION pov2 ON pi2.PRODUCT_ITEM_ID = pov2.PRODUCT_ITEM_ID
+			INNER JOIN ORDER_ITEM oi2 ON pov2.PRODUCT_OPTION_VARIATION_ID = oi2.PRODUCT_OPTION_VARIATION_ID
+			INNER JOIN `ORDER` o2 ON oi2.ORDER_ID = o2.ORDER_ID
+			WHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
+			GROUP BY c.CATEGORY_ID, p2.PRODUCT_ID
+			) as Sub
+		GROUP BY Sub.CategoryId
+		) a
+	JOIN
+		(SELECT 
+			c.CATEGORY_ID as CategoryId,
+			c.name as CategoryName,
+			p2.PRODUCT_ID as ProductId,
+			p2.name as ProductName,
+			ROUND(SUM(pi2.Quantity * pi2.PRICE), 1) as TopSalesOfProduct
+		FROM CATEGORY c
+		JOIN PRODUCT p2 ON c.CATEGORY_ID = p2.CATEGORY_ID
+		INNER JOIN PRODUCT_ITEM pi2 ON p2.PRODUCT_ID = pi2.PRODUCT_ID
+		INNER JOIN PRODUCT_OPTION_VARIATION pov2 ON pi2.PRODUCT_ITEM_ID = pov2.PRODUCT_ITEM_ID
+		INNER JOIN ORDER_ITEM oi2 ON pov2.PRODUCT_OPTION_VARIATION_ID = oi2.PRODUCT_OPTION_VARIATION_ID
+		INNER JOIN `ORDER` o2 ON oi2.ORDER_ID = o2.ORDER_ID
+		WHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
+		GROUP BY c.CATEGORY_ID, p2.PRODUCT_ID
+			) b
+		ON a.CategoryId = b.CategoryId AND a.TopSalesOfProduct = b.TopSalesOfProduct
+		ORDER BY a.CategoryId
+	) AS tmp2
+ON tmp1.CategoryId = tmp2.CategoryId
+ORDER BY tmp1.CategoryId
+```
+https://github.com/Doohwancho/ecommerce/blob/4e978a6279c639991811bc4628dc5bfb0a2bbea4/back/ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java#L11-L97
 
 
 
