@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -22,7 +23,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "`ORDER`") //mysql에 ORDER 이름의 테이블 생성 불가라 `ORDER`으로 적었지만, h2에서는 "ORDER"으로 생성되어 문제가 생긴다.
+@Table(
+    name = "`ORDER`", //mysql에 ORDER 이름의 테이블 생성 불가라 `ORDER`으로 적었지만, h2에서는 "ORDER"으로 생성되어 문제가 생긴다.
+    indexes = {
+        @Index(name = "idx_order_date", columnList = "ORDER_DATE")
+    }
+)
 @Getter
 @Setter
 public class OrderEntity {

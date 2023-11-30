@@ -3,8 +3,6 @@ package com.cho.ecommerce;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobParameters;
@@ -36,11 +34,11 @@ public class Application {
         return args -> {
             JobParameters parameters = new JobParametersBuilder()
                 .addLong("run.id", System.currentTimeMillis()) // Unique parameter for each run
-                .addLong("numberOfFakeUsers", 30L)
+                .addLong("numberOfFakeUsers", 1000L)
                 .addLong("numberOfFakeCategories", 10L)
                 .addLong("numberOfFakeOptionsPerCategory", 3L)
                 .addLong("numberOfFakeOptionVariationsPerOption", 3L)
-                .addLong("numberOfFakeProducts", 30L)
+                .addLong("numberOfFakeProducts", 1000L)
                 .addLong("numberOfFakeProductItemsPerProduct", 3L)
                 .addLong("numberOfFakeOrderItemsPerOrder", 5L)
                 .toJobParameters();
