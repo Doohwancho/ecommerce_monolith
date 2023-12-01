@@ -610,7 +610,7 @@ WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
 	1. **mysql workbench에 visual explain에서 나오는 rows read는 추정치일 뿐이라 그대로 믿으면 안된다.**
 	2. 실제 실행계획 수치는 mysql console에서 commandline인 'explain analyze'을 쳐서 실측치를 봐야한다. 
 
-#### 2-4. 실험
+#### 2-4. 검증
 "e. 통계쿼리"를 다시 돌리되,\
 데이터 사이즈를 키워서 index 타는 쿼리와 타지 않는 쿼리가 시간차가 얼마나 나는지 보자.
 

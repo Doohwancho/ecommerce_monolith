@@ -20,9 +20,8 @@ How
 Features
 
 1. authentication
-2. security
-3. product
-4. order
+2. product
+3. order
 
 
 ---\
@@ -51,3 +50,16 @@ Etc
 5. revert : reverts the previous commit
 6. bump: 버전업에 대한 커밋
 
+
+---\
+Frontend 
+
+front로 시작한다.
+
+- domain 
+    1. authentication
+    2. product
+    3. order
+- front specific keywords
+    1. page
+    2. state
