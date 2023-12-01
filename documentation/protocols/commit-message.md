@@ -62,4 +62,7 @@ front로 시작한다.
     3. order
 - front specific keywords
     1. page
-    2. state
+    2. component
+    3. style
+    4. state
+
