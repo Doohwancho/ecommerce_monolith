@@ -372,7 +372,17 @@ sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/node,react,visualstudiocode
 
+
 ### end of frontend ###
+
+
+### openapi-codegen-cli ###
+
+front/ecommerce/generated-sources/openapi/
+
+
+### end of openapi-codegen-cli ###
+
 
 
 
