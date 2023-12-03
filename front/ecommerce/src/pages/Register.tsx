@@ -1,19 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation, UseMutationResult } from 'react-query';
 
-interface RegisterForm {
-  username: string;
-  email: string;
-  password: string;
-  name: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    country: string;
-    zipcode: string;
-  };
-}
+import { RegisterRequestDTO, RegisterResponseDTO } from 'model';
 
 const initialFormData = {
     username: '',
@@ -25,13 +13,13 @@ const initialFormData = {
       city: '',
       state: '',
       country: '',
-      zipcode: '',
+      zipCode: '',
     },
   };
 
 
-const useRegisterUser = ():UseMutationResult<any, Error, RegisterForm> => {
-    return useMutation<unknown, Error, RegisterForm>(async (formData:RegisterForm) => {
+const useRegisterUser = ():UseMutationResult<RegisterResponseDTO, Error, RegisterRequestDTO> => {
+    return useMutation<RegisterResponseDTO, Error, RegisterRequestDTO>(async (formData:RegisterRequestDTO) => {
 
         const baseUrl = 'http://127.0.0.1:8080';
         const endpoint = '/register';
@@ -55,7 +43,7 @@ const useRegisterUser = ():UseMutationResult<any, Error, RegisterForm> => {
 
 const Register: React.FC = () => {
 
-  const [formData, setFormData] = useState<RegisterForm>(initialFormData);
+  const [formData, setFormData] = useState<RegisterRequestDTO>(initialFormData);
 
   const { mutate, isLoading, isError, error, data } = useRegisterUser();
 
@@ -81,8 +69,14 @@ const Register: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    mutate(formData);
-    console.log('Form Data Submitted:', formData);
+    mutate(formData, {
+        onSuccess: (responseData) => {
+          console.log('Registration Response:', responseData);
+        },
+        onError: (error) => {
+          console.error('Registration Error:', error);
+        }
+    });
   };
 
   return (
@@ -172,12 +166,12 @@ const Register: React.FC = () => {
             />
             </div>
             <div>
-            <label htmlFor="zipcode">Zipcode:</label>
+            <label htmlFor="zipCode">Zipcode:</label>
             <input
                 type="text"
-                id="zipcode"
-                name="address.zipcode"
-                value={formData.address.zipcode}
+                id="zipCode"
+                name="address.zipCode"
+                value={formData.address.zipCode}
                 onChange={handleChange}
             />
             </div>

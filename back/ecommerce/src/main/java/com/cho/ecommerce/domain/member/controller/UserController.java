@@ -68,7 +68,7 @@ public class UserController implements UserApi {
     }
     
     @Override
-    public ResponseEntity<com.cho.ecommerce.api.domain.UserDetailsResponseDTO> getUserByUsername(@Valid @PathVariable String username) {
+    public ResponseEntity<com.cho.ecommerce.api.domain.UserDetailsResponseDTO> getUserByUsername(@PathVariable String username) {
         com.cho.ecommerce.api.domain.UserDetailsResponseDTO userDetailsResponseDTOByUsername = userService.findUserDetailsDTOByUsername(
             username);
         

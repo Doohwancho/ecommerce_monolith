@@ -29,26 +29,26 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
     
-    @Bean
-    public CommandLineRunner commandLineRunner() {
-        return args -> {
-            JobParameters parameters = new JobParametersBuilder()
-                .addLong("run.id", System.currentTimeMillis()) // Unique parameter for each run
-                .addLong("numberOfFakeUsers", 10L)
-                .addLong("numberOfFakeCategories", 10L)
-                .addLong("numberOfFakeOptionsPerCategory", 3L)
-                .addLong("numberOfFakeOptionVariationsPerOption", 3L)
-                .addLong("numberOfFakeProducts", 10L)
-                .addLong("numberOfFakeProductItemsPerProduct", 3L)
-                .addLong("numberOfFakeOrderItemsPerOrder", 5L)
-                .toJobParameters();
-            try {
-                jobLauncher.run(dataInitializationJob, parameters);
-            } catch (JobExecutionException e) {
-                e.printStackTrace();
-            }
-        };
-    }
+//    @Bean
+//    public CommandLineRunner commandLineRunner() {
+//        return args -> {
+//            JobParameters parameters = new JobParametersBuilder()
+//                .addLong("run.id", System.currentTimeMillis()) // Unique parameter for each run
+//                .addLong("numberOfFakeUsers", 10L)
+//                .addLong("numberOfFakeCategories", 10L)
+//                .addLong("numberOfFakeOptionsPerCategory", 3L)
+//                .addLong("numberOfFakeOptionVariationsPerOption", 3L)
+//                .addLong("numberOfFakeProducts", 10L)
+//                .addLong("numberOfFakeProductItemsPerProduct", 3L)
+//                .addLong("numberOfFakeOrderItemsPerOrder", 5L)
+//                .toJobParameters();
+//            try {
+//                jobLauncher.run(dataInitializationJob, parameters);
+//            } catch (JobExecutionException e) {
+//                e.printStackTrace();
+//            }
+//        };
+//    }
     
 //    @Bean
 //    public CommandLineRunner initData() {

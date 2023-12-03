@@ -485,24 +485,23 @@ components:
       properties:
         username:
           type: string
+          minLength: 1
+          nullable: false
           description: Unique user identifier.
-          nullable: false #TODO - nullable: false로 해도, RegisterPostDTO에 필드 위에 @NotNull 붙지 않고, postman으로 테스트 해봐도 null값이 들어가는 에러가 존재한다. 아마 서버에서 검증하는게 아니라 클라이언트에서 검증하는식으로 처리하는건가?
-                          #TODO - 만약 nullable, minLength, required 등이 client에서 만들어지는 ts으로 validation하는 거라면, hacker가 client code를 통하지 않고, 쌩 POST /register 요청으로 body에 null, "" 등을 넣어 보내면 뚫릴 보안적 취약성이 존재한다.
-          minLength: 1 #TODO - minLength를 정해도, 필드에 ""를 넣고 요청해도 잘 들어가는 문제가 존재한다.
         email:
           type: string
           format: email
-          description: Unique email address.
-          nullable: false
           minLength: 1
+          nullable: false
+          description: Unique email address.
         name:
           type: string
-          nullable: false
           minLength: 1
+          nullable: false
         password:
           type: string
-          nullable: false
           minLength: 1
+          nullable: false
         address:
           type: object
           required:
@@ -514,29 +513,29 @@ components:
           properties:
             street:
               type: string
+              minLength: 1
               description: Street name and number.
               nullable: false
-              minLength: 1
             city:
               type: string
+              minLength: 1
               description: City name.
               nullable: false
-              minLength: 1
             state:
               type: string
+              minLength: 1
               description: State or province name.
               nullable: false
-              minLength: 1
             country:
               type: string
+              minLength: 1
               description: Country name.
               nullable: false
-              minLength: 1
             zipCode:
               type: string
+              minLength: 1
               description: Postal or ZIP code.
               nullable: false
-              minLength: 1
     RegisterResponseDTO:
       type: object
       required:
