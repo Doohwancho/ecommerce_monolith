@@ -4,6 +4,7 @@ package com.cho.ecommerce.global.config.security;
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationFailureHandler;
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationSuccessHandler;
 import com.cho.ecommerce.global.config.security.session.SecuritySessionExpiredStrategy;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -38,6 +42,8 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+            .cors().configurationSource(corsConfigurationSource())
+            .and()
             .csrf()
             .ignoringAntMatchers("/h2-console/**") // Disable CSRF for H2 console
             .disable() //disable csrf for conveniency
@@ -98,5 +104,19 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     @Bean
     public SpringSessionBackedSessionRegistry<S> sessionRegistry() {
         return new SpringSessionBackedSessionRegistry<>(this.sessionRepository);
+    }
+    
+    // CORS configuration for local react-vite development
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5173")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+        configuration.setAllowCredentials(true);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
