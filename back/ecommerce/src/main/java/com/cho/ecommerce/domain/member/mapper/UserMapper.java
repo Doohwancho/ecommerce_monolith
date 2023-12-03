@@ -1,8 +1,6 @@
 package com.cho.ecommerce.domain.member.mapper;
 
 import com.cho.ecommerce.api.domain.AddressDTO;
-import com.cho.ecommerce.api.domain.RegisterPostDTO;
-import com.cho.ecommerce.api.domain.UserDetailsDTO;
 import com.cho.ecommerce.domain.member.domain.Address;
 import com.cho.ecommerce.domain.member.domain.User;
 import com.cho.ecommerce.domain.member.entity.AddressEntity;
@@ -27,7 +25,8 @@ public class UserMapper {
         this.passwordEncoder = passwordEncoder;
     }
     
-    public UserEntity dtoToEntityWithNestedAddress(RegisterPostDTO dto, String role) {
+    public UserEntity dtoToEntityWithNestedAddress(
+        com.cho.ecommerce.api.domain.RegisterRequestDTO dto, String role) {
         UserEntity userEntity = new UserEntity();
         
         userEntity.setUsername(dto.getUsername());
@@ -100,23 +99,23 @@ public class UserMapper {
             : dateToConvert.atZone(ZoneId.systemDefault()).toOffsetDateTime();
     }
     
-    public UserDetailsDTO toUserDetailsDTO(User user) {
+    public com.cho.ecommerce.api.domain.UserDetailsResponseDTO toUserDetailsDTO(User user) {
         if (user == null) {
             return null;
         }
         
-        UserDetailsDTO userDetailsDTO = new UserDetailsDTO();
-        userDetailsDTO.setUsername(user.getUsername());
-        userDetailsDTO.setEmail(user.getEmail());
-        userDetailsDTO.setName(user.getName());
-        userDetailsDTO.setAddress(toAddressDTO(user.getAddress()));
-        userDetailsDTO.setRole(user.getRole());
-        userDetailsDTO.setEnabled(user.getEnabled());
-        userDetailsDTO.setCreated(user.getCreated());
-        userDetailsDTO.setUpdated(user.getUpdated());
-        userDetailsDTO.setAuthorities(user.getAuthorities());
+        com.cho.ecommerce.api.domain.UserDetailsResponseDTO userDetailsResponseDTO = new com.cho.ecommerce.api.domain.UserDetailsResponseDTO();
+        userDetailsResponseDTO.setUsername(user.getUsername());
+        userDetailsResponseDTO.setEmail(user.getEmail());
+        userDetailsResponseDTO.setName(user.getName());
+        userDetailsResponseDTO.setAddress(toAddressDTO(user.getAddress()));
+        userDetailsResponseDTO.setRole(user.getRole());
+        userDetailsResponseDTO.setEnabled(user.getEnabled());
+        userDetailsResponseDTO.setCreated(user.getCreated());
+        userDetailsResponseDTO.setUpdated(user.getUpdated());
+        userDetailsResponseDTO.setAuthorities(user.getAuthorities());
         
-        return userDetailsDTO;
+        return userDetailsResponseDTO;
     }
     
     public AddressDTO toAddressDTO(Address address) {

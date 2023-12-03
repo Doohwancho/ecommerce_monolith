@@ -1,8 +1,6 @@
 package com.cho.ecommerce.domain.product.mapper;
 
-import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
-import com.cho.ecommerce.api.domain.ProductDetailDTO;
 import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
@@ -64,7 +62,8 @@ public interface ProductMapper {
     @Mapping(target = "productItems", ignore = true) // Assuming not needed for creation DTO
     @Mapping(target = "category", ignore = true)
         // Assuming you don't want to map the category back in this direction
-    ProductEntity productCreateDTOToProductEntity(ProductCreateDTO productCreateDTO);
+    ProductEntity productCreateDTOToProductEntity(
+        com.cho.ecommerce.api.domain.ProductCreateRequestDTO productCreateRequestDTO);
     
     
     default ProductListResponseDTO productEntitiesToProductListResponseDTOs(
@@ -74,9 +73,9 @@ public interface ProductMapper {
         return productListResponseDTO;
     }
     
-    ProductDetailDTO productToProductDetailDTO(Product product);
+    com.cho.ecommerce.api.domain.ProductDetailResponseDTO productToProductDetailDTO(Product product);
     
-    List<ProductDetailDTO> productsToProductDetailDTOs(List<Product> products);
+    List<com.cho.ecommerce.api.domain.ProductDetailResponseDTO> productsToProductDetailDTOs(List<Product> products);
     
     default PaginatedProductResponse buildPaginatedProductResponse(Page<ProductEntity> page) {
         List<ProductDTO> productDTOs = page.getContent().stream()

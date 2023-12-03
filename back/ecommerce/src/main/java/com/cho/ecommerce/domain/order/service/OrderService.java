@@ -1,10 +1,8 @@
 package com.cho.ecommerce.domain.order.service;
 
 import com.cho.ecommerce.api.domain.OrderDTO;
-import com.cho.ecommerce.api.domain.OrderItemDetailsDTO;
 import com.cho.ecommerce.domain.order.domain.OrderItemDetails;
 import com.cho.ecommerce.domain.order.entity.OrderEntity;
-import com.cho.ecommerce.api.domain.OrderSalesStatisticsDTO;
 import com.cho.ecommerce.domain.order.entity.nativeQuery.OrderSalesStatisticsInterface;
 import com.cho.ecommerce.domain.order.mapper.OrderMapper;
 import com.cho.ecommerce.domain.order.mapper.TimeMapper;
@@ -44,7 +42,7 @@ public class OrderService {
         return orderMapper.orderEntityToOrderDTO(orderEntity);
     }
     
-    public List<OrderItemDetailsDTO> findOrderItemDetailsByUsername(String username) {
+    public List<com.cho.ecommerce.api.domain.OrderItemDetailsResponseDTO> findOrderItemDetailsByUsername(String username) {
         List<OrderItemDetails> orderItemDetails = orderRepository.getOrderItemDetailsByUsername(
             username).orElseThrow(() -> new ResourceNotFoundException(
             "No order details found for username: " + username));
@@ -75,12 +73,12 @@ public class OrderService {
         orderRepository.delete(order);
     }
     
-    public List<OrderSalesStatisticsDTO> findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
+    public List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
         List<OrderSalesStatisticsInterface> queryResults = orderRepository.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths();
-        List<OrderSalesStatisticsDTO> list = new ArrayList<>();
+        List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> list = new ArrayList<>();
     
         queryResults.forEach(result -> {
-            OrderSalesStatisticsDTO dto = new OrderSalesStatisticsDTO();
+            com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO dto = new com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO();
             dto.setCategoryId(result.getCategoryId());
             dto.setCategoryName(result.getCategoryName());
             dto.setNumberOfProductsPerCategory(result.getNumberOfProductsPerCategory());

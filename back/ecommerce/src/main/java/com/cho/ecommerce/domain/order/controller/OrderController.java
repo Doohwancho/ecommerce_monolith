@@ -2,10 +2,9 @@ package com.cho.ecommerce.domain.order.controller;
 
 import com.cho.ecommerce.api.OrderApi;
 import com.cho.ecommerce.api.domain.OrderDTO;
-import com.cho.ecommerce.api.domain.OrderItemDetailsDTO;
 import com.cho.ecommerce.domain.order.service.OrderService;
-import com.cho.ecommerce.api.domain.OrderSalesStatisticsDTO;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,23 +47,23 @@ public class OrderController implements OrderApi {
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<OrderDTO> ordersOrderIdPut(Long orderId, OrderDTO order) {
+    public ResponseEntity<OrderDTO> ordersOrderIdPut(Long orderId, @Valid OrderDTO order) {
         OrderDTO updatedOrder = orderService.updateOrder(orderId, order);
         return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
     }
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<OrderDTO> ordersPost(OrderDTO order) {
+    public ResponseEntity<OrderDTO> ordersPost(@Valid OrderDTO order) {
         OrderDTO createdOrder = orderService.createOrder(order);
         return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
     }
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<List<OrderItemDetailsDTO>> getOrderItemDetailsByUsername(
+    public ResponseEntity<List<com.cho.ecommerce.api.domain.OrderItemDetailsResponseDTO>> getOrderItemDetailsByUsername(
         @PathVariable String username) {
-        List<OrderItemDetailsDTO> orderItemDetails = orderService.findOrderItemDetailsByUsername(
+        List<com.cho.ecommerce.api.domain.OrderItemDetailsResponseDTO> orderItemDetails = orderService.findOrderItemDetailsByUsername(
             username);
         if (orderItemDetails.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -74,13 +73,13 @@ public class OrderController implements OrderApi {
     
     @Override
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<OrderSalesStatisticsDTO>> getMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
-        List<OrderSalesStatisticsDTO> orderSalesStatisticsDTOs = orderService.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths();
+    public ResponseEntity<List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO>> getMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
+        List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> orderSalesStatisticsResponseDTOS = orderService.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths();
         
-        if(orderSalesStatisticsDTOs.isEmpty()) {
+        if(orderSalesStatisticsResponseDTOS.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         
-        return ResponseEntity.ok(orderSalesStatisticsDTOs);
+        return ResponseEntity.ok(orderSalesStatisticsResponseDTOS);
     }
 }

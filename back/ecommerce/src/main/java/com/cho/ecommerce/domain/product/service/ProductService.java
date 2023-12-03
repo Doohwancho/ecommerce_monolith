@@ -1,9 +1,7 @@
 package com.cho.ecommerce.domain.product.service;
 
 import com.cho.ecommerce.api.domain.PaginatedProductResponse;
-import com.cho.ecommerce.api.domain.ProductCreateDTO;
 import com.cho.ecommerce.api.domain.ProductDTO;
-import com.cho.ecommerce.api.domain.ProductDetailDTO;
 import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
@@ -109,14 +107,14 @@ public class ProductService {
         return productList;
     }
     
-    public List<ProductDetailDTO> findProductDetailDTOsById(Long productId) {
+    public List<com.cho.ecommerce.api.domain.ProductDetailResponseDTO> findProductDetailDTOsById(Long productId) {
         List<Product> productDetailDTOsList = self.getProductDetailDTOsById(
             productId); //fix: solution to "Methods should not call same-class methods with incompatible @Transactional"
         return productMapper.productsToProductDetailDTOs(productDetailDTOsList);
     }
     
     @Transactional
-    public ProductDTO saveProduct(ProductCreateDTO product) {
+    public ProductDTO saveProduct(com.cho.ecommerce.api.domain.ProductCreateRequestDTO product) {
         ProductEntity productEntity = productMapper.productCreateDTOToProductEntity(product);
         CategoryEntity category = categoryRepository.findByCategoryId(
             Long.valueOf(product.getCategoryId()));

@@ -1,7 +1,5 @@
 package com.cho.ecommerce.domain.member.service;
 
-import com.cho.ecommerce.api.domain.RegisterPostDTO;
-import com.cho.ecommerce.api.domain.UserDetailsDTO;
 import com.cho.ecommerce.domain.member.domain.User;
 import com.cho.ecommerce.domain.member.entity.AuthorityEntity;
 import com.cho.ecommerce.domain.member.entity.UserAuthorityEntity;
@@ -18,7 +16,6 @@ import com.cho.ecommerce.global.error.exception.member.LockedAccountUserFailedTo
 import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,8 +73,9 @@ public class UserService implements UserDetailsService {
     }
     
     @Transactional
-    public UserEntity saveRoleUser(RegisterPostDTO registerPostDTO) {
-        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO,
+    public UserEntity saveRoleUser(
+        com.cho.ecommerce.api.domain.RegisterRequestDTO registerRequestDTO) {
+        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerRequestDTO,
             "ROLE_USER");
         userEntity.setEnabled(true);
         userEntity.setFailedAttempt(0);
@@ -86,8 +84,9 @@ public class UserService implements UserDetailsService {
     }
     
     @Transactional
-    public UserEntity saveRoleAdmin(RegisterPostDTO registerPostDTO) {
-        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO,
+    public UserEntity saveRoleAdmin(
+        com.cho.ecommerce.api.domain.RegisterRequestDTO registerRequestDTO) {
+        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerRequestDTO,
             "ROLE_ADMIN");
         userEntity.setEnabled(true);
         userEntity.setFailedAttempt(0);
@@ -102,7 +101,7 @@ public class UserService implements UserDetailsService {
         return userMapper.toUser(userEntity);
     }
     
-    public UserDetailsDTO findUserDetailsDTOByUsername(String username) {
+    public com.cho.ecommerce.api.domain.UserDetailsResponseDTO findUserDetailsDTOByUsername(String username) {
         User user = findUserByUsername(username);
         return userMapper.toUserDetailsDTO(user);
     }

@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.cho.ecommerce.Application;
-import com.cho.ecommerce.api.domain.UserDetailsDTO;
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
@@ -133,7 +132,7 @@ class MemberIntegrationTest {
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeDeserializer())
             .create();
         
-        UserDetailsDTO userDetails = gson.fromJson(jsonInput, UserDetailsDTO.class);
+        com.cho.ecommerce.api.domain.UserDetailsResponseDTO userDetails = gson.fromJson(jsonInput, com.cho.ecommerce.api.domain.UserDetailsResponseDTO.class);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());

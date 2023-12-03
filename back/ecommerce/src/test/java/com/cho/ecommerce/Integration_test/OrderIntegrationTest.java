@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.cho.ecommerce.Application;
-import com.cho.ecommerce.api.domain.OrderItemDetailsDTO;
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
@@ -133,9 +132,9 @@ class OrderIntegrationTest {
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeDeserializer())
             .create();
         
-        OrderItemDetailsDTO[] orderItems = gson.fromJson(jsonInput, OrderItemDetailsDTO[].class);
+        com.cho.ecommerce.api.domain.OrderItemDetailsResponseDTO[] orderItems = gson.fromJson(jsonInput, com.cho.ecommerce.api.domain.OrderItemDetailsResponseDTO[].class);
         
-        for (OrderItemDetailsDTO orderItem : orderItems) {
+        for (com.cho.ecommerce.api.domain.OrderItemDetailsResponseDTO orderItem : orderItems) {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
             assertNotNull(orderItem.getOrderItemId());

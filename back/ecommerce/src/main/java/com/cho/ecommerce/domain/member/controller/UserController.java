@@ -1,9 +1,7 @@
 package com.cho.ecommerce.domain.member.controller;
 
 import com.cho.ecommerce.api.UserApi;
-import com.cho.ecommerce.api.domain.RegisterPostDTO;
 import com.cho.ecommerce.api.domain.RegisterResponseDTO;
-import com.cho.ecommerce.api.domain.UserDetailsDTO;
 import com.cho.ecommerce.domain.member.service.UserService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +27,7 @@ public class UserController implements UserApi {
     private final AuthenticationManager authenticationManager;
     
     
+    //TODO - react app에 GET /login 페이지 생기면 삭제하기
     @GetMapping("/login")
     public String getLogin(@RequestParam(defaultValue = "false") Boolean error, Model model) {
         if (error) {
@@ -38,9 +37,9 @@ public class UserController implements UserApi {
     }
     
     @Override
-    public ResponseEntity<RegisterResponseDTO> registerRoleUser(@Valid RegisterPostDTO registerPostDTO) {
+    public ResponseEntity<RegisterResponseDTO> registerRoleUser(@Valid com.cho.ecommerce.api.domain.RegisterRequestDTO registerRequestDTO) {
         try {
-            userService.saveRoleUser(registerPostDTO);
+            userService.saveRoleUser(registerRequestDTO);
             
             // Creating a response
             RegisterResponseDTO response = new RegisterResponseDTO();
@@ -69,10 +68,10 @@ public class UserController implements UserApi {
     }
     
     @Override
-    public ResponseEntity<UserDetailsDTO> getUserByUsername(@PathVariable String username) {
-        UserDetailsDTO userDetailsDTOByUsername = userService.findUserDetailsDTOByUsername(
+    public ResponseEntity<com.cho.ecommerce.api.domain.UserDetailsResponseDTO> getUserByUsername(@Valid @PathVariable String username) {
+        com.cho.ecommerce.api.domain.UserDetailsResponseDTO userDetailsResponseDTOByUsername = userService.findUserDetailsDTOByUsername(
             username);
         
-        return new ResponseEntity<>(userDetailsDTOByUsername, HttpStatus.OK);
+        return new ResponseEntity<>(userDetailsResponseDTOByUsername, HttpStatus.OK);
     }
 }
