@@ -24,10 +24,12 @@ public class OrderItemEntity {
     @Column(name = "ORDER_ITEM_ID")
     private Long orderItemId;
     
+    //@NotNull //TODO - required?
     @ManyToOne
     @JoinColumn(name = "ORDER_ID")
     private OrderEntity order;
     
+    //@NotNull //TODO - required?
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PRODUCT_OPTION_VARIATION_ID")
     private ProductOptionVariationEntity productOptionVariation;

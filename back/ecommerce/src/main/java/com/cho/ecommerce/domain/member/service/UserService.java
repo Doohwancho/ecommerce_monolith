@@ -59,16 +59,17 @@ public class UserService implements UserDetailsService {
     
     @Transactional
     public UserEntity saveRoleUser(UserEntity userEntity) {
-        //2. Create and save the user's authority
+        //1. get user's authority
         AuthorityEntity userRole = authorityRepository.findByAuthority(AuthorityEntity.ROLE_USER)
             .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
-        
+
+        //2. save into user-authority table
         UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
         userAuthorityEntity.setUserEntity(userEntity);
         userAuthorityEntity.setAuthorityEntity(userRole);
-        
-        userAuthorityRepository.save(userAuthorityEntity);
-        
+    
+//        UserAuthorityEntity savedUserAuthority = userAuthorityRepository.save(userAuthorityEntity);
+    
         //3. save user
         userEntity.setUserAuthorities(userAuthorityEntity);
         return userRepository.save(userEntity);
@@ -80,6 +81,7 @@ public class UserService implements UserDetailsService {
             "ROLE_USER");
         userEntity.setEnabled(true);
         userEntity.setFailedAttempt(0);
+        
         return saveRoleUser(userEntity);
     }
     

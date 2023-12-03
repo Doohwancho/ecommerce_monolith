@@ -38,7 +38,6 @@ public class CategoryEntity {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private Set<OptionEntity> optionEntities;
     
-    @NotEmpty(message = "Category must have at least one product")
     @OneToMany(mappedBy = "category")
     private Set<ProductEntity> products;
     

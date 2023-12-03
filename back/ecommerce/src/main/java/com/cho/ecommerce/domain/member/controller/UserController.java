@@ -5,6 +5,7 @@ import com.cho.ecommerce.api.domain.RegisterPostDTO;
 import com.cho.ecommerce.api.domain.RegisterResponseDTO;
 import com.cho.ecommerce.api.domain.UserDetailsDTO;
 import com.cho.ecommerce.domain.member.service.UserService;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class UserController implements UserApi {
     }
     
     @Override
-    public ResponseEntity<RegisterResponseDTO> registerRoleUser(RegisterPostDTO registerPostDTO) {
+    public ResponseEntity<RegisterResponseDTO> registerRoleUser(@Valid RegisterPostDTO registerPostDTO) {
         try {
             userService.saveRoleUser(registerPostDTO);
             

@@ -76,7 +76,7 @@ public class InsertCategoriesAndOptionsStepConfig {
                     option.setValue(optionValue);
                     option.setCategory(category);
                     option.setOptionVariations(new ArrayList<>());
-                    optionRepository.save(option);
+//                    optionRepository.save(option);
                     options.add(option);
 
                     // Generate option variations for each option
@@ -88,7 +88,7 @@ public class InsertCategoriesAndOptionsStepConfig {
                         optionVariation.setValue(optionVariationValue);
                         optionVariation.setOption(option);
 
-                        optionVariationRepository.save(optionVariation);
+//                        optionVariationRepository.save(optionVariation);
 
                         option.getOptionVariations().add(optionVariation);
                     }
@@ -100,7 +100,8 @@ public class InsertCategoriesAndOptionsStepConfig {
             return RepeatStatus.FINISHED;
         };
     }
-
+    
+    
     @Bean
     public Step createCategoriesAndOptionsStep() {
         return stepBuilderFactory.get("createCategoriesAndOptionsStep")

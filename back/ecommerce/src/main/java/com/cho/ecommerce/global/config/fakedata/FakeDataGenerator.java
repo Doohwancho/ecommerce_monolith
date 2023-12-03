@@ -242,7 +242,7 @@ public class FakeDataGenerator {
                 option.setValue(optionValue);
                 option.setCategory(category);
                 option.setOptionVariations(new ArrayList<>());
-                optionRepository.save(option);
+//                optionRepository.save(option);
                 options.add(option);
                 
                 // Generate option variations for each option
@@ -254,7 +254,7 @@ public class FakeDataGenerator {
                     optionVariation.setValue(optionVariationValue);
                     optionVariation.setOption(option);
                     
-                    optionVariationRepository.save(optionVariation);
+//                    optionVariationRepository.save(optionVariation);
                     
                     option.getOptionVariations().add(optionVariation);
                 }
@@ -306,6 +306,9 @@ public class FakeDataGenerator {
             
             //step4) create productItems for each product
             Set<ProductItemEntity> productItems = new HashSet<>();
+    
+            product.setProductItems(productItems);
+            productRepository.save(product);
             
             for (int j = 0; j < numberOfFakeProductItems; j++) {
                 ProductItemEntity productItem = new ProductItemEntity();
@@ -344,8 +347,6 @@ public class FakeDataGenerator {
                 discount.setProductItem(productItem);
                 discountRepository.save(discount);
             }
-            product.setProductItems(productItems);
-            productRepository.save(product);
         }
     }
     

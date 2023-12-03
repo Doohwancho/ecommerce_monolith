@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -37,11 +39,12 @@ public class ProductEntity {
     @Column(name = "DESCRIPTION", length = DatabaseConstants.PRODUCT_DESCRIPTION_SIZE)
     private String description;
     
-    @NotBlank(message = "rating is required")
+    @Min(value = 0, message = "Rating must be at least 0")
+    @Max(value = 5, message = "Rating must be no more than 5")
     @Column(name = "RATING", length = DatabaseConstants.PRODUCT_RATING_SIZE)
     private Double rating;
     
-    @NotBlank(message = "rating count is required")
+    @Min(0)
     @Column(name = "RATING_COUNT", length = DatabaseConstants.PRODUCT_RATING_COUNT_SIZE)
     private Integer ratingCount;
     

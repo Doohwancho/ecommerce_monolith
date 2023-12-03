@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +34,7 @@ public class DiscountEntity {
     @Column(name = "DISCOUNT_TYPE", length = DatabaseConstants.DISCOUNT_TYPE_SIZE, nullable = false)
     private DiscountType discountType;
     
-    @NotNull(message = "Discount value is required")
+    @Min(0)
     @Column(name = "DISCOUNT_VALUE", length = DatabaseConstants.DISCOUNT_VALUE_SIZE, nullable = false, precision = 10, scale = 2)
     private Double discountValue;
     
