@@ -52,54 +52,50 @@ paths:
                   message:
                     type: string
                     example: "An unexpected error occurred."
-  #  /login: #수동 로그인 말고 spring security에서 제공하는 방법으로 바꿈
-  #    post:
-  #      tags:
-  #        - User
-  #      summary: Authenticate a user
-  #      description: Authenticates the user and returns a login status message.
-  #      operationId: loginUser
-  #      requestBody:
-  #        description: User credentials for authentication
-  #        required: true
-  #        content:
-  #          application/json:
-  #            schema:
-  #              $ref: '#/components/schemas/LoginPostDTO'
-  #          application/x-www-form-urlencoded:
-  #            schema:
-  #              $ref: '#/components/schemas/LoginPostDTO'
-  #      responses:
-  #        200:
-  #          description: Login successful
-  #          content:
-  #            application/json:
-  #              schema:
-  #                type: object
-  #                properties:
-  #                  message:
-  #                    type: string
-  #                    example: "Logged in successfully"
-  #        401:
-  #          description: Unauthorized
-  #          content:
-  #            application/json:
-  #              schema:
-  #                type: object
-  #                properties:
-  #                  message:
-  #                    type: string
-  #                    example: "Invalid username or password"
-  #        default:
-  #          description: Unexpected error
-  #          content:
-  #            application/json:
-  #              schema:
-  #                type: object
-  #                properties:
-  #                  message:
-  #                    type: string
-  #                    example: "An unexpected error occurred."
+  /login: #수동 로그인 말고 spring security에서 제공하는 방법으로 바꿈
+    post:
+      tags:
+        - User
+      summary: Authenticate a user
+      description: Authenticates the user and returns a login status message.
+      operationId: loginUser
+      requestBody:
+        description: User credentials for authentication
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDTO'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDTO'
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseDTO'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid username or password"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
   /users/{username}:
     get:
       tags:
@@ -544,15 +540,28 @@ components:
         message:
           type: string
           example: "Registration successful"
-    #    LoginPostDTO:
-    #      type: object
-    #      properties:
-    #        username:
-    #          type: string
-    #          description: Unique user identifier.
-    #        password:
-    #          type: string
-    #          description: User's password.
+    LoginRequestDTO:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 1;
+          description: Unique user identifier.
+        password:
+          type: string
+          minLength: 1;
+          description: User's password.
+    LoginResponseDTO:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "Login successful"
     UserDetailsResponseDTO:
       type: object
       required:

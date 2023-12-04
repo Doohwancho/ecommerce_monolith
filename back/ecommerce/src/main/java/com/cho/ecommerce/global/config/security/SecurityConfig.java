@@ -42,15 +42,13 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .cors().configurationSource(corsConfigurationSource())
-            .and()
+            .cors().configurationSource(corsConfigurationSource()).and()
             .csrf()
             .ignoringAntMatchers("/h2-console/**") // Disable CSRF for H2 console
             .disable() //disable csrf for conveniency
             .headers()
             .frameOptions().disable() //h2-console 접속시 ui error 막기 위해 썼다.
-            .xssProtection()
-            .disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
+            .xssProtection().disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
             .and()
             .sessionManagement(s -> s
                 .maximumSessions(
@@ -75,10 +73,11 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                 //In other words, all other URLs in your application require the user to be authenticated.
             )
             .formLogin(f -> f
-                    .loginPage("/login") //custom page 구현한 경우
+//                    .loginPage("/login") //custom page 구현한 경우. 없으면 default login page로 이동시킨다.
+                    .loginProcessingUrl("/login") //TODO - '/users/login'으로 추후 변경
                     .usernameParameter("username")
                     .passwordParameter("password")
-                    .defaultSuccessUrl("/", true)
+//                    .defaultSuccessUrl("/", true)
                     .successHandler(formSuccessHandler)
                     .failureHandler(formFailureHandler)
             )
@@ -110,11 +109,11 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5173")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
+        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5173","http://127.0.0.1:8080")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
-        configuration.setAllowCredentials(true);
-        
+        configuration.setAllowCredentials(true); // Important for cookies, authorization headers with HTTPS
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

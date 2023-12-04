@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,25 +23,35 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
     private final Logger logger = LoggerFactory.getLogger(FormAuthenticationSuccessHandler.class);
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     
-    //case1) ROLE에 따라 다른 페이지로 redirect
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-        Authentication authentication) throws IOException, ServletException {
-        String redirectUrl = "/";
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        
-        for (GrantedAuthority grantedAuthority : authorities) {
-            
-            if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
-                redirectUrl = "/admin";
-                break;
-            } else if (grantedAuthority.getAuthority().equals("ROLE_USER")) {
-                redirectUrl = "/user";
-                break;
-            }
-        }
-        redirectStrategy.sendRedirect(request, response, redirectUrl);
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+        logger.info("authentication succeeded!!!!");
+    
+        HttpSession session = request.getSession();
+        session.setMaxInactiveInterval(60 * 30); //30 min
+        response.sendRedirect("http://localhost:8080/login/success");
+        response.setStatus(HttpServletResponse.SC_OK);
     }
+    
+//    //case1) ROLE에 따라 다른 페이지로 redirect
+//    @Override
+//    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+//        Authentication authentication) throws IOException, ServletException {
+//        String redirectUrl = "/";
+//        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+//
+//        for (GrantedAuthority grantedAuthority : authorities) {
+//
+//            if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
+//                redirectUrl = "/admin";
+//                break;
+//            } else if (grantedAuthority.getAuthority().equals("ROLE_USER")) {
+//                redirectUrl = "/user";
+//                break;
+//            }
+//        }
+//        redirectStrategy.sendRedirect(request, response, redirectUrl);
+//    }
     
     //case2) logging successful login
 //    private final Logger logger = LoggerFactory.getLogger(FormAuthenticationSuccessHandler.class);

@@ -33,6 +33,8 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException exception) throws IOException, ServletException {
         logger.info("여기에오! authentication failed!");
+    
+        response.sendRedirect("http://localhost:8080/login/fail");
         
         String username = request.getParameter("username");
         UserEntity user = userRepository.findByUsername(username);
