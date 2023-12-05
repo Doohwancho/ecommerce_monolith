@@ -7,6 +7,7 @@ import com.cho.ecommerce.global.error.ErrorCode;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
@@ -38,6 +39,20 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
         
         String username = request.getParameter("username");
         UserEntity user = userRepository.findByUsername(username);
+    
+        // Extracting JSESSIONID from the request cookies
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("JSESSIONID".equals(cookie.getName())) {
+                    logger.info("JSESSIONID: " + cookie.getValue());
+                    break;
+                }
+            }
+        }
+        logger.info("login failed username: " + username);
+        logger.info("username queried from database: " + user.getUsername());
+        
         
         if (user == null) {
             log.error("onAuthenticationFailure() failed! username: " + username);
