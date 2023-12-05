@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,6 @@ public class ProductController implements ProductApi {
     
     
     @Override
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<PaginatedProductResponse> getProductsWithPagiation(
         Integer page,
         Integer size
@@ -39,7 +39,6 @@ public class ProductController implements ProductApi {
     }
     
     @Override
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<List<com.cho.ecommerce.api.domain.ProductDetailResponseDTO>> getProductDetailDTOsById(Long id) {
         List<com.cho.ecommerce.api.domain.ProductDetailResponseDTO> productList = productService.findProductDetailDTOsById(id);
         
@@ -48,13 +47,11 @@ public class ProductController implements ProductApi {
     
     
     @Override
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody com.cho.ecommerce.api.domain.ProductCreateRequestDTO product) {
         return ResponseEntity.ok(productService.saveProduct(product));
     }
     
     @Override
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id,
         @Valid @RequestBody ProductDTO product) {
         if (!productService.getProductById(id).isPresent()) {
@@ -65,7 +62,6 @@ public class ProductController implements ProductApi {
     }
     
     @Override
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
@@ -73,7 +69,6 @@ public class ProductController implements ProductApi {
     
     
     @Override
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<ProductListResponseDTO> getProductsByCategory(Long categoryId) {
         ProductListResponseDTO allProductsByCategory = productService.findAllProductsByCategory(
             categoryId);
