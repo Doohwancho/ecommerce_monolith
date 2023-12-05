@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, UseMutationResult } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
-import { sessionIdState } from '../store/sessionState';
 
 
 interface LoginRequestDTO {
@@ -24,7 +22,8 @@ const useLoginUser = ():UseMutationResult<any, Error, FormData> => {
 
       const response = await fetch(fullUrl, {
         method: 'POST',
-        body: loginData
+        body: loginData,
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -38,7 +37,6 @@ const useLoginUser = ():UseMutationResult<any, Error, FormData> => {
 
 const Login: React.FC = () => {
   const [loginData, setLoginData] = useState<LoginRequestDTO>(initialLoginData);
-  const setSessionId = useSetRecoilState(sessionIdState);
   const { mutate, isLoading, isError, error } = useLoginUser();
   const navigate = useNavigate();
 
@@ -59,23 +57,6 @@ const Login: React.FC = () => {
     mutate(formData, {
       onSuccess: (response) => {
         console.log('Login Success! Response:', response);
-
-        const cookies = response.headers.get('Set-Cookie'); // HttpOnly Cookies: If the JSESSIONID cookie is set as HttpOnly, it will not be accessible via JavaScript due to security reasons. This is a common security practice to prevent XSS attacks.
-        const sessionIdMatch = cookies && cookies.match(/JSESSIONID=([^;]+);/);
-
-        console.log("cookies:");
-        console.log(cookies);
-        console.log("sessionIdMatch:");
-        console.log(sessionIdMatch);
-
-        if (sessionIdMatch) {
-          const sessionId = sessionIdMatch[1];
-          
-          console.log("sessionId:");
-          console.log(sessionId);
-
-          setSessionId(sessionId); 
-        }
 
         navigate('/');
       },
