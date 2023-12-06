@@ -22,6 +22,8 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../../base';
 // @ts-ignore
+import { AllCategoriesByDepthResponseDTO } from '../../src/model';
+// @ts-ignore
 import { ErrorResponseDTO } from '../../src/model';
 // @ts-ignore
 import { PaginatedProductResponse } from '../../src/model';
@@ -95,6 +97,36 @@ export const ProductApiAxiosParamCreator = function (configuration?: Configurati
             }
 
             const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Fetches categories organized by their depth levels.
+         * @summary Retrieve all categories, sort by depth
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAllCategoriesSortByDepth: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/products/categories`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -294,6 +326,18 @@ export const ProductApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
+         * Fetches categories organized by their depth levels.
+         * @summary Retrieve all categories, sort by depth
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAllCategoriesSortByDepth(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AllCategoriesByDepthResponseDTO>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAllCategoriesSortByDepth(options);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ProductApi.getAllCategoriesSortByDepth']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        },
+        /**
          * 
          * @summary Get product details by product ID
          * @param {number} productId The ID of the product to retrieve.
@@ -378,6 +422,15 @@ export const ProductApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.deleteProduct(productId, options).then((request) => request(axios, basePath));
         },
         /**
+         * Fetches categories organized by their depth levels.
+         * @summary Retrieve all categories, sort by depth
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAllCategoriesSortByDepth(options?: any): AxiosPromise<Array<AllCategoriesByDepthResponseDTO>> {
+            return localVarFp.getAllCategoriesSortByDepth(options).then((request) => request(axios, basePath));
+        },
+        /**
          * 
          * @summary Get product details by product ID
          * @param {number} productId The ID of the product to retrieve.
@@ -447,6 +500,15 @@ export interface ProductApiInterface {
      * @memberof ProductApiInterface
      */
     deleteProduct(productId: number, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * Fetches categories organized by their depth levels.
+     * @summary Retrieve all categories, sort by depth
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApiInterface
+     */
+    getAllCategoriesSortByDepth(options?: AxiosRequestConfig): AxiosPromise<Array<AllCategoriesByDepthResponseDTO>>;
 
     /**
      * 
@@ -521,6 +583,17 @@ export class ProductApi extends BaseAPI implements ProductApiInterface {
      */
     public deleteProduct(productId: number, options?: AxiosRequestConfig) {
         return ProductApiFp(this.configuration).deleteProduct(productId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Fetches categories organized by their depth levels.
+     * @summary Retrieve all categories, sort by depth
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApi
+     */
+    public getAllCategoriesSortByDepth(options?: AxiosRequestConfig) {
+        return ProductApiFp(this.configuration).getAllCategoriesSortByDepth(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

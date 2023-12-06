@@ -24,6 +24,12 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, ope
 // @ts-ignore
 import { ErrorResponseDTO } from '../../src/model';
 // @ts-ignore
+import { LoginRequestDTO } from '../../src/model';
+// @ts-ignore
+import { LoginResponseDTO } from '../../src/model';
+// @ts-ignore
+import { LoginUser401Response } from '../../src/model';
+// @ts-ignore
 import { RegisterRequestDTO } from '../../src/model';
 // @ts-ignore
 import { RegisterResponseDTO } from '../../src/model';
@@ -65,6 +71,42 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Authenticates the user and returns a login status message.
+         * @summary Authenticate a user
+         * @param {LoginRequestDTO} loginRequestDTO User credentials for authentication
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        loginUser: async (loginRequestDTO: LoginRequestDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'loginRequestDTO' is not null or undefined
+            assertParamExists('loginUser', 'loginRequestDTO', loginRequestDTO)
+            const localVarPath = `/login`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(loginRequestDTO, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -131,6 +173,19 @@ export const UserApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
+         * Authenticates the user and returns a login status message.
+         * @summary Authenticate a user
+         * @param {LoginRequestDTO} loginRequestDTO User credentials for authentication
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async loginUser(loginRequestDTO: LoginRequestDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.loginUser(loginRequestDTO, options);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['UserApi.loginUser']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        },
+        /**
          * Returns the Result of Register Attempt
          * @summary register a user
          * @param {RegisterRequestDTO} registerRequestDTO User registration details
@@ -164,6 +219,16 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
             return localVarFp.getUserByUsername(username, options).then((request) => request(axios, basePath));
         },
         /**
+         * Authenticates the user and returns a login status message.
+         * @summary Authenticate a user
+         * @param {LoginRequestDTO} loginRequestDTO User credentials for authentication
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        loginUser(loginRequestDTO: LoginRequestDTO, options?: any): AxiosPromise<LoginResponseDTO> {
+            return localVarFp.loginUser(loginRequestDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Returns the Result of Register Attempt
          * @summary register a user
          * @param {RegisterRequestDTO} registerRequestDTO User registration details
@@ -191,6 +256,16 @@ export interface UserApiInterface {
      * @memberof UserApiInterface
      */
     getUserByUsername(username: string, options?: AxiosRequestConfig): AxiosPromise<UserDetailsResponseDTO>;
+
+    /**
+     * Authenticates the user and returns a login status message.
+     * @summary Authenticate a user
+     * @param {LoginRequestDTO} loginRequestDTO User credentials for authentication
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserApiInterface
+     */
+    loginUser(loginRequestDTO: LoginRequestDTO, options?: AxiosRequestConfig): AxiosPromise<LoginResponseDTO>;
 
     /**
      * Returns the Result of Register Attempt
@@ -221,6 +296,18 @@ export class UserApi extends BaseAPI implements UserApiInterface {
      */
     public getUserByUsername(username: string, options?: AxiosRequestConfig) {
         return UserApiFp(this.configuration).getUserByUsername(username, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Authenticates the user and returns a login status message.
+     * @summary Authenticate a user
+     * @param {LoginRequestDTO} loginRequestDTO User credentials for authentication
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserApi
+     */
+    public loginUser(loginRequestDTO: LoginRequestDTO, options?: AxiosRequestConfig) {
+        return UserApiFp(this.configuration).loginUser(loginRequestDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

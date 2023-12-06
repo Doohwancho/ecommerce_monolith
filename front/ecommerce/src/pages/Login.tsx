@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useMutation, UseMutationResult } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 
-
 interface LoginRequestDTO {
     'username': string;
     'password': string;
