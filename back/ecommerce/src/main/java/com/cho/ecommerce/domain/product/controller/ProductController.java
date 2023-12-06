@@ -5,6 +5,7 @@ import com.cho.ecommerce.api.domain.PaginatedProductResponse;
 import com.cho.ecommerce.api.domain.ProductDTO;
 import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
+import com.cho.ecommerce.domain.product.repository.CategoryRepository;
 import com.cho.ecommerce.domain.product.service.ProductService;
 import java.util.List;
 import javax.validation.Valid;
@@ -26,6 +27,10 @@ public class ProductController implements ProductApi {
     @Autowired
     private ProductMapper productMapper;
     
+    @Autowired
+    private CategoryRepository categoryRepository;
+    
+
     
     @Override
     public ResponseEntity<PaginatedProductResponse> getProductsWithPagiation(
@@ -74,5 +79,11 @@ public class ProductController implements ProductApi {
             categoryId);
         
         return ResponseEntity.ok(allProductsByCategory);
+    }
+    
+    @Override
+    public ResponseEntity<List<com.cho.ecommerce.api.domain.AllCategoriesByDepthResponseDTO>> getAllCategoriesSortByDepth() {
+        List<com.cho.ecommerce.api.domain.AllCategoriesByDepthResponseDTO> allCategoriesSortByDepth = categoryRepository.findAllCategoriesSortByDepth();
+        return ResponseEntity.ok(allCategoriesSortByDepth);
     }
 }

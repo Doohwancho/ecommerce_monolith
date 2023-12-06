@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
@@ -34,7 +35,13 @@ public class CategoryEntity {
     @Column(name = "NAME", length = DatabaseConstants.CATEGORY_NAME_SIZE)
     private String name;
     
-    @NotEmpty(message = "Category must have at least one option")
+    @Column(name = "PARENT_CATEGORY_ID")
+    private Long parentCategoryId;
+    
+    @Min(0)
+    @Column(name = "DEPTH")
+    private Integer depth;
+    
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private Set<OptionEntity> optionEntities;
     

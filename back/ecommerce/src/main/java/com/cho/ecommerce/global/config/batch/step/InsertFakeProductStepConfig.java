@@ -137,12 +137,12 @@ public class InsertFakeProductStepConfig {
             @Override
             public ProductEntity process(ProductEntity product) throws Exception {
                 if(categoryList == null) {
-                    categoryList = categoryRepository.findAll();
+                    categoryList = categoryRepository.findCategoriesByDepth(2);
                 }
                 
                 //category 적용
                 CategoryEntity randomCategory = categoryList.get(
-                    faker.number().numberBetween(0, categoryList.size() - 1)); //random category
+                    faker.number().numberBetween(0, categoryList.size() - 1)); //random category (depth 2)
                 product.setCategory(randomCategory);
     
                 //create product_option_variation for each product_items

@@ -276,6 +276,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
+  /products/categories:
+    get:
+      summary: Retrieve all categories, sort by depth
+      description: Fetches categories organized by their depth levels.
+      operationId: getAllCategoriesSortByDepth
+      tags:
+        - Product
+      responses:
+        '200':
+          description: A list of categories organized by depth
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AllCategoriesByDepthResponseDTO'
+        '400':
+          description: Invalid input
+        '404':
+          description: Categories not found
   /products/category/{categoryId}:
     get:
       tags:
@@ -782,6 +802,26 @@ components:
           type: string
           format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
           description: End date of the discount
+    AllCategoriesByDepthResponseDTO:
+      type: object
+      properties:
+        topCategoryId:
+          type: integer
+          format: int64
+          minimum: 1
+        topCategoryName:
+          type: string
+          nullable: false
+        midCategoryId:
+          type: integer
+          format: int64
+        midCategoryName:
+          type: string
+        lowCategoryId:
+          type: integer
+          format: int64
+        lowCategoryName:
+          type: string
     OrderDTO: #TODO - OrderDTO와 OrderRequestDTO와 OrderResponseDTO를 분리하자!
       type: object
       required:
