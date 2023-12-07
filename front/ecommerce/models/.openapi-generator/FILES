@@ -19,6 +19,7 @@ src/model/index.ts
 src/model/login-request-dto.ts
 src/model/login-response-dto.ts
 src/model/login-user401-response.ts
+src/model/options-option-varaitons-response-dto.ts
 src/model/order-dto.ts
 src/model/order-item-details-response-dto.ts
 src/model/order-sales-statistics-response-dto.ts

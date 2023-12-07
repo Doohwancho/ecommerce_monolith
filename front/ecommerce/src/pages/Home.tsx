@@ -31,9 +31,6 @@ const Home: React.FC = () => {
   const { data: categoriesResponse, isLoading: isLoadingCategories, error: categoriesError } = useQuery<AllCategoriesByDepthResponseDTO, Error>('categories', fetchCategories, {
     onSuccess: (data) => {
       setCategories(data);
-
-      console.log("naviage!");
-      navigate('/category/Toys');
     }
   });
   const { data: productsResponse, error, isLoading } = useQuery<PaginatedProductResponse, Error>('products', fetchProducts);
@@ -41,6 +38,10 @@ const Home: React.FC = () => {
   useEffect(() => {
     console.log("Updated categories:", categories);
   }, [categories]); 
+
+  const onCategoryClick = (categoryName: string) => {
+    navigate(`/category/${categoryName}`);
+  };
 
   return (
     <>
@@ -50,7 +51,7 @@ const Home: React.FC = () => {
       {categoriesError && <p>Error: {categoriesError.message}</p>}
       <ul>
         {categoriesResponse?.map((category: AllCategoriesByDepthResponseDTO, index: number) => (
-            <li key={index}>
+            <li key={index} onClick={() => onCategoryClick(category.lowCategoryName)}>
                 Top: {category.topCategoryName} (ID: {category.topCategoryId}),
                 Mid: {category.midCategoryName} (ID: {category.midCategoryId}),
                 Low: {category.lowCategoryName} (ID: {category.lowCategoryId})

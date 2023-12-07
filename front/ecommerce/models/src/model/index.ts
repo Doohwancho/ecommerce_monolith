@@ -5,6 +5,7 @@ export * from './error-response-dto';
 export * from './login-request-dto';
 export * from './login-response-dto';
 export * from './login-user401-response';
+export * from './options-option-varaitons-response-dto';
 export * from './order-dto';
 export * from './order-item-details-response-dto';
 export * from './order-sales-statistics-response-dto';
