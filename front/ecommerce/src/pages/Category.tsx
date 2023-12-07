@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
 import { categoriesState } from '../store/state'; // Adjust the import path as needed
-import { AllCategoriesByDepthResponseDTO, OptionsOptionVariationsResponseDTO } from 'model';
+import { AllCategoriesByDepthResponseDTO, OptionsOptionVariationsResponseDTO, ProductListResponseDTO, ProductDTO } from 'model';
 
 const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVariationsResponseDTO[]> => {
     const baseUrl = 'http://127.0.0.1:8080';
@@ -17,18 +17,36 @@ const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVa
     return response.json();
   };  
 
+  const fetchProductsByCategoryId = async (categoryId: number): Promise<ProductListResponseDTO> => {
+    const baseUrl = 'http://127.0.0.1:8080';
+    const endpoint = `/products/category/${categoryId}`;
+    const fullUrl = baseUrl + endpoint;
+
+    const response = await fetch(fullUrl, { credentials: 'include' });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  };  
+
 const Category = () => {
   const { categoryName } = useParams();
   const categories = useRecoilValue(categoriesState);
-  const { data: optionsData, isLoading, error } = useQuery<OptionsOptionVariationsResponseDTO[], Error>(
-    ['categoryOptions', 71],
+  const { data: optionsData, optionIsLoading, optionError } = useQuery<AllCategoriesByDepthResponseDTO[], Error>(
+    ['categoryOptions', 71], //?
     () => fetchCategoryOptions(71),
+  );
+
+  const { data: productsData, productIsLoading, productError } = useQuery<ProductListResponseDTO, Error>(
+    ['categoryId', 71],
+    () => fetchProductsByCategoryId(71),
   );
 
   useEffect(() => {
     console.log("Updated categories:", categories);
     console.log("updated option datas:", optionsData);
-  }, [categories, optionsData]); 
+    console.log("updated products by categoryId", productsData);
+  }, [categories, optionsData, productsData]); 
 
 
   return (
@@ -63,6 +81,21 @@ const Category = () => {
                 </ul>
             ) : (
                 <p>No options available for this category.</p>
+            )}
+        </div>
+
+        <div>
+            <h1>Product List that belongs to categoryId</h1>
+            {productsData && productsData.products.length > 0 ? (
+                <ul>
+                {productsData.products.map((product: ProductDTO, index: number) => (
+                    <li key={index}>
+                        product: {product.name}, description: {product.description}
+                    </li>
+                ))}
+                </ul>
+            ) : (
+                <p>No products available for this category.</p>
             )}
         </div>
     </>
