@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import { useRecoilValue } from 'recoil';
 import { categoriesState } from '../store/state'; // Adjust the import path as needed
 import { AllCategoriesByDepthResponseDTO, OptionsOptionVariationsResponseDTO, ProductListResponseDTO, ProductDTO } from 'model';
+import { useNavigate } from 'react-router-dom';
 
 const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVariationsResponseDTO[]> => {
     const baseUrl = 'http://127.0.0.1:8080';
@@ -30,6 +31,7 @@ const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVa
   };  
 
 const Category = () => {
+  const navigate = useNavigate();
   const { categoryName } = useParams();
   const categories = useRecoilValue(categoriesState);
   const { data: optionsData, optionIsLoading, optionError } = useQuery<AllCategoriesByDepthResponseDTO[], Error>(
@@ -48,6 +50,9 @@ const Category = () => {
     console.log("updated products by categoryId", productsData);
   }, [categories, optionsData, productsData]); 
 
+  const onProductClick = (productId: number) => {
+    navigate(`/product/${productId}`);
+  };
 
   return (
     <>
@@ -89,7 +94,7 @@ const Category = () => {
             {productsData && productsData.products.length > 0 ? (
                 <ul>
                 {productsData.products.map((product: ProductDTO, index: number) => (
-                    <li key={index}>
+                    <li key={index} onClick={() => onProductClick(product.productId)}>
                         product: {product.name}, description: {product.description}
                     </li>
                 ))}

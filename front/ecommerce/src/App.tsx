@@ -19,7 +19,7 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/category/:categoryName" element={<Category />} />
-            <Route path="/product" element={<Product />} />
+            <Route path="/product/:productId" element={<Product />} />
           </Routes>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
