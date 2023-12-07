@@ -35,7 +35,7 @@ public class OptionRepositoryImpl implements OptionRepositoryCustom {
         QOptionVariationEntity optionVariation = QOptionVariationEntity.optionVariationEntity;
         
         List<Tuple> results = queryFactory
-            .select(option, optionVariation)
+            .select(option.optionId, option.value, optionVariation.value)
             .from(option)
             .innerJoin(option.optionVariations, optionVariation)
             .where(option.category.categoryId.eq(categoryId))
@@ -45,6 +45,7 @@ public class OptionRepositoryImpl implements OptionRepositoryCustom {
         for (Tuple tuple : results) {
             com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO dto = new com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO();
             dto.setCategoryId(categoryId);
+            
             dto.setOptionId(tuple.get(option.optionId));
             dto.setOptionName(tuple.get(option.value));
             dto.setOptionVariationName(tuple.get(optionVariation.value));
