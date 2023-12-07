@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import net.datafaker.Faker;
-import org.hibernate.dialect.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -292,7 +291,7 @@ public class FakeDataGenerator {
             product.setCategory(category);
             
             //step3) get option and option variations from category
-            List<OptionEntity> optionEntityList = optionRepository.findByCategory_CategoryId(
+            List<OptionEntity> optionEntityList = optionRepository.findOptionsByCategory_CategoryId(
                 category.getCategoryId());
             
             optionEntityList.forEach(option -> {

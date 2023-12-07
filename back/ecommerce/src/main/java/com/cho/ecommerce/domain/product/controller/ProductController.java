@@ -6,6 +6,7 @@ import com.cho.ecommerce.api.domain.ProductDTO;
 import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
+import com.cho.ecommerce.domain.product.repository.OptionRepository;
 import com.cho.ecommerce.domain.product.service.ProductService;
 import java.util.List;
 import javax.validation.Valid;
@@ -20,15 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProductController implements ProductApi {
-    
     @Autowired
     private ProductService productService;
-    
     @Autowired
     private ProductMapper productMapper;
-    
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private OptionRepository optionRepository;
     
 
     
@@ -83,7 +83,13 @@ public class ProductController implements ProductApi {
     
     @Override
     public ResponseEntity<List<com.cho.ecommerce.api.domain.AllCategoriesByDepthResponseDTO>> getAllCategoriesSortByDepth() {
-        List<com.cho.ecommerce.api.domain.AllCategoriesByDepthResponseDTO> allCategoriesSortByDepth = categoryRepository.findAllCategoriesSortByDepth();
+        List<com.cho.ecommerce.api.domain.AllCategoriesByDepthResponseDTO> allCategoriesSortByDepth = categoryRepository.findAllCategoriesSortByDepth(); //TODO - 굳이 service layer안거치고 바로 controller가 repository에서 건져 올리는게 맞는걸까?
         return ResponseEntity.ok(allCategoriesSortByDepth);
+    }
+    
+    @Override
+    public ResponseEntity<List<com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO>> getOptionsByCategory(Long categoryId) {
+        List<com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO> optionsAndOptionVariationsByCategoryId = optionRepository.findOptionsAndOptionVariationsByCategoryId(categoryId);
+        return ResponseEntity.ok(optionsAndOptionVariationsByCategoryId);
     }
 }

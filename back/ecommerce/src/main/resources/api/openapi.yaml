@@ -324,6 +324,31 @@ paths:
           description: Bad request, invalid category ID
         '404':
           description: Not found, category does not exist
+  /categories/{categoryId}/options:
+    get:
+      summary: Get options and option variations for a category
+      operationId: getOptionsByCategory
+      tags:
+        - Product
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          description: ID of the category
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response with options and option variations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OptionsOptionVaraitonsResponseDTO'
+        '404':
+          description: Category not found
   /orders:
     get:
       summary: Get all orders
@@ -821,6 +846,19 @@ components:
           type: integer
           format: int64
         lowCategoryName:
+          type: string
+    OptionsOptionVaraitonsResponseDTO:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+          format: int64
+        optionId:
+          type: integer
+          format: int64
+        optionName:
+          type: string
+        optionVariationName:
           type: string
     OrderDTO: #TODO - OrderDTO와 OrderRequestDTO와 OrderResponseDTO를 분리하자!
       type: object
