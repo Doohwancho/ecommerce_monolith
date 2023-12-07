@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { PaginatedProductResponse, ProductDTO, AllCategoriesByDepthResponseDTO } from 'model';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { categoriesState } from '../store/state';
+import { useNavigate } from 'react-router-dom';
 
 const fetchCategories = async (): Promise<AllCategoriesByDepthResponseDTO> => {
     const response = await fetch('http://127.0.0.1:8080/products/categories', { credentials: 'include' });
@@ -24,13 +25,22 @@ const fetchProducts = async (): Promise<PaginatedProductResponse> => {
 };
 
 const Home: React.FC = () => {
-  const setCategories = useSetRecoilState(categoriesState);
+  const [categories, setCategories] = useRecoilState(categoriesState);
+  const navigate = useNavigate();
+
   const { data: categoriesResponse, isLoading: isLoadingCategories, error: categoriesError } = useQuery<AllCategoriesByDepthResponseDTO, Error>('categories', fetchCategories, {
     onSuccess: (data) => {
       setCategories(data);
+
+      console.log("naviage!");
+      navigate('/category/Toys');
     }
   });
   const { data: productsResponse, error, isLoading } = useQuery<PaginatedProductResponse, Error>('products', fetchProducts);
+
+  useEffect(() => {
+    console.log("Updated categories:", categories);
+  }, [categories]); 
 
   return (
     <>
