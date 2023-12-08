@@ -286,6 +286,36 @@ export const ProductApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Fetches top 10 higest rated products
+         * @summary Retrieve top 10 products sort by highest rating
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTopTenHighestRatedProducts: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/products/highestRatings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 
          * @summary Update a product by ID
          * @param {number} productId 
@@ -427,6 +457,18 @@ export const ProductApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
+         * Fetches top 10 higest rated products
+         * @summary Retrieve top 10 products sort by highest rating
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getTopTenHighestRatedProducts(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ProductDTO>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getTopTenHighestRatedProducts(options);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['ProductApi.getTopTenHighestRatedProducts']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        },
+        /**
          * 
          * @summary Update a product by ID
          * @param {number} productId 
@@ -521,6 +563,15 @@ export const ProductApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getProductsWithPagiation(page, size, options).then((request) => request(axios, basePath));
         },
         /**
+         * Fetches top 10 higest rated products
+         * @summary Retrieve top 10 products sort by highest rating
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTopTenHighestRatedProducts(options?: any): AxiosPromise<Array<ProductDTO>> {
+            return localVarFp.getTopTenHighestRatedProducts(options).then((request) => request(axios, basePath));
+        },
+        /**
          * 
          * @summary Update a product by ID
          * @param {number} productId 
@@ -609,6 +660,15 @@ export interface ProductApiInterface {
      * @memberof ProductApiInterface
      */
     getProductsWithPagiation(page?: number, size?: number, options?: AxiosRequestConfig): AxiosPromise<PaginatedProductResponse>;
+
+    /**
+     * Fetches top 10 higest rated products
+     * @summary Retrieve top 10 products sort by highest rating
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApiInterface
+     */
+    getTopTenHighestRatedProducts(options?: AxiosRequestConfig): AxiosPromise<Array<ProductDTO>>;
 
     /**
      * 
@@ -712,6 +772,17 @@ export class ProductApi extends BaseAPI implements ProductApiInterface {
      */
     public getProductsWithPagiation(page?: number, size?: number, options?: AxiosRequestConfig) {
         return ProductApiFp(this.configuration).getProductsWithPagiation(page, size, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Fetches top 10 higest rated products
+     * @summary Retrieve top 10 products sort by highest rating
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApi
+     */
+    public getTopTenHighestRatedProducts(options?: AxiosRequestConfig) {
+        return ProductApiFp(this.configuration).getTopTenHighestRatedProducts(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

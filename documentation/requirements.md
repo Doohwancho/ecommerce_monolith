@@ -15,6 +15,7 @@
 	- Product CRUD
         - detailed product information read query by product Id
         - pagination on getAllProducts()
+        - cache top 10 rated products for main page
     - Discount 적용
 	- Category 적용
 		- 해당 카테고리 하위 옵션 1,2 구현
