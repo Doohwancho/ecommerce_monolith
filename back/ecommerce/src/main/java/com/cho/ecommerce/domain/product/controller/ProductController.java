@@ -44,6 +44,12 @@ public class ProductController implements ProductApi {
     }
     
     @Override
+    public ResponseEntity<List<ProductDTO>> getTopTenHighestRatedProducts() {
+        List<ProductDTO> top10RatedProducts = productService.getTop10RatedProducts();
+        return ResponseEntity.ok(top10RatedProducts);
+    }
+    
+    @Override
     public ResponseEntity<List<com.cho.ecommerce.api.domain.ProductDetailResponseDTO>> getProductDetailDTOsById(Long id) {
         List<com.cho.ecommerce.api.domain.ProductDetailResponseDTO> productList = productService.findProductDetailDTOsById(id);
         

@@ -58,6 +58,11 @@ public class ProductService {
             productsWithPaginations);
     }
     
+    public List<ProductDTO> getTop10RatedProducts() {
+        List<ProductEntity> top10ProductsByRating = productRepository.findTop10ByRating();
+        return productMapper.productEntitiesToProductDTOs(top10ProductsByRating);
+    }
+    
     public Optional<ProductEntity> getProductById(Long id) {
         return productRepository.findById(id);
     }

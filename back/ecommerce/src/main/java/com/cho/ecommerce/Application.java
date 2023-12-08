@@ -1,6 +1,7 @@
 package com.cho.ecommerce;
 
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
+import com.cho.ecommerce.global.util.DatabaseCleanup;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -12,13 +13,17 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Slf4j
 @EnableBatchProcessing
+@EnableCaching
 @AllArgsConstructor
 @SpringBootApplication
 public class Application {
+    
     private final FakeDataGenerator dataGenerator;
     
     private final JobLauncher jobLauncher;
@@ -29,26 +34,26 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
     
-//    @Bean
-//    public CommandLineRunner commandLineRunner() {
-//        return args -> {
-//            JobParameters parameters = new JobParametersBuilder()
-//                .addLong("run.id", System.currentTimeMillis()) // Unique parameter for each run
-//                .addLong("numberOfFakeUsers", 10L)
-//                .addLong("numberOfFakeCategories", 10L)
-//                .addLong("numberOfFakeOptionsPerCategory", 3L)
-//                .addLong("numberOfFakeOptionVariationsPerOption", 3L)
-//                .addLong("numberOfFakeProducts", 10L)
-//                .addLong("numberOfFakeProductItemsPerProduct", 3L)
-//                .addLong("numberOfFakeOrderItemsPerOrder", 5L)
-//                .toJobParameters();
-//            try {
-//                jobLauncher.run(dataInitializationJob, parameters);
-//            } catch (JobExecutionException e) {
-//                e.printStackTrace();
-//            }
-//        };
-//    }
+    @Bean
+    public CommandLineRunner commandLineRunner() {
+        return args -> {
+            JobParameters parameters = new JobParametersBuilder()
+                .addLong("run.id", System.currentTimeMillis()) // Unique parameter for each run
+                .addLong("numberOfFakeUsers", 10L)
+                .addLong("numberOfFakeCategories", 10L)
+                .addLong("numberOfFakeOptionsPerCategory", 3L)
+                .addLong("numberOfFakeOptionVariationsPerOption", 3L)
+                .addLong("numberOfFakeProducts", 20L)
+                .addLong("numberOfFakeProductItemsPerProduct", 3L)
+                .addLong("numberOfFakeOrderItemsPerOrder", 5L)
+                .toJobParameters();
+            try {
+                jobLauncher.run(dataInitializationJob, parameters);
+            } catch (JobExecutionException e) {
+                e.printStackTrace();
+            }
+        };
+    }
     
 //    @Bean
 //    public CommandLineRunner initData() {

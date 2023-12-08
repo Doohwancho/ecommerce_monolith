@@ -8,4 +8,6 @@ public interface ProductRepositoryCustom {
     List<ProductEntity> findAllProductsByCategory(Long categoryId);
     
     Optional<List<ProductEntity>> findProductDetailDTOsById(Long productId);
+    
+    List<ProductEntity> findTop10ByRating();
 }

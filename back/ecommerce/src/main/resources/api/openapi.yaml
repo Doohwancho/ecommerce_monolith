@@ -276,6 +276,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
+  /products/highestRatings:
+    get:
+      summary: Retrieve top 10 products sort by highest rating
+      description: Fetches top 10 higest rated products
+      operationId: getTopTenHighestRatedProducts
+      tags:
+        - Product
+      responses:
+        '200':
+          description: A list of top 10 products sort by rating
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductDTO'
+        '400':
+          description: Invalid input
+        '404':
+          description: Categories not found
   /products/categories:
     get:
       summary: Retrieve all categories, sort by depth

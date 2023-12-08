@@ -2,6 +2,7 @@ package com.cho.ecommerce.domain.product.repository;
 
 import static com.google.common.base.Predicates.not;
 
+import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.entity.QCategoryEntity;
 import com.cho.ecommerce.domain.product.entity.QDiscountEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 
 public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     
@@ -64,5 +66,17 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Product not found, productId: "
                     + productId))); //throw Exception if result is Optional
+    }
+    
+    @Override
+    @Cacheable("topTenRatedProductsCached")
+    public List<ProductEntity> findTop10ByRating() {
+        QProductEntity product = QProductEntity.productEntity;
+        
+        return queryFactory
+            .selectFrom(product)
+            .orderBy(product.rating.desc())
+            .limit(10)
+            .fetch();
     }
 }

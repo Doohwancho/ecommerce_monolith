@@ -1,6 +1,7 @@
 package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,8 +21,8 @@ import lombok.Setter;
 @Table(name = "CATEGORY")
 @Getter
 @Setter
-public class CategoryEntity {
-    
+public class CategoryEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CATEGORY_ID")
