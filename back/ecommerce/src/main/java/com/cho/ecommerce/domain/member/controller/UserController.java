@@ -15,9 +15,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -72,6 +76,15 @@ public class UserController implements UserApi {
         log.info("로그인 실패");
         Map<String,Boolean> map = new HashMap<>();
         map.put("로그인 성공 여부", false);
+        return new ResponseEntity(map, HttpStatus.OK);
+    }
+    
+    @GetMapping("/login")
+    public ResponseEntity loginPage(@RequestParam(value = "logout", required = false) String logout) {
+        Map<String,String> map = new HashMap<>();
+        if (logout != null) {
+            map.put("message", "You have been logged out successfully.");
+        }
         return new ResponseEntity(map, HttpStatus.OK);
     }
     

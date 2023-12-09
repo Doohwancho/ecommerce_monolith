@@ -66,7 +66,7 @@ public class OrderController implements OrderApi {
     }
     
     @Override
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO>> getMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
         List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> orderSalesStatisticsResponseDTOS = orderService.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths(); //TODO - Q. 다른 곳에서 재사용 안할 것 같은데, adaptor로 굳이 뺄 필요가 있을까?
         
