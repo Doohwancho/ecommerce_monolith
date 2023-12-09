@@ -83,7 +83,6 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
             )
             .logout(logout -> logout
                 .logoutUrl("/logout") // URL to trigger logout
-//                .logoutSuccessUrl("/login?logout") // URL to redirect after logout
                 .logoutSuccessUrl("/login?logout") // URL to redirect after logout
                 .invalidateHttpSession(true) // Invalidate the session
                 .deleteCookies("JSESSIONID")); // Delete cookies on logout

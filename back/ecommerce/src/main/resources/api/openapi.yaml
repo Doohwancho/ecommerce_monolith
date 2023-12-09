@@ -53,6 +53,36 @@ paths:
                     type: string
                     example: "An unexpected error occurred."
   /login: #수동 로그인 말고 spring security에서 제공하는 방법으로 바꿈
+    get:
+      summary: Display login page or logout message
+      description: Shows the login page or a logout success message based on the logout parameter
+      tags:
+        - User
+      operationId: loginPage
+      parameters:
+        - name: logout
+          in: query
+          required: false
+          description: Logout query parameter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Login page displayed or logout message shown
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You have been logged out successfully."
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
     post:
       tags:
         - User
@@ -96,6 +126,54 @@ paths:
                   message:
                     type: string
                     example: "An unexpected error occurred."
+  /login/success:
+    get:
+      summary: Handle login success redirection
+      description: Endpoint to manage redirection after successful login
+      operationId: onLoginSuccess
+      tags:
+        - User
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  로그인 성공 여부:
+                    type: boolean
+                    example: true
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /login/fail:
+    get:
+      summary: Handle login failure redirection
+      description: Endpoint to manage redirection after failed login
+      operationId: onLoginFail
+      tags:
+        - User
+      responses:
+        '200':
+          description: Login failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  로그인 성공 여부:
+                    type: boolean
+                    example: false
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
   /users/{username}:
     get:
       tags:
