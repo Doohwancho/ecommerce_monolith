@@ -65,32 +65,9 @@ public class UserService implements UserDetailsService {
         userAuthorityEntity.setUserEntity(userEntity);
         userAuthorityEntity.setAuthorityEntity(userRole);
     
-//        UserAuthorityEntity savedUserAuthority = userAuthorityRepository.save(userAuthorityEntity);
-    
         //3. save user
         userEntity.setUserAuthorities(userAuthorityEntity);
         return userRepository.save(userEntity);
-    }
-    
-    @Transactional
-    public UserEntity saveRoleUser(
-        com.cho.ecommerce.api.domain.RegisterRequestDTO registerRequestDTO) {
-        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerRequestDTO,
-            "ROLE_USER");
-        userEntity.setEnabled(true);
-        userEntity.setFailedAttempt(0);
-        
-        return saveRoleUser(userEntity);
-    }
-    
-    @Transactional
-    public UserEntity saveRoleAdmin(
-        com.cho.ecommerce.api.domain.RegisterRequestDTO registerRequestDTO) {
-        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerRequestDTO,
-            "ROLE_ADMIN");
-        userEntity.setEnabled(true);
-        userEntity.setFailedAttempt(0);
-        return saveRoleUser(userEntity);
     }
     
     public User findUserByUsername(String username) {
@@ -100,12 +77,6 @@ public class UserService implements UserDetailsService {
         
         return userMapper.toUser(userEntity);
     }
-    
-    public com.cho.ecommerce.api.domain.UserDetailsResponseDTO findUserDetailsDTOByUsername(String username) {
-        User user = findUserByUsername(username);
-        return userMapper.toUserDetailsDTO(user);
-    }
-    
     
     @Transactional
     public boolean updateUserName(String username, String userName) {
@@ -146,7 +117,7 @@ public class UserService implements UserDetailsService {
             userAuthorityEntity.setUserEntity(user);
             userAuthorityEntity.setAuthorityEntity(userRole);
             
-            userAuthorityRepository.save(userAuthorityEntity);
+            userAuthorityRepository.save(userAuthorityEntity); //TODO - 이 부분 빼도 cascade 되서 저장되지 않을까? 그러면 @Transactional 빼도 되지 않을까?
             
             user.setUserAuthorities(userAuthorityEntity);
             user.setUpdated(LocalDateTime.now());

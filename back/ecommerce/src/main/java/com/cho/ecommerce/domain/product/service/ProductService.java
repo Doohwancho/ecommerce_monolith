@@ -24,6 +24,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,16 +52,12 @@ public class ProductService {
         this.self = self;
     }
     
-    public PaginatedProductResponse getProductsWithPagination(int page, int size) {
-        Page<ProductEntity> productsWithPaginations = productRepository.findAll(
-            PageRequest.of(page, size));
-        return productMapper.buildPaginatedProductResponse(
-            productsWithPaginations);
+    public Page<ProductEntity> getProductsWithPagination(int page, int size) { //TODO - change name from PaginatedProductResponse to PaginatedProductResponseDTO
+        return productRepository.findAll(PageRequest.of(page, size));
     }
     
-    public List<ProductDTO> getTop10RatedProducts() {
-        List<ProductEntity> top10ProductsByRating = productRepository.findTop10ByRating();
-        return productMapper.productEntitiesToProductDTOs(top10ProductsByRating);
+    public List<ProductEntity> getTop10RatedProducts() {
+        return productRepository.findTop10ByRating();
     }
     
     public Optional<ProductEntity> getProductById(Long id) {
@@ -112,39 +109,36 @@ public class ProductService {
         return productList;
     }
     
-    public List<com.cho.ecommerce.api.domain.ProductDetailResponseDTO> findProductDetailDTOsById(Long productId) {
-        List<Product> productDetailDTOsList = self.getProductDetailDTOsById(
-            productId); //fix: solution to "Methods should not call same-class methods with incompatible @Transactional"
-        return productMapper.productsToProductDetailDTOs(productDetailDTOsList);
-    }
-    
     @Transactional
-    public ProductDTO saveProduct(com.cho.ecommerce.api.domain.ProductCreateRequestDTO product) {
+    public ProductEntity saveProduct(com.cho.ecommerce.api.domain.ProductCreateRequestDTO product) {
         ProductEntity productEntity = productMapper.productCreateDTOToProductEntity(product);
         CategoryEntity category = categoryRepository.findByCategoryId(
             Long.valueOf(product.getCategoryId()));
         productEntity.setCategory(category);
-        ProductEntity savedProduct = productRepository.save(productEntity);
-        return productMapper.productEntityToProductDTO(savedProduct);
+        return productRepository.save(productEntity);
     }
     
-    public ProductDTO saveProduct(ProductDTO product) {
-        ProductEntity productEntity = productMapper.productDTOToProductEntity(product);
-        CategoryEntity category = categoryRepository.findByCategoryId(
-            Long.valueOf(product.getCategoryId()));
-        productEntity.setCategory(category);
-        ProductEntity savedProduct = productRepository.save(productEntity);
-        return productMapper.productEntityToProductDTO(savedProduct);
+    @Transactional
+    public ProductEntity updateProduct(com.cho.ecommerce.api.domain.ProductDTO product) {
+        //1. read productEntity from database to check if it exist.
+        ProductEntity productEntity = productRepository.findById(product.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        
+        //2. set productEntity's columns with new productDTO's columns
+        productEntity.setName(product.getName());
+        productEntity.setDescription(product.getDescription());
+        productEntity.setRating(product.getRating());
+        productEntity.setRatingCount(product.getRatingCount());
+        
+        //3. save productEntity
+        return productRepository.save(productEntity);
     }
     
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
     
-    public ProductListResponseDTO findAllProductsByCategory(Long categoryId) {
-        List<ProductEntity> allProductsByCategory = productRepositoryCustom.findAllProductsByCategory(
+    public List<ProductEntity> findAllProductsByCategory(Long categoryId) {
+        return productRepositoryCustom.findAllProductsByCategory(
             categoryId);
-        
-        return productMapper.productEntitiesToProductListResponseDTOs(allProductsByCategory);
     }
 }

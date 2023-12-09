@@ -2,7 +2,7 @@ package com.cho.ecommerce.domain.member.controller;
 
 import com.cho.ecommerce.api.UserApi;
 import com.cho.ecommerce.api.domain.RegisterResponseDTO;
-import com.cho.ecommerce.domain.member.service.UserService;
+import com.cho.ecommerce.domain.member.adapter.UserAdapter;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.Valid;
@@ -15,12 +15,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -28,14 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController implements UserApi {
     
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
-    private final UserService userService;
+    private final UserAdapter userAdapter;
     private final AuthenticationManager authenticationManager;
     
     
     @Override
     public ResponseEntity<RegisterResponseDTO> registerRoleUser(@Valid com.cho.ecommerce.api.domain.RegisterRequestDTO registerRequestDTO) {
         try {
-            userService.saveRoleUser(registerRequestDTO);
+            userAdapter.saveRoleUser(registerRequestDTO);
             
             // Creating a response
             RegisterResponseDTO response = new RegisterResponseDTO();
@@ -80,7 +77,7 @@ public class UserController implements UserApi {
     
     @Override
     public ResponseEntity<com.cho.ecommerce.api.domain.UserDetailsResponseDTO> getUserByUsername(@PathVariable String username) {
-        com.cho.ecommerce.api.domain.UserDetailsResponseDTO userDetailsResponseDTOByUsername = userService.findUserDetailsDTOByUsername(
+        com.cho.ecommerce.api.domain.UserDetailsResponseDTO userDetailsResponseDTOByUsername = userAdapter.findUserDetailsDTOByUsername(
             username);
         
         return new ResponseEntity<>(userDetailsResponseDTOByUsername, HttpStatus.OK);

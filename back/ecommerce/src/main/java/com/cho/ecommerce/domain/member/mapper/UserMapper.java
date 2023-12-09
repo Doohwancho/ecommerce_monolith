@@ -51,6 +51,7 @@ public class UserMapper {
         userEntity.setUpdated(LocalDateTime.now());
         userEntity.setRole(role);
         userEntity.setEnabled(true);
+        userEntity.setFailedAttempt(0);
         
         return userEntity;
     }
