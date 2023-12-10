@@ -4,6 +4,8 @@ import { ProductDTO, AllCategoriesByDepthResponseDTO } from 'model';
 import { useRecoilState } from 'recoil';
 import { categoriesState } from '../store/state';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/common/Header'
+import Footer from '../components/common/Footer'
 
 const fetchCategories = async (): Promise<AllCategoriesByDepthResponseDTO> => {
     const response = await fetch('http://127.0.0.1:8080/products/categories', { credentials: 'include' });
@@ -45,6 +47,7 @@ const Home: React.FC = () => {
 
   return (
     <>
+      <Header />
       <h1>Home Page!</h1>
       <h2>Categories</h2>
       {isLoadingCategories && <p>Category Loading...</p>}
@@ -68,6 +71,7 @@ const Home: React.FC = () => {
           </li>
         ))}
       </ul>
+      <Footer />
     </>
   );
 };
