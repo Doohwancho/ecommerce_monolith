@@ -108,19 +108,14 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     // CORS configuration for local react-vite development
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5173","http://localhost:5173")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
-        configuration.addAllowedHeader("*");
-//        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
-//        configuration.setExposedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "Accept", "X-Requested-With", "Access-Control-Allow-Headers", "Origin", "Cache-Control", "Pragma", "Expires", "X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-//        configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true); // Important for cookies like JSESSIONID, authorization headers with HTTPS
-                                                 //configuration.setAllowCredentials(true); 를 하면, .setAllowedOrigins("*"); 가 시스템적으로 안되게 막혀있다. 꼭 특정 url로 명시해야 한다.
-
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                                                 //configuration.setAllowCredentials(true); 를 하면, .setAllowedOrigins("*"); ,.setAllowedHeaders("*") 가 시스템적으로 안되게 막혀있다. 꼭 특정 url, type으로 명시해야 한다.
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
