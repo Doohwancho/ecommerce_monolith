@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, UseMutationResult } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 import { RegisterRequestDTO, RegisterResponseDTO } from 'model';
 import styled from 'styled-components';
 
@@ -113,6 +114,7 @@ const useRegisterUser = ():UseMutationResult<RegisterResponseDTO, Error, Registe
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        credentials: 'include'
       });
   
       if (!response.ok) {
@@ -124,11 +126,9 @@ const useRegisterUser = ():UseMutationResult<RegisterResponseDTO, Error, Registe
   };
 
 const Register: React.FC = () => {
-
   const [formData, setFormData] = useState<RegisterRequestDTO>(initialFormData);
-
   const { mutate, isLoading, isError, error, data } = useRegisterUser();
-
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name.startsWith('address.')) {
@@ -154,6 +154,7 @@ const Register: React.FC = () => {
     mutate(formData, {
         onSuccess: (responseData) => {
           console.log('Registration Response:', responseData);
+          navigate('/login');
         },
         onError: (error) => {
           console.error('Registration Error:', error);
