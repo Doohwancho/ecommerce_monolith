@@ -56,24 +56,6 @@ public class UserController implements UserApi {
         
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    
-    //spring security는 authentication success 이후 Redirect 해주는 GET 주소가 꼭 필요하다보다.
-    @Override
-    public ResponseEntity onLoginSuccess() {
-        log.info("로그인 성공");
-        Map<String,Boolean> map = new HashMap<>();
-        map.put("로그인 성공 여부", true);
-        return new ResponseEntity(map, HttpStatus.OK);
-    }
-
-    //spring security는 authentication fail 이후 Redirect 해주는 GET 주소가 꼭 필요하다보다.
-    @Override
-    public ResponseEntity onLoginFail() {
-        log.info("로그인 실패");
-        Map<String,Boolean> map = new HashMap<>();
-        map.put("로그인 성공 여부", false);
-        return new ResponseEntity(map, HttpStatus.OK);
-    }
 
     @Override
     public ResponseEntity loginPage(@RequestParam(value = "logout", required = false) String logout) {

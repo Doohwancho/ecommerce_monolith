@@ -73,13 +73,13 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                 //In other words, all other URLs in your application require the user to be authenticated.
             )
             .formLogin(f -> f
-//                    .loginPage("/login") //custom page 구현한 경우. 없으면 default login page로 이동시킨다.
                     .loginProcessingUrl("/login") //TODO - '/users/login'으로 추후 변경
                     .usernameParameter("username")
                     .passwordParameter("password")
-//                    .defaultSuccessUrl("/", true)
                     .successHandler(formSuccessHandler)
                     .failureHandler(formFailureHandler)
+//                    .loginPage("/login") //custom page 구현한 경우. 없으면 default login page로 이동시킨다.
+//                    .defaultSuccessUrl("/", true) //react의 navigate("/") 쓰기 때문에 주석처리
             )
             .logout(logout -> logout
                 .logoutUrl("/logout") // URL to trigger logout

@@ -29,7 +29,9 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
     
         HttpSession session = request.getSession();
         session.setMaxInactiveInterval(60 * 30); //30 min
-        response.sendRedirect("http://localhost:8080/login/success");
+        
+        response.setHeader("login-status", "success");
+        response.setHeader("Access-Control-Expose-Headers", "Login-Status"); //CORS때문에 js에서 login-status header를 extract 못하니까, Access-Control-Expose-Headers 로 'login' header를 expose 해준다.
         response.setStatus(HttpServletResponse.SC_OK);
     }
     
@@ -52,17 +54,8 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
 //        }
 //        redirectStrategy.sendRedirect(request, response, redirectUrl);
 //    }
-    
-    //case2) logging successful login
-//    private final Logger logger = LoggerFactory.getLogger(FormAuthenticationSuccessHandler.class);
-//
-//    @Override
-//    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-//        logger.info("User {} logged in successfully", authentication.getName());
-//        super.onAuthenticationSuccess(request, response, authentication);
-//    }
-    
-    //case3) session에 필드 추가
+   
+    //case2) session에 필드 추가
 //    @Override
 //    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 //        HttpSession session = request.getSession();
@@ -70,7 +63,7 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
 //        super.onAuthenticationSuccess(request, response, authentication);
 //    }
     
-    //case4) storing last login timestamp
+    //case3) storing last login timestamp
 //    private final UserRepository userRepository;
 //
 //    @Override

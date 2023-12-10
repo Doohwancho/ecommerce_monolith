@@ -129,9 +129,14 @@ const Login: React.FC = () => {
 
     mutate(formData, {
       onSuccess: (response) => {
-        console.log('Login Success! Response:', response);
-
-        navigate('/');
+        const loginStatusHeader = response.headers.get('Login-Status');
+        if(loginStatusHeader == 'success') {
+          console.log('Login Success! Response:', response);
+          navigate('/');
+        }
+        else if(loginStatusHeader == 'failed') {
+          console.log('login failed!', response);
+        }
       },
       onError: (error) => {
         console.error('Login Failed! Error:', error);

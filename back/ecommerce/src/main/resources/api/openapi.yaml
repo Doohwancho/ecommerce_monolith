@@ -126,54 +126,6 @@ paths:
                   message:
                     type: string
                     example: "An unexpected error occurred."
-  /login/success:
-    get:
-      summary: Handle login success redirection
-      description: Endpoint to manage redirection after successful login
-      operationId: onLoginSuccess
-      tags:
-        - User
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  로그인 성공 여부:
-                    type: boolean
-                    example: true
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponseDTO'
-  /login/fail:
-    get:
-      summary: Handle login failure redirection
-      description: Endpoint to manage redirection after failed login
-      operationId: onLoginFail
-      tags:
-        - User
-      responses:
-        '200':
-          description: Login failed
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  로그인 성공 여부:
-                    type: boolean
-                    example: false
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponseDTO'
   /users/{username}:
     get:
       tags:
