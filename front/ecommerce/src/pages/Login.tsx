@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation, UseMutationResult } from 'react-query';
+import { useSetRecoilState } from 'recoil';
+import { isLoggedInState } from '../store/state';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -110,6 +112,7 @@ const useLoginUser = ():UseMutationResult<any, Error, FormData> => {
 
 const Login: React.FC = () => {
   const [loginData, setLoginData] = useState<LoginRequestDTO>(initialLoginData);
+  const setIsLoggedInUser = useSetRecoilState(isLoggedInState);
   const { mutate, isLoading, isError, error } = useLoginUser();
   const navigate = useNavigate();
 
@@ -132,6 +135,8 @@ const Login: React.FC = () => {
         const loginStatusHeader = response.headers.get('Login-Status');
         if(loginStatusHeader == 'success') {
           console.log('Login Success! Response:', response);
+          
+          setIsLoggedInUser(true);
           navigate('/');
         }
         else if(loginStatusHeader == 'failed') {

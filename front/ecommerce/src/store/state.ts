@@ -5,3 +5,8 @@ export const categoriesState = atom<AllCategoriesByDepthResponseDTO[]>({
   key: 'categoriesState',
   default: [],
 });
+
+export const isLoggedInState = atom<boolean>({
+  key: 'isLoggedInState',
+  default: false,
+});

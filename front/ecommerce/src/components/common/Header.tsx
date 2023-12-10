@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useRecoilState } from 'recoil';
+import { isLoggedInState } from '../../store/state';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -32,34 +34,41 @@ const TopRight = styled.ul`
 `;
 
 const Header: React.FC = () => {
+    const [isLoggedInUser, setIsLoggedInUser] = useRecoilState(isLoggedInState);
 
-  const logout = () => {
-    axios
-      .post("http://127.0.0.1:8080/logout", { credentials: 'include' })
-      .then(() => {
-        alert('로그 아웃 성공!');
-      })
-      .catch(() => {
-        alert('로그 아웃 실패!');
-      });
+    const logout = () => {
+      axios
+        .post("http://127.0.0.1:8080/logout", {}, { withCredentials: true })
+        .then(() => {
+          alert('로그 아웃 성공!');
+          setIsLoggedInUser(false); 
+        })
+        .catch(() => {
+          alert('로그 아웃 실패!');
+        });
+    };
+
+    return (
+      <>
+        <TopWrapper>
+          <div></div>
+          <TopRight>
+            {isLoggedInUser ? (
+              <li onClick={logout}>로그아웃</li>
+            ) : (
+              <>
+                <Link to="/register">
+                  <li>회원가입</li>
+                </Link>
+                <Link to="/login">
+                  <li>로그인</li>
+                </Link>
+              </>
+            )}
+          </TopRight>
+        </TopWrapper>
+      </>
+    );
   };
-
-  return (
-    <>
-       <TopWrapper>
-         <div></div>
-         <TopRight>
-           <Link to="/register">
-             <li>회원가입</li>
-           </Link>
-           <li onClick= {logout}>로그아웃</li>
-           <Link to="/login">
-             <li>로그인</li>
-           </Link>
-         </TopRight>
-       </TopWrapper>
-    </>
-  );
-};
 
 export default Header;
