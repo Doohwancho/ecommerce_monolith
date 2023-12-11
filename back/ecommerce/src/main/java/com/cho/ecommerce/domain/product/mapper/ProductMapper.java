@@ -1,10 +1,9 @@
 package com.cho.ecommerce.domain.product.mapper;
 
+import com.cho.ecommerce.api.domain.PaginatedProductResponse;
 import com.cho.ecommerce.api.domain.ProductDTO;
-import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
-import com.cho.ecommerce.api.domain.PaginatedProductResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
@@ -64,14 +63,6 @@ public interface ProductMapper {
         // Assuming you don't want to map the category back in this direction
     ProductEntity productCreateDTOToProductEntity(
         com.cho.ecommerce.api.domain.ProductCreateRequestDTO productCreateRequestDTO);
-    
-    
-    default ProductListResponseDTO productEntitiesToProductListResponseDTOs(
-        List<ProductEntity> productEntityList) {
-        ProductListResponseDTO productListResponseDTO = new ProductListResponseDTO();
-        productListResponseDTO.setProducts(productEntitiesToProductDTOs(productEntityList));
-        return productListResponseDTO;
-    }
     
     com.cho.ecommerce.api.domain.ProductDetailResponseDTO productToProductDetailDTO(Product product);
     

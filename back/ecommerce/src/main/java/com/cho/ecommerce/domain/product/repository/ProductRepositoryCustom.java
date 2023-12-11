@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepositoryCustom {
-    List<ProductEntity> findAllProductsByCategory(Long categoryId);
+    List<com.cho.ecommerce.api.domain.ProductWithOptionsDTO> findAllProductsByCategory(Long categoryId);
     
     Optional<List<ProductEntity>> findProductDetailDTOsById(Long productId);
     

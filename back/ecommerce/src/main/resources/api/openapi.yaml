@@ -352,7 +352,7 @@ paths:
         - Product
       summary: Get products by category
       description: Returns a list of products belonging to a specific category
-      operationId: getProductsByCategory
+      operationId: getProductsWithOptionsByCategory
       parameters:
         - name: categoryId
           in: path
@@ -363,11 +363,11 @@ paths:
             format: int64
       responses:
         '200':
-          description: A list of products
+          description: A list of products with options
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductListResponseDTO'
+                $ref: '#/components/schemas/ProductWithOptionsListResponseDTO'
         '204':
           description: No content, no products found for the category
         '400':
@@ -757,13 +757,58 @@ components:
           type: integer
         categoryId:
           type: integer
-    ProductListResponseDTO:
+    ProductWithOptionsDTO:
+      type: object
+      required:
+        - productId
+        - name
+        - description
+        - rating
+        - ratingCount
+        - categoryId
+        - optionId
+        - optionName
+        - optionVariationName
+        - quantity
+        - price
+      properties:
+        productId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        rating:
+          type: number
+          format: double
+        ratingCount:
+          type: integer
+        categoryId:
+          type: integer
+          format: int64
+        optionId:
+          type: integer
+          format: int64
+        optionName:
+          type: string
+        optionVariationName:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+          description: Available quantity of the product
+        price:
+          type: number
+          format: double
+          description: Price of the product
+    ProductWithOptionsListResponseDTO:
       type: object
       properties:
         products:
           type: array
           items:
-            $ref: '#/components/schemas/ProductDTO'
+            $ref: '#/components/schemas/ProductWithOptionsDTO'
     PaginatedProductResponse:
       type: object
       required:

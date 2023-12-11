@@ -1,8 +1,5 @@
 package com.cho.ecommerce.domain.product.service;
 
-import com.cho.ecommerce.api.domain.PaginatedProductResponse;
-import com.cho.ecommerce.api.domain.ProductDTO;
-import com.cho.ecommerce.api.domain.ProductListResponseDTO;
 import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
 import com.cho.ecommerce.domain.product.entity.DiscountEntity;
@@ -24,7 +21,6 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -137,8 +133,4 @@ public class ProductService {
         productRepository.deleteById(id);
     }
     
-    public List<ProductEntity> findAllProductsByCategory(Long categoryId) {
-        return productRepositoryCustom.findAllProductsByCategory(
-            categoryId);
-    }
 }

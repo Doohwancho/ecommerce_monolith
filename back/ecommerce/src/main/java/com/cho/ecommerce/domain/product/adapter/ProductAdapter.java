@@ -43,14 +43,6 @@ public class ProductAdapter {
         return productMapper.productEntityToProductDTO(productEntity);
     }
     
-    public com.cho.ecommerce.api.domain.ProductListResponseDTO findAllProductsByCategory(
-        Long categoryId) {
-        List<ProductEntity> allProductsByCategory = productService.findAllProductsByCategory(
-            categoryId);
-    
-        return productMapper.productEntitiesToProductListResponseDTOs(allProductsByCategory);
-    }
-    
     public List<com.cho.ecommerce.api.domain.ProductDTO> getTop10RatedProducts() {
         List<ProductEntity> top10ProductsByRating = productService.getTop10RatedProducts();
         return productMapper.productEntitiesToProductDTOs(top10ProductsByRating);

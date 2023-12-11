@@ -3,11 +3,12 @@ package com.cho.ecommerce.domain.product.controller;
 import com.cho.ecommerce.api.ProductApi;
 import com.cho.ecommerce.api.domain.PaginatedProductResponse;
 import com.cho.ecommerce.api.domain.ProductDTO;
-import com.cho.ecommerce.api.domain.ProductListResponseDTO;
+import com.cho.ecommerce.api.domain.ProductWithOptionsDTO;
 import com.cho.ecommerce.domain.product.adapter.ProductAdapter;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
 import com.cho.ecommerce.domain.product.repository.OptionRepository;
+import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import com.cho.ecommerce.domain.product.service.ProductService;
 import java.util.List;
 import javax.validation.Valid;
@@ -30,6 +31,8 @@ public class ProductController implements ProductApi {
     private CategoryRepository categoryRepository;
     @Autowired
     private OptionRepository optionRepository;
+    @Autowired
+    private ProductRepository productRepository;
     
 
     
@@ -77,11 +80,14 @@ public class ProductController implements ProductApi {
     
     
     @Override
-    public ResponseEntity<ProductListResponseDTO> getProductsByCategory(Long categoryId) {
-        ProductListResponseDTO allProductsByCategory = productAdapter.findAllProductsByCategory(
+    public ResponseEntity<com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO> getProductsWithOptionsByCategory(Long categoryId) {
+        List<ProductWithOptionsDTO> allProductsByCategory = productRepository.findAllProductsByCategory(
             categoryId);
-        
-        return ResponseEntity.ok(allProductsByCategory);
+    
+        com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO response = new com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO();
+        response.setProducts(allProductsByCategory);
+    
+        return ResponseEntity.ok(response);
     }
     
     @Override
