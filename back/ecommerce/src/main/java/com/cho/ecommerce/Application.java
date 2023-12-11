@@ -43,8 +43,8 @@ public class Application {
                 .addLong("numberOfFakeCategories", 10L)
                 .addLong("numberOfFakeOptionsPerCategory", 3L)
                 .addLong("numberOfFakeOptionVariationsPerOption", 3L)
-                .addLong("numberOfFakeProducts", 20L)
-                .addLong("numberOfFakeProductItemsPerProduct", 3L)
+                .addLong("numberOfFakeProducts", 1000L)
+                .addLong("numberOfFakeProductItemsPerProduct", 10L)
                 .addLong("numberOfFakeOrderItemsPerOrder", 5L)
                 .toJobParameters();
             try {

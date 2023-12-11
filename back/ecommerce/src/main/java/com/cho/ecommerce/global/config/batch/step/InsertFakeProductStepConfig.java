@@ -4,6 +4,7 @@ package com.cho.ecommerce.global.config.batch.step;
 import com.cho.ecommerce.domain.product.domain.DiscountType;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
 import com.cho.ecommerce.domain.product.entity.DiscountEntity;
+import com.cho.ecommerce.domain.product.entity.OptionEntity;
 import com.cho.ecommerce.domain.product.entity.OptionVariationEntity;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.entity.ProductItemEntity;
@@ -16,6 +17,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManager;
@@ -147,19 +149,37 @@ public class InsertFakeProductStepConfig {
     
                 //create product_option_variation for each product_items
                 for(ProductItemEntity productItem : product.getProductItems()) {
+                    //1. extract random option that belongs to the product's category
+                    Set<OptionEntity> optionEntitiesSet = product.getCategory().getOptionEntities();
+                    int optionEntitySize = optionEntitiesSet.size();
+                    Random rand = new Random();
+                    OptionEntity randomOptionEntity = optionEntitiesSet.stream()
+                        .skip(rand.nextInt(optionEntitySize))
+                        .findFirst()
+                        .orElse(null);
+                    
+                    //2. extract random option_variation from random option extracted
+                    List<OptionVariationEntity> optionVariationsList = randomOptionEntity.getOptionVariations();
+                    int optionVariationsListSize = optionVariationsList.size();
+                    OptionVariationEntity optionVariationEntity = randomOptionEntity.getOptionVariations()
+                        .stream()
+                        .skip(rand.nextInt(optionVariationsListSize))
+                        .findFirst()
+                        .orElse(null);
+    
+                    //3. create product option variation Entity
                     ProductOptionVariationEntity productOptionVariationEntity = new ProductOptionVariationEntity();
-    
-                    OptionVariationEntity optionVariation = product.getCategory()
-                        .getOptionEntities()
-                        .stream().findFirst().get().getOptionVariations().get(0);
-    
+                    
+                    //4. option variation에서 product option variation을 저장
                     Set productOptionVariationSet = new HashSet();
                     productOptionVariationSet.add(productOptionVariationEntity);
-                    optionVariation.setProductOptionVariations(productOptionVariationSet);
+                    optionVariationEntity.setProductOptionVariations(productOptionVariationSet);
     
+                    //5. productItem에서 product option variation 저장
                     productItem.setProductOptionVariations(productOptionVariationSet);
     
-                    productOptionVariationEntity.setOptionVariation(optionVariation);
+                    //6. product option variation에서 productItem, option variation 저장
+                    productOptionVariationEntity.setOptionVariation(optionVariationEntity);
                     productOptionVariationEntity.setProductItem(productItem);
                 }
                 
