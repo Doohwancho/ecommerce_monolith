@@ -4,6 +4,7 @@ import com.cho.ecommerce.api.ProductApi;
 import com.cho.ecommerce.api.domain.PaginatedProductResponse;
 import com.cho.ecommerce.api.domain.ProductDTO;
 import com.cho.ecommerce.api.domain.ProductWithOptionsDTO;
+import com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO;
 import com.cho.ecommerce.domain.product.adapter.ProductAdapter;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
@@ -31,8 +32,7 @@ public class ProductController implements ProductApi {
     private CategoryRepository categoryRepository;
     @Autowired
     private OptionRepository optionRepository;
-    @Autowired
-    private ProductRepository productRepository;
+
     
 
     
@@ -81,11 +81,8 @@ public class ProductController implements ProductApi {
     
     @Override
     public ResponseEntity<com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO> getProductsWithOptionsByCategory(Long categoryId) {
-        List<ProductWithOptionsDTO> allProductsByCategory = productRepository.findAllProductsByCategory(
+        ProductWithOptionsListResponseDTO response = productAdapter.findAllProductsByCategory(
             categoryId);
-    
-        com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO response = new com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO();
-        response.setProducts(allProductsByCategory);
     
         return ResponseEntity.ok(response);
     }

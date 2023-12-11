@@ -6,6 +6,7 @@ import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
+import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import com.cho.ecommerce.domain.product.service.ProductService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ public class ProductAdapter {
     @Autowired
     private ProductService productService;
     
+    @Autowired
+    private ProductRepository productRepository;
     
     public com.cho.ecommerce.api.domain.PaginatedProductResponse getProductsWithPagination(
         Integer page, Integer size) {
@@ -46,5 +49,15 @@ public class ProductAdapter {
     public List<com.cho.ecommerce.api.domain.ProductDTO> getTop10RatedProducts() {
         List<ProductEntity> top10ProductsByRating = productService.getTop10RatedProducts();
         return productMapper.productEntitiesToProductDTOs(top10ProductsByRating);
+    }
+    
+    public com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO findAllProductsByCategory(
+        Long categoryId) {
+        List<com.cho.ecommerce.api.domain.ProductWithOptionsDTO> allProductsByCategory = productRepository.findAllProductsByCategory(
+            categoryId);
+    
+        com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO response = new com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO();
+        response.setProducts(allProductsByCategory);
+        return response;
     }
 }
