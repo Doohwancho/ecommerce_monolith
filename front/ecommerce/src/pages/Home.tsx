@@ -5,6 +5,7 @@ import { useRecoilState } from 'recoil';
 import { categoriesState } from '../store/state';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/common/Header'
+import TopNav from '../components/common/TopNav/TopNav';
 import Footer from '../components/common/Footer'
 
 const fetchCategories = async (): Promise<AllCategoriesByDepthResponseDTO> => {
@@ -41,26 +42,14 @@ const Home: React.FC = () => {
     console.log("Updated categories:", categories);
   }, [categories]); 
 
-  const onCategoryClick = (categoryName: string) => {
-    navigate(`/category/${categoryName}`);
-  };
-
   return (
     <>
       <Header />
+      <TopNav />
       <h1>Home Page!</h1>
-      <h2>Categories</h2>
       {isLoadingCategories && <p>Category Loading...</p>}
       {categoriesError && <p>Error: {categoriesError.message}</p>}
-      <ul>
-        {categoriesResponse?.map((category: AllCategoriesByDepthResponseDTO, index: number) => (
-            <li key={index} onClick={() => onCategoryClick(category.lowCategoryName)}>
-                Top: {category.topCategoryName} (ID: {category.topCategoryId}),
-                Mid: {category.midCategoryName} (ID: {category.midCategoryId}),
-                Low: {category.lowCategoryName} (ID: {category.lowCategoryId})
-          </li>
-        ))}
-      </ul>
+
       <h2>Products</h2>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error.message}</p>}
