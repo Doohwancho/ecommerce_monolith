@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from 'react-query';
 import { OptionsOptionVariationsResponseDTO, ProductWithOptionsListResponseDTO, ProductWithOptionsDTO } from 'model';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -34,6 +34,10 @@ interface OptionVariation {
   [optionName: string]: string;
 }
 
+interface OptionFilters {
+  [key: string]: string;
+}
+
 const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVariationsResponseDTO[]> => {
     const baseUrl = 'http://127.0.0.1:8080';
     const endpoint = `/categories/${categoryId}/options`;
@@ -59,6 +63,7 @@ const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVa
   };  
 
   const groupOptionsByOptionId = (data: OptionsOptionVariationsResponseDTO[]): GroupedOptions[] => {
+    // console.log("inside groupOptionsByOptionId()", data);
     const grouped: Record<number, GroupedOptions> = {};
 
     data.forEach(item => {
@@ -68,6 +73,8 @@ const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVa
         }
         grouped[optionId].optionVariationNames.push(optionVariationName);
     });
+
+    // console.log("inside groupOptionsByOptionId()", grouped);
 
     return Object.values(grouped);
 };
@@ -107,9 +114,26 @@ const groupProducts = (products: ProductWithOptionsDTO[]): GroupedProducts => {
   return groupedProducts;
 }
 
+
 const Category = () => {
   const navigate = useNavigate();
   const { lowCategoryId } = useParams();
+  const prevCategoryIdRef = useRef();
+
+  const [priceFilters, setPriceFilters] = useState([]); // State for price filter
+  const [optionFilter, setOptionFilter] = useState({}); // State for option variation filter
+  const [filteredProducts, setFilteredProducts] = useState({}); // New state for filtered products
+
+
+  // Define the price ranges
+    const priceRanges = [
+      { min: 0, max: 50000 },
+      { min: 50000, max: 100000 },
+      { min: 100000, max: 150000 },
+      { min: 150000, max: 200000 },
+      { min: 200000, max: Infinity }
+    ];
+
   const { data: optionsData, isLoading: optionIsLoading, error: optionError, refetch: refetchOptions } = useQuery<OptionsOptionVariationsResponseDTO[], Error>(
     ['categoryOptions', lowCategoryId], //react-query의 키. lowCategoryId가 바뀌면 refetch한다. 
     () => fetchCategoryOptions(lowCategoryId),
@@ -127,24 +151,105 @@ const Category = () => {
   );
 
   useEffect(() => {
-    if (lowCategoryId) {
+    //if category page is chagned, refetch option, products, and empty previous option filters
+    if (lowCategoryId && lowCategoryId !== prevCategoryIdRef.current) {
+      console.log("low categoryId is changed, so refetch options and products!");
       refetchOptions();
       refetchProducts();
+      setOptionFilter({}); //reset option filters
+      prevCategoryIdRef.current = lowCategoryId; // Update the ref with the new categoryId
     }
-    console.log("updated option datas:", optionsData);
-    if (optionsData) {
-      console.log("grouped option data", groupOptionsByOptionId(optionsData));
-    }
-    console.log("updated products by categoryId", productsData);
-
+    
+    //after fetching products, group them by productId, then filter them if option | price filters exist
     if(productsData) {
-      console.log(groupProducts(productsData.products));
-    }
-  }, [lowCategoryId, optionsData, productsData]); 
+      console.log("step1: ",productsData.products);
 
-  const onProductClick = (productId: number) => {
-    navigate(`/product/${productId}`);
+      const groupedProducts = groupProducts(productsData.products);
+      console.log("step2: ", groupedProducts);
+
+      if(Object.keys(optionFilter).length > 0) {
+        const updatedFilteredProducts = filteredGroupedProducts(groupedProducts);
+        console.log("step3: ", updatedFilteredProducts);
+        setFilteredProducts(updatedFilteredProducts);
+      } else {
+        console.log("optionFilter is empty! so dont apply filter!");
+        setFilteredProducts(groupedProducts);
+      }
+      
+    }
+  }, [lowCategoryId, optionsData, productsData, priceFilters, optionFilter]); 
+
+  // const onProductClick = (productId: number) => {
+  //   navigate(`/product/${productId}`);
+  // };
+
+  const handleOptionFilterChange = (optionId: string, optionName: string, optionVariationName: string, isChecked: boolean, event) => {    
+    event.stopPropagation();
+    console.log(event.target);
+    console.log("option clicked! optionId: "+optionId + " optionName: "+optionName + " optionVariationName: "+optionVariationName + " isChecked: "+isChecked);
+    setOptionFilter(prevFilters => {
+      const newFilters = { ...prevFilters };
+
+      if (isChecked) {
+        // If the filter for this optionId doesn't exist, initialize it
+        if (!newFilters[optionId]) {
+          newFilters[optionId] = [];
+        }
+        // Add the variation name to the filter
+        if (!newFilters[optionId].includes(optionVariationName)) {
+          newFilters[optionId].push(optionVariationName);
+        }
+      } else {
+        // Remove the variation name from the filter
+        newFilters[optionId] = newFilters[optionId].filter(variation => variation !== optionVariationName);
+        
+        // If the filter array is empty, delete the filter
+        if (newFilters[optionId].length === 0) {
+          delete newFilters[optionId];
+        }
+      }
+      console.log("inside handleOptionFilterChange()", newFilters);
+      Object.keys(newFilters).map((key) => {
+        console.log("key: "+key+" newfilter[key]: "+newFilters[key])
+        // console.log(newFilters[key]);
+      });
+
+      return newFilters;
+    });
   };
+
+  // const handlePriceFilterChange = (range) => {
+  //   setPriceFilters(prevFilters => {
+  //     if (prevFilters.some(filter => filter.min === range.min && filter.max === range.max)) {
+  //       // Remove the filter
+  //       return prevFilters.filter(filter => filter.min !== range.min || filter.max !== range.max);
+  //     } else {
+  //       // Add the filter
+  //       return [...prevFilters, range];
+  //     }
+  //   });
+  // };
+
+  const filteredGroupedProducts = (groupProducts: GroupedProducts) => {
+    console.log("inside filteredGroupProducts(), filter:", optionFilter);
+    console.log("inside filteredGroupProducts()", groupProducts);
+
+    return Object.values(groupProducts).filter(product => {
+      // Check if product passes any of the selected price filters
+      // const priceFilterPassed = priceFilters.length === 0 || priceFilters.some(filter => 
+      //   product.averagePrice >= filter.min && product.averagePrice <= filter.max
+      // );
+  
+      // Check if product passes the option variation filter
+      const optionFilterPassed = Object.entries(optionFilter).some(([optionId, optionVariationNames]) =>
+        product.optionVariations[optionId] && optionVariationNames.includes(Object.values(product.optionVariations[optionId])[0])
+      );
+  
+      // return priceFilterPassed && optionFilterPassed;
+      return optionFilterPassed;
+    });
+  };
+
 
   return (
     <>
@@ -154,18 +259,21 @@ const Category = () => {
         <Area className="left-area">
           {/* option filters */}
           {optionsData && groupOptionsByOptionId(optionsData)?.map(group => (
-              <Container key={group.optionId}>
-                  <Title>{group.optionName}</Title>
-                  <CheckboxList>
-                    {group.optionVariationNames.map((variation, variationIndex) => (
-                      <CheckboxItem key={`${group.optionId}-${variationIndex}`}>
-                          <input type="checkbox" />
-                          <label>
-                              {variation}
-                          </label>
-                      </CheckboxItem>
-                    ))}
-                  </CheckboxList>
+            <Container key={group.optionId}>
+                <Title>{group.optionName}</Title>
+                <CheckboxList>
+                  {group.optionVariationNames.map((variation, variationIndex) => (
+                    <CheckboxItem key={`${group.optionId}-${variationIndex}`}>
+                      <input 
+                      type="checkbox" 
+                      onChange={(e) => handleOptionFilterChange(group.optionId, group.optionName, variation, e.target.checked, e)}
+                      />
+                      <label>
+                          {variation}
+                      </label>
+                    </CheckboxItem>
+                  ))}
+                </CheckboxList>
               </Container>
             ))}
           {/* price filter */}
@@ -216,8 +324,8 @@ const Category = () => {
         <Area className="right-area">
           <ProductContainer>
             {productsData && productsData.products.length > 0 ? (
-                Object.values(groupProducts(productsData.products)).map((product) => (
-                    <Card key={product.productId}>
+                Object.values(filteredProducts).map((product) => (
+                  <Card key={product.productId}>
                     {/* source: https://codepen.io/mdshifut/pen/VrwBJq */}
                     {/* <Badge>Hot</Badge> */}
                     {/* <ProductThumb> */}
