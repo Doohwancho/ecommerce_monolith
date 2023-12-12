@@ -58,6 +58,12 @@ export interface ProductWithOptionsDTO {
     'categoryId': number;
     /**
      * 
+     * @type {string}
+     * @memberof ProductWithOptionsDTO
+     */
+    'categoryName': string;
+    /**
+     * 
      * @type {number}
      * @memberof ProductWithOptionsDTO
      */

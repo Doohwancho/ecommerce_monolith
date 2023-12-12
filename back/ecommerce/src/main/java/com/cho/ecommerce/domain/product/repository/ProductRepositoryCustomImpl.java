@@ -46,6 +46,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 product.rating,
                 product.ratingCount,
                 category.categoryId,
+                category.name,
                 option.optionId,
                 option.value,
                 optionVariation.value,
@@ -70,6 +71,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             dto.setRating(tuple.get(product.rating));
             dto.setRatingCount(tuple.get(product.ratingCount));
             dto.setCategoryId(tuple.get(category.categoryId));
+            dto.setCategoryName(tuple.get(category.name));
             dto.setOptionId(tuple.get(option.optionId));
             dto.setOptionName(tuple.get(option.value));
             dto.setOptionVariationName(tuple.get(optionVariation.value));

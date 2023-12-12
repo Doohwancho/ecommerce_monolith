@@ -766,6 +766,7 @@ components:
         - rating
         - ratingCount
         - categoryId
+        - categoryName
         - optionId
         - optionName
         - optionVariationName
@@ -787,6 +788,8 @@ components:
         categoryId:
           type: integer
           format: int64
+        categoryName:
+          type: string
         optionId:
           type: integer
           format: int64

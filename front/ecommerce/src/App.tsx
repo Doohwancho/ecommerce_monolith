@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import './App.css'
+// import './App.css'
 
 import Register from "./pages/Register";
 import Login from './pages/Login';
