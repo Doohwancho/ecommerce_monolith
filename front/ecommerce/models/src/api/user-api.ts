@@ -24,6 +24,8 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, ope
 // @ts-ignore
 import { ErrorResponseDTO } from '../../src/model';
 // @ts-ignore
+import { LoginPage200Response } from '../../src/model';
+// @ts-ignore
 import { LoginRequestDTO } from '../../src/model';
 // @ts-ignore
 import { LoginResponseDTO } from '../../src/model';
@@ -65,6 +67,41 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Shows the login page or a logout success message based on the logout parameter
+         * @summary Display login page or logout message
+         * @param {string} [logout] Logout query parameter
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        loginPage: async (logout?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/login`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (logout !== undefined) {
+                localVarQueryParameter['logout'] = logout;
+            }
 
 
     
@@ -173,6 +210,19 @@ export const UserApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
+         * Shows the login page or a logout success message based on the logout parameter
+         * @summary Display login page or logout message
+         * @param {string} [logout] Logout query parameter
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async loginPage(logout?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginPage200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.loginPage(logout, options);
+            const index = configuration?.serverIndex ?? 0;
+            const operationBasePath = operationServerMap['UserApi.loginPage']?.[index]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        },
+        /**
          * Authenticates the user and returns a login status message.
          * @summary Authenticate a user
          * @param {LoginRequestDTO} loginRequestDTO User credentials for authentication
@@ -219,6 +269,16 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
             return localVarFp.getUserByUsername(username, options).then((request) => request(axios, basePath));
         },
         /**
+         * Shows the login page or a logout success message based on the logout parameter
+         * @summary Display login page or logout message
+         * @param {string} [logout] Logout query parameter
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        loginPage(logout?: string, options?: any): AxiosPromise<LoginPage200Response> {
+            return localVarFp.loginPage(logout, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Authenticates the user and returns a login status message.
          * @summary Authenticate a user
          * @param {LoginRequestDTO} loginRequestDTO User credentials for authentication
@@ -256,6 +316,16 @@ export interface UserApiInterface {
      * @memberof UserApiInterface
      */
     getUserByUsername(username: string, options?: AxiosRequestConfig): AxiosPromise<UserDetailsResponseDTO>;
+
+    /**
+     * Shows the login page or a logout success message based on the logout parameter
+     * @summary Display login page or logout message
+     * @param {string} [logout] Logout query parameter
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserApiInterface
+     */
+    loginPage(logout?: string, options?: AxiosRequestConfig): AxiosPromise<LoginPage200Response>;
 
     /**
      * Authenticates the user and returns a login status message.
@@ -296,6 +366,18 @@ export class UserApi extends BaseAPI implements UserApiInterface {
      */
     public getUserByUsername(username: string, options?: AxiosRequestConfig) {
         return UserApiFp(this.configuration).getUserByUsername(username, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Shows the login page or a logout success message based on the logout parameter
+     * @summary Display login page or logout message
+     * @param {string} [logout] Logout query parameter
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserApi
+     */
+    public loginPage(logout?: string, options?: AxiosRequestConfig) {
+        return UserApiFp(this.configuration).loginPage(logout, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

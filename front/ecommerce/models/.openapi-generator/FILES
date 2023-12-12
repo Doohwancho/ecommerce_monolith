@@ -16,6 +16,7 @@ src/model/all-categories-by-depth-response-dto.ts
 src/model/discount-dto.ts
 src/model/error-response-dto.ts
 src/model/index.ts
+src/model/login-page200-response.ts
 src/model/login-request-dto.ts
 src/model/login-response-dto.ts
 src/model/login-user401-response.ts
@@ -27,7 +28,8 @@ src/model/paginated-product-response.ts
 src/model/product-create-request-dto.ts
 src/model/product-detail-response-dto.ts
 src/model/product-dto.ts
-src/model/product-list-response-dto.ts
+src/model/product-with-options-dto.ts
+src/model/product-with-options-list-response-dto.ts
 src/model/register-request-dto.ts
 src/model/register-request-dtoaddress.ts
 src/model/register-response-dto.ts
