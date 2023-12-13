@@ -63,7 +63,6 @@ const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVa
   };  
 
   const groupOptionsByOptionId = (data: OptionsOptionVariationsResponseDTO[]): GroupedOptions[] => {
-    // console.log("inside groupOptionsByOptionId()", data);
     const grouped: Record<number, GroupedOptions> = {};
 
     data.forEach(item => {
@@ -73,8 +72,6 @@ const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVa
         }
         grouped[optionId].optionVariationNames.push(optionVariationName);
     });
-
-    // console.log("inside groupOptionsByOptionId()", grouped);
 
     return Object.values(grouped);
 };
@@ -124,16 +121,6 @@ const Category = () => {
   const [optionFilter, setOptionFilter] = useState({}); // State for option variation filter
   const [filteredProducts, setFilteredProducts] = useState({}); // New state for filtered products
 
-
-  // Define the price ranges
-    const priceRanges = [
-      { min: 0, max: 50000 },
-      { min: 50000, max: 100000 },
-      { min: 100000, max: 150000 },
-      { min: 150000, max: 200000 },
-      { min: 200000, max: Infinity }
-    ];
-
   const { data: optionsData, isLoading: optionIsLoading, error: optionError, refetch: refetchOptions } = useQuery<OptionsOptionVariationsResponseDTO[], Error>(
     ['categoryOptions', lowCategoryId], //react-query의 키. lowCategoryId가 바뀌면 refetch한다. 
     () => fetchCategoryOptions(lowCategoryId),
@@ -157,6 +144,7 @@ const Category = () => {
       refetchOptions();
       refetchProducts();
       setOptionFilter({}); //reset option filters
+      setPriceFilters([]); //reset price filters
       prevCategoryIdRef.current = lowCategoryId; // Update the ref with the new categoryId
     }
     
@@ -167,7 +155,8 @@ const Category = () => {
       const groupedProducts = groupProducts(productsData.products);
       console.log("step2: ", groupedProducts);
 
-      if(Object.keys(optionFilter).length > 0) {
+      console.log("price filters: ", priceFilters);
+      if(Object.keys(optionFilter).length > 0 || priceFilters.length > 0) {
         const updatedFilteredProducts = filteredGroupedProducts(groupedProducts);
         console.log("step3: ", updatedFilteredProducts);
         setFilteredProducts(updatedFilteredProducts);
@@ -190,7 +179,7 @@ const Category = () => {
     setOptionFilter(prevFilters => {
       const newFilters = { ...prevFilters };
 
-      if (isChecked) {
+      if (isChecked) {  
         // If the filter for this optionId doesn't exist, initialize it
         if (!newFilters[optionId]) {
           newFilters[optionId] = [];
@@ -202,7 +191,7 @@ const Category = () => {
       } else {
         // Remove the variation name from the filter
         newFilters[optionId] = newFilters[optionId].filter(variation => variation !== optionVariationName);
-        
+
         // If the filter array is empty, delete the filter
         if (newFilters[optionId].length === 0) {
           delete newFilters[optionId];
@@ -211,24 +200,23 @@ const Category = () => {
       console.log("inside handleOptionFilterChange()", newFilters);
       Object.keys(newFilters).map((key) => {
         console.log("key: "+key+" newfilter[key]: "+newFilters[key])
-        // console.log(newFilters[key]);
       });
 
       return newFilters;
     });
   };
 
-  // const handlePriceFilterChange = (range) => {
-  //   setPriceFilters(prevFilters => {
-  //     if (prevFilters.some(filter => filter.min === range.min && filter.max === range.max)) {
-  //       // Remove the filter
-  //       return prevFilters.filter(filter => filter.min !== range.min || filter.max !== range.max);
-  //     } else {
-  //       // Add the filter
-  //       return [...prevFilters, range];
-  //     }
-  //   });
-  // };
+  const handlePriceFilterChange = (range) => {
+    setPriceFilters(prevFilters => {
+      if (prevFilters.some(filter => filter.min === range.min && filter.max === range.max)) {
+        // Remove the filter
+        return prevFilters.filter(filter => filter.min !== range.min || filter.max !== range.max);
+      } else {
+        // Add the filter
+        return [...prevFilters, range];
+      }
+    });
+  };
 
   const filteredGroupedProducts = (groupProducts: GroupedProducts) => {
     console.log("inside filteredGroupProducts(), filter:", optionFilter);
@@ -236,17 +224,16 @@ const Category = () => {
 
     return Object.values(groupProducts).filter(product => {
       // Check if product passes any of the selected price filters
-      // const priceFilterPassed = priceFilters.length === 0 || priceFilters.some(filter => 
-      //   product.averagePrice >= filter.min && product.averagePrice <= filter.max
-      // );
+      const priceFilterPassed = priceFilters.length === 0 || priceFilters.some(filter => 
+        product.averagePrice >= filter.min && product.averagePrice <= filter.max
+      );
   
       // Check if product passes the option variation filter
-      const optionFilterPassed = Object.entries(optionFilter).some(([optionId, optionVariationNames]) =>
+      const optionFilterPassed = Object.keys(optionFilter).length === 0 || Object.entries(optionFilter).some(([optionId, optionVariationNames]) =>
         product.optionVariations[optionId] && optionVariationNames.includes(Object.values(product.optionVariations[optionId])[0])
       );
   
-      // return priceFilterPassed && optionFilterPassed;
-      return optionFilterPassed;
+      return priceFilterPassed && optionFilterPassed;
     });
   };
 
@@ -265,8 +252,8 @@ const Category = () => {
                   {group.optionVariationNames.map((variation, variationIndex) => (
                     <CheckboxItem key={`${group.optionId}-${variationIndex}`}>
                       <input 
-                      type="checkbox" 
-                      onChange={(e) => handleOptionFilterChange(group.optionId, group.optionName, variation, e.target.checked, e)}
+                        type="checkbox" 
+                        onChange={(e) => handleOptionFilterChange(group.optionId, group.optionName, variation, e.target.checked, e)}
                       />
                       <label>
                           {variation}
@@ -281,7 +268,11 @@ const Category = () => {
             <Title>Price</Title>
             <CheckboxList>
               <CheckboxItem>
-                  <input type="checkbox" />
+                  <input 
+                    type="checkbox" 
+                    checked={!!priceFilters.some(filter => filter.min === 0 && filter.max === 50000)}
+                    onChange={() => handlePriceFilterChange({ min: 0, max: 50000 })}
+                  />
                   <label>
                       0 - 50,000원
                   </label>
@@ -289,7 +280,11 @@ const Category = () => {
             </CheckboxList>
             <CheckboxList>
               <CheckboxItem>
-                  <input type="checkbox" />
+                  <input 
+                    type="checkbox" 
+                    checked={!!priceFilters.some(filter => filter.min === 50000 && filter.max === 100000)}
+                    onChange={() => handlePriceFilterChange({ min: 50000, max: 100000 })}
+                  />
                   <label>
                       50,000 - 100,000원
                   </label>
@@ -297,7 +292,11 @@ const Category = () => {
             </CheckboxList>
             <CheckboxList>
               <CheckboxItem>
-                  <input type="checkbox" />
+                  <input 
+                    type="checkbox" 
+                    checked={!!priceFilters.some(filter => filter.min === 100000 && filter.max === 150000)}
+                    onChange={() => handlePriceFilterChange({ min: 100000, max: 150000 })}
+                  />
                   <label>
                     100,000 - 150,000원
                   </label>
@@ -305,7 +304,11 @@ const Category = () => {
             </CheckboxList>
             <CheckboxList>
               <CheckboxItem>
-                  <input type="checkbox" />
+                  <input 
+                    type="checkbox" 
+                    checked={!!priceFilters.some(filter => filter.min === 150000 && filter.max === 200000)}
+                    onChange={() => handlePriceFilterChange({ min: 150000, max: 200000 })}
+                  />
                   <label>
                     150,000 - 200,000원
                   </label>
@@ -313,7 +316,11 @@ const Category = () => {
             </CheckboxList>
             <CheckboxList>
               <CheckboxItem>
-                  <input type="checkbox" />
+                  <input 
+                    type="checkbox" 
+                    checked={!!priceFilters.some(filter => filter.min === 200000 && filter.max === Infinity)}
+                    onChange={() => handlePriceFilterChange({ min: 200000, max: Infinity })}
+                  />
                   <label>
                       200,000원 +
                   </label>
