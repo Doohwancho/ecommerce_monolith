@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import styled from 'styled-components'
 import { ProductDetailResponseDTO, DiscountDTO } from 'model';
 
-import Header from '../components/common/Header'
-import TopNav from '../components/common/TopNav/TopNav';
-import Footer from '../components/common/Footer'
 import ProductImages from './ProductImages';
 
 
@@ -88,8 +85,8 @@ const renderDiscounts = (discounts: DiscountDTO[]) => {
 
 const Product = () => {
   const { productId } = useParams();
-  const [chosenOption, setChosenOption] = useState();
   const [groupedProductItems, setGroupedProductItems] = useState<GroupedProductItems>({}); // New state for filtered products
+  const [chosenOption, setChosenOption] = useState();
 
   const images = ["/images/category-product-image-1.png", "/images/category-product-image-2.png", "/images/category-product-image-3.png", "/images/category-product-image-4.png", "/images/category-product-image-5.png"];
 
@@ -99,30 +96,26 @@ const Product = () => {
   );
 
   useEffect(() => {
-    // console.log("productId: ", productId);
-    // console.log("updated products by categoryId", productsData);
+    console.log("product.tsx's useEffect()-1 triggered!");
+    console.log("productsData: ", productsData)
     
     if (productsData) {
       const grouptedProducts = groupProductItems(productsData);
       setGroupedProductItems(grouptedProducts);
-      // console.log("grouped product Items: ", grouptedProducts);
 
       const firstOptionName = Object.keys(grouptedProducts).find(key => typeof grouptedProducts[key] === 'object');
       if (firstOptionName) {
         setChosenOption(grouptedProducts[firstOptionName] as GroupedProductItemOption);
       }
-
-
     }
     
-  }, [productId, productsData]); 
+  }, [productsData]); 
 
   const handleOptionChange = (optionName: string) => {
     setChosenOption(groupedProductItems[optionName] as GroupedProductItemOption);
   };
 
-
-  console.log("--------------------------------------------------------------------------");
+  console.log("-----------------------------");
   console.log("Product.tsx rendered!");
 
   if (productIsLoading) return <div>Loading...</div>;
@@ -130,9 +123,6 @@ const Product = () => {
 
   return (
     <>
-      <Header />
-      <TopNav />
-      
       <Wrapper>
         <div className='section section-center page'>
           <div className='product-center'>
@@ -190,8 +180,6 @@ const Product = () => {
           <div className='empty-line'></div>
         </div>
       </Wrapper>
-      
-      <Footer />
     </>
   );
 };

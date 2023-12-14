@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import Header from '../components/common/Header'
-import TopNav from '../components/common/TopNav/TopNav';
-import Footer from '../components/common/Footer'
 
 
 // const fetchTopTenRatedProducts = async (): Promise<ProductDTO[]> => {
@@ -24,8 +21,6 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Header />
-      <TopNav />
       <MainWrapper>
         <MainElement>
           <img className="main-image" src="/images/main-image.png" alt="main image" />
@@ -50,7 +45,6 @@ const Home: React.FC = () => {
           </li>
         ))}
       </ul> */}
-      <Footer />
     </>
   );
 };

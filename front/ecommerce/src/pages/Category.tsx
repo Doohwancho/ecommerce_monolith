@@ -4,10 +4,6 @@ import { OptionsOptionVariationsResponseDTO, ProductWithOptionsListResponseDTO, 
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import Header from '../components/common/Header'
-import TopNav from '../components/common/TopNav/TopNav';
-import Footer from '../components/common/Footer'
-
 interface GroupedOptions {
   categoryId: number;
   optionId: number;
@@ -62,7 +58,7 @@ const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVa
     return response.json();
   };  
 
-  const groupOptionsByOptionId = (data: OptionsOptionVariationsResponseDTO[]): GroupedOptions[] => {
+  const groupOptionsByOptionId = (data: OptionsOptionVariationsResponseDTO[]): GroupedOptions[] => { //TODO - useMemo() to prevent unnecessary re-render
     const grouped: Record<number, GroupedOptions> = {};
 
     data.forEach(item => {
@@ -76,7 +72,7 @@ const fetchCategoryOptions = async (categoryId: number): Promise<OptionsOptionVa
     return Object.values(grouped);
 };
 
-const groupProducts = (products: ProductWithOptionsDTO[]): GroupedProducts => {
+const groupProducts = (products: ProductWithOptionsDTO[]): GroupedProducts => { //TODO - useMemo() to prevent unnecessary re-render
   const groupedProducts: GroupedProducts = {};
 
   products.forEach(product => {
@@ -169,7 +165,7 @@ const Category = () => {
   }, [lowCategoryId, optionsData, productsData, priceFilters, optionFilter]); 
 
   const onProductClick = (productId: number) => {
-    navigate(`/product/${productId}`);
+    navigate(`/products/${productId}`);
   };
 
   const handleOptionFilterChange = (optionId: string, optionName: string, optionVariationName: string, isChecked: boolean, event) => {    
@@ -242,8 +238,6 @@ const Category = () => {
 
   return (
     <>
-      <Header />
-      <TopNav />
       <MainContainer>
         <Area className="left-area">
           {/* option filters */}
@@ -359,7 +353,6 @@ const Category = () => {
           </ProductContainer>
         </Area>
       </MainContainer>
-      <Footer />
     </>
   );
 };
