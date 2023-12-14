@@ -88,11 +88,13 @@ const TopNav: React.FC = () => {
           <NavCenter>
             <div className="mainMenu">
               {getUniqueTopCategories(categories).map((category, index) => (
-                <div onMouseEnter={() => {
-                  setModalOn(true);
-                  setSelectedCategories(filterCategoriesForTopId(categories, category.topCategoryId));
+                <div 
+                  key={category.topCategoryId}
+                  onMouseEnter={() => {
+                    setModalOn(true);
+                    setSelectedCategories(filterCategoriesForTopId(categories, category.topCategoryId));
                 }}>
-                  {category.topCategoryName}
+                    {category.topCategoryName}
                 </div>
               ))}
             </div>
