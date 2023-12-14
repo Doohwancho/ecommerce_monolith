@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useRecoilState } from 'recoil';
 import { isLoggedInState } from '../../store/state';
 import styled from 'styled-components';
@@ -48,6 +48,8 @@ const Header: React.FC = () => {
         });
     };
 
+    console.log("Header rendered!");
+
     return (
       <>
         <TopWrapper>
@@ -71,4 +73,4 @@ const Header: React.FC = () => {
     );
   };
 
-export default Header;
+export default memo(Header);

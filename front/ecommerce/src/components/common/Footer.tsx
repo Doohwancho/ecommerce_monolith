@@ -120,7 +120,9 @@ const FooterBottom = styled.div`
   }
 `;
 
-const FooterComponent: React.FC = () => {
+const Footer: React.FC = () => {
+    console.log("footer rendered!");
+
     return (
         <FooterWrapper>
             <FooterTop>
@@ -200,6 +202,4 @@ const FooterComponent: React.FC = () => {
     );
   };
 
-const Footer = memo(FooterComponent);
-
-export default Footer;
+export default memo(Footer);
