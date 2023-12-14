@@ -95,6 +95,10 @@ const Product = () => {
     () => fetchProductsByProductId(productId),
   );
 
+  //Q. why useEffect triggered 3 times?
+  //1. initial render 때 component mount 될 때 실행됨
+  //2. react-query가 fetch 실행할 때, productsData가 처음에 undefined or null이긴 하지만, productsData를 react-query가 건드리므로, 이 변수를 dependency로 받고있던 useEffect가 triggered 된다.
+  //3. react-query가 끝나고, productsData가 undefined -> 값으로 찰 때, 3번째로 useEffect()가 실행된다.
   useEffect(() => {
     console.log("product.tsx's useEffect()-1 triggered!");
     console.log("productsData: ", productsData)

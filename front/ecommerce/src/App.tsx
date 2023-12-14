@@ -3,9 +3,12 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 //template
-import Header from './components/common/Header'
+import Header from './components/common/Header';
 import TopNav from './components/common/TopNav/TopNav';
-import Footer from './components/common/Footer'
+import Footer from './components/common/Footer';
+
+//util
+import ScrollToTop from './util/ScrollToTop';
 
 //pages
 import Register from "./pages/Register";
@@ -21,6 +24,7 @@ const App = () => {
     <>
       <Header />
       <TopNav />
+      <ScrollToTop />
       {children}
       <Footer />
     </>
