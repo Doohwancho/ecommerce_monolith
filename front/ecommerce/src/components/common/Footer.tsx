@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import styled from 'styled-components';
 import { FaFacebook, FaYoutube, FaInstagram, FaTwitter } from 'react-icons/fa';
 
@@ -119,7 +120,7 @@ const FooterBottom = styled.div`
   }
 `;
 
-const Footer: React.FC = () => {
+const FooterComponent: React.FC = () => {
     return (
         <FooterWrapper>
             <FooterTop>
@@ -198,5 +199,7 @@ const Footer: React.FC = () => {
         </FooterWrapper>
     );
   };
+
+const Footer = memo(FooterComponent);
 
 export default Footer;
