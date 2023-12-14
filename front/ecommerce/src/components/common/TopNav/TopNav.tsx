@@ -1,11 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useQuery } from 'react-query';
+import { AllCategoriesByDepthResponseDTO } from 'model';
 import { useRecoilState } from 'recoil';
 import { categoriesState } from '../../../store/state';
-import { AllCategoriesByDepthResponseDTO } from 'model';
 import styled from 'styled-components';
 import { SiNike } from 'react-icons/si';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Modal from './modal/Modal';
+
+const fetchCategories = async (): Promise<AllCategoriesByDepthResponseDTO> => {
+  const response = await fetch('http://127.0.0.1:8080/products/categories', { credentials: 'include' });
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
 
 const throttle = (callback: (...args: any[]) => void, waitTime: number) => {
   let timeId: ReturnType<typeof setTimeout> | null = null;
@@ -37,13 +46,19 @@ const filterCategoriesForTopId = (categories: AllCategoriesByDepthResponseDTO[],
 
 
 const TopNav: React.FC = () => {
-  const [categories] = useRecoilState<AllCategoriesByDepthResponseDTO[]>(categoriesState); // Fetch categories from recoil state
+  const [categories, setCategories] = useRecoilState<AllCategoriesByDepthResponseDTO[]>(categoriesState); // Fetch categories from recoil state
   const [modalOn, setModalOn] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   const [hide, setHide] = useState(false);
   const [pageY, setPageY] = useState(0);
-  const documentRef = useRef<Document>(document);
+  const documentRef = useRef<Document>(document); 
+
+  const { data: categoriesResponse, isLoading: isLoadingCategories, error: categoriesError } = useQuery<AllCategoriesByDepthResponseDTO, Error>('categories', fetchCategories, {
+    onSuccess: (data) => {
+      setCategories(data);
+    }
+  });
 
   const handleScroll = () => {
     const { pageYOffset } = window;
@@ -73,14 +88,12 @@ const TopNav: React.FC = () => {
           <NavCenter>
             <div className="mainMenu">
               {getUniqueTopCategories(categories).map((category, index) => (
-                <a href={`/list?genderId=${category.topCategoryId}`} key={index}>
-                  <div onMouseEnter={() => {
-                    setModalOn(true);
-                    setSelectedCategories(filterCategoriesForTopId(categories, category.topCategoryId));
-                  }}>
-                    {category.topCategoryName}
-                  </div>
-                </a>
+                <div onMouseEnter={() => {
+                  setModalOn(true);
+                  setSelectedCategories(filterCategoriesForTopId(categories, category.topCategoryId));
+                }}>
+                  {category.topCategoryName}
+                </div>
               ))}
             </div>
           </NavCenter>
