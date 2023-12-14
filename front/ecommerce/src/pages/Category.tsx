@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { OptionsOptionVariationsResponseDTO, ProductWithOptionsListResponseDTO, ProductWithOptionsDTO } from 'model';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -164,9 +165,9 @@ const Category = () => {
     }
   }, [lowCategoryId, optionsData, productsData, priceFilters, optionFilter]); 
 
-  const onProductClick = (productId: number) => {
-    navigate(`/products/${productId}`);
-  };
+  // const onProductClick = (productId: number) => {
+  //   navigate(`/products/${productId}`);
+  // };
 
   const handleOptionFilterChange = (optionId: string, optionName: string, optionVariationName: string, isChecked: boolean, event) => {    
     event.stopPropagation();
@@ -328,24 +329,26 @@ const Category = () => {
           <ProductContainer>
             {productsData && productsData.products.length > 0 ? (
                 Object.values(filteredProducts).map((product) => (
-                  <Card key={product.productId} onClick={() => onProductClick(product.productId)}>
-                    {/* source: https://codepen.io/mdshifut/pen/VrwBJq */}
-                    {/* <Badge>Hot</Badge> */}
-                    {/* <ProductThumb> */}
-                      <ProductImage src="/images/category-product-image-1.png" alt="" />
-                    {/* </ProductThumb> */}
-                    <ProductDetails>
-                        <ProductCategory>{product.categoryName}</ProductCategory>
-                        <ProductTitle><a href="">{product.name}</a></ProductTitle>
-                        <ProductDescription>{product.description}</ProductDescription>
-                        <ProductBottomDetails>
-                            <ProductPrice>
-                              {/* <ProductPriceSmall>$96.00</ProductPriceSmall> */}
-                              {product.averagePrice} 원
-                            </ProductPrice>
-                        </ProductBottomDetails>
-                    </ProductDetails>
-                  </Card>
+                  <StyledLink to={`/products/${product.productId}`}>
+                    <Card key={product.productId}>
+                      {/* source: https://codepen.io/mdshifut/pen/VrwBJq */}
+                      {/* <Badge>Hot</Badge> */}
+                      {/* <ProductThumb> */}
+                        <ProductImage src="/images/category-product-image-1.png" alt="" />
+                      {/* </ProductThumb> */}
+                      <ProductDetails>
+                          <ProductCategory>{product.categoryName}</ProductCategory>
+                          <ProductTitle>{product.name}</ProductTitle>
+                          <ProductDescription>{product.description}</ProductDescription>
+                          <ProductBottomDetails>
+                              <ProductPrice>
+                                {/* <ProductPriceSmall>$96.00</ProductPriceSmall> */}
+                                {product.averagePrice} 원
+                              </ProductPrice>
+                          </ProductBottomDetails>
+                      </ProductDetails>
+                    </Card>
+                  </StyledLink>
               ))
               ) : (
                   <p>No products available for this category.</p>
@@ -409,18 +412,16 @@ const ProductContainer = styled.div`
   padding: 10px; // Optional, for some spacing around the container
 `;
 
-const Card = styled.div`
-  // flex: 0 0 calc(33.333% - 20px); // Adjust width to fit three items per row
-  // position: relative;
-  width: calc(33.333% - 20px); 
+const StyledLink = styled(Link)`
+  text-decoration: none; // Removes underline from links
+  flex: 0 0 calc(33.333% - 20px); // Adjust width to fit three items per row
   box-shadow: 0 2px 7px #dfdfdf;
   margin: 10px; // Adjust margin for spacing
   background: #fafafa;
-    // width: 380px;
-    // position: relative;
-    // box-shadow: 0 2px 7px #dfdfdf;
-    // margin: 50px auto;
-    // background: #fafafa;
+`;
+
+const Card = styled.div`
+  color: inherit;
 `;
 
 const Badge = styled.div`
