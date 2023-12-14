@@ -121,6 +121,10 @@ const Product = () => {
     setChosenOption(groupedProductItems[optionName] as GroupedProductItemOption);
   };
 
+
+  console.log("--------------------------------------------------------------------------");
+  console.log("Product.tsx rendered!");
+
   if (productIsLoading) return <div>Loading...</div>;
   if (productError) return <div>Error: {productError.message}</div>;
 

@@ -237,6 +237,8 @@ const Category = () => {
     });
   };
 
+  console.log("-----------------------------");
+  console.log("Category.tsx rendered!");
 
   return (
     <>

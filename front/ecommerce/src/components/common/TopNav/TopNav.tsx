@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { useQuery } from 'react-query';
 import { AllCategoriesByDepthResponseDTO } from 'model';
 import { useRecoilState } from 'recoil';
@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import Modal from './modal/Modal';
 
 const fetchCategories = async (): Promise<AllCategoriesByDepthResponseDTO> => {
+  console.log("fetches categories!");
   const response = await fetch('http://127.0.0.1:8080/products/categories', { credentials: 'include' });
   if (!response.ok) {
     throw new Error('Network response was not ok');
@@ -55,6 +56,8 @@ const TopNav: React.FC = () => {
   const documentRef = useRef<Document>(document); 
 
   const { data: categoriesResponse, isLoading: isLoadingCategories, error: categoriesError } = useQuery<AllCategoriesByDepthResponseDTO, Error>('categories', fetchCategories, {
+    staleTime: Infinity, // Data is always considered fresh and won't be refetched
+    cacheTime: 1000 * 60 * 60 * 24, // 24 hours
     onSuccess: (data) => {
       setCategories(data);
     }
@@ -74,6 +77,8 @@ const TopNav: React.FC = () => {
     documentRef.current.addEventListener('scroll', throttleScroll);
     return () => documentRef.current.removeEventListener('scroll', throttleScroll);
   }, [pageY]);
+
+  console.log("TopNav rendered!");
 
   return (
     <>
@@ -166,4 +171,4 @@ const NavCenter = styled.div`
     display: none;
   }
 `;
-export default TopNav;
+export default memo(TopNav);

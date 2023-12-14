@@ -19,6 +19,9 @@ import Footer from '../components/common/Footer'
 const Home: React.FC = () => {
   // const { data: productsResponse, error, isLoading } = useQuery<ProductDTO[], Error>('products', fetchTopTenRatedProducts);
 
+  console.log("-----------------------------");
+  console.log("Home.tsx rendered!");
+
   return (
     <>
       <Header />

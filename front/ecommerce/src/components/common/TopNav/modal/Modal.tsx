@@ -31,6 +31,9 @@ const groupLowCategories = (categories: AllCategoriesByDepthResponseDTO[]) => {
   }
 
 const Modal: React.FC<ModalProps> = ({ setMenModalOn, categories }) => {
+
+  console.log("Modal rendered!");
+
   return (
     
     <ModalWrapper>
