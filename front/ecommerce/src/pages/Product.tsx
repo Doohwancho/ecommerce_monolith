@@ -88,7 +88,7 @@ const Product = () => {
   const [groupedProductItems, setGroupedProductItems] = useState<GroupedProductItems>({}); // New state for filtered products
   const [chosenOption, setChosenOption] = useState();
 
-  const images = ["/images/category-product-image-1.png", "/images/category-product-image-2.png", "/images/category-product-image-3.png", "/images/category-product-image-4.png", "/images/category-product-image-5.png"];
+  const images = ["/images/category-product-image-1.webp", "/images/category-product-image-2.webp", "/images/category-product-image-3.webp", "/images/category-product-image-4.webp", "/images/category-product-image-5.webp"];
 
   const { data: productsData, productIsLoading, productError } = useQuery<ProductDetailResponseDTO[], Error>(
     ['productId', productId],

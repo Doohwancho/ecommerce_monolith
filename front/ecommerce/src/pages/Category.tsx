@@ -334,7 +334,7 @@ const Category = () => {
                       {/* source: https://codepen.io/mdshifut/pen/VrwBJq */}
                       {/* <Badge>Hot</Badge> */}
                       {/* <ProductThumb> */}
-                        <ProductImage src="/images/category-product-image-1.png" alt="" />
+                        <ProductImage src="/images/category-product-image-1.webp" alt="" />
                       {/* </ProductThumb> */}
                       <ProductDetails>
                           <ProductCategory>{product.categoryName}</ProductCategory>

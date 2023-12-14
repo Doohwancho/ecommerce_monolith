@@ -23,7 +23,7 @@ const Home: React.FC = () => {
     <>
       <MainWrapper>
         <MainElement>
-          <img className="main-image" src="/images/main-image.png" alt="main image" />
+          <img className="main-image" src="/images/main-image.webp" alt="main image" />
           <MainContent>
             <div className="title">가능성은 지금부터</div>
             <div className="content">매일 공개되는 새로운 미션에 도전하고</div>
