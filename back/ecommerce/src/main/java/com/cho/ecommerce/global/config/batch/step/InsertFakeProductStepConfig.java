@@ -78,7 +78,7 @@ public class InsertFakeProductStepConfig {
             productItems.add(productItem);
         
             Integer productItemQuantity = faker.number().numberBetween(1, 100);
-            Double productItemPrice = faker.number().randomDouble(1, 3000, 3000000);
+            Double productItemPrice = faker.number().randomDouble(1, 1000, 210000);
         
             productItem.setQuantity(productItemQuantity);
             productItem.setPrice(productItemPrice);

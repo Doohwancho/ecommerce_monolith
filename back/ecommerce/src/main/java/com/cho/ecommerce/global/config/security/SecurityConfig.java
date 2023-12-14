@@ -65,6 +65,9 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
             .authorizeRequests(f -> f
                     .antMatchers("/login").permitAll()
                     .antMatchers("/register").permitAll()
+                    .antMatchers("/register").permitAll()
+                    .antMatchers("/products/**").permitAll()
+                    .antMatchers("/categories/**").permitAll()
                     .antMatchers("/h2-console/**").permitAll() //allow h2-console access for developer
                     .antMatchers("/actuator/health").permitAll() //allow h2-console access for developer
                     .anyRequest().authenticated()
