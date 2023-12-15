@@ -12,7 +12,7 @@ import ScrollToTop from './hooks/ScrollToTop';
 
 //pages
 import Register from "./pages/authentication/register/Register";
-import Login from './pages/Login';
+import Login from './pages/authentication/login/Login';
 import Home from './pages/Home';
 import Category from './pages/Category';
 import Product from './pages/Product';
