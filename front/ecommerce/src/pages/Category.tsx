@@ -329,7 +329,7 @@ const Category = () => {
           <ProductContainer>
             {productsData && productsData.products.length > 0 ? (
                 Object.values(filteredProducts).map((product) => (
-                  <StyledLink to={`/products/${product.productId}`}>
+                  <StyledLink to={`/products/${product.productId}`} key={`link-${product.productId}`}>
                     <Card key={product.productId}>
                       {/* source: https://codepen.io/mdshifut/pen/VrwBJq */}
                       {/* <Badge>Hot</Badge> */}
