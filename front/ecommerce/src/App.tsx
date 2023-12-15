@@ -3,12 +3,12 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 //template
-import Header from './components/common/Header';
-import TopNav from './components/common/TopNav/TopNav';
-import Footer from './components/common/Footer';
+import Header from './components/Header/Header';
+import TopNav from './components/TopNav/TopNav';
+import Footer from './components/Footer/Footer';
 
 //util
-import ScrollToTop from './util/ScrollToTop';
+import ScrollToTop from './hooks/ScrollToTop';
 
 //pages
 import Register from "./pages/Register";
