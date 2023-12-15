@@ -11,7 +11,7 @@ import Footer from './components/Footer/Footer';
 import ScrollToTop from './hooks/ScrollToTop';
 
 //pages
-import Register from "./pages/Register";
+import Register from "./pages/authentication/register/Register";
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Category from './pages/Category';
