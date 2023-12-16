@@ -6,6 +6,6 @@ import java.util.List;
 public interface OptionRepositoryCustom {
     List<OptionEntity> findOptionsByCategory_CategoryId(Long categoryId);
     
-    List<com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO> findOptionsAndOptionVariationsByCategoryId(Long categoryId);
+    List<com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO> findOptionsAndOptionVariationsByCategoryId(Long categoryId);
 }
 

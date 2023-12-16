@@ -99,8 +99,8 @@ public class ProductController implements ProductApi {
     }
     
     @Override
-    public ResponseEntity<List<com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO>> getOptionsByCategory(Long categoryId) {
-        List<com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO> optionsAndOptionVariationsByCategoryId = optionRepository.findOptionsAndOptionVariationsByCategoryId(categoryId);
+    public ResponseEntity<List<com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO>> getOptionsByCategory(Long categoryId) {
+        List<com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO> optionsAndOptionVariationsByCategoryId = optionRepository.findOptionsAndOptionVariationsByCategoryId(categoryId);
         //TODO - Q. 굳이 service layer안거치고 바로 controller가 repository에서 건져 올리는게 맞는걸까?
         //일단 이렇게 만들고, 만약 추후 저 코드를 재활용해야하는 상황이 오면,
         // 1. 서비스 레이어를 통해 호출하는 식으로 바꾸고,

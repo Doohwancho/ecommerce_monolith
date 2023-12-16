@@ -1,7 +1,6 @@
 package com.cho.ecommerce.domain.product.repository;
 
 import com.cho.ecommerce.domain.product.entity.OptionEntity;
-import com.cho.ecommerce.domain.product.entity.QCategoryEntity;
 import com.cho.ecommerce.domain.product.entity.QOptionEntity;
 import com.cho.ecommerce.domain.product.entity.QOptionVariationEntity;
 import com.querydsl.core.Tuple;
@@ -30,7 +29,7 @@ public class OptionRepositoryImpl implements OptionRepositoryCustom {
     }
     
     @Override
-    public List<com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO> findOptionsAndOptionVariationsByCategoryId(Long categoryId){
+    public List<com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO> findOptionsAndOptionVariationsByCategoryId(Long categoryId){
         QOptionEntity option = QOptionEntity.optionEntity;
         QOptionVariationEntity optionVariation = QOptionVariationEntity.optionVariationEntity;
         
@@ -41,9 +40,9 @@ public class OptionRepositoryImpl implements OptionRepositoryCustom {
             .where(option.category.categoryId.eq(categoryId))
             .fetch();
     
-        List<com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO> responseList = new ArrayList<>();
+        List<com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO> responseList = new ArrayList<>();
         for (Tuple tuple : results) {
-            com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO dto = new com.cho.ecommerce.api.domain.OptionsOptionVaraitonsResponseDTO();
+            com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO dto = new com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO();
             dto.setCategoryId(categoryId);
             
             dto.setOptionId(tuple.get(option.optionId));
