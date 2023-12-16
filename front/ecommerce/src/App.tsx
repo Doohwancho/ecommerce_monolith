@@ -13,9 +13,9 @@ import ScrollToTop from './hooks/ScrollToTop';
 //pages
 import Register from "./pages/authentication/register/Register";
 import Login from './pages/authentication/login/Login';
-import Home from './pages/Home';
-import Category from './pages/Category';
-import Product from './pages/Product';
+import Home from './pages/product/Home/Home';
+import Category from './pages/product/Category/Category';
+import Product from './pages/product/Product/Product';
 
 const queryClient = new QueryClient();
 
