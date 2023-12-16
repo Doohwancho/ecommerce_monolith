@@ -1,30 +1,5 @@
-import React, { useState } from 'react'
 import styled from 'styled-components'
 
-const ProductImages: React.FC<{ images: string[] | undefined }> = ({
-  images = [],
-}) => {
-  const [imageIndex, setImageIndex] = useState(0)
-
-  return (
-    <Wrapper>
-      <img src={images[imageIndex]} alt='main' className='main' />
-      <div className='gallery'>
-        {images.map((image, index) => {
-          return (
-            <img
-              key={image}
-              src={image}
-              alt=''
-              onClick={() => setImageIndex(index)}
-              className={index===imageIndex? 'active': undefined}
-            />
-          )
-        })}
-      </div>
-    </Wrapper>
-  )
-}
 
 const Wrapper = styled.section`
   .main {
@@ -70,5 +45,4 @@ const Wrapper = styled.section`
     }
   }
 `
-
-export default ProductImages
+export { Wrapper };
