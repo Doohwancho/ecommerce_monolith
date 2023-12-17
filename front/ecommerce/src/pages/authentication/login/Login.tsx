@@ -7,7 +7,7 @@ import useLoginUser from './hooks/useLoginUser';
 
 const Login: React.FC = () => {
   const { loginData, handleChange } = useLoginForm(initialLoginData);
-  const { mutate, isLoading, isError, error } = useLoginUser();
+  const { mutate, isError, error } = useLoginUser();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,5 +1,6 @@
 import { useMutation, UseMutationResult } from 'react-query';
-import { RegisterRequestDTO, RegisterResponseDTO } from 'model';
+import { RegisterRequestDTO } from '../../../../../models/src/model/register-request-dto';
+import { RegisterResponseDTO } from '../../../../../models/src/model/register-response-dto';
 
 const useRegisterUser = ():UseMutationResult<RegisterResponseDTO, Error, RegisterRequestDTO> => {
     return useMutation<RegisterResponseDTO, Error, RegisterRequestDTO>(async (formData:RegisterRequestDTO) => {
