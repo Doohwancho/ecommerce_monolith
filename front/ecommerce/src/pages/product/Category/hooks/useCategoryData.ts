@@ -2,10 +2,11 @@ import { useQuery } from 'react-query';
 import { useMemo } from 'react';
 import { fetchCategoryOptions, fetchProductsWithOptionsByCategoryId } from '../service/CategoryService';
 
-import { OptionsOptionVariationsResponseDTO, ProductWithOptionsListResponseDTO, ProductWithOptionsDTO } from 'model';
-import {GroupedOptions, GroupedProducts, GroupedProductInfo, OptionVariation, OptionFilters} from '../types/Category.types';
+import { OptionsOptionVariatonsResponseDTO } from '../../../../../models/src/model/options-option-variatons-response-dto';
+import { ProductWithOptionsDTO } from '../../../../../models/src/model/product-with-options-dto';
+import {GroupedOptions, GroupedProducts } from '../types/Category.types';
 
-const groupOptionsByOptionId = (data: OptionsOptionVariationsResponseDTO[]): GroupedOptions[] => { //TODO - useMemo() to prevent unnecessary re-render
+const groupOptionsByOptionId = (data: OptionsOptionVariatonsResponseDTO[]): GroupedOptions[] => { //TODO - useMemo() to prevent unnecessary re-render
     const grouped: Record<number, GroupedOptions> = {};
 
     data?.forEach(item => {
@@ -55,7 +56,7 @@ const groupProducts = (products: ProductWithOptionsDTO[]): GroupedProducts => { 
 }
 
 
-export const useCategoryData = (categoryId: number) => {
+export const useCategoryData = (categoryId: string) => {
     // Fetching category options
     const { data: optionsData, status: optionsStatus, ...optionsQuery } = useQuery(
         ['categoryOptions', categoryId], 

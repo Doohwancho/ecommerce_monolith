@@ -1,11 +1,13 @@
 import {ProductContainer, StyledLink, Card, ProductImage, ProductDetails, ProductCategory, ProductTitle, ProductDescription, ProductBottomDetails, ProductPrice } from '../styles/Category.styles';
+import { CategoryProductsProps, GroupedProductInfo } from '../types/Category.types';
 
-const CategoryProducts = ({ productsData }) => {
+
+const CategoryProducts: React.FC<CategoryProductsProps> = ({ productsData }) => {
     return (
         <ProductContainer>
             {
                 Object.values(productsData).length > 0 ?
-                Object.values(productsData).map((product) => (
+                (Object.values(productsData) as GroupedProductInfo[]).map((product) => (
                     <StyledLink to={`/products/${product.productId}`} key={`link-${product.productId}`}>
                         <Card key={product.productId}>
                         {/* source: https://codepen.io/mdshifut/pen/VrwBJq */}

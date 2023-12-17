@@ -9,14 +9,14 @@ import CategoryProducts from './ui/CategoryProducts';
 
 
 const Category = () => {
-  const { lowCategoryId } = useParams();
-  const prevCategoryIdRef = useRef();
+  const { lowCategoryId = '' } = useParams();
+  const prevCategoryIdRef = useRef<string | undefined >();
 
   const {
       groupedOptions,
       groupedProducts,
-      optionsQuery: { isLoading: optionIsLoading, error: optionError, refetch: refetchOptions },
-      productsQuery: { isLoading: productIsLoading, error: productError, refetch: refetchProducts }
+      optionsQuery: { refetch: refetchOptions },
+      productsQuery: { refetch: refetchProducts }
   } = useCategoryData(lowCategoryId);
 
   const {

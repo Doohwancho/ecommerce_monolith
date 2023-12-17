@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
+import { GroupedProducts, InitialOptionFilterType, InitialPriceFiltersType } from '../types/Category.types';
 
-export const useFilterProducts = (groupedProducts, initialOptionFilter, initialPriceFilters) => {
+export const useFilterProducts = (
+  groupedProducts: GroupedProducts, 
+  initialOptionFilter: InitialOptionFilterType, 
+  initialPriceFilters: InitialPriceFiltersType[]) => {
     const [priceFilters, setPriceFilters] = useState(initialPriceFilters);
     const [optionFilter, setOptionFilter] = useState(initialOptionFilter);
     const [filteredProducts, setFilteredProducts] = useState({});
@@ -13,7 +17,7 @@ export const useFilterProducts = (groupedProducts, initialOptionFilter, initialP
     }
   }, [groupedProducts, priceFilters, optionFilter]);
 
-  const handleOptionFilterChange = (optionId: string, optionName: string, optionVariationName: string, isChecked: boolean, event) => {    
+  const handleOptionFilterChange = (optionId: number, optionVariationName: string, isChecked: boolean, event: React.ChangeEvent<HTMLInputElement>) => {  //React.MouseEvent  
     event.stopPropagation();
     
     setOptionFilter(prevFilters => {
@@ -42,7 +46,7 @@ export const useFilterProducts = (groupedProducts, initialOptionFilter, initialP
     });
   };
 
-  const handlePriceFilterChange = (range) => {
+  const handlePriceFilterChange = (range: InitialPriceFiltersType) => {
     setPriceFilters(prevFilters => {
       if (prevFilters.some(filter => filter.min === range.min && filter.max === range.max)) {
         // Remove the filter
@@ -69,9 +73,13 @@ export const useFilterProducts = (groupedProducts, initialOptionFilter, initialP
       );
   
       // Check if product passes the option variation filter
-      const optionFilterPassed = Object.keys(optionFilter).length === 0 || Object.entries(optionFilter).some(([optionId, optionVariationNames]) =>
-        product.optionVariations[optionId] && optionVariationNames.includes(Object.values(product.optionVariations[optionId])[0])
-      );
+      const optionFilterPassed = Object.keys(optionFilter).length === 0 || Object.entries(optionFilter).some(([key, optionVariationNames]) => {
+      const optionId = parseInt(key, 10); // Parse the key to a number
+      const variations = product.optionVariations[optionId]; // Make sure this is correctly typed in your interface
+      
+      if (!variations) return false;
+        return product.optionVariations[optionId] && optionVariationNames.includes(Object.values(product.optionVariations[optionId])[0]);
+      });
   
       return priceFilterPassed && optionFilterPassed;
     });

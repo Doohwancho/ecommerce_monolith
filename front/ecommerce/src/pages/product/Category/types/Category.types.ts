@@ -30,4 +30,23 @@ interface OptionFilters {
     [key: string]: string;
 }
 
-export {GroupedOptions, GroupedProducts, GroupedProductInfo, OptionVariation, OptionFilters};
+interface InitialOptionFilterType { 
+    [key: string]: string[] 
+};
+
+interface InitialPriceFiltersType { 
+    min: number; max: number 
+};
+  
+interface CategoryFiltersProps {
+    optionsData: GroupedOptions[];
+    priceFilters: InitialPriceFiltersType[];
+    onOptionChange: (optionId: number, optionVariationName: string, isChecked: boolean, event: React.ChangeEvent<HTMLInputElement>) => void;
+    onPriceChange: (range: InitialPriceFiltersType) => void;
+  }
+  
+  interface CategoryProductsProps {
+    productsData: GroupedProducts;
+}
+
+export type {GroupedOptions, GroupedProducts, GroupedProductInfo, OptionVariation, OptionFilters, InitialOptionFilterType, InitialPriceFiltersType, CategoryFiltersProps, CategoryProductsProps};

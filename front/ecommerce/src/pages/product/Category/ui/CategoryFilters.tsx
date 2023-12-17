@@ -1,7 +1,7 @@
 import {Container, Title, CheckboxList, CheckboxItem} from '../styles/Category.styles';
+import { CategoryFiltersProps } from '../types/Category.types';
 
-
-const CategoryFilters = ({ optionsData, priceFilters, onOptionChange, onPriceChange }) => {
+const CategoryFilters: React.FC<CategoryFiltersProps> = ({ optionsData, priceFilters, onOptionChange, onPriceChange }) => {
     return (
         <div className="filters-container">
             <div className="option-filter-group">
@@ -13,7 +13,7 @@ const CategoryFilters = ({ optionsData, priceFilters, onOptionChange, onPriceCha
                         <CheckboxItem key={`${group.optionId}-${variationIndex}`}>
                             <input 
                             type="checkbox" 
-                            onChange={(e) => onOptionChange(group.optionId, group.optionName, variation, e.target.checked, e)}
+                            onChange={(e) => onOptionChange(group.optionId, variation, e.target.checked, e)}
                             />
                             <label>
                                 {variation}
