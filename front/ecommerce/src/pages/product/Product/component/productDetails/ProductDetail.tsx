@@ -3,8 +3,7 @@ import { ProductDetailProps } from '../../types/Product.types';
 
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, chosenOption, onOptionChange }) => {
-  console.log("product: ", product);
-
+  
   return (
     <section className='content'>
       <h2>{product.name}</h2>

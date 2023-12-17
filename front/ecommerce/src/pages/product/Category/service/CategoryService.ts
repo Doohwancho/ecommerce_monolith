@@ -4,9 +4,9 @@ import { ProductWithOptionsListResponseDTO } from '../../../../../models/src/mod
 
 
 export const fetchCategoryOptions = async (categoryId: string): Promise<OptionsOptionVariatonsResponseDTO[]> => { 
-    const baseUrl = 'http://127.0.0.1:8080';
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const endpoint = `/categories/${categoryId}/options`;
-    const fullUrl = baseUrl + endpoint;
+    const fullUrl = BASE_URL + endpoint;
 
     const response = await fetch(fullUrl, { credentials: 'include' });
     if (!response.ok) {
@@ -16,9 +16,9 @@ export const fetchCategoryOptions = async (categoryId: string): Promise<OptionsO
 };
 
 export const fetchProductsWithOptionsByCategoryId = async (categoryId: string): Promise<ProductWithOptionsListResponseDTO> => {
-    const baseUrl = 'http://127.0.0.1:8080';
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const endpoint = `/products/category/${categoryId}`;
-    const fullUrl = baseUrl + endpoint;
+    const fullUrl = BASE_URL + endpoint;
 
     const response = await fetch(fullUrl, { credentials: 'include' });
     if (!response.ok) {

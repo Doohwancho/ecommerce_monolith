@@ -3,8 +3,10 @@ import { useRecoilState } from 'recoil';
 import { categoriesState } from '../../../store/state';
 import { AllCategoriesByDepthResponseDTO } from '../../../../models/src/model/all-categories-by-depth-response-dto';
 
+
 const fetchCategories = async (): Promise<AllCategoriesByDepthResponseDTO[]> => {
-    const response = await fetch('http://127.0.0.1:8080/products/categories', { credentials: 'include' });
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    const response = await fetch(BASE_URL + '/products/categories', { credentials: 'include' });
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }

@@ -8,9 +8,9 @@ const useLoginUser = ():UseMutationResult<any, Error, FormData> => {
     const navigate = useNavigate();
 
     return useMutation<any, Error, FormData>(async (loginData:FormData) => {
-        const baseUrl = 'http://127.0.0.1:8080';
+        const BASE_URL = import.meta.env.VITE_API_BASE_URL;
         const endpoint = '/login';
-        const fullUrl = baseUrl + endpoint;
+        const fullUrl = BASE_URL + endpoint;
 
       const response = await fetch(fullUrl, {
         method: 'POST',
