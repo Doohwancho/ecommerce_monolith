@@ -20,7 +20,7 @@ import Product from './pages/product/Product/Product';
 const queryClient = new QueryClient();
 
 const App = () => {
-  const Layout = ({ children }) => (
+  const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <>
       <Header />
       <TopNav />

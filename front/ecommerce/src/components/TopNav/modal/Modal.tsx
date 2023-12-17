@@ -23,7 +23,7 @@ const Modal: React.FC<ModalProps> = ({ setMenModalOn, categories }) => (
   <ModalWrapper>
     <div className="modal">
       <div className="modalWrapper" onMouseLeave={() => setMenModalOn(false)}>
-        {groupLowCategories(categories).map((group, index) => (
+        {groupLowCategories(categories).map((group: CategoryGroupProps, index: number) => (
           <CategoryGroup key={index} group={group} />
         ))}
       </div>

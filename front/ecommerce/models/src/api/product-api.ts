@@ -26,7 +26,7 @@ import { AllCategoriesByDepthResponseDTO } from '../../src/model';
 // @ts-ignore
 import { ErrorResponseDTO } from '../../src/model';
 // @ts-ignore
-import { OptionsOptionVaraitonsResponseDTO } from '../../src/model';
+import { OptionsOptionVariatonsResponseDTO } from '../../src/model';
 // @ts-ignore
 import { PaginatedProductResponse } from '../../src/model';
 // @ts-ignore
@@ -410,7 +410,7 @@ export const ProductApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOptionsByCategory(categoryId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<OptionsOptionVaraitonsResponseDTO>>> {
+        async getOptionsByCategory(categoryId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<OptionsOptionVariatonsResponseDTO>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOptionsByCategory(categoryId, options);
             const index = configuration?.serverIndex ?? 0;
             const operationBasePath = operationServerMap['ProductApi.getOptionsByCategory']?.[index]?.url;
@@ -528,7 +528,7 @@ export const ProductApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOptionsByCategory(categoryId: number, options?: any): AxiosPromise<Array<OptionsOptionVaraitonsResponseDTO>> {
+        getOptionsByCategory(categoryId: number, options?: any): AxiosPromise<Array<OptionsOptionVariatonsResponseDTO>> {
             return localVarFp.getOptionsByCategory(categoryId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -628,7 +628,7 @@ export interface ProductApiInterface {
      * @throws {RequiredError}
      * @memberof ProductApiInterface
      */
-    getOptionsByCategory(categoryId: number, options?: AxiosRequestConfig): AxiosPromise<Array<OptionsOptionVaraitonsResponseDTO>>;
+    getOptionsByCategory(categoryId: number, options?: AxiosRequestConfig): AxiosPromise<Array<OptionsOptionVariatonsResponseDTO>>;
 
     /**
      * 

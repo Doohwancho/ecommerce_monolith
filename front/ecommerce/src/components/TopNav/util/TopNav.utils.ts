@@ -1,4 +1,4 @@
-import { AllCategoriesByDepthResponseDTO } from 'model';
+import { AllCategoriesByDepthResponseDTO } from '../../../../models/src/model/all-categories-by-depth-response-dto';
 
 const throttle = (callback: (...args: any[]) => void, waitTime: number) => {
   let timeId: ReturnType<typeof setTimeout> | null = null;

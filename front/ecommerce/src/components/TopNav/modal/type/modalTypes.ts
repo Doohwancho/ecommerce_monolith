@@ -1,4 +1,4 @@
-import { AllCategoriesByDepthResponseDTO } from 'model';
+import { AllCategoriesByDepthResponseDTO } from '../../../../../models/src/model/all-categories-by-depth-response-dto';
 
 export interface ModalProps {
   setMenModalOn: (value: boolean) => void;

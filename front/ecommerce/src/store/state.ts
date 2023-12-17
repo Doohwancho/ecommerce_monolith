@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import { AllCategoriesByDepthResponseDTO } from 'model';
+import { AllCategoriesByDepthResponseDTO } from '../../models/src/model/all-categories-by-depth-response-dto';
 
 export const categoriesState = atom<AllCategoriesByDepthResponseDTO[]>({
   key: 'categoriesState',

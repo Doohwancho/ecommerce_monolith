@@ -1,9 +1,9 @@
 import { useQuery } from 'react-query';
 import { useRecoilState } from 'recoil';
 import { categoriesState } from '../../../store/state';
-import { AllCategoriesByDepthResponseDTO } from 'model';
+import { AllCategoriesByDepthResponseDTO } from '../../../../models/src/model/all-categories-by-depth-response-dto';
 
-const fetchCategories = async (): Promise<AllCategoriesByDepthResponseDTO> => {
+const fetchCategories = async (): Promise<AllCategoriesByDepthResponseDTO[]> => {
     console.log("fetches categories!");
     const response = await fetch('http://127.0.0.1:8080/products/categories', { credentials: 'include' });
     if (!response.ok) {
@@ -15,7 +15,9 @@ const fetchCategories = async (): Promise<AllCategoriesByDepthResponseDTO> => {
 export const useFetchCategories = () => {
   const [categories, setCategories] = useRecoilState<AllCategoriesByDepthResponseDTO[]>(categoriesState);
 
-  const { data, isLoading, error } = useQuery<AllCategoriesByDepthResponseDTO, Error>('categories', fetchCategories, {
+  //ignore false-positive type error of 'not using data'
+  // @ts-expect-error
+  const { data, isLoading, error } = useQuery<AllCategoriesByDepthResponseDTO[], Error>('categories', fetchCategories, {
     staleTime: Infinity,
     cacheTime: 1000 * 60 * 60 * 24,
     onSuccess: (data) => {

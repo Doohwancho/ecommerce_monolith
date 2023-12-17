@@ -17,32 +17,32 @@
 /**
  * 
  * @export
- * @interface OptionsOptionVaraitonsResponseDTO
+ * @interface OptionsOptionVariatonsResponseDTO
  */
-export interface OptionsOptionVaraitonsResponseDTO {
+export interface OptionsOptionVariatonsResponseDTO {
     /**
      * 
      * @type {number}
-     * @memberof OptionsOptionVaraitonsResponseDTO
+     * @memberof OptionsOptionVariatonsResponseDTO
      */
-    'categoryId'?: number;
+    'categoryId': number;
     /**
      * 
      * @type {number}
-     * @memberof OptionsOptionVaraitonsResponseDTO
+     * @memberof OptionsOptionVariatonsResponseDTO
      */
-    'optionId'?: number;
+    'optionId': number;
     /**
      * 
      * @type {string}
-     * @memberof OptionsOptionVaraitonsResponseDTO
+     * @memberof OptionsOptionVariatonsResponseDTO
      */
-    'optionName'?: string;
+    'optionName': string;
     /**
      * 
      * @type {string}
-     * @memberof OptionsOptionVaraitonsResponseDTO
+     * @memberof OptionsOptionVariatonsResponseDTO
      */
-    'optionVariationName'?: string;
+    'optionVariationName': string;
 }
 
