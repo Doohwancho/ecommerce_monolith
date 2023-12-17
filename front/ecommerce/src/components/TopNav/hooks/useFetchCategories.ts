@@ -4,7 +4,6 @@ import { categoriesState } from '../../../store/state';
 import { AllCategoriesByDepthResponseDTO } from '../../../../models/src/model/all-categories-by-depth-response-dto';
 
 const fetchCategories = async (): Promise<AllCategoriesByDepthResponseDTO[]> => {
-    console.log("fetches categories!");
     const response = await fetch('http://127.0.0.1:8080/products/categories', { credentials: 'include' });
     if (!response.ok) {
       throw new Error('Network response was not ok');

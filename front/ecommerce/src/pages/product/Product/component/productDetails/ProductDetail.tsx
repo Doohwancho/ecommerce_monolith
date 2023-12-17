@@ -1,11 +1,13 @@
 import Discount from '../discount/Discount';
-import { GroupedProductItems, GroupedProductItemOption } from '../../types/Product.types';
+import { ProductDetailProps } from '../../types/Product.types';
 
-const ProductDetail = ({ product, chosenOption, onOptionChange }) => {
+
+const ProductDetail: React.FC<ProductDetailProps> = ({ product, chosenOption, onOptionChange }) => {
+  console.log("product: ", product);
+
   return (
     <section className='content'>
       <h2>{product.name}</h2>
-      <h5 className='price'>{product.price}</h5>
 
       <div className='info'>
         <span>Description: </span>

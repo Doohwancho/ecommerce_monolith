@@ -1,9 +1,9 @@
-import { DiscountDTO } from 'model'; // adjust the import path as needed
+import { DiscountProps, DiscountDTO } from '../../types/Product.types';
 
-const Discount = ({ discounts }) => {
+const Discount: React.FC<DiscountProps> = ({ discounts }) => {
   return (
     <div className="discount-details">
-      {discounts.map((discount, index) => (
+      {discounts.map((discount: DiscountDTO, index: number) => (
         <div key={index}>
           <p>Discount Info</p>
           <p>Type: {discount.discountType}</p>

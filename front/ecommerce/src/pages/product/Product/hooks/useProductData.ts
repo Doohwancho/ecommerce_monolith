@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
+import { isValidProductId } from '../util/Product.util';
 import { fetchProductsByProductId } from '../service/ProductService';
 import { GroupedProductItems } from '../types/Product.types';
-import { ProductDetailResponseDTO } from 'model';
+import { ProductDetailResponseDTO } from '../../../../../models/src/model/product-detail-response-dto';
 
 
-export const useProductData = (productId: number) => {
-  const { data, isLoading, error } = useQuery(['productId', productId], () => fetchProductsByProductId(productId));
-  const [groupedProductItems, setGroupedProductItems] = useState({});
+export const useProductData = (productId: string | undefined) => {
+  const { data, isLoading, error } = useQuery(['productId', productId], () => fetchProductsByProductId(parseInt(productId!, 10)), {
+    enabled: isValidProductId(productId),
+  });
+  const [groupedProductItems, setGroupedProductItems] = useState<GroupedProductItems>();
 
   useEffect(() => {
     if (data) {
@@ -20,16 +23,16 @@ export const useProductData = (productId: number) => {
 
 
 const groupProductItems = (productItems: ProductDetailResponseDTO[]): GroupedProductItems => {
-  const groupedProducts: GroupedProductItems = {};
-
-  groupedProducts.productId = productItems[0].productId;
-  groupedProducts.name = productItems[0].name;
-  groupedProducts.description = productItems[0].description;
-  groupedProducts.rating = productItems[0].rating;
-  groupedProducts.ratingCount = productItems[0].ratingCount;
-  groupedProducts.categoryId= productItems[0].categoryId;
-  groupedProducts.categoryName = productItems[0].categoryName;
-  groupedProducts.categoryCode = productItems[0].categoryCode;
+  const groupedProducts: GroupedProductItems = {
+    productId: productItems[0].productId,
+    name: productItems[0].name,
+    description: productItems[0].description,
+    rating: productItems[0].rating,
+    ratingCount: productItems[0].ratingCount,
+    categoryId: productItems[0].categoryId,
+    categoryName: productItems[0].categoryName,
+    categoryCode: productItems[0].categoryCode,
+  };
 
   productItems.forEach(productItem=> {
     const optionName = `${productItem.optionName}`;

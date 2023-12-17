@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Wrapper } from './styles/Product.styles';
-import { GroupedProductItemOption } from './types/Product.types';
+import { GroupedProductItemOption, GroupedProductItems } from './types/Product.types';
+import { isValidProductId } from './util/Product.util';
 import { useParams } from 'react-router-dom';
 import { useProductData } from './hooks/useProductData';
 import ProductImages from './component/productImages/ProductImages';
@@ -8,7 +9,7 @@ import ProductDetail from './component/productDetails/ProductDetail';
 
 
 const Product = () => {
-  const { productId } = useParams();
+  const { productId } = useParams<{ productId: string }>();
   const { groupedProductItems, isLoading: productIsLoading, error: productError } = useProductData(productId);
   const [chosenOption, setChosenOption] = useState<GroupedProductItemOption | null>(null);
 
@@ -22,17 +23,28 @@ const Product = () => {
     setChosenOption(findFirstProductOption(groupedProductItems));
   }, [groupedProductItems]); 
 
-  const findFirstProductOption = (groupedItems) => {
+  const findFirstProductOption = (groupedItems?: GroupedProductItems) => {
+    if (!groupedItems) {
+      return null;
+    }
     const firstOptionName = Object.keys(groupedItems).find(key => typeof groupedItems[key] === 'object');
     return firstOptionName ? groupedItems[firstOptionName] as GroupedProductItemOption : null;
   };
   
   const handleOptionChange = (optionName: string) => {
-    setChosenOption(groupedProductItems[optionName] as GroupedProductItemOption);
+    if (groupedProductItems && optionName in groupedProductItems) {
+      setChosenOption(groupedProductItems[optionName] as GroupedProductItemOption);
+    }
   };
-
+  
   if (productIsLoading) return <div>Loading...</div>;
-  if (productError) return <div>Error: {productError.message}</div>;
+  if (!isValidProductId(productId)) {
+    return <div>Error: Invalid product ID</div>;
+  }
+  if (productError) {
+    const errorMessage = (productError as any).message || 'Unknown error';
+    return <div>Error: {errorMessage}</div>;
+  }
 
   return (
     <>
@@ -40,7 +52,9 @@ const Product = () => {
         <div className='section section-center page'>
           <div className='product-center'>
             <ProductImages images={images} />
-            <ProductDetail product={groupedProductItems} chosenOption={chosenOption} onOptionChange={handleOptionChange} />
+            {groupedProductItems && (
+              <ProductDetail product={groupedProductItems} chosenOption={chosenOption} onOptionChange={handleOptionChange} />
+            )}
           </div>
           <div className='empty-line'></div>
         </div>

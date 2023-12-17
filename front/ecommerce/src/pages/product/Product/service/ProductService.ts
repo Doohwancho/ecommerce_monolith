@@ -1,4 +1,4 @@
-import { ProductDetailResponseDTO } from 'model';
+import { ProductDetailResponseDTO } from '../../../../../models/src/model/product-detail-response-dto';
 
 export const fetchProductsByProductId = async (productId: number): Promise<ProductDetailResponseDTO[]> => {
     const baseUrl = 'http://127.0.0.1:8080';
