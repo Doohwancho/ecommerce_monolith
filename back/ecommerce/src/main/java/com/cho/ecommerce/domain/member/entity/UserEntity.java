@@ -85,22 +85,22 @@ public class UserEntity implements
     
     private boolean enabled; //attribute is a flag to indicate the user's status. If enabled is true, the user can log in. If enabled is false, the user cannot log in. This is useful in scenarios where you might want to temporarily (or permanently) deactivate a user's account without deleting it.
     
+    //    @NotBlank(message = "failedAttempt is required") //note: Integer은 @NotBlank를 쓰면 에러난다!
     @Min(0)
     @Max(SecurityConstants.MAX_LOGIN_ATTEMPTS + 1)
-    @NotBlank(message = "failedAttempt is required")
     private Integer failedAttempt;
     
     @JsonIgnore //for error - "Could not write JSON: (was java.lang.NullPointerException)"
-    @NotEmpty(message = "User must have at least one authority")
+//    @NotEmpty(message = "User must have at least one authority")
     @OneToMany(mappedBy = "userEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<UserAuthorityEntity> userAuthorities;
     
     @Column(name = "CREATED_AT")
-    @NotEmpty(message = "User must have created datetime")
+    @NotNull(message = "User must have created datetime") //note: @NotEmpty는 LocalDateTime과 호환이 안되서 에러난다! @NotNull을 써야한다!
     private LocalDateTime created;
     
     @Column(name = "UPDATED_AT")
-    @NotEmpty(message = "User must have updated datetime")
+    @NotNull(message = "User must have updated datetime")
     private LocalDateTime updated;
     
     

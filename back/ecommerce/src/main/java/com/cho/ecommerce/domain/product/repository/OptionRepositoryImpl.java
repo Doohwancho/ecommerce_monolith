@@ -2,7 +2,10 @@ package com.cho.ecommerce.domain.product.repository;
 
 import com.cho.ecommerce.domain.product.entity.OptionEntity;
 import com.cho.ecommerce.domain.product.entity.QOptionEntity;
+import com.cho.ecommerce.domain.product.entity.QOptionVariationEntity;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +20,37 @@ public class OptionRepositoryImpl implements OptionRepositoryCustom {
     }
     
     @Override
-    public List<OptionEntity> findByCategory_CategoryId(Long categoryId) {
+    public List<OptionEntity> findOptionsByCategory_CategoryId(Long categoryId) {
         
         QOptionEntity option = QOptionEntity.optionEntity;
         return queryFactory.selectFrom(option)
             .where(option.category.categoryId.eq(categoryId))
             .fetch();
+    }
+    
+    @Override
+    public List<com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO> findOptionsAndOptionVariationsByCategoryId(Long categoryId){
+        QOptionEntity option = QOptionEntity.optionEntity;
+        QOptionVariationEntity optionVariation = QOptionVariationEntity.optionVariationEntity;
+        
+        List<Tuple> results = queryFactory
+            .select(option.optionId, option.value, optionVariation.value)
+            .from(option)
+            .innerJoin(option.optionVariations, optionVariation)
+            .where(option.category.categoryId.eq(categoryId))
+            .fetch();
+    
+        List<com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO> responseList = new ArrayList<>();
+        for (Tuple tuple : results) {
+            com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO dto = new com.cho.ecommerce.api.domain.OptionsOptionVariatonsResponseDTO();
+            dto.setCategoryId(categoryId);
+            
+            dto.setOptionId(tuple.get(option.optionId));
+            dto.setOptionName(tuple.get(option.value));
+            dto.setOptionVariationName(tuple.get(optionVariation.value));
+            responseList.add(dto);
+        }
+        return responseList;
     }
 }
 

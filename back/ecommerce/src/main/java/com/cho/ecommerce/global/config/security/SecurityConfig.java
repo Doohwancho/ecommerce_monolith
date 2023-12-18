@@ -4,6 +4,7 @@ package com.cho.ecommerce.global.config.security;
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationFailureHandler;
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationSuccessHandler;
 import com.cho.ecommerce.global.config.security.session.SecuritySessionExpiredStrategy;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -38,13 +42,13 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+            .cors().configurationSource(corsConfigurationSource()).and()
             .csrf()
             .ignoringAntMatchers("/h2-console/**") // Disable CSRF for H2 console
             .disable() //disable csrf for conveniency
             .headers()
             .frameOptions().disable() //h2-console 접속시 ui error 막기 위해 썼다.
-            .xssProtection()
-            .disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
+            .xssProtection().disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
             .and()
             .sessionManagement(s -> s
                 .maximumSessions(
@@ -61,6 +65,9 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
             .authorizeRequests(f -> f
                     .antMatchers("/login").permitAll()
                     .antMatchers("/register").permitAll()
+                    .antMatchers("/register").permitAll()
+                    .antMatchers("/products/**").permitAll()
+                    .antMatchers("/categories/**").permitAll()
                     .antMatchers("/h2-console/**").permitAll() //allow h2-console access for developer
                     .antMatchers("/actuator/health").permitAll() //allow h2-console access for developer
                     .anyRequest().authenticated()
@@ -69,12 +76,13 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                 //In other words, all other URLs in your application require the user to be authenticated.
             )
             .formLogin(f -> f
-                    .loginPage("/login") //custom page 구현한 경우
+                    .loginProcessingUrl("/login") //TODO - '/users/login'으로 추후 변경
                     .usernameParameter("username")
                     .passwordParameter("password")
-                    .defaultSuccessUrl("/", true)
                     .successHandler(formSuccessHandler)
                     .failureHandler(formFailureHandler)
+//                    .loginPage("/login") //custom page 구현한 경우. 없으면 default login page로 이동시킨다.
+//                    .defaultSuccessUrl("/", true) //react의 navigate("/") 쓰기 때문에 주석처리
             )
             .logout(logout -> logout
                 .logoutUrl("/logout") // URL to trigger logout
@@ -98,5 +106,20 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     @Bean
     public SpringSessionBackedSessionRegistry<S> sessionRegistry() {
         return new SpringSessionBackedSessionRegistry<>(this.sessionRepository);
+    }
+    
+    // CORS configuration for local react-vite development
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5173","http://localhost:5173", "http://localhost")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
+        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "Accept", "X-Requested-With", "Access-Control-Allow-Headers", "Origin", "Cache-Control", "Pragma", "Expires", "X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowCredentials(true); // Important for cookies like JSESSIONID, authorization headers with HTTPS
+                                                 //configuration.setAllowCredentials(true); 를 하면, .setAllowedOrigins("*"); ,.setAllowedHeaders("*") 가 시스템적으로 안되게 막혀있다. 꼭 특정 url, type으로 명시해야 한다.
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

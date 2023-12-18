@@ -1,10 +1,8 @@
 package com.cho.ecommerce.domain.order.service;
 
 import com.cho.ecommerce.api.domain.OrderDTO;
-import com.cho.ecommerce.api.domain.OrderItemDetailsDTO;
 import com.cho.ecommerce.domain.order.domain.OrderItemDetails;
 import com.cho.ecommerce.domain.order.entity.OrderEntity;
-import com.cho.ecommerce.api.domain.OrderSalesStatisticsDTO;
 import com.cho.ecommerce.domain.order.entity.nativeQuery.OrderSalesStatisticsInterface;
 import com.cho.ecommerce.domain.order.mapper.OrderMapper;
 import com.cho.ecommerce.domain.order.mapper.TimeMapper;
@@ -28,10 +26,8 @@ public class OrderService {
     @Autowired
     private TimeMapper timeMapper;
     
-    public OrderDTO createOrder(OrderDTO order) {
-        OrderEntity orderEntity = orderMapper.orderDTOToOrderEntity(order);
-        OrderEntity savedOrderEntity = orderRepository.save(orderEntity);
-        return orderMapper.orderEntityToOrderDTO(savedOrderEntity);
+    public OrderEntity createOrder(OrderEntity order) {
+        return orderRepository.save(order);
     }
     
     public OrderEntity getOrderById(Long orderId) {
@@ -39,35 +35,26 @@ public class OrderService {
             () -> new ResourceNotFoundException("Order not found with id: " + orderId));
     }
     
-    public OrderDTO getOrderByIdForOrderDTO(Long orderId) {
-        OrderEntity orderEntity = getOrderById(orderId);
-        return orderMapper.orderEntityToOrderDTO(orderEntity);
-    }
-    
-    public List<OrderItemDetailsDTO> findOrderItemDetailsByUsername(String username) {
-        List<OrderItemDetails> orderItemDetails = orderRepository.getOrderItemDetailsByUsername(
+    public List<OrderItemDetails> findOrderItemDetailsByUsername(String username) {
+        return orderRepository.getOrderItemDetailsByUsername(
             username).orElseThrow(() -> new ResourceNotFoundException(
             "No order details found for username: " + username));
-        
-        return orderMapper.orderItemDetailsListToDTOList(orderItemDetails);
     }
     
-    public List<OrderDTO> getAllOrders() {
-        List<OrderEntity> orderEntityList = orderRepository.findAll();
-        return orderEntityList.stream().map(orderMapper::orderEntityToOrderDTO)
-            .collect(Collectors.toList());
+    public List<OrderEntity> getAllOrders() {
+        return orderRepository.findAll();
     }
     
-    public OrderDTO updateOrder(Long orderId, OrderDTO orderDetails) {
+    public OrderEntity updateOrder(Long orderId, OrderDTO orderDetails) {
+        //1. check whether order exists
         OrderEntity orderEntity = getOrderById(orderId);
-        
+    
+        //TODO - what to update?
+        //2. update order status
         orderEntity.setOrderStatus(orderDetails.getOrderStatus());
         
-        OrderDTO orderToSave = orderMapper.orderEntityToOrderDTO(orderEntity);
-        
-        //TODO - what to update?
-        
-        return createOrder(orderToSave);
+        //3. save order
+        return orderRepository.save(orderEntity);
     }
     
     public void deleteOrder(Long orderId) {
@@ -75,12 +62,12 @@ public class OrderService {
         orderRepository.delete(order);
     }
     
-    public List<OrderSalesStatisticsDTO> findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
+    public List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
         List<OrderSalesStatisticsInterface> queryResults = orderRepository.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths();
-        List<OrderSalesStatisticsDTO> list = new ArrayList<>();
+        List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> list = new ArrayList<>();
     
         queryResults.forEach(result -> {
-            OrderSalesStatisticsDTO dto = new OrderSalesStatisticsDTO();
+            com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO dto = new com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO();
             dto.setCategoryId(result.getCategoryId());
             dto.setCategoryName(result.getCategoryName());
             dto.setNumberOfProductsPerCategory(result.getNumberOfProductsPerCategory());

@@ -1,7 +1,5 @@
 package com.cho.ecommerce.domain.member.service;
 
-import com.cho.ecommerce.api.domain.RegisterPostDTO;
-import com.cho.ecommerce.api.domain.UserDetailsDTO;
 import com.cho.ecommerce.domain.member.domain.User;
 import com.cho.ecommerce.domain.member.entity.AuthorityEntity;
 import com.cho.ecommerce.domain.member.entity.UserAuthorityEntity;
@@ -18,7 +16,6 @@ import com.cho.ecommerce.global.error.exception.member.LockedAccountUserFailedTo
 import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,37 +56,18 @@ public class UserService implements UserDetailsService {
     
     @Transactional
     public UserEntity saveRoleUser(UserEntity userEntity) {
-        //2. Create and save the user's authority
+        //1. get user's authority
         AuthorityEntity userRole = authorityRepository.findByAuthority(AuthorityEntity.ROLE_USER)
             .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
-        
+
+        //2. save into user-authority table
         UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
         userAuthorityEntity.setUserEntity(userEntity);
         userAuthorityEntity.setAuthorityEntity(userRole);
-        
-        userAuthorityRepository.save(userAuthorityEntity);
-        
+    
         //3. save user
         userEntity.setUserAuthorities(userAuthorityEntity);
         return userRepository.save(userEntity);
-    }
-    
-    @Transactional
-    public UserEntity saveRoleUser(RegisterPostDTO registerPostDTO) {
-        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO,
-            "ROLE_USER");
-        userEntity.setEnabled(true);
-        userEntity.setFailedAttempt(0);
-        return saveRoleUser(userEntity);
-    }
-    
-    @Transactional
-    public UserEntity saveRoleAdmin(RegisterPostDTO registerPostDTO) {
-        UserEntity userEntity = userMapper.dtoToEntityWithNestedAddress(registerPostDTO,
-            "ROLE_ADMIN");
-        userEntity.setEnabled(true);
-        userEntity.setFailedAttempt(0);
-        return saveRoleUser(userEntity);
     }
     
     public User findUserByUsername(String username) {
@@ -99,12 +77,6 @@ public class UserService implements UserDetailsService {
         
         return userMapper.toUser(userEntity);
     }
-    
-    public UserDetailsDTO findUserDetailsDTOByUsername(String username) {
-        User user = findUserByUsername(username);
-        return userMapper.toUserDetailsDTO(user);
-    }
-    
     
     @Transactional
     public boolean updateUserName(String username, String userName) {
@@ -145,7 +117,7 @@ public class UserService implements UserDetailsService {
             userAuthorityEntity.setUserEntity(user);
             userAuthorityEntity.setAuthorityEntity(userRole);
             
-            userAuthorityRepository.save(userAuthorityEntity);
+            userAuthorityRepository.save(userAuthorityEntity); //TODO - 이 부분 빼도 cascade 되서 저장되지 않을까? 그러면 @Transactional 빼도 되지 않을까?
             
             user.setUserAuthorities(userAuthorityEntity);
             user.setUpdated(LocalDateTime.now());

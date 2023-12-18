@@ -1,6 +1,7 @@
 package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
+import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
@@ -19,8 +21,8 @@ import lombok.Setter;
 @Table(name = "CATEGORY")
 @Getter
 @Setter
-public class CategoryEntity {
-    
+public class CategoryEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CATEGORY_ID")
@@ -34,11 +36,16 @@ public class CategoryEntity {
     @Column(name = "NAME", length = DatabaseConstants.CATEGORY_NAME_SIZE)
     private String name;
     
-    @NotEmpty(message = "Category must have at least one option")
+    @Column(name = "PARENT_CATEGORY_ID")
+    private Long parentCategoryId;
+    
+    @Min(0)
+    @Column(name = "DEPTH")
+    private Integer depth;
+    
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private Set<OptionEntity> optionEntities;
     
-    @NotEmpty(message = "Category must have at least one product")
     @OneToMany(mappedBy = "category")
     private Set<ProductEntity> products;
     

@@ -20,9 +20,8 @@ How
 Features
 
 1. authentication
-2. security
-3. product
-4. order
+2. product
+3. order
 
 
 ---\
@@ -38,6 +37,7 @@ Actions
 6. refactor : 코드 리팩토링에 대한 커밋
 7. fix : error 수정에 대한 커밋
 8. defensive : defensive programming에 대한 커밋
+9. security: security 관련 커밋
 
 
 
@@ -50,4 +50,20 @@ Etc
 4. chore : 그 외 자잘한 수정에 대한 커밋(ex. 툴링, 오타수정)
 5. revert : reverts the previous commit
 6. bump: 버전업에 대한 커밋
+
+
+---\
+Frontend 
+
+front로 시작한다.
+
+- domain 
+    1. authentication
+    2. product
+    3. order
+- front specific keywords
+    1. page
+    2. component
+    3. style
+    4. state
 

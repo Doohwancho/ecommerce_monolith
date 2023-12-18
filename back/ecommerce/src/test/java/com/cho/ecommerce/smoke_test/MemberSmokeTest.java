@@ -6,20 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cho.ecommerce.Application;
-import com.cho.ecommerce.api.domain.RegisterPostDTO;
-import com.cho.ecommerce.api.domain.RegisterPostDTOAddress;
 import com.cho.ecommerce.api.domain.RegisterResponseDTO;
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.domain.member.service.AuthorityService;
 import com.cho.ecommerce.domain.member.service.UserAuthorityService;
 import com.cho.ecommerce.domain.member.service.UserService;
-import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
 import com.cho.ecommerce.global.config.redis.RedisConfig;
 import com.cho.ecommerce.global.config.security.SecurityConstants;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import net.datafaker.Faker;
@@ -251,13 +247,13 @@ class MemberSmokeTest<S extends Session> {
         Faker faker = new Faker();
         
         // Create RegisterPostDTO object with test data
-        RegisterPostDTO registerPostDTO = new RegisterPostDTO();
-        registerPostDTO.setUsername("newuser");
-        registerPostDTO.setEmail("newuser@example.com");
-        registerPostDTO.setPassword("password");
-        registerPostDTO.setName("name");
+        com.cho.ecommerce.api.domain.RegisterRequestDTO registerRequestDTO = new com.cho.ecommerce.api.domain.RegisterRequestDTO();
+        registerRequestDTO.setUsername("newuser");
+        registerRequestDTO.setEmail("newuser@example.com");
+        registerRequestDTO.setPassword("password");
+        registerRequestDTO.setName("name");
         
-        RegisterPostDTOAddress address = new RegisterPostDTOAddress();
+        com.cho.ecommerce.api.domain.RegisterRequestDTOAddress address = new com.cho.ecommerce.api.domain.RegisterRequestDTOAddress();
         
         address.setStreet(faker.address().streetAddress());
         address.setCity(faker.address().city());
@@ -265,12 +261,13 @@ class MemberSmokeTest<S extends Session> {
         address.setCountry(faker.address().country());
         address.setZipCode(faker.address().zipCode());
         
-        registerPostDTO.setAddress(address);
+        registerRequestDTO.setAddress(address);
         
         // Convert RegisterPostDTO to HttpEntity
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<RegisterPostDTO> request = new HttpEntity<>(registerPostDTO, headers);
+        HttpEntity<com.cho.ecommerce.api.domain.RegisterRequestDTO> request = new HttpEntity<>(
+            registerRequestDTO, headers);
         
         // Perform POST request to register endpoint
         ResponseEntity<RegisterResponseDTO> response = restTemplate.postForEntity(

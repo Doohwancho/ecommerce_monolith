@@ -30,12 +30,12 @@ public class UserAuthorityEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull(message = "User is required")
+//    @NotNull(message = "User is required")
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private UserEntity userEntity;
     
-    @NotNull(message = "Authority is required")
+//    @NotNull(message = "Authority is required")
     @ManyToOne
     @JoinColumn(name = "AUTHORITY_ID")
     private AuthorityEntity authorityEntity;

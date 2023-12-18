@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import net.datafaker.Faker;
-import org.hibernate.dialect.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -242,7 +241,7 @@ public class FakeDataGenerator {
                 option.setValue(optionValue);
                 option.setCategory(category);
                 option.setOptionVariations(new ArrayList<>());
-                optionRepository.save(option);
+//                optionRepository.save(option);
                 options.add(option);
                 
                 // Generate option variations for each option
@@ -254,7 +253,7 @@ public class FakeDataGenerator {
                     optionVariation.setValue(optionVariationValue);
                     optionVariation.setOption(option);
                     
-                    optionVariationRepository.save(optionVariation);
+//                    optionVariationRepository.save(optionVariation);
                     
                     option.getOptionVariations().add(optionVariation);
                 }
@@ -292,7 +291,7 @@ public class FakeDataGenerator {
             product.setCategory(category);
             
             //step3) get option and option variations from category
-            List<OptionEntity> optionEntityList = optionRepository.findByCategory_CategoryId(
+            List<OptionEntity> optionEntityList = optionRepository.findOptionsByCategory_CategoryId(
                 category.getCategoryId());
             
             optionEntityList.forEach(option -> {
@@ -306,6 +305,9 @@ public class FakeDataGenerator {
             
             //step4) create productItems for each product
             Set<ProductItemEntity> productItems = new HashSet<>();
+    
+            product.setProductItems(productItems);
+            productRepository.save(product);
             
             for (int j = 0; j < numberOfFakeProductItems; j++) {
                 ProductItemEntity productItem = new ProductItemEntity();
@@ -344,8 +346,6 @@ public class FakeDataGenerator {
                 discount.setProductItem(productItem);
                 discountRepository.save(discount);
             }
-            product.setProductItems(productItems);
-            productRepository.save(product);
         }
     }
     

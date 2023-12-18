@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
@@ -30,11 +31,11 @@ public class ProductItemEntity {
     @Column(name = "PRODUCT_ITEM_ID")
     private Long productItemId;
     
-    @NotNull(message = "Quantity is required")
+    @Min(0)
     @Column(name = "QUANTITY", length = DatabaseConstants.PRODUCT_ITEM_QUANTITY_SIZE)
     private Integer quantity;
     
-    @NotNull(message = "Price is required")
+    @Min(0)
     @Column(name = "PRICE", length = DatabaseConstants.PRODUCT_ITEM_PRICE_SIZE)
     private Double price;
     
@@ -43,7 +44,7 @@ public class ProductItemEntity {
     @JoinColumn(name = "PRODUCT_ID")
     private ProductEntity product;
     
-    @NotEmpty(message = "Product item must have at least one product option variation")
+//    @NotEmpty(message = "Product item must have at least one product option variation") //TODO - ProductOptionVariationEntity가 ProductItemEntity를 @NotNull 해놨는데, 여기서도 양방향으로 @NotEmpty 걸면 어떻게 두 객체를 동시에 validation 어기지 않고 insert 하지?
     @OneToMany(mappedBy = "productItem", cascade = CascadeType.ALL, orphanRemoval = true) //TODO - CascadeType.ALL 말고 뭘 쓸지 고려하기
     private Set<ProductOptionVariationEntity> productOptionVariations;
     
