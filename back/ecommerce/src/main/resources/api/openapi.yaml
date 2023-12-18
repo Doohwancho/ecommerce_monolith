@@ -948,6 +948,11 @@ components:
           type: string
     OptionsOptionVariatonsResponseDTO:
       type: object
+      required:
+        - categoryId
+        - optionId
+        - optionName
+        - optionVariationName
       properties:
         categoryId:
           type: integer

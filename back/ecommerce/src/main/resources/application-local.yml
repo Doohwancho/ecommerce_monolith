@@ -9,11 +9,11 @@ spring:
   datasource:
     platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ecommerce-database?serverTimezone=Asia/Seoul #for local development
-#    url: jdbc:mysql://mysql:3306/ecommerce-database?serverTimezone=Asia/Seoul #for docker
+#    url: jdbc:mysql://localhost:3306/ecommerce-database?serverTimezone=Asia/Seoul #for local development
+    url: jdbc:mysql://mysql:3306/ecommerce-database?serverTimezone=Asia/Seoul #for docker
     username: root
-#    password: root #mysql로 접속시 root유저의 비밀번호 또한 root로 설정함.
-    password: #local에서 접속시엔 root user's password is null
+    password: root #for docker
+#    password: #local에서 접속시엔 root user's password is null
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
@@ -29,12 +29,12 @@ spring:
     job:
       enabled: false #true로 하면 @Bean으로 등록된 cron batch steps들이 시작과 동시에 자동 실행되니까 false로 꺼둔다.
   redis:
-    host: localhost #for local development
-#    host: redis #for docker
+#    host: localhost #for local development
+    host: redis #for docker
     port: 6379
   session:
     store-type: redis
-    timeout: 30m
+    timeout: 60m
 
 logging.level:
   org.hibernate.SQL: debug
