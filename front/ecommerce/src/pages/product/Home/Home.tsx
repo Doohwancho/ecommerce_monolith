@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import {MainWrapper, MainElement, MainContent, TopTenProducts} from './styles/Home.styles'
-import CarouselComponent from './component/carousel/CarouselComponent';
 
 const Home: React.FC = () => {
+  const CarouselComponent = React.lazy(() => import ('./component/carousel/CarouselComponent'));
 
   return (
     <>
@@ -23,8 +23,10 @@ const Home: React.FC = () => {
         </MainElement>
         
         <TopTenProducts>Top 10 Rated Products</TopTenProducts>
-        <CarouselComponent />
-        
+        <Suspense fallback={<div>Loading...</div>}>
+          <CarouselComponent />
+        </Suspense>
+
       </MainWrapper>
     </>
   );
