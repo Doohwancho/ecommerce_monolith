@@ -23,7 +23,7 @@ const MainWrapper = styled.div`
     margin: 5px;
   }
 
-  button {
+  .description-buttons button {
     margin: 30px;
     background-color: black;
     color: white;
@@ -32,6 +32,7 @@ const MainWrapper = styled.div`
     border-radius: 20px;
     font-size: 14px;
   }
+
 
   @media screen and (max-width: 640px) {
     .pc {
@@ -62,5 +63,13 @@ const MainContent = styled.div`
   text-align: center;
 `;
 
+const TopTenProducts = styled.div`
+  color: #333;             
+  padding: 10px;
+  text-align: center;
+  font-size: 25px;
+  border-radius: 8px;
+  margin: 20px;
+`;
 
-export {MainWrapper, MainElement, MainContent};
+export {MainWrapper, MainElement, MainContent, TopTenProducts};

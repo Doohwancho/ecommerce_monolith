@@ -1,7 +1,9 @@
 import React from 'react';
-import {MainWrapper, MainElement, MainContent} from './styles/Home.styles'
+import {MainWrapper, MainElement, MainContent, TopTenProducts} from './styles/Home.styles'
+import CarouselComponent from './component/carousel/CarouselComponent';
 
 const Home: React.FC = () => {
+
   return (
     <>
       <MainWrapper>
@@ -13,12 +15,16 @@ const Home: React.FC = () => {
             <div className="content">
               더 성장한 나를 만들어 줄 다양한 리워드와 제품도 함께 만나보세요
             </div>
-            <div>
+            <div className="description-buttons">
               <button>미션 참여하기</button>
               <button>컬랙션 구매하기</button>
             </div>
           </MainContent>
         </MainElement>
+        
+        <TopTenProducts>Top 10 Rated Products</TopTenProducts>
+        <CarouselComponent />
+        
       </MainWrapper>
     </>
   );
