@@ -66,4 +66,6 @@ front로 시작한다.
     2. component
     3. style
     4. state
+- etc
+    1. clone (클론한 경우) 
 
