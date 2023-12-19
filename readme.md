@@ -6,7 +6,7 @@
 - D. [AWS architecture](#d-aws-architecture)
 - E. [ERD diagram](#e-erd-diagram)
 - F. [Sequence Diagram](#f-sequence-diagram)
-- G. [기술적 도전](#g-기술적-도전)
+- G. [기술적 도전 - Backend](#g-기술적-도전---backend)
     - a. [정규화](#a-정규화)
     - b. [bulk insert](#b-bulk-insert)
     - c. [API first design](#c-api-first-design)
@@ -15,56 +15,85 @@
     - f. [sql tuning](#f-sql-tuning)
     - g. [defensive programming](#g-defensive-programming)
     - h. [clean code](#h-clean-code)
-- H. [Trouble Shooting](#h-trouble-shooting)
+	- i. [architecture](#i-architecture)
+- H. [기술적 도전 - Frontend](#h-기술적-도전---frontend)
+	- a. [component 모듈화](#a-component-모듈화)
+	- b. [state management](#b-state-managment)
+	- c. [filter 기능 구현](#c-filter-기능-구현)
+	- d. [페이지 로드 속도 개선](#d-페이지-로드-속도-개선)
+- I. [Trouble Shooting](#i-trouble-shooting)
     - a. [queryDSL library와 openapi-codegen이 build.gradle에서 컴파일시 깨지는 문제 해결](#a-querydsl-library와-openapi-codegen이-컴파일시-깨지는-문제-해결)
     - b. [그 외 trouble shooting 내역](#b-그-외-trouble-shooting-커밋-내역들)
 
 
 # A. 프로젝트 소개
 
-쇼핑몰 MVP.
+![](./documentation/images/main-page-demo.gif)
 
+쇼핑몰 MVP\
 인증, 상품, 주문 관련 기능이 존재한다.
 
-## how to start project?
+## a. how to start project?
 ```
 1. git clone https://github.com/Doohwancho/ecommerce
-2. docker compose up
+2. cd ecommerce
+3. docker compose up
 ```
+
+
 
 
 # B. 사용 기술
 
-| Category             | Tool/Library           | Version |
-|----------------------|------------------------|---------|
-| Java                 | JDK                    | 1.8     |
-| Spring               | Spring Boot Starter Web| 2.5.6   |
-|                      | Spring Security        | 2.5.6   |
-|                      | Spring Data JPA        | 2.5.6   |
-|                      | Spring Batch           | 2.5.6   |
-|                      | Spring Quartz          | 2.5.6   |
-| External Java Library| QueryDSL               | 4.4.0   |
-|                      | OpenAPI-Codegen        | 4.3.1   |
-|                      | Jqwik                  | 1.8.1   |
-|                      | MapStruct              | 1.5.5   |
-|                      | Datafaker              | 1.9.0   |
-| Database             | MySQL                  | 8.0.23  |
-|                      | Redis                  | 7.0.9   |
-| Test                 | junit                  | 5.9.2   |
-|                      | hamcrest               | 2.2     |
-| Deploy               | AWS                    |         |
-|                      | Docker                 |         |
-| Development Tools    | IntelliJ               |         |
-|                      | MySQL Workbench        |         |
-|                      | Postman                |         |
-|                      | Redoc                  |         |
+## a. 백엔드
+| Category             | Tool/Library              | Version |
+|----------------------|---------------------------|---------|
+| Java                 | JDK                       | 1.8     |
+| Spring               | Spring Boot Starter Web   | 2.5.6   |
+|                      | Spring Security           | 2.5.6   |
+|                      | Spring Data JPA           | 2.5.6   |
+|                      | Spring Batch              | 2.5.6   |
+|                      | Spring Quartz             | 2.5.6   |
+|                      | Spring Boot Starter Cache | 2.5.6   |
+| External Java Library| QueryDSL                  | 4.4.0   |
+|                      | OpenAPI-Codegen           | 4.3.1   |
+|                      | Jqwik                     | 1.8.1   |
+|                      | MapStruct                 | 1.5.5   |
+|                      | Datafaker                 | 1.9.0   |
+| Database             | MySQL                     | 8.0.23  |
+|                      | Redis                     | 7.0.9   |
+| Test                 | junit                     | 5.9.2   |
+|                      | hamcrest                  | 2.2     |
+| Deploy               | AWS                       |         |
+|                      | Docker                    |         |
+| Development Tools    | IntelliJ                  |         |
+|                      | MySQL Workbench           |         |
+|                      | Postman                   |         |
+|                      | Redoc                     |         |
 |                      | VSC Plugin - Draw.io Integration |         |
 |                      | VSC Plugin - ERD Editor|         |
+
+
+## b. 프론트엔드
+| Category             | Tool/Library           | Version |
+|----------------------|------------------------|---------|
+| Language             | Typescript             | ^5.2.2  |
+| React                | React                  | ^18.2.0 |
+|                      | React-Router-Dom       | ^6.20.0 |
+| Style                | Styled-Component       | ^6.1.1  |
+| State Management     | Recoil                 | ^0.7.7  |
+|                      | React-Query            | ^3.39.3 |
+| Build Tool           | Vite                   | ^5.0.0  |
+| API                  | openapi-generator-cli  | ^2.7.0  |
+| external library     | react-slick            | ^0.29.0 |
+|                      | slick-carousel         | ^1.8.1  |
+|                      | react-icons            | ^4.12.0 |
 
 
 
 # C. 프로젝트 구조
 
+## a. backend
 ```
 ── src
 │   ├── main
@@ -131,6 +160,79 @@
 │   └── warn
 ```
 
+
+
+## b. frontend
+
+```
+public
+├── images
+models
+├── src
+│   └── model
+src
+├── assets
+│   └── styles
+├── components
+│   ├── Footer
+│   │   └── styles
+│   ├── Header
+│   │   ├── hooks
+│   │   └── styles
+│   └── TopNav
+│       ├── hooks
+│       ├── modal
+│       │   ├── styles
+│       │   ├── type
+│       │   └── util
+│       ├── styles
+│       └── util
+├── hooks
+├── pages
+│   ├── authentication
+│   │   ├── login
+│   │   │   ├── constants
+│   │   │   ├── hooks
+│   │   │   ├── styles
+│   │   │   └── types
+│   │   └── register
+│   │       ├── constants
+│   │       ├── hooks
+│   │       └── styles
+│   └── product
+│       ├── Category
+│       │   ├── hooks
+│       │   ├── service
+│       │   ├── styles
+│       │   ├── types
+│       │   └── ui
+│       ├── Home
+│       │   ├── component
+│       │   │   └── carousel
+│       │   │       ├── service
+│       │   │       ├── styles
+│       │   │       └── types
+│       │   └── styles
+│       └── Product
+│           ├── component
+│           │   ├── discount
+│           │   ├── productDetails
+│           │   └── productImages
+│           ├── hooks
+│           ├── service
+│           ├── styles
+│           ├── types
+│           └── util
+└── store
+```
+
+1. 도메인 컴포넌트별들을 도메인 별로 구분하여 page/에서 관리한다.
+2. Header, Footer과 같은 공통 컴포넌트들은 component/에서 관리한다.
+3. 각 컴포넌트마다 style, types, service, custom hooks, ui, component, ui, util, constant를 폴더로 나눠 관리한다.
+4. 공통 custom hooks들은 hooks/에서 관리한다.
+5. openapi-codgen으로 생성된 모델 DTO들은 models/src/model/에 생성된다.
+
+
 # D. AWS architecture
 ![](documentation/images/aws-architecture.png)
 
@@ -153,7 +255,7 @@ VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 �
 
 
 
-# G. 기술적 도전
+# G. 기술적 도전 - Backend
 
 ## a. 정규화
 
@@ -671,6 +773,11 @@ productOptionVariation: 30000 rows
 3. profile 별(ex. test/local/prod) log level을 구분하여 log/ 디렉토리에 레벨별로 저장
 
 
+### 4. Valid 전략
+1. openapi에서 필드마다 validity 조건 걸어서, 컨트롤러 레이어에서 파라미터로 받을 때, 백엔드 시스템 안에 들어오는 필드값을 1차적으로 type check, null check한다.
+2. backend Entity에 validity 조건을 걸어서 database에 값을 넣을 때, 올바른 값이 들어가는지 다시한번 필터링 한다.
+
+
 
 ## h. clean code
 
@@ -684,7 +791,234 @@ productOptionVariation: 30000 rows
 2. checkstyle
 3. code-style-formatter ([google style java format 적용](https://google.github.io/styleguide/javaguide.html))
 
-# H. Trouble Shooting
+
+## i. architecture
+layered architecture에서 DDD로 넘어가는 과정 속에 있다.\
+이 프로젝트는 차후 규모가 커지고 복잡해 지면, 점진적으로 DDD + MSA + CQRS 쪽으로 리펙토링할 예정이다.
+
+디렉토리 큰 줄기는 다음과 같다.
+```
+src/
+	domain/
+	global/
+	infra
+```
+
+1. global/ 에는 도메인 전반적으로 적용되는 configuration, exception & error 정의, utility 파일이 들어가고,
+2. infra/ 에는 email, message등 외부 API와 연결되는 파일들이 존재한다.
+3. domain/ 은 layered architecture의 형태를 전반적으로 따라가되, 현 프로젝트에서는 필요에 의해 DDD에서 차용된 개념이 2가지가 있다.
+	1. application layer에서 Entity <-> ResponseDTO 변환까지 포함되어, 너무 비대해지는 문제가 있어서, 타입 변환만 전문적으로 하는 adapter layer을 추가하여 service layer에서는 business logic 위주로 처리되도록 관심사를 분리하였다.
+	2. entity와 domain을 분리하고, domain에 도메인 로직을 넣었다. service layer에서는 도메인 로직을 빼서 최대한 비즈니스 로직만 들어가게끔 관심사 분리를 하였다.
+
+
+### 1. adapter layer 분리 예시
+
+#### 1-가. 문제
+```java
+@Service
+public class ProductService {
+    
+    private ProductService self;
+
+	@Transactional
+    public List<Product> getProductDetailDTOsById(Long productId) {
+		//business logics
+	}
+
+	public List<ProductDetailResponseDTO> findProductDetailDTOsById(Long productId) {
+        List<Product> productDetailDTOsList = self.getProductDetailDTOsById(
+            productId); //fix: solution to "Methods should not call same-class methods with incompatible @Transactional"
+        return productMapper.productsToProductDetailDTOs(productDetailDTOsList);
+    }
+}
+```
+- 문제
+	1. getProductDetailDTOsById()를 작성할 때, 리턴타입을 `List<도메인>`으로 해야 다른 메서드에서도 사용 가능하니까 재사용성이 좋아진다.
+	2. 그러나 controller에서 요구하는 반환타입은 `List<도메인>`이 아닌, `List<ResponseDTO>` 이기 때문에, mapper로 타입 변환을 해주어야 한다.
+	3. 이 때, 같은 서비스 레이어에서 타입변환만 해주는 메서드를 만들면, 메서드 네이밍도 애매해지고, 
+	4. @Transactional 붙은 메서드 호출 시, `self.메서드()`로 호출해야 하는데, 그닥 좋은 패턴은 아닌 듯 하다. 
+	5. 서비스 레이어가 비즈니스 로직 메서드 + 타입 변환 메서드가 섞여서 비대해진다.
+
+#### 1-나. 해결책
+```java
+@Component
+public class ProductAdapter {
+    @Autowired
+    private ProductMapper productMapper;
+    @Autowired
+    private ProductService productService;   
+
+	public List<ProductDetailResponseDTO> getProductDetailDTOsById(Long id) {
+        List<Product> productList = productService.getProductDetailDTOsById(id);
+        return productMapper.productsToProductDetailDTOs(productList);
+    }
+}
+
+
+@Service
+public class ProductService {
+    
+    private ProductService self;
+
+	@Transactional
+    public List<Product> getProductDetailDTOsById(Long productId) {
+		//business logics
+	}
+}
+```
+
+타입 변환해주는 메서드를 서비스 레이어에서 어답터 레이어로 분리함으로써, 서비스 레이어에서는 비즈니스 로직만 있도록 했다.
+
+
+
+
+
+
+# H. 기술적 도전 - Frontend
+
+## a. component 모듈화
+
+ex. `<Product />`를 모듈화 한 방법
+
+```
+├── Product.tsx
+├── component
+│   ├── discount
+│   │   └── Discount.tsx
+│   ├── productDetails
+│   │   └── ProductDetail.tsx
+│   └── productImages
+│       ├── ProductImages.styles.ts
+│       └── ProductImages.tsx
+├── hooks
+│   └── useProductData.ts
+├── service
+│   └── ProductService.ts
+├── styles
+│   └── Product.styles.ts
+├── types
+│   └── Product.types.ts
+└── util
+    └── Product.util.ts
+```
+
+## b. state managment
+
+1. custom hooks
+	- react query로 서버 API call 해서 받은 상태값을 각 페이지에 맞게 가공하여 전달
+2. recoil
+	- global state에 담아 관리해야할 것을(ex. user authentication status) recoil로 관리한다.
+3. props 
+	- 최대한 depth 1 정도만 props를 내려준다. 그 이상 depth는 recoil 사용을 고려한다.
+	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우.
+
+
+
+## c. filter 기능 구현
+
+![filter-demo](documentation/images/filter-demo.gif)
+
+
+
+
+## d. 페이지 로드 속도 개선
+
+### 1. 불필요한 랜더링을 React.memo() 으로 최적화
+
+- 문제
+	- 페이지 이동할 때 마다 `<Header />, <Footer />, < TopNav />`가 불필요하게 다시 랜더링 되던 문제가 있었다.
+- 해결책
+	1. React.memo()로 감싸서 props가 바뀌지 않는한, 다시 랜더링 되지 않도록 하고,
+	2. Router에서 템플릿화 시켰다.
+
+```tsx
+  const Layout = ({ children }) => (
+    <>
+      <Header />
+      <TopNav />
+      <ScrollToTop />
+      {children}
+      <Footer />
+    </>
+  );
+
+<Routes>
+	<Route path="/" element={<Layout><Home /></Layout>} />
+	<Route path="/products/category/:lowCategoryId" element={<Layout><Category /></Layout>} />
+	<Route path="/products/:productId" element={<Layout><Product /></Layout>} />
+</Routes>
+  );
+```
+
+---
+
+### 2. useMemo()로 memoization 활용
+
+1. API fetch받은 products들을 재정리 하는 함수의 결과값을 memoization
+
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L23-L56
+
+option/price filter에서 product list를 호출할 때마다, 재정리를 요구하는데,
+이 함수를 useMemo()로 최적화 했다.
+
+
+---
+...하지만 option들을 묶는 함수에 적용한 useMemo()는 이른 최적화 같다.
+
+2. option들을 optionId를 기준으로 묶는 함수
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L9-L21
+
+- Q. 왜 useMemo()를 여기에 쓰는게 좋은 선택이 아닌가?
+	1. 무거운 연산이 아니다.
+	2. 파라미터가 자주 바뀌는 편이라, 한번 연산해놓고 두고두고 쓰는 함수가 아니다.
+
+
+
+
+### 3. code splitting
+
+```tsx
+import React, { Suspense } from 'react';
+
+const Home: React.FC = () => {
+  const CarouselComponent = React.lazy(() => import ('./component/carousel/CarouselComponent'));
+
+  return (
+    <>
+		<MainElement /> //------------------- 1
+
+		<Suspense fallback={<div>Loading...</div>}>
+          <CarouselComponent /> //----------------- 2
+        </Suspense>
+    </>
+  );
+};
+
+export default Home;
+```
+1. 메인페이지 최상단 이미지 + 텍스트는 그래도 랜더링
+2. 화면 하단부 top 10 rated products fetch는 lazy하게 랜더링
+
+
+### 4. main page caching
+
+![top-ten-rated-products](documentation/images/top-ten-rated-products.gif)
+
+main page에서 요구하는 top 10 rated products를 redis cache에 매 시간 갱신하여 뿌려준다.
+
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L51-L61
+
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L116-L126
+
+
+
+### 5. .png -> .webp로 바꿈
+이미지 용량이 약 60%로 축소됨 -> 페이지 로드 속도가 빨라짐
+
+
+
+
+# I. Trouble Shooting
 
 ## a. queryDSL library와 openapi-codegen이 컴파일시 깨지는 문제 해결
 
