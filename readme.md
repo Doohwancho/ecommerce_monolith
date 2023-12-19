@@ -228,7 +228,7 @@ src
 
 1. 도메인 컴포넌트별들을 도메인 별로 구분하여 page/에서 관리한다.
 2. Header, Footer과 같은 공통 컴포넌트들은 component/에서 관리한다.
-3. 각 컴포넌트마다 style, types, service, custom hooks, ui, component, ui, util, constant를 폴더로 나눠 관리한다.
+3. 각 컴포넌트마다 style, types, service, custom hooks, ui, component, util, constant를 폴더로 나눠 관리한다.
 4. 공통 custom hooks들은 hooks/에서 관리한다.
 5. openapi-codgen으로 생성된 모델 DTO들은 models/src/model/에 생성된다.
 
@@ -985,9 +985,9 @@ const Home: React.FC = () => {
 
   return (
     <>
-		<MainElement /> //------------------- 1
+	<MainElement /> //------------------- 1
 
-		<Suspense fallback={<div>Loading...</div>}>
+	<Suspense fallback={<div>Loading...</div>}>
           <CarouselComponent /> //----------------- 2
         </Suspense>
     </>
