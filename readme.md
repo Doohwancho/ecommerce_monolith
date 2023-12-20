@@ -226,7 +226,7 @@ src
 └── store
 ```
 
-1. 도메인 컴포넌트별들을 도메인 별로 구분하여 page/에서 관리한다.
+1. 도메인 컴포넌트들을 도메인 별로 구분하여 page/에서 관리한다.
 2. Header, Footer과 같은 공통 컴포넌트들은 component/에서 관리한다.
 3. 각 컴포넌트마다 style, types, service, custom hooks, ui, component, util, constant를 폴더로 나눠 관리한다.
 4. 공통 custom hooks들은 hooks/에서 관리한다.
