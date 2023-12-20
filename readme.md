@@ -780,6 +780,20 @@ productOptionVariation: 30000 rows
 2. backend Entity에 validity 조건을 걸어서 database에 값을 넣을 때, 올바른 값이 들어가는지 다시한번 필터링 한다.
 
 
+### 5. rate limiting
+
+1. backend server에 http request시, 
+2. 개별 ip address마다 
+3. 1초에 5 request 리밋을 건다.
+4. 단, "burst"라고 초당 기본 5 request에 short spike of 10 request까지 queue에 담아 허용한다.
+5. 그 이상 request가 오면 503 Service Temporarily Unavailable error 를 보낸다.
+
+https://github.com/Doohwancho/ecommerce/blob/91f61cd43591f8d56b8925e9bb8ceac0cbe89d29/web-server/default.conf#L1-L5
+
+https://github.com/Doohwancho/ecommerce/blob/91f61cd43591f8d56b8925e9bb8ceac0cbe89d29/web-server/default.conf#L29-L33
+
+
+
 
 ## h. clean code
 
