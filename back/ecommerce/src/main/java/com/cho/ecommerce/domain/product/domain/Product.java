@@ -1,6 +1,7 @@
 package com.cho.ecommerce.domain.product.domain;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -28,7 +29,9 @@ public class Product {
     private String categoryName;
     
     //option
+    private Long optionId;
     private String optionName;
+    private Long optionVariationId;
     private String optionVariationName;
     
     
@@ -66,7 +69,9 @@ public class Product {
         private Long categoryId;
         private String categoryCode;
         private String categoryName;
+        private Long optionId;
         private String optionName;
+        private Long optionVariationId;
         private String optionVariationName;
         
         public Builder productId(Long productId) {
@@ -124,8 +129,18 @@ public class Product {
             return this;
         }
         
+        public Builder optionId(Long optionId) {
+            this.optionId = optionId;
+            return this;
+        }
+        
         public Builder optionName(String optionName) {
             this.optionName = optionName;
+            return this;
+        }
+        
+        public Builder optionVariationId(Long optionVariationId) {
+            this.optionVariationId = optionVariationId;
             return this;
         }
         
@@ -141,6 +156,7 @@ public class Product {
             Assert.notNull(categoryId, "카테고리 Id는 null이 될 수 없습니다.");
             Assert.notNull(categoryCode, "카테고리 코드는 null이 될 수 없습니다.");
             Assert.notNull(categoryName, "카테고리 이름은 null이 될 수 없습니다.");
+            Assert.notNull(optionId, "옵션 아이디는 null이 될 수 없습니다.");
             Assert.notNull(optionName, "옵션 이름은 null이 될 수 없습니다.");
             
             Product product = new Product();
@@ -155,7 +171,9 @@ public class Product {
             product.categoryId = this.categoryId;
             product.categoryCode = this.categoryCode;
             product.categoryName = this.categoryName;
+            product.optionId = this.optionId;
             product.optionName = this.optionName;
+            product.optionVariationId = this.optionVariationId;
             product.optionVariationName = this.optionVariationName;
             return product;
         }

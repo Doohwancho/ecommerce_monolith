@@ -97,7 +97,10 @@ public class ProductService {
                 .discounts(discountMapper.discountEntitiesToDiscounts(discounts))
                 .categoryId(categoryEntity.getCategoryId())
                 .categoryCode(categoryEntity.getCategoryCode())
-                .categoryName(categoryEntity.getName()).optionName(optionEntity.getValue())
+                .categoryName(categoryEntity.getName())
+                .optionId(optionEntity.getOptionId())
+                .optionName(optionEntity.getValue())
+                .optionVariationId(optionVariationEntity.getOptionVariationId())
                 .optionVariationName(optionVariationEntity.getValue()).build();
             productList.add(product);
         }

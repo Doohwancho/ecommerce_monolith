@@ -850,7 +850,9 @@ components:
         - categoryId
         - categoryCode
         - categoryName
+        - optionId
         - optionName
+        - optionVariationId
         - optionVariationName
       properties:
         productId:
@@ -893,9 +895,15 @@ components:
         categoryName:
           type: string
           description: Name of the category
+        optionId:
+          type: integer
+          format: int64
         optionName:
           type: string
           description: Name of the product option
+        optionVariationId:
+          type: integer
+          format: int64
         optionVariationName:
           type: string
           description: Name of the product option variation

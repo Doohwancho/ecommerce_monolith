@@ -114,7 +114,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5173","http://localhost:5173", "http://localhost")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
+        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5173", "http://127.0.0.1","http://localhost:5173", "http://localhost")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "Accept", "X-Requested-With", "Access-Control-Allow-Headers", "Origin", "Cache-Control", "Pragma", "Expires", "X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowCredentials(true); // Important for cookies like JSESSIONID, authorization headers with HTTPS
