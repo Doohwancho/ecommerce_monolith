@@ -90,11 +90,23 @@ export interface ProductDetailResponseDTO {
      */
     'categoryName': string;
     /**
+     * 
+     * @type {number}
+     * @memberof ProductDetailResponseDTO
+     */
+    'optionId': number;
+    /**
      * Name of the product option
      * @type {string}
      * @memberof ProductDetailResponseDTO
      */
     'optionName': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof ProductDetailResponseDTO
+     */
+    'optionVariationId': number;
     /**
      * Name of the product option variation
      * @type {string}

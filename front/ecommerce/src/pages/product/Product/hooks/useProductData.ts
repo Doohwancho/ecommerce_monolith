@@ -39,6 +39,8 @@ const groupProductItems = (productItems: ProductDetailResponseDTO[]): GroupedPro
 
     if (!groupedProducts[optionName]) {
         groupedProducts[optionName] = {
+          optionId: productItem.optionId,
+          optionVariationId: productItem.optionVariationId,
           optionVariationName: productItem.optionVariationName,
           quantity: productItem.quantity,
           price: productItem.price,
