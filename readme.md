@@ -37,8 +37,10 @@
 ```
 1. git clone https://github.com/Doohwancho/ecommerce
 2. cd ecommerce
-3. docker compose up
+3. docker compose up --build
+4. localhost:80 이나 127.0.0.1:80 로 접속
 ```
+
 
 
 
@@ -273,9 +275,9 @@ VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 �
 이걸 완화하기 위해, 모든 상품테이블에 들어았는 product_id를 인덱스 거는게 최선일지 모르겠음.
 
 
-2. 또한, 상품 카테고리별로 테이블 만들어줘야 해서 테이블 갯수가 수십~수백개로 늘어남. 
+2. 또한, 상품 카테고리별로 테이블 만들어줘야 해서 테이블 갯수가 수십~수백개로 늘어남.
 검색해보니, 의외로 테이블 갯수 자체가 늘어나는건 별 문제가 아니라고 한다.
-다만, 그보다 비정규화 했을 때, 상품 끼리 통일된 구조가 아닌게 더 문제라고 함. 통일된 구조가 아니면 나중에 확장할 때 merge, 변형 등이 힘들어지기 떄문. 
+다만, 그보다 비정규화 했을 때, 상품 끼리 통일된 구조가 아닌게 더 문제라고 함. 통일된 구조가 아니면 나중에 확장할 때 merge, 변형 등이 힘들어지기 떄문.
 erd 설계 한번하면 쭉 가는줄 알았는데, 의외로 서비스 초기 때에도 db 변경을 자주 할 수 있다고 한다. 유연한 설계를 하자.
 
 ---
@@ -296,7 +298,7 @@ erd 설계 한번하면 쭉 가는줄 알았는데, 의외로 서비스 초기 �
 
 
 ---
-b. 또한, 
+b. 또한,
 100개의 컬럼 중 99개가 null이 들어가는 테이블을 만든다는게 조금 이상할 것 같다.
 
 
@@ -306,11 +308,11 @@ b. 또한,
 
 #### 다-1. pros
 
-정규화가 잘 되있어서 변경에 유용하고 확장성이 좋은 설계이다. 
+정규화가 잘 되있어서 변경에 유용하고 확장성이 좋은 설계이다.
 
 
 #### 다-2. cons
-1. 개발 상품 페이지 쿼리할 떄 subquery & join 겁나 많이 해야 해서 느림. 
+1. 개발 상품 페이지 쿼리할 떄 subquery & join 겁나 많이 해야 해서 느림.
 2. 주문목록 query할 때도 join & subquery 많이 해야 해서 느림.
 3. 상품 등록/업데이트/삭제 시, product/product_item/category/option/option_variation/product_option_variation 이 6개 테이블에 트랜잭션/lock 걸릴텐데, 너무 느릴 것 같음.
 
@@ -349,7 +351,7 @@ A. database, 버전, 옵티마이저에 따라 다르긴 하겠지만, 요즘 �
 
 ## b. bulk insert
 
-1. 문제: 가데이터를 for-loop으로 넣던게 약 14분 30초 정도 걸림. 
+1. 문제: 가데이터를 for-loop으로 넣던게 약 14분 30초 정도 걸림.
 2. 해결책: spring batch(chunk size 1000) + jpa bulk insert로 변경해서 4분30초 로 10분 단축
 
 ```
@@ -410,9 +412,9 @@ redocly preview-docs back/ecommerce/src/main/resources/api/openapi.yaml
 
 ![](documentation/images/inactive-user.png)
 
-1. 이상행동으로 잠긴 유저 계정을 
-2. 매주 일요일 새벽 3시에 
-3. INACTIVE_USER로 옮기고, 
+1. 이상행동으로 잠긴 유저 계정을
+2. 매주 일요일 새벽 3시에
+3. INACTIVE_USER로 옮기고,
 4. 기존 유저 테이블에서 제거하는 배치 생성
 
 
@@ -448,7 +450,7 @@ SELECT
     tmp2.ProductName AS TopSalesProduct,
     tmp2.TopSalesOfProduct
 FROM (
-	SELECT 
+	SELECT
 		c.CATEGORY_ID AS CategoryId,
 		c.NAME AS CategoryName,
 		COUNT(DISTINCT p.PRODUCT_ID) AS NumberOfProductsPerCategory,
@@ -471,12 +473,12 @@ INNER JOIN
 		b.ProductName As ProductName,
 		a.TopSalesOfProduct AS TopSalesOfProduct
 	FROM
-		(SELECT 
+		(SELECT
 			Sub.CategoryId,
 			Sub.CategoryName,
 			MAX(Sub.TotalSalesPerProduct) as TopSalesOfProduct
 		FROM
-			(SELECT 
+			(SELECT
 				c.CATEGORY_ID as CategoryId,
 				c.name as CategoryName,
 				p2.PRODUCT_ID,
@@ -493,7 +495,7 @@ INNER JOIN
 		GROUP BY Sub.CategoryId
 		) a
 	INNER JOIN
-		(SELECT 
+		(SELECT
 			c.CATEGORY_ID as CategoryId,
 			c.name as CategoryName,
 			p2.PRODUCT_ID as ProductId,
@@ -548,7 +550,7 @@ e. 통계쿼리를 튜닝해보자.
 총 비용(mysql workbench의 cost 계산 툴 기준): 170,763
 
 - 문제
-    1. 풀 테이블 스캔을 5번이나 하고, 
+    1. 풀 테이블 스캔을 5번이나 하고,
     2. index를 전혀 안탄다.
 
 - 해결책
@@ -580,7 +582,7 @@ INNER JOIN `ORDER` o2 USE INDEX (idx_order_date) ON oi2.ORDER_ID = o2.ORDER_ID
 WHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
 ```
 
-#### 2-2. 결과 
+#### 2-2. 결과
 ![](documentation/images/sql-tuning-after-4.png)
 
 여전히 subquery해서 나온 결과물을 담은 tmp table을 두번 full scan하긴 하지만,\
@@ -595,12 +597,12 @@ WHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
 
 여기까진 좋았다.
 
-그런데, 문제는 이 이후부터인데, 
+그런데, 문제는 이 이후부터인데,
 
 첫 테이블만 5000 rows -> 242 rows로 줄었고, 이후에 join할 때마다 읽는 rows수가 1.2k rows -> 2.6k rows로 늘었다.\
-그런데 join을 여러번 하니까, 결과적으로 총 읽은 rows수의 양이 122k rows -> 266.6k rows로 늘었다. 
+그런데 join을 여러번 하니까, 결과적으로 총 읽은 rows수의 양이 122k rows -> 266.6k rows로 늘었다.
 
-나머지 subquery들도 첫번째 subquery와 같은 현상이 일어났다. 
+나머지 subquery들도 첫번째 subquery와 같은 현상이 일어났다.
 
 ![](documentation/images/sql-tuning-after-2.png)
 ![](documentation/images/sql-tuning-after-3.png)
@@ -616,7 +618,7 @@ WHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
 
 ##### A. date 인덱스 타기 전
 ![](documentation/images/sql-tuning-before-1.png)
-id6 부분이 subquery 'a' 부분이다. 
+id6 부분이 subquery 'a' 부분이다.
 
 - 실행순서
 	1. order table(1000 rows)를 full scan하면서, where절에 date를 태워서 필터한다. (약 200 rows정도 나옴)
@@ -627,7 +629,7 @@ id6 부분이 subquery 'a' 부분이다.
 
 ![](documentation/images/sql-tuning-before-3.png)
 
-이제 nested loop join시 1.21k rows가 나온 이유가 설명되었다. 
+이제 nested loop join시 1.21k rows가 나온 이유가 설명되었다.
 
 ```sql
 explain analyze select count(*)
@@ -653,7 +655,7 @@ order, order item, product option variation 테이블만 떼어내서 index 없�
 
 - 실행순서
 	1. Table scan on o  (cost=102.90 rows=1002) (actual time=0.060..4.873 rows=1002 loops=1)
-		- order table(1000 rows)를 full scan하여 
+		- order table(1000 rows)를 full scan하여
 	2. Filter: (o.order_date between '2023-06-01' and '2023-12-31')  (cost=102.90 rows=111) (actual time=0.065..5.557 rows=247 loops=1)
 		- where절 조건에 맞는 247 rows를 추출한다.
 	3. Index lookup on oi using FKs234mi6jususbx4b37k44cipy (order_id=o.order_id)  (cost=2.76 rows=11) (actual time=0.025..0.040 rows=5 loops=247)
@@ -678,10 +680,10 @@ nested loop join 할 때마다 2.6k rows를 읽는다는데,\
 
 ```sql
 select count(*)
-from `order_item` oi 
+from `order_item` oi
 INNER JOIN `ORDER` o USE INDEX(idx_order_date) ON oi.ORDER_ID = o.ORDER_ID
 INNER JOIN PRODUCT_OPTION_VARIATION pov ON oi.PRODUCT_OPTION_VARIATION_ID = pov.PRODUCT_OPTION_VARIATION_ID
-WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31' 
+WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
 ```
 약식 쿼리를 만들어 실행계획을 뜯어보자!
 
@@ -705,12 +707,12 @@ WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
 		- 1235 rows는 step2에서 nested loop join시 fk index를 평균 5rows 씩 247번 loop하여 조인한 것의 결과이다.
 		- **오해했던 점은, mysql workbench에 explain visualize에서 나오던 2.6k rows를 읽는다는건, 그저 optimizer의 추정치였을 뿐, 실제 읽은 rows는 1235 rows였다!**
 	4. Single-row covering index lookup on pov using PRIMARY (product_option_variation_id=oi.product_option_variation_id)  (cost=0.25 rows=1) (actual time=0.003..0.003 rows=1 loops=1235)
-		- order + order item table이 조인됬는데, 다음으로 조인할 product_option_variation table은 pk로 조인하므로, 1조인 당 1개 rows씩 총 1235 loop하여 inner nested loop join을 한다. 
+		- order + order item table이 조인됬는데, 다음으로 조인할 product_option_variation table은 pk로 조인하므로, 1조인 당 1개 rows씩 총 1235 loop하여 inner nested loop join을 한다.
 
 
 - 결론
 	1. **mysql workbench에 visual explain에서 나오는 rows read는 추정치일 뿐이라 그대로 믿으면 안된다.**
-	2. 실제 실행계획 수치는 mysql console에서 commandline인 'explain analyze'을 쳐서 실측치를 봐야한다. 
+	2. 실제 실행계획 수치는 mysql console에서 commandline인 'explain analyze'을 쳐서 실측치를 봐야한다.
 
 #### 2-4. 검증
 "e. 통계쿼리"를 다시 돌리되,\
@@ -728,7 +730,7 @@ productOptionVariation: 30000 rows
 ```
 ##### case1) where절에 index를 안태운 쿼리: 1027ms
 ![](documentation/images/sql-tuning-after-5.png)
- 
+
 
 ##### case2) where절에 인덱스를 태운 쿼리: 572ms
 ![](documentation/images/sql-tuning-after-6.png)
@@ -749,7 +751,7 @@ productOptionVariation: 30000 rows
     - 유저 인증시 이상 현상이 일어나는지 확인
 2. integration test
     - 도메인 별로 굵직한 서비스 레이어 위주로 테스트
-    - mocking을 하지 않고 최대한 넓은 범위의 모듈을 커버하여, 깨지는 부분이 있는지 대략 어느 부분인지 확인 목적 
+    - mocking을 하지 않고 최대한 넓은 범위의 모듈을 커버하여, 깨지는 부분이 있는지 대략 어느 부분인지 확인 목적
 3. property test
     - 절대 문제생기면 안되는 기능(ex. 돈 관련 코드 등..)을 PBT로 테스트. ([PBT code link](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java))
 4. unit test
@@ -759,13 +761,13 @@ productOptionVariation: 30000 rows
 
 ### 2. exception 전략
 1. Runtime Error가 날만한 부분에 throw CustomException 처리한다.
-2. [custom Error Code Number Protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java) 에 맞추어 error code를 enum으로 선언한다. 
+2. [custom Error Code Number Protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java) 에 맞추어 error code를 enum으로 선언한다.
 3. Runtime Exception을 domain별로 나누어 일괄관리한다.
     - 모든 business 관련 Exception들은 BusinessException을 상속받아 일괄관리하고,
     - 모든 member 관련 Exception들 또한 MemberException을 상속받아 일괄관리한다.
     - Exception에 들어가는 Error Code역시 도메인 별로 일괄관리한다.
 
-> 
+>
 
 ### 3. logging 전략
 1. 에러가 날만한 부분에 log.error()
@@ -817,7 +819,7 @@ src/
 ```java
 @Service
 public class ProductService {
-    
+
     private ProductService self;
 
 	@Transactional
@@ -835,8 +837,8 @@ public class ProductService {
 - 문제
 	1. getProductDetailDTOsById()를 작성할 때, 리턴타입을 `List<도메인>`으로 해야 다른 메서드에서도 사용 가능하니까 재사용성이 좋아진다.
 	2. 그러나 controller에서 요구하는 반환타입은 `List<도메인>`이 아닌, `List<ResponseDTO>` 이기 때문에, mapper로 타입 변환을 해주어야 한다.
-	3. 이 때, 같은 서비스 레이어에서 타입변환만 해주는 메서드를 만들면, 메서드 네이밍도 애매해지고, 
-	4. @Transactional 붙은 메서드 호출 시, `self.메서드()`로 호출해야 하는데, 그닥 좋은 패턴은 아닌 듯 하다. 
+	3. 이 때, 같은 서비스 레이어에서 타입변환만 해주는 메서드를 만들면, 메서드 네이밍도 애매해지고,
+	4. @Transactional 붙은 메서드 호출 시, `self.메서드()`로 호출해야 하는데, 그닥 좋은 패턴은 아닌 듯 하다.
 	5. 서비스 레이어가 비즈니스 로직 메서드 + 타입 변환 메서드가 섞여서 비대해진다.
 
 #### 1-나. 해결책
@@ -846,7 +848,7 @@ public class ProductAdapter {
     @Autowired
     private ProductMapper productMapper;
     @Autowired
-    private ProductService productService;   
+    private ProductService productService;
 
 	public List<ProductDetailResponseDTO> getProductDetailDTOsById(Long id) {
         List<Product> productList = productService.getProductDetailDTOsById(id);
@@ -857,7 +859,7 @@ public class ProductAdapter {
 
 @Service
 public class ProductService {
-    
+
     private ProductService self;
 
 	@Transactional
@@ -908,7 +910,7 @@ ex. `<Product />`를 모듈화 한 방법
 	- react query로 서버 API call 해서 받은 상태값을 각 페이지에 맞게 가공하여 전달
 2. recoil
 	- global state에 담아 관리해야할 것을(ex. user authentication status) recoil로 관리한다.
-3. props 
+3. props
 	- 최대한 depth 1 정도만 props를 내려준다. 그 이상 depth는 recoil 사용을 고려한다.
 	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우.
 
@@ -1023,8 +1025,8 @@ https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549a
 ## a. queryDSL library와 openapi-codegen이 컴파일시 깨지는 문제 해결
 
 ### 1. 문제
-1. 스프링 + openapi-codgen library도 잘 동작하고, 
-2. 스프링 + queryDSL로 잘 동작하는데, 
+1. 스프링 + openapi-codgen library도 잘 동작하고,
+2. 스프링 + queryDSL로 잘 동작하는데,
 3. 둘을 동시에 쓰면 빌드가 안되는 현상 발생
 
 ### 2. 문제 원인
