@@ -24,5 +24,6 @@
 - 주문
     - Order CRUD
         - userId로 유저가 주문한 모든 주문리스트 read
+        - productItem 들을 discount price를 고려하여 주문 등록
     - 통계 쿼리
         - 6개월 기간 동안 모든 카테고리에서 총 상품 판매량, 총 상품 판매액, 가장 많이 팔린 상품명과 액수 쿼리

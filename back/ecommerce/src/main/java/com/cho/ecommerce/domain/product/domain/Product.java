@@ -54,6 +54,17 @@ public class Product {
         return discountedPrice;
     }
     
+    public static Double getDiscountedPrice(Double price, List<Discount> discounts) {
+        Double discountedPrice = price;
+    
+        for (Discount discount : discounts) {
+            discountedPrice = discount.applyDiscount(discountedPrice);
+        }
+        discountedPrice = Math.max(discountedPrice, 0);
+    
+        return discountedPrice;
+    }
+    
     
     // Static inner Builder class
     public static class Builder {

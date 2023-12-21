@@ -15,12 +15,23 @@ public enum ErrorCode {
     
     // Business
     
-    //     Member
+    // Member
     EMAIL_DUPLICATION(400, "M001", "Email is Duplication"),
     LOGIN_INPUT_INVALID(400, "M002", "Login input is invalid"),
     USER_ALREADY_EXIST(400, "M003", "User already exists"),
     LOCKED_USER_FAILED_TO_AUTHENTICATE(403, "M004", "locked account user tried to authenticate and failed"),
-    INVALIDATING_SESSION_FOR_USER(500, "M005", "Error invalidating sessions for user")
+    INVALIDATING_SESSION_FOR_USER(500, "M005", "Error invalidating sessions for user"),
+    
+    // Order
+    INVALID_ORDER_REQUEST(400, "O001", "Invalid Order Request"),
+    EMPTY_ORDER_ITEMS(400, "O002", "Order was requested but orderItems were not included"),
+    ORDER_REQUESTED_BY_INVALID_USER(400, "O003", "order was requested by invalid user"),
+    ORDER_ITEMS_REQUESTED_BY_MORE_THAN_ONE_USER(400, "O004", "order with a list of order items was requested by more than 1 user"),
+    REQUESTED_QUANTITY_EXCEEDS_STOCK(400, "O005", "requested order amount exceeds current stock quantity"),
+    
+    
+    // Discount
+    INVALID_DISCOUNT(400, "D001", "value of requested discount are not valid in comparison to saved discount on database")
     
     // Coupon
 //    COUPON_ALREADY_USE(400, "CO001", "Coupon was already used"),

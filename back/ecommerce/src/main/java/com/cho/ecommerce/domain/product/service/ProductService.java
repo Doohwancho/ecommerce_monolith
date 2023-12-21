@@ -11,6 +11,8 @@ import com.cho.ecommerce.domain.product.entity.ProductOptionVariationEntity;
 import com.cho.ecommerce.domain.product.mapper.DiscountMapper;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
+import com.cho.ecommerce.domain.product.repository.DiscountRepository;
+import com.cho.ecommerce.domain.product.repository.ProductItemRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepositoryCustomImpl;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
@@ -26,27 +28,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductService {
     
-    private ProductService self;
-    
     @Autowired
     private ProductRepository productRepository;
-    
     @Autowired
     private CategoryRepository categoryRepository;
-    
+
     @Autowired
     private ProductRepositoryCustomImpl productRepositoryCustom;
     
     @Autowired
     private ProductMapper productMapper;
-    
     @Autowired
     private DiscountMapper discountMapper;
-    
-    @Autowired
-    public void setSelf(ProductService self) {
-        this.self = self;
-    }
     
     public Page<ProductEntity> getProductsWithPagination(int page, int size) { //TODO - change name from PaginatedProductResponse to PaginatedProductResponseDTO
         return productRepository.findAll(PageRequest.of(page, size));

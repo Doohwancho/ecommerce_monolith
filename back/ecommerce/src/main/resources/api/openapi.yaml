@@ -415,6 +415,7 @@ paths:
                   $ref: '#/components/schemas/OrderDTO'
     post:
       summary: Create a new order
+      operationId: createOrder
       tags:
         - Order
       requestBody:
@@ -422,14 +423,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrderDTO'
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderRequestDTO'
       responses:
         '201':
-          description: Order created
+          description: Order created successfully
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/OrderDTO'
+                type: string
+                example: Ordered successfully
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
   /orders/{orderId}:
     get:
       summary: Get a specific order by ID
@@ -994,6 +1002,55 @@ components:
         paymentId:
           type: string
         deliveryId:
+          type: string
+    OrderRequestDTO:
+      type: object
+      required:
+        - memberId
+        - productItemId
+        - order_quantity
+        - price
+        - optionVariationId
+      properties:
+        memberId:
+          type: integer
+          format: int64
+        productItemId:
+          type: integer
+          format: int64
+        order_quantity:
+          type: integer
+          minimum: 1
+#          maximum: 100 # Maximum order quantity, adjust as needed
+        price:
+          type: integer
+          format: double
+          minimum: 0.01
+        discountId:
+          type: integer
+          format: int64
+        discountType:
+          type: string
+          description: Type of the discount
+        discountValue:
+          type: number
+          format: double
+          description: Value of the discount
+        startDate:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+          description: Start date of the discount
+        endDate:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+          description: End date of the discount
+        optionId:
+          type: integer
+          format: int64
+        optionVariationId:
+          type: integer
+          format: int64
+        optionVariationName:
           type: string
     OrderItemDetailsResponseDTO:
       type: object

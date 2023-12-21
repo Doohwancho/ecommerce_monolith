@@ -28,13 +28,6 @@ public class OrderAdapter {
         return orderMapper.orderEntityToOrderDTO(orderEntity);
     }
     
-    public com.cho.ecommerce.api.domain.OrderDTO createOrder(
-        OrderDTO order) {
-        OrderEntity orderEntity = orderMapper.orderDTOToOrderEntity(order);
-        OrderEntity savedOrderEntity = orderService.createOrder(orderEntity);
-        return orderMapper.orderEntityToOrderDTO(savedOrderEntity);
-    }
-    
     public com.cho.ecommerce.api.domain.OrderDTO updateOrder(Long orderId, OrderDTO order) {
         OrderEntity orderEntity = orderService.updateOrder(orderId, order);
         return orderMapper.orderEntityToOrderDTO(orderEntity);

@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.member.domain;
 
+import com.cho.ecommerce.domain.member.entity.UserEntity;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,10 @@ public class User {
     private OffsetDateTime created;
     private OffsetDateTime updated;
     private List<String> authorities;
+    
+    public static Boolean isLockedUser(UserEntity user) {
+        return !user.isAccountNonLocked();
+    }
     
     public User(Builder builder) {
         this.memberId = builder.memberId;

@@ -3,6 +3,7 @@ package com.cho.ecommerce.domain.order.controller;
 import com.cho.ecommerce.api.OrderApi;
 import com.cho.ecommerce.api.domain.OrderDTO;
 import com.cho.ecommerce.domain.order.adapter.OrderAdapter;
+import com.cho.ecommerce.domain.order.entity.OrderEntity;
 import com.cho.ecommerce.domain.order.service.OrderService;
 import java.util.List;
 import javax.validation.Valid;
@@ -49,9 +50,15 @@ public class OrderController implements OrderApi {
     }
     
     @Override
-    public ResponseEntity<OrderDTO> ordersPost(@Valid OrderDTO order) {
-        OrderDTO createdOrder = orderAdapter.createOrder(order);
-        return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+    public ResponseEntity<String> createOrder(@Valid List<com.cho.ecommerce.api.domain.OrderRequestDTO> orderRequest) {
+        OrderEntity order = orderService.createOrder(orderRequest);
+    
+        if (order.getOrderId() != null) {
+            return ResponseEntity.status(201).body("Ordered successfully");
+        } else {
+            // Handle the failure case appropriately
+            return ResponseEntity.status(400).body("Order creation failed");
+        }
     }
     
     @Override

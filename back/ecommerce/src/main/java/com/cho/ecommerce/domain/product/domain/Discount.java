@@ -1,5 +1,7 @@
 package com.cho.ecommerce.domain.product.domain;
 
+import com.cho.ecommerce.domain.product.entity.DiscountEntity;
+import com.cho.ecommerce.global.error.exception.business.RiggedDiscountRequested;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +34,17 @@ public class Discount {
             default:
                 return originalPrice;
         }
+    }
+    
+    public Boolean validateRequestedDiscountWithSavedDiscountEntity(DiscountEntity discountEntity) {
+        if(!(discountId.equals(discountEntity.getDiscountId()) &&
+            discountType.equals(discountEntity.getDiscountType()) &&
+            discountValue.equals(discountEntity.getDiscountValue()) &&
+            startDate.isEqual(discountEntity.getStartDate()) &&
+            endDate.isEqual(discountEntity.getEndDate()))) {
+            throw new RiggedDiscountRequested("요청한 Discount의 값은 데이터베이스에 존재하지 않거나 조작되었습니다.");
+        }
+        return true;
     }
     
     // Static inner Builder class

@@ -70,6 +70,10 @@ public class UserService implements UserDetailsService {
         return userRepository.save(userEntity);
     }
     
+    public UserEntity findUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found, userId: "+ id));
+    }
+    
     public User findUserByUsername(String username) {
         UserEntity userEntity = userRepository.findUserDetailsByUsername(username).orElseThrow(
             () -> new ResourceNotFoundException("User not found, userId: "
@@ -167,5 +171,12 @@ public class UserService implements UserDetailsService {
             log.error("Error invalidating sessions for user: " + username, e);
             throw new InvalidatingSessionForUser(ErrorCode.INVALIDATING_SESSION_FOR_USER);
         }
+    }
+    
+    public void invalidateUserSessionAndLockUser(UserEntity user) {
+        user.setEnabled(false); //lock user account
+        invalidateUserSessions(user.getUsername()); // Invalidate session
+        
+        userRepository.save(user);
     }
 }
