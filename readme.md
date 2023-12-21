@@ -38,7 +38,8 @@
 1. git clone https://github.com/Doohwancho/ecommerce
 2. cd ecommerce
 3. docker compose up --build
-4. localhost:80 이나 127.0.0.1:80 로 접속
+4. 1000 data insert 완료할 때까지 기다리기
+5. http://localhost:80  or  http://127.0.0.1:80 로 접속
 ```
 
 
@@ -782,16 +783,15 @@ productOptionVariation: 30000 rows
 
 ### 5. rate limiting
 
-1. backend server에 http request시, 
-2. 개별 ip address마다 
+1. backend server에 http request시,
+2. 개별 ip address마다
 3. 1초에 5 request 리밋을 건다.
 4. 단, "burst"라고 초당 기본 5 request에 short spike of 10 request까지 queue에 담아 허용한다.
 5. 그 이상 request가 오면 503 Service Temporarily Unavailable error 를 보낸다.
 
 https://github.com/Doohwancho/ecommerce/blob/91f61cd43591f8d56b8925e9bb8ceac0cbe89d29/web-server/default.conf#L1-L5
 
-https://github.com/Doohwancho/ecommerce/blob/91f61cd43591f8d56b8925e9bb8ceac0cbe89d29/web-server/default.conf#L29-L33
-
+https://github.com/Doohwancho/ecommerce/blob/dc963b102c65178fe7bd52960a344991272cfeab/web-server/default.conf#L29-L34
 
 
 
@@ -886,6 +886,36 @@ public class ProductService {
 타입 변환해주는 메서드를 서비스 레이어에서 어답터 레이어로 분리함으로써, 서비스 레이어에서는 비즈니스 로직만 있도록 했다.
 
 
+
+### 2. DDD를 고려한 요구사항 -> 비즈니스 로직 작성
+요구사항: 클라이언트가 요청한 productItem 들을 discount price를 고려하여 주문을 등록한다.
+
+#### 2-가. validation
+1. validation check를 하되 
+2. 악성 request라면, invalidate session + lock user account 
+
+https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L68-L88
+
+
+#### 2-나. domain 종속 함수
+
+product의 가격 계산시, discount를 적용하는 함수가 Product, Discount 도메인 객체에 들어있다.
+
+https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/ecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/Product.java#L57-L66
+
+https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/ecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/Discount.java#L20-L37
+
+
+#### 2-다. domain 종속 함수는 unit test or PBT로 테스트
+
+Discount 도메인 객체에 applyDiscount()는 돈이 걸린 아주 중요한 함수이므로,\
+Property Based Testing을 한다.
+
+https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L25-L100
+
+
+#### 2-라. 전체 코드 
+https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L68-L174
 
 
 
@@ -1012,7 +1042,7 @@ const Home: React.FC = () => {
 
 export default Home;
 ```
-1. 메인페이지 최상단 이미지 + 텍스트는 그래도 랜더링
+1. 메인페이지 최상단 이미지 + 텍스트는 그대로 랜더링
 2. 화면 하단부 top 10 rated products fetch는 lazy하게 랜더링
 
 

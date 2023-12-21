@@ -1,6 +1,6 @@
 import { DiscountDTO } from '../../../../../models/src/model/discount-dto';
 
-interface GroupedProductItemOption { //TODO - 장바구니, 결제페이지에 넘기기 위한 optionVariation id 추가 필요
+interface GroupedProductItemOption { 
   optionId: number;
   optionVariationId: number;
   optionVariationName: string;
@@ -19,7 +19,7 @@ interface GroupedProductItems {
   categoryName: string;
   categoryCode: string;
   // options: ProductOptions;
-  [optionName: string]: GroupedProductItemOption | string | number | undefined //TODO - 장바구니, 결제페이지에 넘기기 위한 option id 추가 필요
+  [optionName: string]: GroupedProductItemOption | string | number | undefined
 }
 
 interface DiscountProps {
