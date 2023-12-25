@@ -78,6 +78,7 @@ public class OrderService {
             Order.checkAllOrderItemsFromSameUser(orderRequests);
     
             //1-3. check if requested user's account is not locked
+            //TODO - Q. user validation 처리 후 invalid시 invalidate user session + lock처리를 domain 객체 내부에서 하면, 도메인 객체 내부에 @Autowired Service; 받아야 하는데, 이 구조가 맞는걸까? 아니면 비즈니스 코드에 이렇게 풀어서 쓰고 주석 다는게 더 좋은 구조일까?
             if(User.isLockedUser(user) == true)
                 throw new OrderRequestByInvalidUser("주문이 잠긴 계정 유저로부터 주문이 요청되었습니다.");
     

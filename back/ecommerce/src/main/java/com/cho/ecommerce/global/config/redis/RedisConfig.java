@@ -54,6 +54,24 @@ public class RedisConfig {
             .build();
     }
     
+    //Note)
+    //lazy loading vs write through
+    //1. lazy loading
+    //db에 write하는 것과 별개로, read 요청이 왔을 때, redis에 cache를 저장하고 뿌리면서 1시간 마다 캐시를 지워준다.
+    //cons-1. slow initial request
+    //cons-2. possibility of serving stale data (thats why I delete cache every hour)
+    
+    //2. write through
+    //db에 write할 때 cache를 업데이트 하는 방식
+    //cache always contains the most recent data
+    //cons-1. slower write to db
+    //cons-2. more complex implementation compared to Lazy Loading
+    //Requires careful error handling to maintain consistency (e.g., if a write to the database succeeds but the cache update fails).
+    //how to implement?
+    //1. 매 write마다 cache가 새롭게 갱신되니까, @Schedule(1hr)로 1시간마다 캐시 지우는 코드 필요 없음
+    //2. write하는 코드에 @CachePut(value = "topTenRatedProductsCached") 사용
+    //3. 만약 delete하는 코드가 있다면 @CacheEvict(value = "topTenRatedProductsCached", allEntries = true) 로 캐시 지워줘서 repopulate 유도
+    
     // @Scheduled(cron = "0 0 0 * * ?") // OR using a cron expression, for example, every day at midnight
     @Scheduled(fixedRate = 3600000) // 3600000 milliseconds = 1 hour (Run every hour)
     public void clearTopTenRatedProductsCache() {

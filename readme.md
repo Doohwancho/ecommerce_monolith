@@ -298,10 +298,6 @@ erd 설계 한번하면 쭉 가는줄 알았는데, 의외로 서비스 초기 �
 2. 주문목록 query하려면, null check 먼저 하고,해당 아이템의 fk 가지고 아이템 찾는 식 일텐데, 100개 컬럼 중 99개 컬럼이 Null인데 하나씩 Null비교해서 값을 꺼내는 방식은 안좋은 방식 같고, Null처리 잘못할 수 있어서 에러날 가능성이 있는 코드구조가 될 수 있음.
 
 
----
-b. 또한,
-100개의 컬럼 중 99개가 null이 들어가는 테이블을 만든다는게 조금 이상할 것 같다.
-
 
 
 ### 다. 방법론3. 상품별 옵션을 정규화 해서 쪼개놓은 경우
@@ -313,16 +309,15 @@ b. 또한,
 
 
 #### 다-2. cons
-1. 개발 상품 페이지 쿼리할 떄 subquery & join 겁나 많이 해야 해서 느림.
-2. 주문목록 query할 때도 join & subquery 많이 해야 해서 느림.
-3. 상품 등록/업데이트/삭제 시, product/product_item/category/option/option_variation/product_option_variation 이 6개 테이블에 트랜잭션/lock 걸릴텐데, 너무 느릴 것 같음.
+- 정규화를 할 수록 쿼리할 떄 join & subquery 많이 해야 해서 느림.
+	- ex. 상품 등록/업데이트/삭제 시, product/product_item/category/option/option_variation/product_option_variation 이 6개 테이블에 트랜잭션/lock 걸릴텐데, 너무 느릴 것 같음.
 
 
 #### 다-3. solution
 방법론3을 택한다. 이유는 후술.
 
 
-##### 다-3-1. 확장성 우선
+##### 다-3-1. 서비스 초기에는 성능보다 확장성 우선
 
 비정규화는 일종의 최적화이고 되돌리기 힘든 과정이다.\
 서비스 초기 단계라면 구현된 기능 자체가 수정&삭제가 빈번한데 이럴 경우 정규화된 구조를 사용하여 기능의 수정 & 삭제같은 유지보수를 저렴한 비용으로 유연하게 할 수 있도록 하는 것이 맞다.
@@ -334,26 +329,49 @@ b. 또한,
 
 
 ---
-##### 다-3-2. 의외로 간단한 쿼리에 join 여러번하는건 보통 걱정 안한다고 한다. 캐싱이 있기 때문이다.
+##### 다-3-2. join 성능은 데이터 사이즈가 커질수록 안좋아진다.
+
+여러 테이블 join시, primary key 기준으로 join한다고 해도, 데이터 사이즈가 작으면 primary key를 index한 테이블을 몇번 안타는데,\
+데이터 사이즈가 빅데이터 수준으로 너~무 커지면, 여러 테이블들의 primary key index table 여러번 타기 때문에 join 성능이 떨어진다.
+
+또한 5개정도 테이블을 left outer join 하는 경우, 예를들어 약 10개의 rows씩 5개 테이블이니까 50개 rows가 쿼리 1번당 lock되는건데, 멀티쓰레드 환경에서 반정규화로 row 1개만 락걸고 스윽 긁어오는 것 대비 성능이 좋지 않다.
+
+따라서 서비스 초창기 때 데이터 수가 적을 땐 join 효율이 괜찮으니 정규화로 확장성을 잡다가,\
+유저수가 많아지고 데이터 쌓인게 엄청 많아져 join 효율이 떨어지는 시기가 오면, 그 때 
+1. 사용하던 RDB에서 정규화된 테이블을 비정규화 테이블로 마이그레이션을 하던,
+2. 사용하던 RDB에서 정규화된 테이블을 놔두고, 따로 비정규화된 테이블을 만들어서 write-through성 으로 따로 만들던(데이터 정합성이 떨어지는 것 고려해야 함)
+3. 별개의 nosql(ex. mongodb)에 기존 RDB 테이블들(aggregates)을 비정규화한 스키마를 하나 만들던,
+4. 샤딩이던 
+5. 파티셔닝이던, 
+6. MSA로 쪼개서 도메인별로 해당 도메인에 맞는 데이터를 해당 서비스 전용 디비에 넣어 붙이던
+
+...지 하는게 좋을 것 같다.
 
 
-간단한 쿼리의 조인 속도는 보통 걱정 안한다.\
-조회수 순, 추천제품 순으로 캐싱해버리니까 걱정하던거의 1000배는 빨라진다.\
-확장성이 우선이다.
+또한, 만약 메인페이지에 top 10 rated products fetch하는 쿼리 속도가 정규화를 했기 때문에 느린게 걱정된다면, 그런 쿼리 위주로 캐싱처리 하면 된다.
 
 
----
-##### 다-3-3. 의문점: 정규화 한 결과로 여러 테이블을 join 해야하면, lock & transaction 때문에 쿼리 성능이 떨어지지 않을까?
+##### 다-3-3. Q. 정규화 한 결과로 여러 테이블을 join 해야하면, lock & transaction 때문에 쿼리 성능이 떨어지지 않을까?
 
-A. database, 버전, 옵티마이저에 따라 다르긴 하겠지만, 요즘 데이터베이스는 테이블 단위로 락 거는 경우는 드물고, row 단위로 락 걸기 때문에 괜찮다고 한다. (TODO - 정말 그런지 확인해보기)
+A. database, 버전, 옵티마이저에 따라 다르긴 하겠지만, 요즘 데이터베이스는 테이블 단위로 락 거는 경우는 드물고, row 단위로 락 걸기 때문에 괜찮다고 한다. 
 
 
 
 
 ## b. bulk insert
 
-1. 문제: 가데이터를 for-loop으로 넣던게 약 14분 30초 정도 걸림.
-2. 해결책: spring batch(chunk size 1000) + jpa bulk insert로 변경해서 4분30초 로 10분 단축
+### b-1. 문제
+
+가데이터를 for-loop으로 넣던게 약 14분 30초 정도 걸림.
+
+### b-2. 문제의 원인
+for-loop으로 한개씩 1000번 insert하면, @transaction 을 1000번 거는데, lock 걸고 입력하고 풀고 하는걸 천번하니까 오래걸림
+
+### b-3. 해결책
+한 batch당 chunk size를 1000개로 해서 한 트랜젝션당 1000개씩 bulk insert 하기
+
+### b-4. 결과
+spring batch(chunk size 1000) + jpa bulk insert로 변경해서 4분30초 로 10분 단축
 
 ```
 ...for inserting
@@ -383,9 +401,15 @@ https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c
 
 
 ## c. API first design
-openapi-codgen + redoc 적용
 
-### 1. openapi codegen
+### 1. 필요성
+frontend, backend 협업 시, 기존엔 코드 각자 짜면서 슬랙으로 프론트가 백 한테 필요 데이터를 매번 요청하는 식으로 일했다면,\
+API first approach는 백에 들어가는 request/response가 무엇이 되어야 하는지 프론트/백이 미리 정해놓고 openapi3 이라는 표준화된 문서를 바탕으로 협업하는 방식.
+
+장점은 저 문서 스펙을 기반으로 auto-codegen이 백엔드는 controller를 자동으로 만들어주고, 프론트는 request & response model with type을 자동으로 만들어주기 때문에 import해서 그대로 쓰면 된다.
+
+
+### 2. openapi codegen
 
 ![](documentation/images/swagger.png)
 
@@ -395,7 +419,7 @@ openapi-codgen + redoc 적용
 
 
 
-### 2. redoc
+### 3. redoc
 ![](documentation/images/redoc.png)
 
 ```
@@ -950,13 +974,16 @@ ex. `<Product />`를 모듈화 한 방법
 
 ## b. state managment
 
-1. custom hooks
-	- react query로 서버 API call 해서 받은 상태값을 각 페이지에 맞게 가공하여 전달
+1. react query
+	- server state 관리
+	- custom hooks에 react query의 fetch 함수와 더불어, 각 페이지에 맞게 가공하여 전달하는 함수까지 포함
 2. recoil
+	- client state 관리 
 	- global state에 담아 관리해야할 것을(ex. user authentication status) recoil로 관리한다.
 3. props
-	- 최대한 depth 1 정도만 props를 내려준다. 그 이상 depth는 recoil 사용을 고려한다.
+	- 가능한 depth 1 정도만 props를 내려준다. 그 이상 depth는 recoil 사용을 고려한다. (props drilling problem)
 	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우.
+
 
 
 
