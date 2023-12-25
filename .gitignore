@@ -392,3 +392,10 @@ mysql-data/**
 !mysql-data/testFile
 
 ### end of custom files ###
+
+
+### exclude env files for local dev env ###
+front/ecommerce/.env
+back/ecommerce/src/main/java/com/cho/ecommerce/Application.java
+back/ecommerce/src/main/resources/application-local.yml
+###
