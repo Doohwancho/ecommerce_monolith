@@ -50,6 +50,10 @@ public enum DatabaseConstants {
     //Order.java
     public static final int ORDER_STATUS_SIZE = 50;
     
+    //Cart.java
+    public static final int CART_ITEM_QUANTITY_SIZE = 11;
+    
+    
     
     private DatabaseConstants() {
         // Private constructor to prevent instantiation

@@ -29,6 +29,8 @@ public enum ErrorCode {
     ORDER_ITEMS_REQUESTED_BY_MORE_THAN_ONE_USER(400, "O004", "order with a list of order items was requested by more than 1 user"),
     REQUESTED_QUANTITY_EXCEEDS_STOCK(400, "O005", "requested order amount exceeds current stock quantity"),
     
+    // Cart
+    INVALID_CART_REQUEST(400, "CA001", "invalid cart request"),
     
     // Discount
     INVALID_DISCOUNT(400, "D001", "value of requested discount are not valid in comparison to saved discount on database")

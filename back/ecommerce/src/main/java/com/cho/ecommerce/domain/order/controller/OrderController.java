@@ -3,7 +3,9 @@ package com.cho.ecommerce.domain.order.controller;
 import com.cho.ecommerce.api.OrderApi;
 import com.cho.ecommerce.api.domain.OrderDTO;
 import com.cho.ecommerce.domain.order.adapter.OrderAdapter;
+import com.cho.ecommerce.domain.order.entity.CartEntity;
 import com.cho.ecommerce.domain.order.entity.OrderEntity;
+import com.cho.ecommerce.domain.order.service.CartService;
 import com.cho.ecommerce.domain.order.service.OrderService;
 import java.util.List;
 import javax.validation.Valid;
@@ -22,6 +24,7 @@ public class OrderController implements OrderApi {
     
     private final OrderService orderService;
     private final OrderAdapter orderAdapter;
+    private final CartService cartService;
     
     
     @Override
@@ -82,5 +85,17 @@ public class OrderController implements OrderApi {
         }
         
         return ResponseEntity.ok(orderSalesStatisticsResponseDTOS);
+    }
+    
+    @Override
+    public ResponseEntity<String> addItemsToCart(
+        @Valid List<com.cho.ecommerce.api.domain.CartRequestDTO> orderRequest) {
+        List<CartEntity> cartItems = cartService.createCartItems(orderRequest);
+        
+        if (cartItems != null && cartItems.size() > 0) { //TODO - 이렇게 처리하는게 맞는걸까?
+            return ResponseEntity.status(201).body("CartItems Inserted Successfully");
+        } else {
+            return ResponseEntity.status(400).body("CartItems Creation Failed");
+        }
     }
 }
