@@ -3,27 +3,33 @@ version: '3.7'
 services:
 
   redis:
+    container_name: 'redis'
     image: redis:latest
     ports:
       - "6379:6379"
     networks:
       - bridge_network
+    restart: on-failure
 
   mysql:
-    image: mysql:latest
+    container_name: 'mysql'
+    image: mysql/mysql-server:8.0.23 # for arm64 m1
+    # image: mysql
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ecommerce-database
-      # MYSQL_USER: root
-      # MYSQL_PASSWORD: root
+      # MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_USER: user123
+      MYSQL_PASSWORD: user123
     volumes:
       - ./mysql-data:/var/lib/mysql
     networks:
       - bridge_network
+    # restart: on-failure
 
   ecommerce-app1:
+    container_name: 'ecommerce-app1'
     build:
       context: ./back/ecommerce
       dockerfile: Dockerfile
@@ -31,13 +37,13 @@ services:
       # - "8080:8080" #"HOST_PORT:CONTAINER_PORT"
     environment: 
       - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - bridge_network
     depends_on:
       - redis
       - mysql
-    restart:
-      on-failure
+    restart: on-failure
 
   # ecommerce-app2:
   #   build:
@@ -56,6 +62,7 @@ services:
   #     on-failure
 
   nginx:
+    container_name: 'nginx'
     restart: always
     build:
       context: ./web-server
@@ -66,14 +73,18 @@ services:
       - bridge_network
     depends_on:
       - frontend-a
+      - ecommerce-app1
+    restart: on-failure
 
   frontend-a:
+    container_name: 'frontend-a'
     restart: always
     build:
       context: ./front/ecommerce
       dockerfile: Dockerfile
     networks:
       - bridge_network
+    restart: on-failure
 
 networks:
   bridge_network: #얘로 frontend, backend, db 같은 네트워크로 묶는 것

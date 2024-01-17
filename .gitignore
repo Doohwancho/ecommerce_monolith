@@ -5,6 +5,8 @@
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
+back/ecommerce/.idea/
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
@@ -392,3 +394,28 @@ mysql-data/**
 !mysql-data/testFile
 
 ### end of custom files ###
+
+### sonar, sonarqube ###
+### Sonar ###
+#Sonar generated dir
+/.sonar/
+
+### SonarQube ###
+# SonarQube ignore files.
+#
+# https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner
+# Sonar Scanner working directories
+.sonar/
+.sonarqube/
+.scannerwork/
+
+# http://www.sonarlint.org/commandline/
+# SonarLint working directories, configuration files (including credentials)
+.sonarlint/
+back/ecommerce/.idea/sonarlint/**
+### end of sonar, sonarqube ###
+
+
+### sprinb binary files ###
+back/ecommerce/bin/**
+### end of sprinb binary files ###

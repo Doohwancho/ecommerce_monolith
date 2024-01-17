@@ -5,7 +5,9 @@ server:
     session:
       timeout: 30m  # 30 minutes
 spring:
-  profiles: test
+  config:
+    activate:
+      on-profile: test
   # Database Setting Info (Database를 H2로 사용하기 위해 H2연결 정보 입력)
   datasource:
     platform: h2 #이게 h2이냐, mysql이냐에 따라 DatabaseCleanUp이 데이터베이스 종류에 맞게 다르게 동작한다.

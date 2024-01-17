@@ -29,6 +29,10 @@ WORKDIR /app
 # Copy the jar file built in the first stage
 COPY --from=build /app/build/libs/*.jar app.jar
 
+# Set the Spring profile to 'docker' to launch application-docker.yml
+ENV SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+
 # Command to run the application
-CMD ["java", "-jar", "app.jar"]
+# CMD ["java", "-jar", "app.jar" ]
+CMD ["java", "-jar", "app.jar", "-Dspring.profiles.active=docker"]
 
