@@ -35,9 +35,32 @@ spring:
     store-type: redis
     timeout: 60m
 
-logging.level:
-  org.hibernate.SQL: debug
-  org.hibernate.type: trace
-  org.springframework.security: DEBUG
+logging:
+  level:
+#    root: DEBUG
+    org:
+      hibernate:
+        SQL: debug
+        type: trace
+      springframework:
+        security: DEBUG
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
 
