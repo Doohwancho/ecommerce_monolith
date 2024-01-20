@@ -11,11 +11,11 @@ spring:
   datasource:
     platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://my-rds-1.cjnqczcskjzp.ap-northeast-2.rds.amazonaws.com:3306/aws_ecommerce_database?serverTimezone=Asia/Seoul #for local development
+    url: jdbc:mysql://my-rds-1.cjnqczcskjzp.ap-northeast-2.rds.amazonaws.com:3306/ecommerce?serverTimezone=Asia/Seoul #for local development
     #    url: jdbc:mysql://mysql:3306/ecommerce-database?serverTimezone=Asia/Seoul #for docker
-    username: awsrdsroot
+    username: admin
     #    password: root #mysql로 접속시 root유저의 비밀번호 또한 root로 설정함.
-    password: awsrdspw #local에서 접속시엔 root user's password is null
+    password: adminPassword #local에서 접속시엔 root user's password is null
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
@@ -37,9 +37,31 @@ spring:
     store-type: redis
     timeout: 30m
 
-logging.level:
-  org.hibernate.SQL: debug
-  org.hibernate.type: trace
-  org.springframework.security: DEBUG
+logging:
+  level:
+    #    root: DEBUG
+    org:
+      hibernate:
+        SQL: debug
+        type: trace
+      springframework:
+        security: DEBUG
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
 
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
