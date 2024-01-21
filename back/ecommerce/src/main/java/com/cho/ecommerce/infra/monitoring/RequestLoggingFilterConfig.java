@@ -1,4 +1,4 @@
-package com.cho.ecommerce.global.config.monitoring;
+package com.cho.ecommerce.infra.monitoring;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;

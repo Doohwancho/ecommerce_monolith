@@ -1,4 +1,4 @@
-package com.cho.ecommerce.global.config.monitoring;
+package com.cho.ecommerce.infra.monitoring;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.context.annotation.Bean;
