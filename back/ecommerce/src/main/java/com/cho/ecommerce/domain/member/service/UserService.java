@@ -100,7 +100,7 @@ public class UserService implements UserDetailsService {
         
         if (!(userEntity.isEnabled() && userEntity.isAccountNonExpired()
             && userEntity.isAccountNonLocked() && userEntity.isCredentialsNonExpired())) {
-            log.error("locked account user authentication failed! username: " + username);
+            log.warn("locked account user authentication failed! username: " + username);
             throw new LockedAccountUserFailedToAuthenticate(
                 ErrorCode.LOCKED_USER_FAILED_TO_AUTHENTICATE);
         }
@@ -149,6 +149,8 @@ public class UserService implements UserDetailsService {
         if (user.getFailedAttempt() >= SecurityConstants.MAX_LOGIN_ATTEMPTS) {
             user.setEnabled(false); //lock user account
             invalidateUserSessions(user.getUsername()); // Invalidate session
+            log.warn(user.getUsername()
+                + "has failed to login more than 5 times, therefore account has become locked.");
         }
         userRepository.save(user);
     }
@@ -156,7 +158,7 @@ public class UserService implements UserDetailsService {
     public void resetFailedAttempts(String username) {
         UserEntity user = userRepository.findByUsername(username);
         if (user == null) {
-            log.error("resetFailedAttempts() failed! username: " + username);
+            log.warn("user not found! therefore, resetFailedAttempts() failed!" + username);
             throw new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
         }
         user.setFailedAttempt(0);

@@ -7,7 +7,6 @@ import com.cho.ecommerce.global.error.ErrorCode;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.io.IOException;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
@@ -35,23 +34,24 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
         String username = request.getParameter("username");
         UserEntity user = userRepository.findByUsername(username);
         
-        // 개발 편의성을 위해 failed login request의 JSESSIONID를 꺼내 log 찍어본다.
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("JSESSIONID".equals(cookie.getName())) {
-                    logger.info("JSESSIONID: " + cookie.getValue());
-                    break;
-                }
-            }
-        }
-        
         //없는 유저였다면, Exception을 던진다.
         if (user == null) {
-            log.error("onAuthenticationFailure() failed! username: " + username);
+//            log.info("onAuthenticationFailure() failed! username: " + username);
             throw new ResourceNotFoundException(
                 ErrorCode.RESOURCE_NOT_FOUND);
         }
+        
+        // 개발 편의성을 위해 failed login request의 JSESSIONID를 꺼내 log 찍어본다.
+//        Cookie[] cookies = request.getCookies();
+//
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                if ("JSESSIONID".equals(cookie.getName())) {
+//                    logger.info("JSESSIONID: " + cookie.getValue());
+//                    break;
+//                }
+//            }
+//        }
         
         //있는 유저였는데 로그인 실패했다면, 비밀번호 실패했다는 말이니, 실패시도 +1을 한다. (5회 이상 실패하면 계정 잠김)
         userService.incrementFailedAttempts(user);
