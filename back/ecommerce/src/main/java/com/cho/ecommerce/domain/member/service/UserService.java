@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 public class UserService implements UserDetailsService {
     
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
-    
     private final AuthorityRepository authorityRepository;
     private final UserAuthorityRepository userAuthorityRepository;
     private final UserRepository userRepository;
@@ -59,19 +58,20 @@ public class UserService implements UserDetailsService {
         //1. get user's authority
         AuthorityEntity userRole = authorityRepository.findByAuthority(AuthorityEntity.ROLE_USER)
             .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
-
+        
         //2. save into user-authority table
         UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
         userAuthorityEntity.setUserEntity(userEntity);
         userAuthorityEntity.setAuthorityEntity(userRole);
-    
+        
         //3. save user
         userEntity.setUserAuthorities(userAuthorityEntity);
         return userRepository.save(userEntity);
     }
     
     public UserEntity findUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found, userId: "+ id));
+        return userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found, userId: " + id));
     }
     
     public User findUserByUsername(String username) {
@@ -121,7 +121,8 @@ public class UserService implements UserDetailsService {
             userAuthorityEntity.setUserEntity(user);
             userAuthorityEntity.setAuthorityEntity(userRole);
             
-            userAuthorityRepository.save(userAuthorityEntity); //TODO - 이 부분 빼도 cascade 되서 저장되지 않을까? 그러면 @Transactional 빼도 되지 않을까?
+            userAuthorityRepository.save(
+                userAuthorityEntity); //TODO - 이 부분 빼도 cascade 되서 저장되지 않을까? 그러면 @Transactional 빼도 되지 않을까?
             
             user.setUserAuthorities(userAuthorityEntity);
             user.setUpdated(LocalDateTime.now());
@@ -151,7 +152,7 @@ public class UserService implements UserDetailsService {
         }
         userRepository.save(user);
     }
-
+    
     public void resetFailedAttempts(String username) {
         UserEntity user = userRepository.findByUsername(username);
         if (user == null) {
@@ -161,7 +162,7 @@ public class UserService implements UserDetailsService {
         user.setFailedAttempt(0);
         userRepository.save(user);
     }
-
+    
     private void invalidateUserSessions(String username) {
         try {
             for (SessionInformation session : sessionRegistry.getAllSessions(username, false)) {

@@ -1,7 +1,6 @@
 package com.cho.ecommerce;
 
 import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
-import com.cho.ecommerce.global.util.DatabaseCleanup;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -15,7 +14,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @Slf4j
 @EnableBatchProcessing
@@ -54,19 +52,20 @@ public class Application {
             }
         };
     }
-    
+
 //    @Bean
 //    public CommandLineRunner initData() {
 //        return args -> {
 //            long startTime = System.currentTimeMillis();
 //
-//            Integer numberOfFakeUsers = 3000;
+//            Integer numberOfFakeUsers = 10;
 //            Integer numberOfFakeCategories = 10;
 //            Integer numberOfFakeOptions = 3;
 //            Integer numberOfFakeOptionsVariations = 3;
 //            Integer numberOfFakeProducts = 3000;
 //            Integer numberOfFakeProductItems = 3;
-//            Integer numberOfFakeProductionOptionVariations = numberOfFakeProducts * numberOfFakeProductItems;
+//            Integer numberOfFakeProductionOptionVariations =
+//                numberOfFakeProducts * numberOfFakeProductItems;
 //            Integer numberOfFakeOrders = 3000;
 //            Integer maxProductItemsPerOrder = 5;
 //
@@ -77,11 +76,13 @@ public class Application {
 //            dataGenerator.generateFakeUsers(numberOfFakeUsers);
 //
 //            //step2) create fake products
-//            dataGenerator.generateFakeCategoryAndOptions(numberOfFakeCategories, numberOfFakeOptions, numberOfFakeOptionsVariations);
-//            dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories, numberOfFakeProductItems );
+//            dataGenerator.generateFakeCategoryAndOptions(numberOfFakeCategories,
+//                numberOfFakeOptions, numberOfFakeOptionsVariations);
+//            dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories, numberOfFakeProductItems);
 //
 //            //step3) create fake orders
-//            dataGenerator.generateFakeOrdersAndOrderItems(numberOfFakeOrders, numberOfFakeUsers, maxProductItemsPerOrder, numberOfFakeProductionOptionVariations);
+//            dataGenerator.generateFakeOrdersAndOrderItems(numberOfFakeOrders, numberOfFakeUsers,
+//                maxProductItemsPerOrder, numberOfFakeProductionOptionVariations);
 //
 //            long endTime = System.currentTimeMillis();
 //            long duration = endTime - startTime;

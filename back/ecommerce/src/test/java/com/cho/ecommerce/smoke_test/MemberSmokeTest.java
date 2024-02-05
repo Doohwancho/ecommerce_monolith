@@ -26,8 +26,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -82,7 +80,6 @@ class MemberSmokeTest<S extends Session> {
     @LocalServerPort
     private int port;
     
-    private final Logger log = LoggerFactory.getLogger(MemberSmokeTest.class);
     
     @BeforeEach
     @AfterEach
@@ -303,7 +300,6 @@ class MemberSmokeTest<S extends Session> {
         assertEquals(HttpStatus.FOUND, firstLoginResponse.getStatusCode());
         String url = firstLoginResponse.getHeaders().getLocation().toString();
         assertEquals("http://localhost:" + port + "/user", url);
-    
         
         //when
         //5 times of failed login attempt with wrong password
@@ -323,7 +319,7 @@ class MemberSmokeTest<S extends Session> {
         //2. Check if user sessions are invalidated
         List<SessionInformation> sessions = sessionRegistry.getAllSessions(user, false);
         assertTrue(sessions.isEmpty(), "User sessions should be empty after account lock");
-    
+        
         //3. check user authentication fails because the account is locked
         ResponseEntity<String> loginResponseThatShouldFail = restTemplate.postForEntity(
             "http://localhost:" + port + "/login",

@@ -11,11 +11,7 @@ import com.cho.ecommerce.domain.order.repository.OrderRepositoryCustomImpl;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,7 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ActiveProfiles("local")
 @Tag("unit") //to run, type "mvn test -Dgroups=integration"
 public class OrderUnitTest {
-    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
@@ -37,12 +33,13 @@ public class OrderUnitTest {
         // Given: a username and corresponding data in the database
         
         // When: calling getOrderItemDetailsByUsername
-        List<OrderItemDetails> results = orderRepositoryCustom.getOrderItemDetailsByUsername("testUser").get();
+        List<OrderItemDetails> results = orderRepositoryCustom.getOrderItemDetailsByUsername(
+            "testUser").get();
         
         // Then: verify the results
         assertNotNull(results);
         assertFalse(results.isEmpty());
-    
+        
         for (OrderItemDetails details : results) {
             assertNotNull(details.getOrderId());
             assertNotNull(details.getOrderDate());

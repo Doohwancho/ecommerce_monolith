@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -26,7 +24,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 public class UserToInactiveMemberStepConfig {
     
-    private final Logger log = LoggerFactory.getLogger(UserToInactiveMemberStepConfig.class);
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -39,6 +36,7 @@ public class UserToInactiveMemberStepConfig {
     @Getter
     @Builder
     public static class UserInactiveMemberDTO {
+        
         private UserEntity userEntity;
         private InactiveMemberEntity inactiveMemberEntity;
     }
@@ -48,10 +46,10 @@ public class UserToInactiveMemberStepConfig {
     public ItemReader<UserEntity> queryAllUsersReader() {
         return new ItemReader<UserEntity>() {
             private Iterator<UserEntity> inactiveUserIterator;
-    
+            
             @Override
             public UserEntity read() {
-                if(inactiveUserIterator == null) {
+                if (inactiveUserIterator == null) {
                     inactiveUserIterator = userRepository.findAll()
                         .stream()
                         .filter(user -> !user.isEnabled())
@@ -72,7 +70,7 @@ public class UserToInactiveMemberStepConfig {
     @Bean
     public ItemProcessor<UserEntity, UserInactiveMemberDTO> inactiveUserProcessor() {
         return new ItemProcessor<UserEntity, UserInactiveMemberDTO>() {
-    
+            
             @Override
             public UserInactiveMemberDTO process(UserEntity user) throws Exception {
                 //member + authorities + address를 inactiveMember에 옮겨닮기
@@ -92,12 +90,12 @@ public class UserToInactiveMemberStepConfig {
                     .country(user.getAddress().getCountry())
                     .zipCode(user.getAddress().getZipCode())
                     .build();
-    
+                
                 UserInactiveMemberDTO memberDTO = UserInactiveMemberDTO.builder()
                     .userEntity(user)
                     .inactiveMemberEntity(inactiveMember)
                     .build();
-    
+                
                 return memberDTO;
             }
         };
@@ -126,7 +124,7 @@ public class UserToInactiveMemberStepConfig {
         ItemReader<UserEntity> queryAllUsersReader,
         ItemProcessor<UserEntity, UserInactiveMemberDTO> inactiveUserProcessor,
         ItemWriter<UserInactiveMemberDTO> inactiveMemberWriter) {
-    
+        
         // note! - spring batch는 외부 transaction을 허용하지 않는다. Step에서 트랜젝션 만들어서 넣어줘야 한다.
 //        DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
 //        attribute.setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);

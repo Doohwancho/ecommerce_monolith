@@ -60,16 +60,14 @@
     </root>
   </springProfile>
 
+  <!-- production에서는 warn, error 로그만 파일에 저장한다. -->
   <springProfile name="prod">
-    <include resource="log/console-appender.xml"/> <!-- info | debug | trace 레벨의 로그를 터미널에 출력 -->
-    <include resource="log/file-info-appender.xml"/>
+    <!--    <include resource="log/file-info-appender.xml"/>-->
     <include resource="log/file-warn-appender.xml"/>
     <include resource="log/file-error-appender.xml"/>
 
-    <root level="INFO"> <!-- production 환경에서는 콘솔에서 info | debug | trace 레벨 이상 로그 출력 -->
-      <appender-ref ref="CONSOLE"/>
-
-      <appender-ref ref="FILE-INFO"/>
+    <root level="WARN">
+      <!--      <appender-ref ref="FILE-INFO"/>-->
       <appender-ref ref="FILE-WARN"/>
       <appender-ref ref="FILE-ERROR"/> <!-- file-error-appender.xml에 FILE-ERROR이라고 이름 설정해둠 -->
     </root>

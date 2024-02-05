@@ -20,14 +20,12 @@ public class StartupApplicationListener implements ApplicationListener<ContextRe
     public void onApplicationEvent(ContextRefreshedEvent event) {
         SecurityContextHolder.clearContext(); // Clear the security context
         clearRedisCache(); // Clear Redis cache
-        System.out.println("Application startup tasks completed");
     }
     
     private void clearRedisCache() {
         Set<String> keys = redisTemplate.keys("*");
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);
-            System.out.println("Redis cache cleared");
         }
     }
 }

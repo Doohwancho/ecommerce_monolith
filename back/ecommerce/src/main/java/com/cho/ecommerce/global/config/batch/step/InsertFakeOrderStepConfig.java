@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import net.datafaker.Faker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -37,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class InsertFakeOrderStepConfig {
-    private final Logger log = LoggerFactory.getLogger(InsertFakeOrderStepConfig.class);
+    
     private final Faker faker = new Faker();
     
     @Autowired
@@ -67,9 +65,10 @@ public class InsertFakeOrderStepConfig {
             boolean batchDataRead = false;
             
             @Override
-            public List<UserEntity> read() throws Exception { //주의! @Override read()안에 코드 써야 chunk의 @Transaction이 올바르게 적용된다. 밖에 쓰면 다른 chunk의 transaction, 서순이 꼬일 수 있다.
+            public List<UserEntity> read()
+                throws Exception { //주의! @Override read()안에 코드 써야 chunk의 @Transaction이 올바르게 적용된다. 밖에 쓰면 다른 chunk의 transaction, 서순이 꼬일 수 있다.
                 List<UserEntity> userList = userRepository.findAll();
-    
+                
                 if (!batchDataRead) { //딱 한번만 보내고 이후부터는 null을 보내 reader()를 끝낸다.
                     batchDataRead = true;
                     return userList;
@@ -94,9 +93,9 @@ public class InsertFakeOrderStepConfig {
                 int productOptionVariationSize = productOptionVariationList.size();
                 
                 List<OrderEntity> orderList = new ArrayList<>();
-    
+                
                 //1유저당 1개의 order을 생성
-                for(UserEntity user : userList) {
+                for (UserEntity user : userList) {
                     // Create a fake order
                     OrderEntity order = new OrderEntity();
                     orderList.add(order);
@@ -118,9 +117,11 @@ public class InsertFakeOrderStepConfig {
                         OrderItemEntity orderItem = new OrderItemEntity();
                         order.getOrderItems().add(orderItem);
                         orderItem.setOrder(order);
-        
-                        ProductOptionVariationEntity productOptionVariation = productOptionVariationList.get(productOptionVariationIndex);
-                        productOptionVariationIndex = (productOptionVariationIndex + 1) % productOptionVariationSize; //index 초과 안나도록 한다.
+                        
+                        ProductOptionVariationEntity productOptionVariation = productOptionVariationList.get(
+                            productOptionVariationIndex);
+                        productOptionVariationIndex = (productOptionVariationIndex + 1)
+                            % productOptionVariationSize; //index 초과 안나도록 한다.
                         orderItem.setProductOptionVariation(productOptionVariation);
                     }
                 }
@@ -138,7 +139,7 @@ public class InsertFakeOrderStepConfig {
                 List<OrderEntity> flatList = orderList.stream()
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
-
+                
                 orderRepository.saveAll(flatList);
             }
         };

@@ -39,16 +39,12 @@ import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import net.datafaker.Faker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
 public class FakeDataGenerator {
-    
-    private final Logger log = LoggerFactory.getLogger(FakeDataGenerator.class);
     
     private final Faker faker = new Faker();
     private final AuthorityRepository authorityRepository;
@@ -87,10 +83,11 @@ public class FakeDataGenerator {
     @Transactional
     public void createFakeAdmin() {
         if (authorityRepository.findByAuthority("ROLE_ADMIN").isPresent()) {
-    
+            
             UserEntity existingAdmin = userRepository.findByUsername("admin");
-    
-            if (existingAdmin == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
+            
+            if (existingAdmin
+                == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
                 //step1) save user "admin"
                 UserEntity admin = new UserEntity();
                 admin.setUsername("admin");
@@ -102,18 +99,18 @@ public class FakeDataGenerator {
                 admin.setRole("ROLE_ADMIN");
                 admin.setEnabled(true);
                 admin.setFailedAttempt(0);
-    
+                
                 UserEntity savedUserEntity = userRepository.save(admin);
-    
+                
                 //step2) save AuthorityEntity "ROLE_ADMIN"
                 AuthorityEntity userRole = authorityRepository.findByAuthority(
                         AuthorityEntity.ROLE_ADMIN)
                     .orElseThrow(() -> new RuntimeException("ROLE_ADMIN not found"));
-    
+                
                 UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
                 userAuthorityEntity.setUserEntity(savedUserEntity);
                 userAuthorityEntity.setAuthorityEntity(userRole);
-    
+                
                 userAuthorityRepository.save(userAuthorityEntity);
             }
         }
@@ -122,10 +119,11 @@ public class FakeDataGenerator {
     @Transactional
     public void createFakeUser() {
         if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
-    
+            
             UserEntity existingAdmin = userRepository.findByUsername("testUser");
-    
-            if (existingAdmin == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
+            
+            if (existingAdmin
+                == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
                 //step1) save user "testUser"
                 UserEntity user = new UserEntity();
                 user.setUsername("testUser");
@@ -137,18 +135,18 @@ public class FakeDataGenerator {
                 user.setRole("ROLE_USER");
                 user.setEnabled(true);
                 user.setFailedAttempt(0);
-    
+                
                 UserEntity savedUserEntity = userRepository.save(user);
-    
+                
                 //step2) save AuthorityEntity "ROLE_USER"
                 AuthorityEntity userRole = authorityRepository.findByAuthority(
                         AuthorityEntity.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
-    
+                
                 UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
                 userAuthorityEntity.setUserEntity(savedUserEntity);
                 userAuthorityEntity.setAuthorityEntity(userRole);
-    
+                
                 userAuthorityRepository.save(userAuthorityEntity);
             }
         }
@@ -158,9 +156,11 @@ public class FakeDataGenerator {
         
         if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
             UserEntity user = new UserEntity();
-            String userName = sizeTrimmer(UUID.randomUUID().toString(), DatabaseConstants.MEMBER_USERNAME_SIZE); //use UUID to avoid duplicate of userId
+            String userName = sizeTrimmer(UUID.randomUUID().toString(),
+                DatabaseConstants.MEMBER_USERNAME_SIZE); //use UUID to avoid duplicate of userId
             String name = sizeTrimmer(faker.name().fullName(), DatabaseConstants.MEMBER_NAME_SIZE);
-            String email = sizeTrimmer(faker.internet().emailAddress(), DatabaseConstants.EMAIL_SIZE);
+            String email = sizeTrimmer(faker.internet().emailAddress(),
+                DatabaseConstants.EMAIL_SIZE);
             
             user.setUsername(userName);
             user.setName(name);
@@ -175,7 +175,8 @@ public class FakeDataGenerator {
             AddressEntity address = new AddressEntity();
             address.setUser(user);
             
-            String streetAddress = sizeTrimmer(faker.address().streetAddress(), DatabaseConstants.STREET_SIZE);
+            String streetAddress = sizeTrimmer(faker.address().streetAddress(),
+                DatabaseConstants.STREET_SIZE);
             String city = sizeTrimmer(faker.address().city(), DatabaseConstants.CITY_SIZE);
             String state = sizeTrimmer(faker.address().state(), DatabaseConstants.STATE_SIZE);
             String country = sizeTrimmer(faker.address().country(), DatabaseConstants.COUNTRY_SIZE);
@@ -226,8 +227,10 @@ public class FakeDataGenerator {
         // Generate categories
         for (int i = 0; i < numberOfFakeCategories; i++) {
             CategoryEntity category = new CategoryEntity();
-            String categoryCode = sizeTrimmer(faker.code().asin(), DatabaseConstants.CATEGORY_CODE_SIZE);
-            String categoryName = sizeTrimmer(faker.commerce().department(), DatabaseConstants.CATEGORY_NAME_SIZE);
+            String categoryCode = sizeTrimmer(faker.code().asin(),
+                DatabaseConstants.CATEGORY_CODE_SIZE);
+            String categoryName = sizeTrimmer(faker.commerce().department(),
+                DatabaseConstants.CATEGORY_NAME_SIZE);
             
             category.setCategoryCode(categoryCode);
             category.setName(categoryName);
@@ -236,7 +239,8 @@ public class FakeDataGenerator {
             Set<OptionEntity> options = new HashSet<>();
             for (int j = 0; j < numberOfFakeOptions; j++) {
                 OptionEntity option = new OptionEntity();
-                String optionValue = sizeTrimmer(faker.commerce().material(), DatabaseConstants.OPTION_VALUE_SIZE);
+                String optionValue = sizeTrimmer(faker.commerce().material(),
+                    DatabaseConstants.OPTION_VALUE_SIZE);
                 
                 option.setValue(optionValue);
                 option.setCategory(category);
@@ -248,11 +252,12 @@ public class FakeDataGenerator {
                 for (int k = 0; k < numberOfFakeOptionsVariations; k++) {
                     OptionVariationEntity optionVariation = new OptionVariationEntity();
                     
-                    String optionVariationValue = sizeTrimmer(faker.color().name(), DatabaseConstants.OPTION_VARIATION_VALUE_SIZE);
+                    String optionVariationValue = sizeTrimmer(faker.color().name(),
+                        DatabaseConstants.OPTION_VARIATION_VALUE_SIZE);
                     
                     optionVariation.setValue(optionVariationValue);
                     optionVariation.setOption(option);
-                    
+
 //                    optionVariationRepository.save(optionVariation);
                     
                     option.getOptionVariations().add(optionVariation);
@@ -271,10 +276,12 @@ public class FakeDataGenerator {
             //step1) create product
             ProductEntity product = new ProductEntity();
             
-            String productName = sizeTrimmer(faker.commerce().productName(), DatabaseConstants.PRODUCT_NAME_SIZE);
-            String productDescription = sizeTrimmer(faker.lorem().sentence(), DatabaseConstants.PRODUCT_DESCRIPTION_SIZE);
+            String productName = sizeTrimmer(faker.commerce().productName(),
+                DatabaseConstants.PRODUCT_NAME_SIZE);
+            String productDescription = sizeTrimmer(faker.lorem().sentence(),
+                DatabaseConstants.PRODUCT_DESCRIPTION_SIZE);
             Double productRating = faker.number().randomDouble(1, 1, 5);
-            Integer productRatingCount =faker.number().numberBetween(1, 1000);
+            Integer productRatingCount = faker.number().numberBetween(1, 1000);
             
             product.setName(productName);
             product.setDescription(productDescription);
@@ -305,7 +312,7 @@ public class FakeDataGenerator {
             
             //step4) create productItems for each product
             Set<ProductItemEntity> productItems = new HashSet<>();
-    
+            
             product.setProductItems(productItems);
             productRepository.save(product);
             
@@ -397,10 +404,10 @@ public class FakeDataGenerator {
         }
     }
     
-    public String sizeTrimmer(String str, int size){
+    public String sizeTrimmer(String str, int size) {
         int len = str.length();
-        if(len >= size) {
-            return str.substring(len-size, len-1);
+        if (len >= size) {
+            return str.substring(len - size, len - 1);
         }
         return str;
     }

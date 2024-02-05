@@ -8,17 +8,12 @@ import com.cho.ecommerce.domain.product.repository.OptionRepository;
 import com.cho.ecommerce.domain.product.repository.OptionVariationRepository;
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import net.datafaker.Faker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -30,29 +25,28 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class InsertCategoriesAndOptionsStepConfig {
     
-    private final Logger log = LoggerFactory.getLogger(InsertCategoriesAndOptionsStepConfig.class);
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
-
+    
     @Autowired
     private CategoryRepository categoryRepository;
-
+    
     @Autowired
     private OptionRepository optionRepository;
-
+    
     @Autowired
     private OptionVariationRepository optionVariationRepository;
-
+    
     private final Faker faker = new Faker();
-
-    public String sizeTrimmer(String str, int size){
+    
+    public String sizeTrimmer(String str, int size) {
         int len = str.length();
-        if(len >= size) {
-            return str.substring(len-size, len-1);
+        if (len >= size) {
+            return str.substring(len - size, len - 1);
         }
         return str;
     }
-
+    
     //note! -
     // spring batch에서 tasklet과 chunk의 transaction 관리가 다르게 된다.
     // tasklet은 개별 tasklet 단위로 trasnactional 되는것 같고,
@@ -70,18 +64,19 @@ public class InsertCategoriesAndOptionsStepConfig {
             topCategories.put("Women", index++);
             topCategories.put("Kids", index++);
             
-            for(Map.Entry<String, Long> topCategoryInfo : topCategories.entrySet()) {
+            for (Map.Entry<String, Long> topCategoryInfo : topCategories.entrySet()) {
                 CategoryEntity topCategory = new CategoryEntity();
-    
-                String topCategoryCode = sizeTrimmer(faker.code().asin(), DatabaseConstants.CATEGORY_CODE_SIZE);
-    
+                
+                String topCategoryCode = sizeTrimmer(faker.code().asin(),
+                    DatabaseConstants.CATEGORY_CODE_SIZE);
+                
                 topCategory.setCategoryCode(topCategoryCode);
                 topCategory.setName(topCategoryInfo.getKey());
                 topCategory.setDepth(0);
                 
                 lists.add(topCategory);
             }
-    
+            
             //insert mid level categories
             Map<String, Long> midCategories = new LinkedHashMap<>();
             
@@ -91,61 +86,64 @@ public class InsertCategoriesAndOptionsStepConfig {
             midCategoryNames.add("Bottom");
             midCategoryNames.add("Shoes");
             
-            for(Map.Entry<String, Long> topCategoryInfo : topCategories.entrySet()) {
+            for (Map.Entry<String, Long> topCategoryInfo : topCategories.entrySet()) {
                 for (String midCategoryName : midCategoryNames) {
                     CategoryEntity midCategory = new CategoryEntity();
-        
+                    
                     String midCategoryCode = sizeTrimmer(faker.code().asin(),
                         DatabaseConstants.CATEGORY_CODE_SIZE);
-        
+                    
                     midCategory.setCategoryCode(midCategoryCode);
                     midCategory.setName(
                         topCategoryInfo.getKey() + "'s " + midCategoryName);
                     midCategory.setParentCategoryId(topCategoryInfo.getValue());
                     midCategory.setDepth(1);
-        
+                    
                     midCategories.put(topCategoryInfo.getKey() + "'s " + midCategoryName, index++);
                     lists.add(midCategory);
                 }
             }
             
-    
             //insert low level categories
             for (Map.Entry<String, Long> midCategoryInfo : midCategories.entrySet()) {
                 for (int i = 0; i < 5; i++) {
                     CategoryEntity lowCategory = new CategoryEntity();
-                    String lowCategoryCode = sizeTrimmer(faker.code().asin(), DatabaseConstants.CATEGORY_CODE_SIZE);
-                    String lowCategoryName = sizeTrimmer(faker.commerce().department(), DatabaseConstants.CATEGORY_NAME_SIZE);
-
+                    String lowCategoryCode = sizeTrimmer(faker.code().asin(),
+                        DatabaseConstants.CATEGORY_CODE_SIZE);
+                    String lowCategoryName = sizeTrimmer(faker.commerce().department(),
+                        DatabaseConstants.CATEGORY_NAME_SIZE);
+                    
                     lowCategory.setCategoryCode(lowCategoryCode);
                     lowCategory.setName(lowCategoryName);
                     lowCategory.setParentCategoryId(midCategoryInfo.getValue());
                     lowCategory.setDepth(2);
-    
+                    
                     // Generate options for each category
                     Set<OptionEntity> options = new HashSet<>();
                     
                     for (int j = 0; j < 3; j++) {
                         OptionEntity option = new OptionEntity();
-                        String optionValue = sizeTrimmer(faker.commerce().material(), DatabaseConstants.OPTION_VALUE_SIZE);
-        
+                        String optionValue = sizeTrimmer(faker.commerce().material(),
+                            DatabaseConstants.OPTION_VALUE_SIZE);
+                        
                         option.setValue(optionValue);
                         option.setCategory(lowCategory);
                         option.setOptionVariations(new ArrayList<>());
 //                    optionRepository.save(option);
                         options.add(option);
-        
+                        
                         // Generate option variations for each option
                         for (int k = 0; k < 3; k++) {
                             OptionVariationEntity optionVariation = new OptionVariationEntity();
-            
-                            String optionVariationValue = sizeTrimmer(faker.color().name(), DatabaseConstants.OPTION_VARIATION_VALUE_SIZE);
-            
+                            
+                            String optionVariationValue = sizeTrimmer(faker.color().name(),
+                                DatabaseConstants.OPTION_VARIATION_VALUE_SIZE);
+                            
                             optionVariation.setValue(optionVariationValue);
                             optionVariation.setOption(option);
 
 //                        optionVariationRepository.save(optionVariation);
-            
+                            
                             option.getOptionVariations().add(optionVariation);
                         }
                     }

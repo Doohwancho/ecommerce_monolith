@@ -77,6 +77,7 @@ Devops
 devops로 시작한다.
 
 - monitoring
+- logging
 - provisioning
-- stress_test
+- stress
 

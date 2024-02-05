@@ -18,7 +18,7 @@ public class SecuritySessionExpiredStrategy implements SessionInformationExpired
     @Override
     public void onExpiredSessionDetected(SessionInformationExpiredEvent event)
         throws IOException, ServletException {
-        log.info("여기에오! SecuritySessionExpiredStrategy.onExpiredSessionDetected()");
+//        log.info("여기에오! SecuritySessionExpiredStrategy.onExpiredSessionDetected()");
         
         HttpServletRequest request = event.getRequest();
         HttpServletResponse response = event.getResponse();

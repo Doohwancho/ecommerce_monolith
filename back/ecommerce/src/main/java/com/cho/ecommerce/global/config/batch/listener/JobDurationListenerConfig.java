@@ -8,13 +8,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JobDurationListenerConfig implements JobExecutionListener {
+    
     private final Logger log = LoggerFactory.getLogger(JobDurationListenerConfig.class);
     
     private long startTime;
     
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        log.warn("Job started: " + jobExecution.getJobInstance().getJobName());
+        log.info("Job started: " + jobExecution.getJobInstance().getJobName());
         startTime = System.currentTimeMillis();
     }
     
@@ -22,9 +23,10 @@ public class JobDurationListenerConfig implements JobExecutionListener {
     public void afterJob(JobExecution jobExecution) {
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
-    
-        log.warn("Job ended: " + jobExecution.getJobInstance().getJobName() + " with status: " + jobExecution.getStatus());
-        log.warn("Job " + jobExecution.getJobInstance().getJobName()
+        
+        log.info("Job ended: " + jobExecution.getJobInstance().getJobName() + " with status: "
+            + jobExecution.getStatus());
+        log.info("Job " + jobExecution.getJobInstance().getJobName()
             + " completed in " + duration + " ms");
     }
 }
