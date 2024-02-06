@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 
 // how to run?
-//docker run --rm -i grafana/k6 run - <./k6/load-10vu.js
+//docker run --rm -i grafana/k6 run - <./k6/load_test/load-10rps.js
 
 export let options = {
     noConnectionReuse: false,
@@ -16,7 +16,7 @@ export let options = {
     }
 }
 
-const API_BASE_URL = 'http://my-cool-project-874785820.ap-northeast-2.elb.amazonaws.com:80/products/category/';
+const API_BASE_URL = 'http://my-cool-project-970200612.ap-northeast-2.elb.amazonaws.com:80/products/category/';
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;

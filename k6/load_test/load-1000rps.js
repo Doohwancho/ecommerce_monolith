@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 
 // how to run?
-//docker run --rm -i grafana/k6 run - <./k6/load-1000vu.js
+//docker run --rm -i grafana/k6 run - <./k6/load_test/load-1000rps.js
 
 export let options = {
 

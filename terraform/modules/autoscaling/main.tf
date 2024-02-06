@@ -16,11 +16,20 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Restricts the search to AMIs owned by the specified AWS account (commonly used for official images
 }
 
+
 resource "aws_launch_template" "webserver" {
   name_prefix   = var.namespace
-  image_id      = data.aws_ami.ubuntu.id
-  instance_type = "t2.small" # t2.micro not supported on ap-northeast-2b
-  user_data     = data.cloudinit_config.config.rendered #B <----------- 여기서 git clone해서 프로젝트 실행함.
+
+  //https://instances.vantage.sh/?region=ap-northeast-2&selected=m7g.medium,m7a.medium,c7a.medium,c7gn.medium
+  instance_type = "m7g.large"
+
+  /* image_id      = data.aws_ami.ubuntu.id */
+  //https://cloud-images.ubuntu.com/locator/ec2/에서 AZ넣고 찾는다. ubuntu18.04를 찾는다.
+  image_id      = "ami-0195178fef736f4ed"//arm64 architecture, ubuntu 18.04
+  /* image_id      = "ami-0419dc605b6dde61f" //amd64 architecture, ubuntu 18.04 */
+
+  //user_data     = data.cloudinit_config.config.rendered #B <----------- 여기서 git clone해서 프로젝트 실행함.
+
   key_name      = var.ssh_keypair
   iam_instance_profile {
     name = var.iam_instance_profile_name
