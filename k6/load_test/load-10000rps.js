@@ -18,13 +18,13 @@ export let options = {
 }
 
 // const API_BASE_URL = 'http://192.168.0.77:8080/api/greet';
-const API_BASE_URL = 'http://my-cool-project-384023695.ap-northeast-2.elb.amazonaws.com:80/products/category/';
+const API_BASE_URL = 'http://my-cool-project-384023695.ap-northeast-2.elb.amazonaws.com:80/products/categories/';
 
 export default function () {
     http.batch([
-        ['GET', `${API_BASE_URL}/16`],
-        ['GET', `${API_BASE_URL}/17`],
-        ['GET', `${API_BASE_URL}/18`],
+        ['GET', `${API_BASE_URL}`],
+        ['GET', `${API_BASE_URL}`],
+        ['GET', `${API_BASE_URL}`],
     ])
 
   sleep(1);

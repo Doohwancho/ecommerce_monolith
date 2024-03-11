@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -92,
-    "scrollLeft": -92.5625,
-    "zoomLevel": 0.9,
+    "scrollTop": -338.75170000000014,
+    "scrollLeft": -214.03380000000027,
+    "zoomLevel": 0.8,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -19,7 +19,7 @@
     },
     "database": "MySQL",
     "databaseName": "",
-    "canvasType": "ERD",
+    "canvasType": "@vuerd/builtin-sql-ddl",
     "language": "GraphQL",
     "tableCase": "pascalCase",
     "columnCase": "camelCase",
@@ -43,10 +43,12 @@
   "table": {
     "tables": [
       {
+        "id": "f8bee689-639d-4c09-b310-0a40a62ad27e",
         "name": "MEMBER",
         "comment": "USER 테이블 명은 MYSQL에서 쓸 수 없으니 MEMBER로 변경",
         "columns": [
           {
+            "id": "725972e0-abec-4fb0-a9c1-3b60d8584b8a",
             "name": "MEMBER_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -66,10 +68,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "725972e0-abec-4fb0-a9c1-3b60d8584b8a"
+            }
           },
           {
+            "id": "7562f035-2420-46f2-8906-bd5d161f84cf",
             "name": "USERNAME",
             "comment": "UNIQUE",
             "dataType": "VARCHAR(30)",
@@ -89,10 +91,10 @@
               "widthComment": 60,
               "widthDataType": 79.36288452148438,
               "widthDefault": 60
-            },
-            "id": "7562f035-2420-46f2-8906-bd5d161f84cf"
+            }
           },
           {
+            "id": "c24649ea-eae0-4664-921d-0f83ff2de7de",
             "name": "EMAIL",
             "comment": "UNIQUE",
             "dataType": "VARCHAR(100)",
@@ -112,10 +114,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "c24649ea-eae0-4664-921d-0f83ff2de7de"
+            }
           },
           {
+            "id": "10e8567c-72f3-4f5d-8f24-471492fadc47",
             "name": "NAME",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -135,10 +137,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "10e8567c-72f3-4f5d-8f24-471492fadc47"
+            }
           },
           {
+            "id": "8e42cd2c-65b7-4ef4-9c2b-7d091cf18e9d",
             "name": "PASSWORD",
             "comment": "encrypted password has long sisze",
             "dataType": "VARCHAR(255)",
@@ -158,10 +160,10 @@
               "widthComment": 120,
               "widthDataType": 84.10789489746094,
               "widthDefault": 60
-            },
-            "id": "8e42cd2c-65b7-4ef4-9c2b-7d091cf18e9d"
+            }
           },
           {
+            "id": "50408958-4c1f-4911-9d46-12d788622963",
             "name": "ROLE",
             "comment": "",
             "dataType": "VARCHAR(20)",
@@ -181,10 +183,10 @@
               "widthComment": 60,
               "widthDataType": 79.25888061523438,
               "widthDefault": 60
-            },
-            "id": "50408958-4c1f-4911-9d46-12d788622963"
+            }
           },
           {
+            "id": "72e0a103-570d-4871-be90-5b7f5e5285a3",
             "name": "FAILEDATTEMPT",
             "comment": "",
             "dataType": "INT(11)",
@@ -204,10 +206,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "72e0a103-570d-4871-be90-5b7f5e5285a3"
+            }
           },
           {
+            "id": "93feb48a-aec7-4ab0-acc3-9fafa1e72df1",
             "name": "ENABLED",
             "comment": "",
             "dataType": "BIT(1)",
@@ -227,10 +229,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "93feb48a-aec7-4ab0-acc3-9fafa1e72df1"
+            }
           },
           {
+            "id": "904e5dee-0ec8-4ef9-a504-d5d36469b68a",
             "name": "CREATED_AT",
             "comment": "",
             "dataType": "DATETIME",
@@ -250,10 +252,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "904e5dee-0ec8-4ef9-a504-d5d36469b68a"
+            }
           },
           {
+            "id": "969a59b6-9581-4d31-ae50-5000d33637fc",
             "name": "UPDATED_AT",
             "comment": "",
             "dataType": "DATETIME",
@@ -273,8 +275,7 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "969a59b6-9581-4d31-ae50-5000d33637fc"
+            }
           }
         ],
         "ui": {
@@ -286,14 +287,15 @@
           "widthComment": 120,
           "color": "#EB4747"
         },
-        "visible": true,
-        "id": "f8bee689-639d-4c09-b310-0a40a62ad27e"
+        "visible": true
       },
       {
+        "id": "323f7b52-48d3-4ae8-ba1f-cd0ad2ae3b5d",
         "name": "AUTHORITY",
         "comment": "",
         "columns": [
           {
+            "id": "f07db02e-9f8c-48e7-98be-41280550015b",
             "name": "AUTHORITY_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -313,10 +315,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "f07db02e-9f8c-48e7-98be-41280550015b"
+            }
           },
           {
+            "id": "0661d869-3bd5-44f3-a6ba-9f9a86aa1d17",
             "name": "AUTHORITY",
             "comment": "ROLE_USER, ROLE_ADMIN",
             "dataType": "VARCHAR(50)",
@@ -336,27 +338,27 @@
               "widthComment": 120,
               "widthDataType": 78.88189697265625,
               "widthDefault": 60
-            },
-            "id": "0661d869-3bd5-44f3-a6ba-9f9a86aa1d17"
+            }
           }
         ],
         "ui": {
           "active": false,
           "left": 22.8892,
           "top": 87.7799,
-          "zIndex": 6,
+          "zIndex": 15,
           "widthName": 67.90994262695312,
           "widthComment": 60,
           "color": "#C49763"
         },
-        "visible": true,
-        "id": "323f7b52-48d3-4ae8-ba1f-cd0ad2ae3b5d"
+        "visible": true
       },
       {
+        "id": "a0e26ae3-223c-4c3f-99fe-50219513e42b",
         "name": "MEMBER_AUTHORITY",
         "comment": "",
         "columns": [
           {
+            "id": "5a1c600c-ba7c-4d36-b78a-29e72f9fa8ae",
             "name": "MEMBER_AUTHORITY_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -376,10 +378,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "5a1c600c-ba7c-4d36-b78a-29e72f9fa8ae"
+            }
           },
           {
+            "id": "10748265-dd25-4804-8055-f9288648b82d",
             "name": "AUTHORITY_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -399,10 +401,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "10748265-dd25-4804-8055-f9288648b82d"
+            }
           },
           {
+            "id": "6e58ed64-b5ad-49db-b66f-8caec4c96ea9",
             "name": "MEMBER_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -422,8 +424,7 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "6e58ed64-b5ad-49db-b66f-8caec4c96ea9"
+            }
           }
         ],
         "ui": {
@@ -435,14 +436,15 @@
           "widthComment": 60,
           "color": "#F8FBA8"
         },
-        "visible": true,
-        "id": "a0e26ae3-223c-4c3f-99fe-50219513e42b"
+        "visible": true
       },
       {
+        "id": "9f137a29-7f3d-4506-ac6a-dada8a928dab",
         "name": "PRODUCT",
         "comment": "",
         "columns": [
           {
+            "id": "96b339c7-b162-4c76-bcd1-fbf9d2a5d314",
             "name": "PRODUCT_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -462,10 +464,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "96b339c7-b162-4c76-bcd1-fbf9d2a5d314"
+            }
           },
           {
+            "id": "869fe85e-9887-41aa-a7aa-ed2a25588cfb",
             "name": "NAME",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -485,10 +487,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "869fe85e-9887-41aa-a7aa-ed2a25588cfb"
+            }
           },
           {
+            "id": "242066f2-adf7-4c36-809a-82e49c8c046c",
             "name": "DESCRIPTION",
             "comment": "",
             "dataType": "VARCHAR(255)",
@@ -508,10 +510,10 @@
               "widthComment": 60,
               "widthDataType": 84.10789489746094,
               "widthDefault": 60
-            },
-            "id": "242066f2-adf7-4c36-809a-82e49c8c046c"
+            }
           },
           {
+            "id": "0e526a19-f052-4db9-8478-3de647e584d2",
             "name": "RATING",
             "comment": "",
             "dataType": "DOUBLE(22)",
@@ -531,10 +533,10 @@
               "widthComment": 60,
               "widthDataType": 71.263916015625,
               "widthDefault": 60
-            },
-            "id": "0e526a19-f052-4db9-8478-3de647e584d2"
+            }
           },
           {
+            "id": "be1748fe-adaa-48c7-b4b1-c02b40c9162d",
             "name": "RATING_COUNT",
             "comment": "",
             "dataType": "INT(11)",
@@ -554,10 +556,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "be1748fe-adaa-48c7-b4b1-c02b40c9162d"
+            }
           },
           {
+            "id": "e130ff28-5a3b-4f42-9194-07abe69a0eca",
             "name": "CATEGORY_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -577,8 +579,7 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "e130ff28-5a3b-4f42-9194-07abe69a0eca"
+            }
           }
         ],
         "ui": {
@@ -590,14 +591,15 @@
           "widthComment": 60,
           "color": "#97FF00"
         },
-        "visible": true,
-        "id": "9f137a29-7f3d-4506-ac6a-dada8a928dab"
+        "visible": true
       },
       {
+        "id": "eb4f7053-d499-4177-aeb3-be091f57a763",
         "name": "CATEGORY",
         "comment": "",
         "columns": [
           {
+            "id": "3ee36088-4d89-48f7-9370-366dcd70cb3e",
             "name": "CATEGORY_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -617,10 +619,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "3ee36088-4d89-48f7-9370-366dcd70cb3e"
+            }
           },
           {
+            "id": "7005ee33-ec09-4c10-87f9-e5d4d65f5d74",
             "name": "CATEGORY_CODE",
             "comment": "",
             "dataType": "VARCHAR(50)",
@@ -640,10 +642,10 @@
               "widthComment": 60,
               "widthDataType": 78.88189697265625,
               "widthDefault": 60
-            },
-            "id": "7005ee33-ec09-4c10-87f9-e5d4d65f5d74"
+            }
           },
           {
+            "id": "14ce4bda-385a-4466-a714-ffd51e916353",
             "name": "NAME",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -663,10 +665,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "14ce4bda-385a-4466-a714-ffd51e916353"
+            }
           },
           {
+            "id": "928fb178-e3cd-4231-ac26-4c39cd6b07f4",
             "name": "PARENT_CATEGORY_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -686,10 +688,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "928fb178-e3cd-4231-ac26-4c39cd6b07f4"
+            }
           },
           {
+            "id": "556c7eb2-7bb6-4784-a589-dfa4b59ea4fa",
             "name": "DEPTH",
             "comment": "",
             "dataType": "INT",
@@ -709,8 +711,7 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "556c7eb2-7bb6-4784-a589-dfa4b59ea4fa"
+            }
           }
         ],
         "ui": {
@@ -722,14 +723,15 @@
           "widthComment": 60,
           "color": "#00FF97"
         },
-        "visible": true,
-        "id": "eb4f7053-d499-4177-aeb3-be091f57a763"
+        "visible": true
       },
       {
+        "id": "31d8d004-d5ad-4d26-965d-c304d1c1855b",
         "name": "PRODUCT_ITEM",
         "comment": "",
         "columns": [
           {
+            "id": "5ebad9a3-b3dc-40a4-949c-fe022a5bc12d",
             "name": "PRODUCT_ITEM_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -749,10 +751,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "5ebad9a3-b3dc-40a4-949c-fe022a5bc12d"
+            }
           },
           {
+            "id": "b3774564-51ff-4dca-b3ce-c1366edf868a",
             "name": "QUANTITY",
             "comment": "",
             "dataType": "INT(11)",
@@ -772,10 +774,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "b3774564-51ff-4dca-b3ce-c1366edf868a"
+            }
           },
           {
+            "id": "1dc0412e-c8fa-435d-8b7b-2197cbbf53cc",
             "name": "PRICE",
             "comment": "",
             "dataType": "DOUBLE(22)",
@@ -795,10 +797,10 @@
               "widthComment": 60,
               "widthDataType": 71.263916015625,
               "widthDefault": 60
-            },
-            "id": "1dc0412e-c8fa-435d-8b7b-2197cbbf53cc"
+            }
           },
           {
+            "id": "737b144d-d98a-4ca9-837b-5796c5baca0a",
             "name": "PRODUCT_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -818,8 +820,7 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "737b144d-d98a-4ca9-837b-5796c5baca0a"
+            }
           }
         ],
         "ui": {
@@ -831,14 +832,15 @@
           "widthComment": 60,
           "color": "#0055FF"
         },
-        "visible": true,
-        "id": "31d8d004-d5ad-4d26-965d-c304d1c1855b"
+        "visible": true
       },
       {
+        "id": "89977d3b-d771-4e5d-a601-418020536fe7",
         "name": "OPTION",
         "comment": "mysql에서 안되니 `OPTION`으로 입력",
         "columns": [
           {
+            "id": "08f2f2b6-7c85-495c-928e-e91aae0d10a7",
             "name": "OPTION_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -858,10 +860,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "08f2f2b6-7c85-495c-928e-e91aae0d10a7"
+            }
           },
           {
+            "id": "b31fd9b2-9be9-4739-9b77-4dcf2cb0f847",
             "name": "VALUE",
             "comment": "브랜드, 사이즈, 콜라보, 신발높이 등",
             "dataType": "VARCHAR(100)",
@@ -881,10 +883,10 @@
               "widthComment": 120,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "b31fd9b2-9be9-4739-9b77-4dcf2cb0f847"
+            }
           },
           {
+            "id": "ba6400bb-08c5-4162-bffb-848336e7e8d6",
             "name": "CATEGORY_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -904,8 +906,7 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "ba6400bb-08c5-4162-bffb-848336e7e8d6"
+            }
           }
         ],
         "ui": {
@@ -917,14 +918,15 @@
           "widthComment": 120,
           "color": "#5F00FF"
         },
-        "visible": true,
-        "id": "89977d3b-d771-4e5d-a601-418020536fe7"
+        "visible": true
       },
       {
+        "id": "2a10c337-f659-4673-9590-4cadfe605ae2",
         "name": "OPTION_VARIATION",
         "comment": "",
         "columns": [
           {
+            "id": "fee84f37-cb4e-4b05-9061-f7b26a92a690",
             "name": "OPTION_VARIATION_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -944,10 +946,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "fee84f37-cb4e-4b05-9061-f7b26a92a690"
+            }
           },
           {
+            "id": "0774b7b2-a6c0-4963-a23c-f6f75515b0df",
             "name": "VALUE",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -967,10 +969,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "0774b7b2-a6c0-4963-a23c-f6f75515b0df"
+            }
           },
           {
+            "id": "6d157829-075a-4974-b4d6-842fc6693168",
             "name": "OPTION_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -990,8 +992,7 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "6d157829-075a-4974-b4d6-842fc6693168"
+            }
           }
         ],
         "ui": {
@@ -1003,14 +1004,15 @@
           "widthComment": 60,
           "color": "#FF00FF"
         },
-        "visible": true,
-        "id": "2a10c337-f659-4673-9590-4cadfe605ae2"
+        "visible": true
       },
       {
+        "id": "431af9d1-4261-4c8c-8814-c3c932f96dae",
         "name": "PRODUCT_OPTION_VARIATION",
         "comment": "",
         "columns": [
           {
+            "id": "1c4d8bc7-99ba-47de-92c9-ff21ce5be4a2",
             "name": "PRODUCT_OPTION_VARIATION_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1030,10 +1032,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "1c4d8bc7-99ba-47de-92c9-ff21ce5be4a2"
+            }
           },
           {
+            "id": "09afc5af-abae-4320-b8fa-e171de86f820",
             "name": "OPTION_VARIATION_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1053,10 +1055,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "09afc5af-abae-4320-b8fa-e171de86f820"
+            }
           },
           {
+            "id": "eef49391-0b6b-4311-9c04-1d6263763644",
             "name": "PRODUCT_ITEM_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1076,8 +1078,7 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "eef49391-0b6b-4311-9c04-1d6263763644"
+            }
           }
         ],
         "ui": {
@@ -1089,14 +1090,15 @@
           "widthComment": 60,
           "color": "#FF0000"
         },
-        "visible": true,
-        "id": "431af9d1-4261-4c8c-8814-c3c932f96dae"
+        "visible": true
       },
       {
+        "id": "6a58c7ea-61a4-483b-9ad3-57f3a85aa0ab",
         "name": "DISCOUNT",
         "comment": "",
         "columns": [
           {
+            "id": "2edfce1d-af1d-42ad-b2b0-ce41c5143043",
             "name": "DISCOUNT_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1116,10 +1118,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "2edfce1d-af1d-42ad-b2b0-ce41c5143043"
+            }
           },
           {
+            "id": "17211095-61dd-4461-b5a0-72468b3ee8e8",
             "name": "DISCOUNT_TYPE",
             "comment": "",
             "dataType": "VARCHAR(50)",
@@ -1139,10 +1141,10 @@
               "widthComment": 60,
               "widthDataType": 78.88189697265625,
               "widthDefault": 60
-            },
-            "id": "17211095-61dd-4461-b5a0-72468b3ee8e8"
+            }
           },
           {
+            "id": "02ebeaa4-534e-47cf-8a11-ea1d161a007a",
             "name": "DISCOUNT_VALUE",
             "comment": "",
             "dataType": "DOUBLE(22)",
@@ -1162,10 +1164,10 @@
               "widthComment": 60,
               "widthDataType": 71.263916015625,
               "widthDefault": 60
-            },
-            "id": "02ebeaa4-534e-47cf-8a11-ea1d161a007a"
+            }
           },
           {
+            "id": "e1c86f35-9dd7-4b28-9f7f-b4da0662d5ba",
             "name": "START_DATE",
             "comment": "",
             "dataType": "DATETIME",
@@ -1185,10 +1187,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "e1c86f35-9dd7-4b28-9f7f-b4da0662d5ba"
+            }
           },
           {
+            "id": "449a2e08-cbab-425d-ad42-0ead41792b0d",
             "name": "END_DATE",
             "comment": "",
             "dataType": "DATETIME",
@@ -1208,10 +1210,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "449a2e08-cbab-425d-ad42-0ead41792b0d"
+            }
           },
           {
+            "id": "cc44d105-ecff-4498-8de7-3b870106b105",
             "name": "PRODUCT_ITEM_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1231,8 +1233,7 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "cc44d105-ecff-4498-8de7-3b870106b105"
+            }
           }
         ],
         "ui": {
@@ -1244,14 +1245,15 @@
           "widthComment": 60,
           "color": "#FF8000"
         },
-        "visible": true,
-        "id": "6a58c7ea-61a4-483b-9ad3-57f3a85aa0ab"
+        "visible": true
       },
       {
+        "id": "1ffebce7-a84e-42d4-92b6-606aa350eb08",
         "name": "ORDER",
         "comment": "mysql에서 이 이름으로 테이블 안만들어지니 `ORDER`으로 만들자",
         "columns": [
           {
+            "id": "96fb6192-80db-461b-b937-5277fb060d95",
             "name": "ORDER_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1271,10 +1273,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "96fb6192-80db-461b-b937-5277fb060d95"
+            }
           },
           {
+            "id": "a5a83386-8d31-474b-9738-af64f782ba31",
             "name": "ORDER_DATE",
             "comment": "",
             "dataType": "DATETIME",
@@ -1294,10 +1296,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "a5a83386-8d31-474b-9738-af64f782ba31"
+            }
           },
           {
+            "id": "c5b6bd51-419c-4e2d-9104-9b760ba44148",
             "name": "ORDER_STATUS",
             "comment": "",
             "dataType": "VARCHAR(50)",
@@ -1317,10 +1319,10 @@
               "widthComment": 60,
               "widthDataType": 78.88189697265625,
               "widthDefault": 60
-            },
-            "id": "c5b6bd51-419c-4e2d-9104-9b760ba44148"
+            }
           },
           {
+            "id": "d9f41930-0545-4f0c-9885-7ae20e1d7ed3",
             "name": "MEMBER_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1340,10 +1342,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "d9f41930-0545-4f0c-9885-7ae20e1d7ed3"
+            }
           },
           {
+            "id": "0d57546c-9ecb-4871-b5bc-f65403577ab6",
             "name": "PAYMENT_ID",
             "comment": "YET",
             "dataType": "",
@@ -1363,10 +1365,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "0d57546c-9ecb-4871-b5bc-f65403577ab6"
+            }
           },
           {
+            "id": "89971b1e-0488-410f-b1d4-25bd4f55e8e5",
             "name": "DELIVERY_ID",
             "comment": "YET",
             "dataType": "",
@@ -1386,8 +1388,7 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "89971b1e-0488-410f-b1d4-25bd4f55e8e5"
+            }
           }
         ],
         "ui": {
@@ -1399,14 +1400,15 @@
           "widthComment": 120,
           "color": "#FF8D00"
         },
-        "visible": true,
-        "id": "1ffebce7-a84e-42d4-92b6-606aa350eb08"
+        "visible": true
       },
       {
+        "id": "e4830b4c-30f8-428a-a1d8-d2c2ca529388",
         "name": "ORDER_ITEM",
         "comment": "",
         "columns": [
           {
+            "id": "133e3368-1ed1-4320-a37c-6f2dd7abec2a",
             "name": "ORDER_ITEM_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1426,10 +1428,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "133e3368-1ed1-4320-a37c-6f2dd7abec2a"
+            }
           },
           {
+            "id": "c0002dd6-5f18-4775-a492-bda716189c55",
             "name": "ORDER_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1449,10 +1451,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "c0002dd6-5f18-4775-a492-bda716189c55"
+            }
           },
           {
+            "id": "9a5e3fb7-ad61-453b-8a04-b5d415b6c594",
             "name": "PRODUCT_OPTION_VARIATION_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1472,8 +1474,7 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "9a5e3fb7-ad61-453b-8a04-b5d415b6c594"
+            }
           }
         ],
         "ui": {
@@ -1485,14 +1486,15 @@
           "widthComment": 60,
           "color": "#FFEC00"
         },
-        "visible": true,
-        "id": "e4830b4c-30f8-428a-a1d8-d2c2ca529388"
+        "visible": true
       },
       {
+        "id": "c437f8c9-21be-493b-9987-a941537ae2cb",
         "name": "ADDRESS",
         "comment": "",
         "columns": [
           {
+            "id": "4dcce11f-09db-4da2-9526-226a48e5490c",
             "name": "ADDRESS_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1512,10 +1514,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "4dcce11f-09db-4da2-9526-226a48e5490c"
+            }
           },
           {
+            "id": "1ec99dd9-f89b-4e8c-a195-6ae08f82e0fc",
             "name": "STREET",
             "comment": "",
             "dataType": "VARCHAR(255)",
@@ -1535,10 +1537,10 @@
               "widthComment": 60,
               "widthDataType": 84.10789489746094,
               "widthDefault": 60
-            },
-            "id": "1ec99dd9-f89b-4e8c-a195-6ae08f82e0fc"
+            }
           },
           {
+            "id": "44d1f524-9ab4-47a4-aa0c-9b7fdbd90cf5",
             "name": "CITY",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -1558,10 +1560,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "44d1f524-9ab4-47a4-aa0c-9b7fdbd90cf5"
+            }
           },
           {
+            "id": "fb0c57f0-4274-47a4-9f08-936bf9a5b1d4",
             "name": "STATE",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -1581,10 +1583,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "fb0c57f0-4274-47a4-9f08-936bf9a5b1d4"
+            }
           },
           {
+            "id": "2d640871-f0f3-4663-bff2-b5484ac83843",
             "name": "COUNTRY",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -1604,10 +1606,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "2d640871-f0f3-4663-bff2-b5484ac83843"
+            }
           },
           {
+            "id": "28f5949a-da0b-4a26-a1dc-dab435b39fb8",
             "name": "ZIPCODE",
             "comment": "",
             "dataType": "VARCHAR(20)",
@@ -1627,10 +1629,10 @@
               "widthComment": 60,
               "widthDataType": 79.25888061523438,
               "widthDefault": 60
-            },
-            "id": "28f5949a-da0b-4a26-a1dc-dab435b39fb8"
+            }
           },
           {
+            "id": "17f54e70-ed9a-40df-93ec-4c25e74f9de2",
             "name": "MEMBER_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1650,8 +1652,7 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "17f54e70-ed9a-40df-93ec-4c25e74f9de2"
+            }
           }
         ],
         "ui": {
@@ -1663,14 +1664,15 @@
           "widthComment": 60,
           "color": "#3F51B5"
         },
-        "visible": true,
-        "id": "c437f8c9-21be-493b-9987-a941537ae2cb"
+        "visible": true
       },
       {
+        "id": "f77ca5c7-2707-48a7-ad0e-dcbb59637eff",
         "name": "INACTIVE_MEMBER",
         "comment": "",
         "columns": [
           {
+            "id": "a6c5ea30-0076-4b8f-a197-fc1283f5befd",
             "name": "MEMBER_ID",
             "comment": "",
             "dataType": "BIGINT(20)",
@@ -1690,10 +1692,10 @@
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
               "widthDefault": 60
-            },
-            "id": "a6c5ea30-0076-4b8f-a197-fc1283f5befd"
+            }
           },
           {
+            "id": "ce931f35-d67d-4119-845f-340abe731aa4",
             "name": "USERNAME",
             "comment": "UNIQUE",
             "dataType": "VARCHAR(30)",
@@ -1713,10 +1715,10 @@
               "widthComment": 60,
               "widthDataType": 79.36288452148438,
               "widthDefault": 60
-            },
-            "id": "ce931f35-d67d-4119-845f-340abe731aa4"
+            }
           },
           {
+            "id": "24a35f3e-c11f-4492-8796-b0e2e3d74c0c",
             "name": "EMAIL",
             "comment": "UNIQUE",
             "dataType": "VARCHAR(100)",
@@ -1736,10 +1738,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "24a35f3e-c11f-4492-8796-b0e2e3d74c0c"
+            }
           },
           {
+            "id": "f9be941e-41a7-4b69-a01d-51bfe30285fb",
             "name": "NAME",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -1759,10 +1761,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "f9be941e-41a7-4b69-a01d-51bfe30285fb"
+            }
           },
           {
+            "id": "06310a83-7cf8-4759-86c2-9ba3b0cfea2c",
             "name": "PASSWORD",
             "comment": "encrypted password has long sisze",
             "dataType": "VARCHAR(255)",
@@ -1782,10 +1784,10 @@
               "widthComment": 120,
               "widthDataType": 84.10789489746094,
               "widthDefault": 60
-            },
-            "id": "06310a83-7cf8-4759-86c2-9ba3b0cfea2c"
+            }
           },
           {
+            "id": "8457c5bb-81c1-4d6b-b366-73878fce16d5",
             "name": "ROLE",
             "comment": "",
             "dataType": "VARCHAR(20)",
@@ -1805,10 +1807,10 @@
               "widthComment": 60,
               "widthDataType": 79.25888061523438,
               "widthDefault": 60
-            },
-            "id": "8457c5bb-81c1-4d6b-b366-73878fce16d5"
+            }
           },
           {
+            "id": "af3d3c09-2d8c-4f76-8a5f-cbdeffea9eb0",
             "name": "FAILEDATTEMPT",
             "comment": "",
             "dataType": "INT(11)",
@@ -1828,10 +1830,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "af3d3c09-2d8c-4f76-8a5f-cbdeffea9eb0"
+            }
           },
           {
+            "id": "43b46530-0ff3-4ea0-afd0-cd6c12c7c8fd",
             "name": "ENABLED",
             "comment": "",
             "dataType": "BIT(1)",
@@ -1851,10 +1853,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "43b46530-0ff3-4ea0-afd0-cd6c12c7c8fd"
+            }
           },
           {
+            "id": "678cbb47-7ffb-4463-a789-e50ea38d13cd",
             "name": "CREATED_AT",
             "comment": "",
             "dataType": "DATETIME",
@@ -1874,10 +1876,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "678cbb47-7ffb-4463-a789-e50ea38d13cd"
+            }
           },
           {
+            "id": "8554dae0-ce94-4850-9aa2-d9d272f8b5eb",
             "name": "UPDATED_AT",
             "comment": "",
             "dataType": "DATETIME",
@@ -1897,10 +1899,10 @@
               "widthComment": 60,
               "widthDataType": 60,
               "widthDefault": 60
-            },
-            "id": "8554dae0-ce94-4850-9aa2-d9d272f8b5eb"
+            }
           },
           {
+            "id": "e94ce815-9660-4c29-aba4-7d174cd3a02f",
             "name": "AUTHORITY",
             "comment": "",
             "dataType": "VARCHAR(50)",
@@ -1920,10 +1922,10 @@
               "widthComment": 60,
               "widthDataType": 78.88189697265625,
               "widthDefault": 60
-            },
-            "id": "e94ce815-9660-4c29-aba4-7d174cd3a02f"
+            }
           },
           {
+            "id": "6a441de8-f02f-441a-b334-d3a4ddfc1619",
             "name": "STREET",
             "comment": "",
             "dataType": "VARCHAR(255)",
@@ -1943,10 +1945,10 @@
               "widthComment": 60,
               "widthDataType": 84.10789489746094,
               "widthDefault": 60
-            },
-            "id": "6a441de8-f02f-441a-b334-d3a4ddfc1619"
+            }
           },
           {
+            "id": "95dd2ff6-4114-409f-9435-885c85bd1f6f",
             "name": "CITY",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -1966,10 +1968,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "95dd2ff6-4114-409f-9435-885c85bd1f6f"
+            }
           },
           {
+            "id": "94a5a88f-9e9f-421b-97a0-1d6c381cf200",
             "name": "STATE",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -1989,10 +1991,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "94a5a88f-9e9f-421b-97a0-1d6c381cf200"
+            }
           },
           {
+            "id": "fa6f23a4-4bfd-48e0-a876-c3f5596f93c1",
             "name": "COUNTRY",
             "comment": "",
             "dataType": "VARCHAR(100)",
@@ -2012,10 +2014,10 @@
               "widthComment": 60,
               "widthDataType": 85.22587585449219,
               "widthDefault": 60
-            },
-            "id": "fa6f23a4-4bfd-48e0-a876-c3f5596f93c1"
+            }
           },
           {
+            "id": "e1d1675b-6fbc-4c28-8f10-77f98caf6c68",
             "name": "ZIPCODE",
             "comment": "",
             "dataType": "VARCHAR(20)",
@@ -2035,8 +2037,7 @@
               "widthComment": 60,
               "widthDataType": 79.25888061523438,
               "widthDefault": 60
-            },
-            "id": "e1d1675b-6fbc-4c28-8f10-77f98caf6c68"
+            }
           }
         ],
         "ui": {
@@ -2048,8 +2049,7 @@
           "widthComment": 60,
           "color": "#B27B7B"
         },
-        "visible": true,
-        "id": "f77ca5c7-2707-48a7-ad0e-dcbb59637eff"
+        "visible": true
       }
     ],
     "indexes": []
@@ -2060,6 +2060,7 @@
   "relationship": {
     "relationships": [
       {
+        "id": "66a11720-730e-498c-9d67-00f2c9364886",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2082,10 +2083,10 @@
           "direction": "left"
         },
         "constraintName": "fk_authority_to_member_authority",
-        "visible": true,
-        "id": "66a11720-730e-498c-9d67-00f2c9364886"
+        "visible": true
       },
       {
+        "id": "fa591716-4573-44f4-b403-6c2d4b9801ca",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2108,10 +2109,10 @@
           "direction": "right"
         },
         "constraintName": "fk_member_to_member_authority",
-        "visible": true,
-        "id": "fa591716-4573-44f4-b403-6c2d4b9801ca"
+        "visible": true
       },
       {
+        "id": "fda022c6-a8f8-444b-b1bc-89c42e0b0ec6",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2134,10 +2135,10 @@
           "direction": "top"
         },
         "constraintName": "fk_product_to_product_item",
-        "visible": true,
-        "id": "fda022c6-a8f8-444b-b1bc-89c42e0b0ec6"
+        "visible": true
       },
       {
+        "id": "2b22624b-a7ae-4262-95b8-4ffd401ce1f5",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2160,10 +2161,10 @@
           "direction": "top"
         },
         "constraintName": "fk_option_to_option_variation",
-        "visible": true,
-        "id": "2b22624b-a7ae-4262-95b8-4ffd401ce1f5"
+        "visible": true
       },
       {
+        "id": "c0b94ac5-8741-470c-b735-8dfea8379fe7",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2186,10 +2187,10 @@
           "direction": "top"
         },
         "constraintName": "fk_option_variation_to_product_option_variation",
-        "visible": true,
-        "id": "c0b94ac5-8741-470c-b735-8dfea8379fe7"
+        "visible": true
       },
       {
+        "id": "44751eb9-517a-4a14-b1fe-8bd8ab4995fb",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2212,10 +2213,10 @@
           "direction": "left"
         },
         "constraintName": "fk_product_item_to_product_option_variation",
-        "visible": true,
-        "id": "44751eb9-517a-4a14-b1fe-8bd8ab4995fb"
+        "visible": true
       },
       {
+        "id": "0bd55130-42ed-42ee-8ce3-6659d6cc8491",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2238,10 +2239,10 @@
           "direction": "top"
         },
         "constraintName": "fk_product_item_to_discount",
-        "visible": true,
-        "id": "0bd55130-42ed-42ee-8ce3-6659d6cc8491"
+        "visible": true
       },
       {
+        "id": "76d679c1-ef2a-45c7-877f-56cf2cc78e64",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2264,10 +2265,10 @@
           "direction": "top"
         },
         "constraintName": "fk_order_to_order_item",
-        "visible": true,
-        "id": "76d679c1-ef2a-45c7-877f-56cf2cc78e64"
+        "visible": true
       },
       {
+        "id": "64b1d941-6062-4e8c-a4b8-4b2a878a0a0f",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2290,10 +2291,10 @@
           "direction": "left"
         },
         "constraintName": "fk_product_option_variation_to_order_item",
-        "visible": true,
-        "id": "64b1d941-6062-4e8c-a4b8-4b2a878a0a0f"
+        "visible": true
       },
       {
+        "id": "23381dbf-28d2-4fdf-a5ee-805212a1da0c",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2316,10 +2317,10 @@
           "direction": "top"
         },
         "constraintName": "fk_member_to_order",
-        "visible": true,
-        "id": "23381dbf-28d2-4fdf-a5ee-805212a1da0c"
+        "visible": true
       },
       {
+        "id": "c2377850-6ddf-424b-b94d-01fe3724d4a3",
         "identification": false,
         "relationshipType": "ZeroOne",
         "startRelationshipType": "Dash",
@@ -2342,10 +2343,10 @@
           "direction": "bottom"
         },
         "constraintName": "fk_member_to_address",
-        "visible": true,
-        "id": "c2377850-6ddf-424b-b94d-01fe3724d4a3"
+        "visible": true
       },
       {
+        "id": "350ae21d-a860-47cd-8046-c18ce9fa9dd5",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2368,10 +2369,10 @@
           "direction": "right"
         },
         "constraintName": "fk_category_to_product",
-        "visible": true,
-        "id": "350ae21d-a860-47cd-8046-c18ce9fa9dd5"
+        "visible": true
       },
       {
+        "id": "077d2ef9-6f06-4a40-90b5-4ef5d06eefcb",
         "identification": false,
         "relationshipType": "OneN",
         "startRelationshipType": "Dash",
@@ -2394,8 +2395,7 @@
           "direction": "top"
         },
         "constraintName": "fk_category_to_option",
-        "visible": true,
-        "id": "077d2ef9-6f06-4a40-90b5-4ef5d06eefcb"
+        "visible": true
       }
     ]
   }

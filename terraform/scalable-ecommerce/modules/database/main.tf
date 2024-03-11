@@ -20,7 +20,7 @@ resource "aws_db_instance" "database" {
   allocated_storage      = 10
   engine                 = "mysql"
   engine_version         = "8.0"
-  instance_class         = "db.t4g.medium"
+  instance_class         = "db.m6g.2xlarge"
   identifier             = "${var.namespace}-db-instance"
   /* name                   = "ecommerce" */ //deprecated field: "name"
   db_name                = "ecommerce"

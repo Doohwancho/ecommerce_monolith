@@ -34,11 +34,13 @@ module "websvr_sg" {
   ingress_rules = [
     {
       port            = 8080
-      security_groups = [module.lb_sg.security_group.id]
+      /* security_groups = [module.lb_sg.security_group.id] */
+      cidr_blocks = ["0.0.0.0/0"] # load balancer 없이 부하 테스트를 위한 설정 변경
     },
     {
       port        = 22 #C
-      cidr_blocks = ["10.0.0.0/16"] #C
+      /* cidr_blocks = ["10.0.0.0/16"] #C */
+      cidr_blocks = ["0.0.0.0/0"] # load balancer 없이 부하 테스트를 위한 설정 변경
     }
   ]
 }

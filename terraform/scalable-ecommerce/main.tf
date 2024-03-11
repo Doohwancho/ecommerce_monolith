@@ -44,7 +44,7 @@ module "redis" {
   source = "./modules/elasticache"
 
   name_prefix        = "redis-basic-example"
-  num_cache_clusters = 2
+  num_cache_clusters = 1
   node_type          = "cache.t4g.small"
 
   engine_version           = "7.0"
@@ -53,8 +53,9 @@ module "redis" {
   snapshot_window          = "04:00-06:00"
   snapshot_retention_limit = 7
 
-  automatic_failover_enabled = true
-  multi_az_enabled           = true
+  //HA를 위한 설정
+  automatic_failover_enabled = false //이 설정이 true라면, 위에 num_cache_clusters가 2개 이상이어야 한다.
+  multi_az_enabled           = false //이 설정이 true라면, 위에 num_cache_clusters가 2개 이상이어야 한다.
 
   at_rest_encryption_enabled = false //encryption을 true로 할 경우, private ec2에서 redis-cli로 접속 불가능하다.
   transit_encryption_enabled = false //set to 'Yes'. This meant my database endpoint needed to be accessed through an SSL tunnel, which redis-cli does not do
