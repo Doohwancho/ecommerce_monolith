@@ -1564,7 +1564,7 @@ vus_max........................: 1000   min=1000     max=1000
 ```
 
 1. failed = 0.01%
-	- 20:47분경 인터넷 핑이 한번 튀었을 때, request timeout된 response들이 80만개 중에서 152개정도 있는 듯 하다.
+	- 실패한 request가 생긴 이유는 max latency가 1m과 같고, 이유는 차후 후술한다.
 2. latency = 115.9ms (http_req_duration)
 	- p(95)=320.89ms
 	- max_req_duration = 1m
