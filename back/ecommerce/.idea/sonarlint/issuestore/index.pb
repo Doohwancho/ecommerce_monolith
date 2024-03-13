@@ -86,13 +86,5 @@ y
 Isrc/main/java/com/cho/ecommerce/domain/product/entity/CategoryEntity.java,4/3/43d4d3673d7184b57fc63a75fd1df374b503bd3a
 y
 Isrc/main/java/com/cho/ecommerce/domain/product/entity/DiscountEntity.java,3/3/3350f53106290c7aef147a1830321e4851721af7
-€
-Psrc/main/java/com/cho/ecommerce/domain/product/controller/ProductController.java,2/4/248ce408f85b159c35dab24737ae043cb1fd8ecd
-z
-Jsrc/main/java/com/cho/ecommerce/domain/product/adapter/ProductAdapter.java,8/c/8ce049fdbee970df0ae1ded5c2d2917927f0da05
-†
-Vsrc/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustom.java,1/8/187221a8103f2993ed046788b3f64f759f16651a
-Š
-Zsrc/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java,a/6/a613099cd9822cdc022fad8915aa5f3090dd0c55
 t
 Dsrc/main/java/com/cho/ecommerce/domain/order/entity/OrderEntity.java,a/6/a6b0fd9de2074fb80ce61e8d0edfe8ea45f8cba4
