@@ -30,3 +30,11 @@ variable "db_config" {
     } #A
   ) #A
 }
+
+variable "redis_endpoint" {
+	type = string
+}
+
+variable "redis_port" {
+	type = string
+}

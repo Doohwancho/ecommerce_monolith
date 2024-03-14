@@ -8,3 +8,4 @@ output "db_config" {
   }
   sensitive = true
 }
+

@@ -10,10 +10,25 @@ module "autoscaling" {
   namespace   = var.namespace
   ssh_keypair = var.ssh_keypair
 
-  vpc       = module.networking.vpc
-  sg        = module.networking.sg
-  db_config = module.database.db_config
-  iam_instance_profile_name = module.iam_instance_profile.name
+  vpc                        = module.networking.vpc
+  sg                         = module.networking.sg
+  db_config                  = module.database.db_config
+  redis_endpoint             = module.redis.elasticache_replication_group_primary_endpoint_address
+  redis_port                 = module.redis.elasticache_port
+  iam_instance_profile_name  = module.iam_instance_profile.name
+}
+
+
+module "prometheus" {
+  source = "./modules/prometheus"
+
+  public_subnets       = module.networking.vpc.public_subnets
+  sg                    = module.networking.sg
+  iam_instance_profile  = module.iam_instance_profile
+  private_ip_address    = module.autoscaling.private_endpoint_of_ec2
+  PRIVATE_IP_ADDRESS    = module.autoscaling.private_endpoint_of_ec2
+
+  /* namespace                 = var.namespace */
 }
 
 module "database" {
@@ -29,16 +44,6 @@ module "networking" {
   source    = "./modules/networking"
   namespace = var.namespace
 }
-
-module "prometheus" {
-  source = "./modules/prometheus"
-
-  public_subnets       = module.networking.vpc.public_subnets
-  sg                    = module.networking.sg
-  iam_instance_profile  = module.iam_instance_profile
-  /* namespace                 = var.namespace */
-}
-
 
 module "redis" {
   source = "./modules/elasticache"
