@@ -18,7 +18,7 @@
     - c. [sql tuning](#c-sql-tuning)
 	- d. [bulk insert](#d-bulk-insert)
 - G. [기술적 도전 - Cloud](#g-기술적-도전---cloud)
-	- a. [provisioning with terraform](#a-provisioning-with-terraform)
+	- a. [provisioning with terraform & packer](#a-provisioning-with-terraform-&-packer)
 	- b. [prometheus and grafana](#b-prometheus-and-grafana)
 	- c. [300 RPS 부하 테스트](#c-300-rps-부하-테스트)
 	- d. [1000 RPS 부하 테스트](#d-1000-rps-부하-테스트)
@@ -81,8 +81,9 @@
 | Test                 | junit                     | 5.9.2   |
 |                      | hamcrest                  | 2.2     |
 | Deploy               | AWS                       |         |
-|                      | Docker                    | 20.10.13 |
+|                      | Docker                    | 20.10.13|
 | Provisioning         | Terraform                 | 1.6.6   |
+|                      | Packer                    | 1.10.2  |
 | Monitoring           | Prometheus                | 2.49    |
 |                      | Grafana                   | 10.3    |
 | Stress Test          | K6                        | 0.49    |
@@ -1086,7 +1087,7 @@ total   1000001     12.39      18.37          0       5366    1034644     100000
 
 # G. 기술적 도전 - Cloud
 
-## a. provisioning with terraform
+## a. provisioning with terraform & packer
 
 ### 1. 문제
 1. aws 서버 구성하고 한달동안 쓰지도 않았는데 10만원이 청부되었다.
@@ -1096,6 +1097,8 @@ total   1000001     12.39      18.37          0       5366    1034644     100000
 ### 2. 해결책
 1. 명령어 한번에 클라우드가 구성되고, 전부 제거되는 툴을 찾다보니 terraform이라는 provisioning tool을 찾아 적용하게 되었다.
 2. terraform 파일 작성시 막혔을 땐, 직접 수동으로 aws를 구성하고 terraformer이라는 오픈소스를 이용해 terraform 파일로 import해서 참조했다.
+3. terraform으로 인스턴스 생성한 다음, 수동으로 서버에 접속해서 프로젝트 다운, 빌드, 실행 했는데, 불편함을 느껴 빌드 스크립트로 자동화 함.
+4. autoscaling 하려면 빠른 ec2 인스턴스 생성이 중요한데, 빌드 스크립트로 ec2에 openjdk8을 설치하는 것 보다, packer를 이용해 미리 jdk8을 설치한 ec2를 custom ami로 만들어서 가져다 씀.
 
 ### 3. 다른 좋았던 점
 1. 부하 테스트에서 인스턴스의 스펙별로 스트레스 테스트를 할 때, provisioning tool이 유용했다.
