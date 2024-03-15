@@ -5,7 +5,7 @@ How
 ```
 terraform init
 terraform apply
-packer build openjdk8_ubuntu8_packer.pkr.hcl
+packer build openjdk8_ubuntu18_packer.pkr.hcl
 terraform destroy
 
 주의! custom_ami는 명령어로 지워지지 않으니, 수동으로 지워줘야 한다.

@@ -18,7 +18,7 @@
     - c. [sql tuning](#c-sql-tuning)
 	- d. [bulk insert](#d-bulk-insert)
 - G. [기술적 도전 - Cloud](#g-기술적-도전---cloud)
-	- a. [provisioning with terraform & packer](#a-provisioning-with-terraform-&-packer)
+	- a. [provisioning with terraform & packer](#a-provisioning-with-terraform-and-packer)
 	- b. [prometheus and grafana](#b-prometheus-and-grafana)
 	- c. [300 RPS 부하 테스트](#c-300-rps-부하-테스트)
 	- d. [1000 RPS 부하 테스트](#d-1000-rps-부하-테스트)
@@ -1087,7 +1087,7 @@ total   1000001     12.39      18.37          0       5366    1034644     100000
 
 # G. 기술적 도전 - Cloud
 
-## a. provisioning with terraform & packer
+## a. provisioning with terraform and packer
 
 ### 1. 문제
 1. aws 서버 구성하고 한달동안 쓰지도 않았는데 10만원이 청부되었다.
@@ -1640,7 +1640,17 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 대용량 부하테스트시, 하나의 로컬pc에서 하는게 아니라, 여러개의 ec2 인스턴스를 만들어 나눠서 부하테스트를 진행해야 하는 것으로 보인다.
 
 ### 6. monthly cost estimation
+- architecture
+	- ec2 1개, rds 1개, elasticache 1개에 대한 비용이다.
+	- load balancer 비용이 예상외로 상당했기 때문에, 비용을 줄여보고자 간소화 하였다.
+	- 하지만 실제 상황에서는 비용이 더 들어라도 load balancer + cpu usage가 30%정도로 유지되는 인스턴스 3개 + 1 rds + 1 elasticache가 HA 측면에서 유리하기에 더 적합할 수 있다.
+		- 300 RPS 부하테스트에서, 2코어 ec2로 cpu usage가 88%까지 올라갔으니, 4코어 ec2 3개 + 로드밸런서로 1000 RPS 부하처리하는게 적절해보인다.
+	- 비용계산을 하면 다음과 같다.
+		1. 4core ec2인 t6g.xlarge가 on-demand 비용이 $0.1360/hr이니까, 3대면 $0.4080/hr + 1달 1000 RPS network load balancer 비용 $700
+		2. 8core ec2인 m7g.2xlarge가 on-demand 비용이 $0.3264/hr + load balancer 비용 없음
+	- 따라서 대략 월 돈백만원정도 차이가 나니까, ec2 인스턴스 1개인 경우, 서비스가 터졌을 때 예상 피해금액을 산정해서 월평균 백만원 이상 피해가 예상되면 instance 3개 + load balancer를 붙이는게 나아보인다.
 
+---
 - 총 요금
 	1. load balancer 없는 경우
 		1. on-demand: $706.49/month
