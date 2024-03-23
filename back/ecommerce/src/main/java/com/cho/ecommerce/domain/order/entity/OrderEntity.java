@@ -17,7 +17,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +34,12 @@ public class OrderEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
+//    @SequenceGenerator(
+//        name = "order_seq",
+//        sequenceName = "ORDER_SEQ",
+//        allocationSize = 1000
+//    )
     @Column(name = "ORDER_ID")
     private Long orderId;
     
@@ -51,7 +56,7 @@ public class OrderEntity {
     private UserEntity member;
     
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    @NotEmpty(message = "Order must have at least one item")
+//    @NotEmpty(message = "Order must have at least one item")
     private Set<OrderItemEntity> orderItems;
     
 }

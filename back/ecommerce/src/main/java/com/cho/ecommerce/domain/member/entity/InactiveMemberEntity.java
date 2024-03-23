@@ -1,7 +1,6 @@
 package com.cho.ecommerce.domain.member.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,6 +20,12 @@ public class InactiveMemberEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "inactive_member_seq")
+//    @SequenceGenerator(
+//        name = "inactive_member_seq",
+//        sequenceName = "INACTIVE_MEMBER_SEQ",
+//        allocationSize = 1000
+//    )
     @Column(name = "MEMBER_ID")
     private Long memberId;
     
@@ -50,7 +55,7 @@ public class InactiveMemberEntity {
     
     @Column(name = "UPDATED_AT", nullable = false)
     private LocalDateTime updatedAt;
-    
+
 //    @Column(name = "AUTHORITY")
 //    private String authority;
     

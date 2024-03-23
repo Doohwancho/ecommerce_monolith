@@ -3,8 +3,8 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -338.75170000000014,
-    "scrollLeft": -214.03380000000027,
+    "scrollTop": -482.75170000000014,
+    "scrollLeft": -548.0338000000003,
     "zoomLevel": 0.8,
     "show": {
       "tableComment": true,
@@ -19,7 +19,7 @@
     },
     "database": "MySQL",
     "databaseName": "",
-    "canvasType": "@vuerd/builtin-sql-ddl",
+    "canvasType": "ERD",
     "language": "GraphQL",
     "tableCase": "pascalCase",
     "columnCase": "camelCase",
@@ -282,7 +282,7 @@
           "active": false,
           "left": 1056.1109,
           "top": 281.1123,
-          "zIndex": 5,
+          "zIndex": 27,
           "widthName": 60,
           "widthComment": 120,
           "color": "#EB4747"
@@ -345,7 +345,7 @@
           "active": false,
           "left": 22.8892,
           "top": 87.7799,
-          "zIndex": 15,
+          "zIndex": 29,
           "widthName": 67.90994262695312,
           "widthComment": 60,
           "color": "#C49763"
@@ -431,7 +431,7 @@
           "active": false,
           "left": 525.2229,
           "top": 62.2229,
-          "zIndex": 4,
+          "zIndex": 30,
           "widthName": 122.40589904785156,
           "widthComment": 60,
           "color": "#F8FBA8"
@@ -586,7 +586,7 @@
           "active": false,
           "left": 17.668,
           "top": 256.1131,
-          "zIndex": 10,
+          "zIndex": 9,
           "widthName": 60,
           "widthComment": 60,
           "color": "#97FF00"
@@ -728,7 +728,7 @@
       {
         "id": "31d8d004-d5ad-4d26-965d-c304d1c1855b",
         "name": "PRODUCT_ITEM",
-        "comment": "",
+        "comment": "상품별로 다른 옵션의 상품이 다르게 가격층정이 되어있기 때문에 따로 뺌. OPTION_VARIATION 테이블과 join해서 사용",
         "columns": [
           {
             "id": "5ebad9a3-b3dc-40a4-949c-fe022a5bc12d",
@@ -827,9 +827,9 @@
           "active": false,
           "left": 34.3342,
           "top": 529.5574,
-          "zIndex": 11,
+          "zIndex": 24,
           "widthName": 89.3209228515625,
-          "widthComment": 60,
+          "widthComment": 120,
           "color": "#0055FF"
         },
         "visible": true
@@ -865,7 +865,7 @@
           {
             "id": "b31fd9b2-9be9-4739-9b77-4dcf2cb0f847",
             "name": "VALUE",
-            "comment": "브랜드, 사이즈, 콜라보, 신발높이 등",
+            "comment": "옷 카테고리엔 브랜드, 사이즈, 콜라보, 신발높이 등, 핸드폰 카테고리엔 폴더블, 무게, 배터리 등, 각 카테고리에 고유한 옵션값 할당.",
             "dataType": "VARCHAR(100)",
             "default": "",
             "option": {
@@ -913,7 +913,7 @@
           "active": false,
           "left": 545.8916,
           "top": 488.8901,
-          "zIndex": 8,
+          "zIndex": 19,
           "widthName": 60,
           "widthComment": 120,
           "color": "#5F00FF"
@@ -1009,7 +1009,7 @@
       {
         "id": "431af9d1-4261-4c8c-8814-c3c932f96dae",
         "name": "PRODUCT_OPTION_VARIATION",
-        "comment": "",
+        "comment": "해당 카테고리 표준 옵션과 상품의 옵션을 조인해 옵션별로 가격 & 수량 따로 측정하는 목적으로 이 테이블을 만듬",
         "columns": [
           {
             "id": "1c4d8bc7-99ba-47de-92c9-ff21ce5be4a2",
@@ -1085,9 +1085,9 @@
           "active": false,
           "left": 504.6665,
           "top": 875.5564,
-          "zIndex": 3,
+          "zIndex": 26,
           "widthName": 170.81784057617188,
-          "widthComment": 60,
+          "widthComment": 120,
           "color": "#FF0000"
         },
         "visible": true
@@ -1240,7 +1240,7 @@
           "active": false,
           "left": 22.8891,
           "top": 754.5583,
-          "zIndex": 12,
+          "zIndex": 11,
           "widthName": 60.88993835449219,
           "widthComment": 60,
           "color": "#FF8000"
@@ -1395,7 +1395,7 @@
           "active": false,
           "left": 1057.223,
           "top": 610.4449,
-          "zIndex": 14,
+          "zIndex": 13,
           "widthName": 60,
           "widthComment": 120,
           "color": "#FF8D00"
@@ -1427,6 +1427,52 @@
               "widthName": 90.00991821289062,
               "widthComment": 60,
               "widthDataType": 63.60688781738281,
+              "widthDefault": 60
+            }
+          },
+          {
+            "id": "825ccbbd-814e-499f-99af-0b7cd7b33fbe",
+            "name": "QUANTITY",
+            "comment": "",
+            "dataType": "INT(11)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60.38294982910156,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            }
+          },
+          {
+            "id": "71d2cdcb-7ece-4f60-8bc9-7cf3b2d0295b",
+            "name": "PRICE",
+            "comment": "productItem의 price에 discount 적용된 값",
+            "dataType": "DOUBLE(22)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 120,
+              "widthDataType": 71.263916015625,
               "widthDefault": 60
             }
           },
@@ -1479,9 +1525,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 1059.4442,
-          "top": 859.3322,
-          "zIndex": 13,
+          "left": 1036.9442,
+          "top": 838.0822,
+          "zIndex": 44,
           "widthName": 73.82493591308594,
           "widthComment": 60,
           "color": "#FFEC00"
@@ -1659,7 +1705,7 @@
           "active": false,
           "left": 1057.6673,
           "top": 18.8886,
-          "zIndex": 7,
+          "zIndex": 28,
           "widthName": 60,
           "widthComment": 60,
           "color": "#3F51B5"
@@ -2044,7 +2090,7 @@
           "active": false,
           "left": 1533.1492156982422,
           "top": 40.001,
-          "zIndex": 9,
+          "zIndex": 8,
           "widthName": 108.91188049316406,
           "widthComment": 60,
           "color": "#B27B7B"
@@ -2260,8 +2306,8 @@
           "columnIds": [
             "c0002dd6-5f18-4775-a492-bda716189c55"
           ],
-          "x": 1298.2490553466796,
-          "y": 859.3322,
+          "x": 1309.5775694458007,
+          "y": 838.0822,
           "direction": "top"
         },
         "constraintName": "fk_order_to_order_item",
@@ -2286,8 +2332,8 @@
           "columnIds": [
             "9a5e3fb7-ad61-453b-8a04-b5d415b6c594"
           ],
-          "x": 1059.4442,
-          "y": 924.5822,
+          "x": 1036.9442,
+          "y": 923.8322,
           "direction": "left"
         },
         "constraintName": "fk_product_option_variation_to_order_item",

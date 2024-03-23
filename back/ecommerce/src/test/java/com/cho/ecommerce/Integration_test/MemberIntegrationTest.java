@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.cho.ecommerce.Application;
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
-import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
+import com.cho.ecommerce.global.config.fakedata.step1_jpa_saveAll.JpaFakeDataGenerator;
 import com.cho.ecommerce.global.config.parser.OffsetDateTimeDeserializer;
 import com.cho.ecommerce.global.util.DatabaseCleanup;
 import com.google.gson.Gson;
@@ -51,7 +51,7 @@ class MemberIntegrationTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
     @Autowired
-    private FakeDataGenerator dataGenerator;
+    private JpaFakeDataGenerator dataGenerator;
     
     @Autowired
     private UserRepository userRepository;
@@ -132,7 +132,8 @@ class MemberIntegrationTest {
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeDeserializer())
             .create();
         
-        com.cho.ecommerce.api.domain.UserDetailsResponseDTO userDetails = gson.fromJson(jsonInput, com.cho.ecommerce.api.domain.UserDetailsResponseDTO.class);
+        com.cho.ecommerce.api.domain.UserDetailsResponseDTO userDetails = gson.fromJson(jsonInput,
+            com.cho.ecommerce.api.domain.UserDetailsResponseDTO.class);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());

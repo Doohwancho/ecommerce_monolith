@@ -830,19 +830,21 @@ productOptionVariation: 30000 rows
 소규모 데이터 핸들링은, 어떤 DBMS를 사용하던, 어떻게 SQL을 짜던 큰 문제없이 처리 가능한데,\
 데이터 규모가 커질수록, sql tuning이라던지, dbms, engine 선택의 중요도가 높아진다.
 
-대규모 데이터 핸들링을 실습하기 위해, WAS 서버에서 datafaker라는 라이브러리로 가짜 데이터를 만든 후, JPA.saveAll()로 가짜 데이터를 bulk-insert하는 시도를 하였다.
+대규모 데이터 핸들링을 실습하기 위해, WAS 서버에서 datafaker라는 라이브러리로 가짜 데이터를 만든 후, saveAll()로 넣었다.
 
-문제는, 어느정도 튜닝이 필요할 볼륨이 적어도 1,000,000 rows 이상은 되어야 하는데, 15,000 rows만 넣는데도 10분정도 걸렸다.\
-즉, 백만 rows를 넣으려면 11시간이 걸리고, 천만 rows를 넣으려면 4일 반나절을 켜놔야 한다.
+문제는, 어느정도 튜닝이 필요할 볼륨이 적어도 1,000,000 rows 이상은 되어야 하는데, 기존보다 약 100배정도 많은 양을 bulk insert하는게 너무 느리다는 문제가 생겼다.
+
+백만 rows를 bulk-insert 해보자.
 
 
 
+### 2. RDS에 최대 몇개 rows 까지 입력 가능할까?
 
-### Q. 최대 몇개 rows 까지 입력 가능할까?
+성능 튜닝하기 전, 총 몇 rows를 넣어야 적합한지, 넣었을 때 차지하는 용량이 얼마나 되는지 등을 계산하자.
 
-Q. rds 8gb에 몇개 rows까지 넣을 수 있음?
 
-ERD 기준, 각 테이블의 평균 row 크기는 다음과 같습니다
+#### step1. 각 테이블의 byte size 계산하기
+ERD 기준, 각 테이블의 평균 row 크기는 다음과 같다.
 ```
 ADDRESS: 303바이트
 AUTHORITY: 33바이트
@@ -859,228 +861,230 @@ PRODUCT: 205바이트
 PRODUCT_ITEM: 28바이트
 PRODUCT_OPTION_VARIATION: 24바이트
 ```
-product테이블에 1 row씩 insert 하면, product_item과 product_option_variation에 3개 rows씩 추가 삽입 된다고 가정,
-
-PRODUCT: 1개 row = 205바이트
-PRODUCT_ITEM: 3개 row = 3 * 28바이트 = 84바이트
-PRODUCT_OPTION_VARIATION: 3개 row = 3 * 24바이트 = 72바이트
-따라서, 각 PRODUCT가 생성될 때 필요한 총 데이터 크기는 205 + 84 + 72 = 361바이트 이다.
-
-계산에 필요한 값 정의
-
-total_database_size_bytes = 8 * 1024 * 1024 * 1024  # 8GB in bytes
-bytes_per_product = 205 + (3 * 28) + (3 * 24)  # Total bytes for each product and its related rows
-
-최대로 만들 수 있는 PRODUCT의 rows 수 계산
-
-max_product_rows = total_database_size_bytes / bytes_per_product
-max_product_rows
-
-23,794,832.664819945
 
 
-약, 2천 3백만 rows가 8Gb rds에 들어갈 수 있는 최대 products 갯수 사이즈다.
+#### step2. 데이터가 테이블마다 들어갈 비율 정하기
+
+##### a. 사이즈가 고정인 테이블
+
+- 2 row from AUTHORITY TABLE = 33 byte * 2
+- total: **66 bytes**
+
+##### b. 10명의 유저가 있다고 했을 때,
+
+- 10 row from MEMBMER TABLE = 281 byte * 10
+- 10 row from MEMBER_AUTHORITY TABLE = 24 byte * 10
+- 10 row from ADDRESS TABLE = 303 byte * 10
+- 3 row from INACTIVE_MEMBER TABLE = 593 byte * 3 (유저 10명당 휴먼 유저 3명이라 가정)
+- 2 row from ORDER TABLE = 49 byte * 20 (유저 1명당 평균 2개의 주문을 했다고 가정)
+- 3 row from ORDER_ITEM = 24 byte * 20 (1개 주문당 평균 3개의 주문 아이템이 있다고 가정)
+- total: **9319 bytes** (2810 + 240 + 3030 + 1779 + 980 + 480), 38 rows
+
+##### c. 카테고리
+
+- 1 row from CATEGORY TABLE = 95 byte
+- 3 root categories are fixed: MEN, WOMEN, KIDS = 95 byte * 3
+- 4 mid level category per 3 root categories(total 12): Hat, Top, Bottom, Shoes per 3 root categories are fixed: 95 byte * 4 * 3
+- 5 low level categories per 4 mid level categories(total 60): 95 byte * 60
+- 3 option per a low level category(total 180): 49 byte * 180 = 8820
+- 3 option_variation per a option(total 540): 66 byte * 540 = 35640
+- total: **51585 bytes** (95 byte * (3 + 12 + 60) + 49 bytes * 180 + 66 bytes * 540), 795 rows
 
 
-### bulk insert setting
+##### d. 상품
 
-#### LOAD DATA INLINE
+product테이블에 1 row씩 insert 하면, product_item과 product_option_variation에 3개 rows씩 추가 삽입 된다고 가정한다.\
+1 product_item당 1개의 discount가 붙는다고 가정한다.
 
-.csv 파일 불러들여와서 bulk insert하는 것
-much faster than inserting row-by-row.
+- PRODUCT: 1개 row = 205바이트
+- PRODUCT_ITEM: 3개 row = 3 * 28바이트 = 84바이트
+- DISCOUNT: 1개 row = 65 바이트
+- PRODUCT_OPTION_VARIATION: 3개 row = 3 * 24바이트 = 72바이트
+- total: **416 bytes** (205 + 84 + 65 + 72), 8 rows
 
-#### disable autocommit
+##### e. 유저 수 대비 상품수 비율 가정하기
+
 ```
-mysql> SET autocommit=0;
-Bulk Inserting......
-mysql> commit;
-```
-
-single transanction안에 모두 넣게 처리
-
-#### adjust buffer size
-bulk_insert_buffer_size
-innodb_log_file_size
-innodb_log_buffer_size
-
-
-
-
-#### max packet size 설정
-MySQL은 client에서 server로 statement를 보낼 때 size 제한이 있다. statement 를 mysqld 로 전송할 때, packet으로 보내게 되는데 그 크기가 max_allowed_packet 보다 큰 경우 오류가 발생한다. (설정 값은 아래와 같이 확인 할 수 있다.)
-show variables like ‘max_allowed_packet’; 
-
-기본값은 1048576 bytes (1MB)이며, 아래와 같이 설정이 가능하다.
-
-set global max_allowed_packet=1073741824
-1G로 설정한 경우이다. 이렇게 하면 서버가 재시작되면 다시 1MB로 초기화 되는데, mysqld 에 설정하여 계속 유지될 수 있도록 할 수 도 있다.(방법은 구글링 해보자)
-
-
-#### INDEX
-테이벌에 걸려있는 INDEX가 많다면, Bulk Insert하면서 INDEX를 조정하는 것 보다 Bulk Insert가 끝나고 INDEX를 조정하는 것이 훨씬 빠르다.
-
-
-#### KEY / UNIQUE
-Bulk Insert 되는 데이터가 믿을수 있는 데이터라면, 잠시 UNIQUE 검사 / FK 검사 등은 꺼두는 것이 좋다.
-```
-mysql> SET unique_checks=0;
-Bulk Inserting......
-mysql> SET unique_checks=1;
-
-mysql> SET foreign_key_checks=0;
-Bulk Inserting......
-mysql> SET foreign_key_checks=1;
+쿠팡은 2020년 기준으로 약 1,800만 명의 월간 활성 사용자를 보유하고 있으며, 약 6,500만 개 이상의 상품을 판매하고 있다고 밝혔습니다.
+이는 쿠팡이 2020년 6월 미국 증시 상장을 위해 제출한 서류(F-1)를 통해 공개된 정보입니다.
 ```
 
-#### buffer, logging 설정 변경
+100% 정확한 정보인지는 모르겠으나, 크리티컬하지는 않기에 맞다고 가정한다.
 
-/etc/my.cnf
+유저 수: 상품 수 = 1: 3.6
+...으로 가정한다.
+
+###### f. 유저 수 대비 총 rows 수 계산하기
+
+1. 고정
+	- 2 rows (AUTHORITY)
+	- 795 rows (CATEGORY, OPTION)
+2. 가변 (1 유저, 1 상품 가정)
+	- 1 user: 3.8 rows
+	- 3.6 product: 8 rows * 3.6 = 28.8 rows
+
+- 결론: 고정 797 rows + 가변 32.6 rows per 1 user
+	- 32.6X + 797, where X is number of users
+
+
+##### g. 10명의 유저당 필요한 바이트수 정리
+
+유저 수: 상품 수가 1:3.6 비율일 때,
+
+유저 10명당 상품 36개가 등록된다고 가정하면,
+
+1. 유저 10명: 9319 bytes
+2. 상품 36개: 14976 bytes
+3. 권한 테이블(고정): 66 bytes
+4. 카테고리 테이블(고정): 51585 bytes
+
+total: 51651 bytes + 24295 bytes * N
+
+
+#### step3. 데이터베이스 용량 별 max 유저 수, rows 수 정하기
 ```
-innodb_change_buffering=all
-innodb_change_buffer_max_size=25
-# innodb_buffer_pool_instances=1 Change at your own discretion
-innodb_buffer_pool_size=3072M // RAM의 80% 가량으로 설정
-innodb_log_file_size=384M //buffer_pool_size에 비례해서 조정
-innodb_log_buffer_size=128M
-innodb_flush_log_at_trx_commit=1
-skip-innodb_doublewrite
+Y = (((X * 1024^3) - 51651) / 24295) / 10
+```
+X = 데이터베이스 용량 in GiB\
+Y = 유저 수
+
+...를 계산하려고 했으나, RDS는 64TB까지 저장 가능하고, 저장하는 데이터의 양의 비례해 요금을 부과한다고 한다.
+
+byte단위로 용량 계산하는건, EC2에 데이터베이스 설치해서 운영할 때나 쓸만한 접근 법인듯 하다..
+
+그런데 WAS서버를 띄운 이후, RDS로 1 million rows를 bulk insert하는 방법 이외에,
+1. 1 million rows를 로컬 pc에 저장한 이후,
+2. export해서
+3. aws s3에 저장한걸
+4. RDS에서 LOAD DATA INLINE으로 bulk insert하는 방식
+...도 있기 때문에, 계산해 본다.
+
+- 8GiB Storage = 35,000 유저, 126,000 상품, 1,141,797 rows
+	- 35,356.58 users = (((8 * 1024^3) - 51651) / 24295) / 10
+	- 1 million rows, 8GiB 정도면 중소규모 데이터 사이즈로, sql tuning이 유효한 사이즈로 보인다.
+
+물론 이 방식보다 ec2,rds 생성시 자동으로 JPA-saveAll() 하는 방식이 간편하기 때문에, 왠만하면 saveAll() 방식을 쓰도록 한다.
+
+
+
+
+### 3. JPA .saveAll()
+```java
+Integer numberOfFakeUsers = 2000; //6000 rows total
+Integer numberOfFakeCategories = 10; //75 rows total
+Integer numberOfFakeOptions = 3; //180 rows
+Integer numberOfFakeOptionsVariations = 3; //540 rows
+Integer numberOfFakeProducts = 4000;
+Integer numberOfFakeProductItems = 3; //12000 + 12000 (discount) rows total
+Integer numberOfFakeProductionOptionVariations = numberOfFakeProducts * numberOfFakeProductItems; //12000 rows
+Integer numberOfFakeOrders = 2000; //2000 rows
+Integer maxProductItemsPerOrder = 2; //4000 rows
+
+... total 52,730 rows
 ```
 
+약 5만 rows의 fake-data를 for-loop으로 insert하는 방법
+```
+.lambda$initData$0:88] - Total execution time: 463886 ms
+```
+
+463.886s = 7.7m
+
+5만 rows 넣을 때 약 8분정도 소요.\
+100만 rows 넣을 때 약 2시간 40분 소요
 
 
-### how
+### 4. spring batch(chunk size of 1000) + JPA .saveAll()
+
+spring batch에 chunk size를 조절하는게 있길래,\
+chunk size를 1000정도로 늘려주면 한 transaction안에 여러 데이터를 넣으니까 훨씬 빠르지 않을까? 라고 생각했지만 오판이었다.
+
+오히려 더 느려졌다.
+
+.saveAll()하는건 똑같은데, spring batch를 내부적으로 로드하는 시간이 추가되서 그런 듯 하다.
+
+
+### 5. JPA .saveAll() + batch size of 1000
+
+spring.jpa.properties.hibernate.jdbc.batch_size = ?
+
+30,50,100,1000,2000 으로 설정하고 결과값을 비교하여 최적 소요시간을 찾아보자.
+
+- batch_size
+	1. 설정을 안한 경우: 463886ms
+	1. 30: 447800 ms
+	2. 50: 445065 ms
+	3. 100: 449799 ms
+	4. 1000: 442736 ms
+	5. 2000: 446292 ms
+
+
+5만 rows를 insert했을 때 batch_size를 1000으로 할 때 442736ms으로, 설정을 안한 경우보다 21,150ms 빨라졌다.
+
+하지만 batch_size를 30->2000으로 조절했는데도, 성능차이가 거의 안나는 것을 보면,\
+bulk-insert 하는게 아니라 여전히 row by row로 한줄씩 넣어서 느린 듯 하다.
+
+저 21,150ms 성능 개선은 jpa -> jdbc로 바꿀 때, jpa의 entity state를 hibernate가 관리해주는 로직과 safety check를 스킵해서 빨라진 듯 하다.
+
+
+
+
+### 6. jdbc bulk insert + batch size 1000
+
+Q. jpa.saveAll()도 bulk insert의 사이즈를 늘리면 jdbc bulk insert만큼 하나의 트렌젝션 안에 많은 양을 넣을 수 있는데, 그럼에도 불구하고 jdbc가 더 빠른 이유는 무엇일까?
+
+1. JPA는 .saveAll()할 때 JPA entity lifecycle 을 통한다. 그 때, entity state를 확인하고, dirty checking을 통해 entity 객체가 modified 되었는지 확인한다. 이런 safety check 단계 때문에 bulk insert시 느려진다.
+2. JPA/hibernate에서 .saveAll() 할 때, transaction 내부 동작 과정 중, session관리와 auto-flushing by hibernate due to change in entity state 단계를 스킵할 수 있음
+	- 세션은 WAS와 DB 사이에서 read or write할 때 캐시 레이어 처럼 동작함. (ex. session에 이미 있으면 read 안하고 session에서 꺼내씀.)
+	- 위에 서술한 entity state관리와 dirty check한다는게 session에 캐시된 데이터 보고 한다는 것
+	- bulk insert시, 각 rows가 unique 하다는 점을 고려, session에 캐싱하는건 오버헤드다.
+	- 또한, hibernate가 session에 캐싱된 데이터와 엔티티를 비교해서, 달라졌으면 알아서 자동으로 flush를 해주기 위해 체킹하는 단계가 있는데, bulk insert시에는 overhead 이므로, jdbc로 bulk insert하면 이 단계를 스킵할 수 있다.
+
+
+JPA .saveAll() -> jdbc bulk-insert로 바꾸고 동일한 숫자의 53,000 rows를 넣은 결과,
+```
+Total execution time: 188,535 ms
+```
+
+442,736ms -> 188,535ms로, JPA .saveAll()방법 대비, 약 254,201ms 만큼 성능향상이 되었다.
+
+442초 걸리던게 188초로 줄어든 것이니까 큰폭으로 성능 향상되었다.
+
+
+
+
+### 7. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true
+
+[stackoverflow에 jdbc batch optimization 기법](https://stackoverflow.com/questions/2993251/jdbc-batch-insert-performance)을 찾아보니
+`jdbc:mysql://${url}:3306/${database-name}?${parameter}`에, `&rewriteBatchedStatements=true`을 추가하면 빨라진다고 한다.
+
+왜냐?
+
+기존 jdbc bulk-insert는 mysql로 이런 쿼리를 날린다고 한다.
+```sql
+INSERT INTO X VALUES (A1,B1,C1)
+INSERT INTO X VALUES (A2,B2,C2)
+...
+INSERT INTO X VALUES (An,Bn,Cn)
+```
+
+그런데 `&rewriteBatchedStatements=true`을 하면, 저 쿼리를
 
 ```sql
-DELIMITER $$
-
-CREATE PROCEDURE InsertFakeMembers(IN num_rows INT)
-BEGIN
-  DECLARE i INT DEFAULT 0;
-  DECLARE v_username VARCHAR(30);
-  DECLARE v_email VARCHAR(100);
-  DECLARE v_name VARCHAR(100);
-  DECLARE v_password VARCHAR(255);
-  DECLARE v_role VARCHAR(20);
-  DECLARE v_failedattempt INT;
-  DECLARE v_enabled BIT(1);
-  DECLARE v_created_at DATETIME;
-  DECLARE v_updated_at DATETIME;
-
-  WHILE i < num_rows DO
-    SET v_username = CONCAT('User', LPAD(FLOOR(RAND() * 1000000), 6, '0'));
-    SET v_email = CONCAT(v_username, '@example.com');
-    SET v_name = CONCAT('Name', LPAD(FLOOR(RAND() * 1000000), 6, '0'));
-    SET v_password = 'encrypted_password';
-    SET v_role = IF(RAND() < 0.5, 'ROLE_USER', 'ROLE_ADMIN');
-    SET v_failedattempt = FLOOR(RAND() * 5); -- Assuming 0 to 4 failed attempts
-    SET v_enabled = FLOOR(RAND() + 0.5); -- Randomly 0 or 1
-    SET v_created_at = NOW();
-    SET v_updated_at = NOW();
-
-    INSERT INTO MEMBER(USERNAME, EMAIL, NAME, PASSWORD, ROLE, FAILEDATTEMPT, ENABLED, CREATED_AT, UPDATED_AT)
-    VALUES (v_username, v_email, v_name, v_password, v_role, v_failedattempt, v_enabled, v_created_at, v_updated_at);
-
-    SET i = i + 1;
-  END WHILE;
-END$$
-
-DELIMITER ;
+INSERT INTO X VALUES (A1,B1,C1),(A2,B2,C2),...,(An,Bn,Cn)
 ```
 
-recursive
-```sql
-insert into member
-WITH RECURSIVE numbers_cte (n, login_date, login_id, login_pw, user_name) AS (
-  SELECT 1, NOW(), UUID(), UUID(), concat('아무개-',floor(RAND()*100))
-  UNION ALL
-  SELECT n+1, NOW(), UUID(), UUID(), concat('아무개-',floor(RAND()*100))
-  FROM numbers_cte
-  WHERE n < 100
-)
-SELECT * FROM numbers_cte;
+..로 한줄 압축해서 보낸다고 한다.
+
+실험해 본 결과,
 ```
-그러나 위 방법은 1000개가 넘어갈 경우 에러가 나오기에 만약 1000개가 넘는 데이터를 넣고 싶다면 설정파일에서 @@cte_max_recursion_depth의 값을 원하는 값으로 설정해주시면 됩니다.
-
-
-
-
-```sql
-CALL InsertFakeMembers(100);
+Total execution time: 152384 ms
 ```
 
+..로
+기존 5만 rows insert, 188,535 ms 대비, 36,151ms 더 빨라졌다.
 
-```
-load data local infile '[파일경로]' into table [insert할 테이블명]
-fields terminated by '[데이터 구분자. CSV의 경우 ,]'
-lines terminated by '\n'
-IGNORE 1 LINES // 첫번째 줄에는 각 컬럼명이 표시되어 있으므로 첫번째 줄을 무시하도록 한다.
-(col1, col2, col3, ...); // insert를 원하는 컬럼명
-```
-
-
-
-```
-CREATE TABLE MAXTEST (COLA NUMBER, COLB NUMBER, COLC NUMBER);
-CREATE TABLE MAXTEST2 (COLA NUMBER, COLB NUMBER, COLC NUMBER);
-
-
-case1) bulk insert
-DECLARE
--- 1. MAXTEST 레코드 형식의 배열 선언
-TYPE tbl_ins IS TABLE OF MAXTEST%ROWTYPE INDEX BY BINARY_INTEGER;
-w_ins tbl_ins;
-BEGIN
--- 2. 배열에 값 설정
-FOR i IN 1..1000000 LOOP
-   w_ins(i).COLA :=i;
-   w_ins(i).COLB :=10;
-   w_ins(i).COLC :=99;
-END LOOP;
--- 3. 벌크 INSERT 실행
-   FORALL i in 1..1000000 INSERT INTO MAXTEST VALUES w_ins(i);
-   COMMIT;
-END;
-/
-
-
-case2) 일반 insert
-
-BEGIN
-FOR i IN 1..1000000 LOOP
-INSERT INTO MAXTEST2 VALUES (i, 10, 99);
-END LOOP;
-COMMIT;
-END;
-
-
-
-sql insert로 본 성능 차이
-벌크 insert sql trace
-call     count       cpu    elapsed       disk      query    current        rows
-------- ------  -------- ---------- ---------- ---------- ----------  ----------
-Parse        1      0.00       0.00          0          0          0           0
-Execute      1      0.79       1.01          0       4082      23177     1000000
-Fetch        0      0.00       0.00          0          0          0           0
-------- ------  -------- ---------- ---------- ---------- ----------  ----------
-total        2      0.79       1.01          0       4082      23177     1000000
-
-
-일반 insert sql trace
-call     count       cpu    elapsed       disk      query    current        rows
-------- ------  -------- ---------- ---------- ---------- ----------  ----------
-Parse        1      0.00       0.00          0          0          0           0
-Execute 1000000     12.39      18.37          0       5366    1034644     1000000
-Fetch        0      0.00       0.00          0          0          0           0
-------- ------  -------- ---------- ---------- ---------- ----------  ----------
-total   1000001     12.39      18.37          0       5366    1034644     1000000
-```
-
-일반 INSERT에서는 Execute의 Count값이 100만개 이지만 벌크 INSERT에서는 1로 나옴
-
-또한 cpu 값이 일반 INSERT에서는 12.39초이지만 벌크 INSERT에서는 0.79초임
-
-
-
+5만 rows 넣는데 2분 30초 걸리니까, 100만 rows를 넣을 때 까지, 약 50분 정도 걸린다.
 
 
 

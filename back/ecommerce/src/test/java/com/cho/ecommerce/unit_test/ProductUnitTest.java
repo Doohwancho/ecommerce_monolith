@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.cho.ecommerce.Application;
 import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.service.ProductService;
-import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
+import com.cho.ecommerce.global.config.fakedata.step1_jpa_saveAll.JpaFakeDataGenerator;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class ProductUnitTest {
     @Autowired
     private ProductService productService;
     @Autowired
-    private FakeDataGenerator dataGenerator;
+    private JpaFakeDataGenerator dataGenerator;
     
     @Test
     void GetProductDetailDTOsByIdUnitTest() {
@@ -42,14 +42,14 @@ class ProductUnitTest {
         
         dataGenerator.generateFakeCategoryAndOptions(numberOfFakeCategories, numberOfFakeOptions,
             numberOfFakeOptionsVariations);
-        dataGenerator.generateFake100Products(numberOfFakeProducts, numberOfFakeCategories,
+        dataGenerator.generateFakeProducts(numberOfFakeProducts, numberOfFakeCategories,
             numberOfFakeProductItems);
         
         // When
         List<Product> products = productService.getProductDetailDTOsById(productId);
-    
+        
         // Then
-        for(Product product : products) {
+        for (Product product : products) {
             assertNotNull(products);
             assertEquals(products.size(), numberOfFakeProductItems);
             assertNotNull(product.getProductId());

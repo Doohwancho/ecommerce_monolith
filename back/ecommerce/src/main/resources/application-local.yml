@@ -11,7 +11,7 @@ spring:
   datasource:
     platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ecommerce-database?serverTimezone=Asia/Seoul #for local development
+    url: jdbc:mysql://localhost:3306/ecommerce-database?serverTimezone=Asia/Seoul&rewriteBatchedStatements=true #for local development
     username: root
     password:
   jpa:
@@ -21,9 +21,13 @@ spring:
     properties.hibernate:
       format_sql: true
       show-sql: true
-#      generate_statistics: true
+      #      generate_statistics: true
       open-in-view: false # TODO - OIV 자세히 알아보기. log level: WARNING - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering.
       default_batch_fetch_size: 1000
+      jdbc:
+        batch_size: 1000
+  #      id:
+  #        new_generator_mappings: false
   batch:
     initialize-schema: always
     job:
@@ -36,8 +40,8 @@ spring:
     timeout: 60m
 
 logging.level:
-  org.hibernate.SQL: debug
-  org.hibernate.type: trace
+  org.hibernate.SQL: DEBUG # DEBUG # warn
+  org.hibernate.type: trace # trace # warn
   org.springframework.security: DEBUG
 
 

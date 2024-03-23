@@ -31,6 +31,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'com.querydsl:querydsl-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-quartz'
@@ -70,12 +71,11 @@ dependencies {
 }
 
 
-
 test {
     jvmArgs '--enable-preview'
     //start of jqwik config
     useJUnitPlatform {
-         includeEngines 'jqwik', 'junit-jupiter', 'junit-vintage'
+        includeEngines 'jqwik', 'junit-jupiter', 'junit-vintage'
 
         // includeTags 'fast', 'medium'
         // excludeTags 'slow'
@@ -122,7 +122,6 @@ swaggerSources {
 
 sourceSets.main.java.srcDir "${swaggerSources.ecommerce.code.outputDir}"
 sourceSets.main.resources.srcDir "${swaggerSources.ecommerce.code.outputDir}"
-
 
 
 //query dsl config

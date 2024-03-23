@@ -27,7 +27,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,11 +49,18 @@ public class UserEntity implements
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq")
+//    @SequenceGenerator(
+//        name = "member_seq",
+//        sequenceName = "MEMBER_SEQ",
+//        allocationSize = 1000
+//    )
     @Column(name = "MEMBER_ID")
     private Long memberId;
     
     @NotBlank(message = "Username is required")
-    @Column(name = "USER_ID", length = DatabaseConstants.MEMBER_USERNAME_SIZE, unique = true) //MYSQL의 utf8mb4은 최대 764byte(== 191 * 4) 까지 저장 가능
+    @Column(name = "USER_ID", length = DatabaseConstants.MEMBER_USERNAME_SIZE) //unique = true
+    //MYSQL의 utf8mb4은 최대 764byte(== 191 * 4) 까지 저장 가능
     private String username;
     
     @Email(message = "Invalid email format")
@@ -65,12 +71,13 @@ public class UserEntity implements
     @NotBlank(message = "Name is required")
     @Column(length = DatabaseConstants.MEMBER_NAME_SIZE)
     private String name;
-    
+
 //    private String picUrl; //TODO - apply user picture
     
     @NotNull(message = "Address is required")
     @OneToOne(cascade = CascadeType.ALL) //Casecade로 지정하면, UserEntity를 저장하면 AddressEntity도 자동 저장된다.
-    @JoinColumn(name = "ADDRESS_ID", referencedColumnName = "ADDRESS_ID")
+//    @JoinColumn(name = "ADDRESS_ID", referencedColumnName = "ADDRESS_ID")
+    @JoinColumn(name = "ADDRESS_ID")
     private AddressEntity address;
     
     @NotBlank(message = "Password is required")
@@ -96,7 +103,8 @@ public class UserEntity implements
     private Set<UserAuthorityEntity> userAuthorities;
     
     @Column(name = "CREATED_AT")
-    @NotNull(message = "User must have created datetime") //note: @NotEmpty는 LocalDateTime과 호환이 안되서 에러난다! @NotNull을 써야한다!
+    @NotNull(message = "User must have created datetime")
+    //note: @NotEmpty는 LocalDateTime과 호환이 안되서 에러난다! @NotNull을 써야한다!
     private LocalDateTime created;
     
     @Column(name = "UPDATED_AT")

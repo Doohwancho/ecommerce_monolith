@@ -16,7 +16,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +30,12 @@ public class ProductEntity implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_seq")
+//    @SequenceGenerator(
+//        name = "product_seq",
+//        sequenceName = "PRODUCT_SEQ",
+//        allocationSize = 1000
+//    )
     @Column(name = "PRODUCT_ID")
     private Long productId;
     

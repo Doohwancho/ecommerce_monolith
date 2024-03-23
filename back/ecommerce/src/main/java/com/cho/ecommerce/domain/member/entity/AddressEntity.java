@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -26,6 +25,22 @@ public class AddressEntity implements Serializable {
     private static final long serialVersionUID = 1L;  // Add this line
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_seq")
+//    @SequenceGenerator(
+//        name = "address_seq",
+//        sequenceName = "ADDRESS_SEQ",
+//        allocationSize = 1000
+//    )
+//    @GeneratedValue(strategy = GenerationType.TABLE, generator = "address_seq")
+//    @TableGenerator(
+//        name = "address_seq",
+//        table = "ADDRESS_ID",
+//        pkColumnName = "SEQ_NAME",
+//        pkColumnValue = "ADDRESS_MAX_ID",
+//        valueColumnName = "SEQ_NUMBER",
+//        initialValue = 1, //초기 값
+//        allocationSize = 1 //증가 값
+//    )
     @Column(name = "ADDRESS_ID")
     private Long addressId;
     
@@ -46,7 +61,7 @@ public class AddressEntity implements Serializable {
     private String country;
     
     @NotBlank(message = "Zip code is required")
-    @Column(length = DatabaseConstants.ZIPCODE_SIZE)
+    @Column(name = "zip_code", length = DatabaseConstants.ZIPCODE_SIZE)
     private String zipCode;
     
     @NotNull

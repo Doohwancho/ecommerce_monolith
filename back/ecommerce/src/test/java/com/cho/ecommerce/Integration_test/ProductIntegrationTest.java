@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cho.ecommerce.Application;
 import com.cho.ecommerce.domain.product.domain.Product;
-import com.cho.ecommerce.global.config.fakedata.FakeDataGenerator;
+import com.cho.ecommerce.global.config.fakedata.step1_jpa_saveAll.JpaFakeDataGenerator;
 import com.cho.ecommerce.global.config.parser.OffsetDateTimeDeserializer;
 import com.cho.ecommerce.global.util.DatabaseCleanup;
 import com.google.gson.Gson;
@@ -52,7 +52,7 @@ class ProductIntegrationTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
     @Autowired
-    private FakeDataGenerator dataGenerator;
+    private JpaFakeDataGenerator dataGenerator;
     
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;

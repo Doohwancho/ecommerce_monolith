@@ -1,4 +1,4 @@
-package com.cho.ecommerce.global.config.fakedata;
+package com.cho.ecommerce.global.config.fakedata.step1_jpa_saveAll;
 
 import com.cho.ecommerce.domain.member.entity.AddressEntity;
 import com.cho.ecommerce.domain.member.entity.AuthorityEntity;
@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import net.datafaker.Faker;
@@ -44,26 +46,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class FakeDataGenerator {
+public class JpaFakeDataGenerator {
     
+    @PersistenceContext
+    private EntityManager entityManager;
     private final Faker faker = new Faker();
     private final AuthorityRepository authorityRepository;
     private final UserAuthorityRepository userAuthorityRepository;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    
     private final CategoryRepository categoryRepository;
-    
     private final OptionRepository optionRepository;
-    
     private final OptionVariationRepository optionVariationRepository;
-    
     private final ProductRepository productRepository;
-    
     private final ProductItemRepository productItemRepository;
     private final DiscountRepository discountRepository;
     private final ProductOptionVariationRepository productOptionVariationRepository;
-    
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     
@@ -79,78 +77,118 @@ public class FakeDataGenerator {
             authorityRepository.save(adminRole);
         }
     }
-    
-    @Transactional
-    public void createFakeAdmin() {
-        if (authorityRepository.findByAuthority("ROLE_ADMIN").isPresent()) {
-            
-            UserEntity existingAdmin = userRepository.findByUsername("admin");
-            
-            if (existingAdmin
-                == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
-                //step1) save user "admin"
-                UserEntity admin = new UserEntity();
-                admin.setUsername("admin");
-                admin.setName("admin");
-                admin.setEmail("admin@admin.com");
-                admin.setPassword(passwordEncoder.encode("admin"));
-                admin.setCreated(LocalDateTime.now());
-                admin.setUpdated(LocalDateTime.now());
-                admin.setRole("ROLE_ADMIN");
-                admin.setEnabled(true);
-                admin.setFailedAttempt(0);
-                
-                UserEntity savedUserEntity = userRepository.save(admin);
-                
-                //step2) save AuthorityEntity "ROLE_ADMIN"
-                AuthorityEntity userRole = authorityRepository.findByAuthority(
-                        AuthorityEntity.ROLE_ADMIN)
-                    .orElseThrow(() -> new RuntimeException("ROLE_ADMIN not found"));
-                
-                UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
-                userAuthorityEntity.setUserEntity(savedUserEntity);
-                userAuthorityEntity.setAuthorityEntity(userRole);
-                
-                userAuthorityRepository.save(userAuthorityEntity);
-            }
-        }
-    }
-    
-    @Transactional
-    public void createFakeUser() {
-        if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
-            
-            UserEntity existingAdmin = userRepository.findByUsername("testUser");
-            
-            if (existingAdmin
-                == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
-                //step1) save user "testUser"
-                UserEntity user = new UserEntity();
-                user.setUsername("testUser");
-                user.setName("testUser");
-                user.setEmail("testUser@testUser.com");
-                user.setPassword(passwordEncoder.encode("password"));
-                user.setCreated(LocalDateTime.now());
-                user.setUpdated(LocalDateTime.now());
-                user.setRole("ROLE_USER");
-                user.setEnabled(true);
-                user.setFailedAttempt(0);
-                
-                UserEntity savedUserEntity = userRepository.save(user);
-                
-                //step2) save AuthorityEntity "ROLE_USER"
-                AuthorityEntity userRole = authorityRepository.findByAuthority(
-                        AuthorityEntity.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
-                
-                UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
-                userAuthorityEntity.setUserEntity(savedUserEntity);
-                userAuthorityEntity.setAuthorityEntity(userRole);
-                
-                userAuthorityRepository.save(userAuthorityEntity);
-            }
-        }
-    }
+
+//    @Transactional
+//    public void createFakeAdmin() {
+//        if (authorityRepository.findByAuthority("ROLE_ADMIN").isPresent()) {
+//
+//            UserEntity existingAdmin = userRepository.findByUsername("admin");
+//
+//            if (existingAdmin
+//                == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
+//                //step1) save user "admin"
+//                UserEntity admin = new UserEntity();
+//                admin.setUsername("admin");
+//                admin.setName("admin");
+//                admin.setEmail("admin@admin.com");
+//                admin.setPassword(passwordEncoder.encode("admin"));
+//                admin.setCreated(LocalDateTime.now());
+//                admin.setUpdated(LocalDateTime.now());
+//                admin.setRole("ROLE_ADMIN");
+//                admin.setEnabled(true);
+//                admin.setFailedAttempt(0);
+//
+//                AddressEntity address = new AddressEntity();
+//                address.setUser(admin);
+//
+//                String streetAddress = sizeTrimmer(faker.address().streetAddress(),
+//                    DatabaseConstants.STREET_SIZE);
+//                String city = sizeTrimmer(faker.address().city(), DatabaseConstants.CITY_SIZE);
+//                String state = sizeTrimmer(faker.address().state(), DatabaseConstants.STATE_SIZE);
+//                String country = sizeTrimmer(faker.address().country(),
+//                    DatabaseConstants.COUNTRY_SIZE);
+//                String zipCode = sizeTrimmer(faker.address().zipCode(),
+//                    DatabaseConstants.ZIPCODE_SIZE);
+//
+//                address.setStreet(streetAddress);
+//                address.setCity(city);
+//                address.setState(state);
+//                address.setCountry(country);
+//                address.setZipCode(zipCode);
+//
+//                admin.setAddress(address);
+//
+//                UserEntity savedUserEntity = userRepository.save(admin);
+//
+//                //step2) save AuthorityEntity "ROLE_ADMIN"
+//                AuthorityEntity userRole = authorityRepository.findByAuthority(
+//                        AuthorityEntity.ROLE_ADMIN)
+//                    .orElseThrow(() -> new RuntimeException("ROLE_ADMIN not found"));
+//
+//                UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
+//                userAuthorityEntity.setUserEntity(savedUserEntity);
+//                userAuthorityEntity.setAuthorityEntity(userRole);
+//
+//                userAuthorityRepository.save(userAuthorityEntity);
+//            }
+//        }
+//    }
+
+//    @Transactional
+//    public void createFakeUser() {
+//        if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
+//
+//            UserEntity existingAdmin = userRepository.findByUsername("testUser");
+//
+//            if (existingAdmin
+//                == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
+//                //step1) save user "testUser"
+//                UserEntity user = new UserEntity();
+//                user.setUsername("testUser");
+//                user.setName("testUser");
+//                user.setEmail("testUser@testUser.com");
+//                user.setPassword(passwordEncoder.encode("password"));
+//                user.setCreated(LocalDateTime.now());
+//                user.setUpdated(LocalDateTime.now());
+//                user.setRole("ROLE_USER");
+//                user.setEnabled(true);
+//                user.setFailedAttempt(0);
+//
+//                AddressEntity address = new AddressEntity();
+//                address.setUser(user);
+//
+//                String streetAddress = sizeTrimmer(faker.address().streetAddress(),
+//                    DatabaseConstants.STREET_SIZE);
+//                String city = sizeTrimmer(faker.address().city(), DatabaseConstants.CITY_SIZE);
+//                String state = sizeTrimmer(faker.address().state(), DatabaseConstants.STATE_SIZE);
+//                String country = sizeTrimmer(faker.address().country(),
+//                    DatabaseConstants.COUNTRY_SIZE);
+//                String zipCode = sizeTrimmer(faker.address().zipCode(),
+//                    DatabaseConstants.ZIPCODE_SIZE);
+//
+//                address.setStreet(streetAddress);
+//                address.setCity(city);
+//                address.setState(state);
+//                address.setCountry(country);
+//                address.setZipCode(zipCode);
+//
+//                user.setAddress(address);
+//
+//                UserEntity savedUserEntity = userRepository.save(user);
+//
+//                //step2) save AuthorityEntity "ROLE_USER"
+//                AuthorityEntity userRole = authorityRepository.findByAuthority(
+//                        AuthorityEntity.ROLE_USER)
+//                    .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
+//
+//                UserAuthorityEntity userAuthorityEntity = new UserAuthorityEntity();
+//                userAuthorityEntity.setUserEntity(savedUserEntity);
+//                userAuthorityEntity.setAuthorityEntity(userRole);
+//
+//                userAuthorityRepository.save(userAuthorityEntity);
+//            }
+//        }
+//    }
     
     public UserEntity generateRandomROLE_USER() {
         
@@ -204,25 +242,26 @@ public class FakeDataGenerator {
         return null;
     }
     
-    
     @Transactional
     public void generateFakeUsers(Integer numberOfUsers) {
-        List<UserEntity> users = new ArrayList<>();
-        
         for (int i = 0; i < numberOfUsers; i++) {
             UserEntity user = generateRandomROLE_USER();
             if (user != null) {
-                users.add(user);
+                entityManager.persist(user);
+                
+                if (i > 0 && i % 1000 == 0) {
+                    entityManager.flush();
+                    entityManager.clear();
+                }
             }
         }
-        userRepository.saveAll(users);
     }
     
     
     @Transactional
     public void generateFakeCategoryAndOptions(Integer numberOfFakeCategories,
         Integer numberOfFakeOptions, Integer numberOfFakeOptionsVariations) {
-        List<CategoryEntity> lists = new ArrayList<>();
+//        List<CategoryEntity> lists = new ArrayList<>();
         
         // Generate categories
         for (int i = 0; i < numberOfFakeCategories; i++) {
@@ -264,13 +303,18 @@ public class FakeDataGenerator {
                 }
             }
             category.setOptionEntities(options);
-            lists.add(category);
+//            lists.add(category);
+            entityManager.persist(category);
+            if (i > 0 && i % 1000 == 0) {
+                entityManager.flush();
+                entityManager.clear();
+            }
         }
-        categoryRepository.saveAll(lists);
+//        categoryRepository.saveAll(lists);
     }
     
     @Transactional
-    public void generateFake100Products(Integer numberOfFakeProducts,
+    public void generateFakeProducts(Integer numberOfFakeProducts,
         Integer numberOfFakeCategories, Integer numberOfFakeProductItems) {
         for (int i = 0; i < numberOfFakeProducts; i++) { //카테고리수가 10개니까, 1000개가 max
             //step1) create product

@@ -20,6 +20,12 @@ public class ProductOptionVariationEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_option_variation_seq")
+//    @SequenceGenerator(
+//        name = "product_option_variation_seq",
+//        sequenceName = "PRODUCT_OPTION_VARIATION_SEQ",
+//        allocationSize = 1000
+//    )
     @Column(name = "PRODUCT_OPTION_VARIATION_ID")
     private Long productOptionVariationId;
     

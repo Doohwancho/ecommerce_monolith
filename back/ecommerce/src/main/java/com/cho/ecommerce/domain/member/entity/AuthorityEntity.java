@@ -33,6 +33,12 @@ public class AuthorityEntity implements GrantedAuthority {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "authority_seq")
+//    @SequenceGenerator(
+//        name = "authority_seq",
+//        sequenceName = "AUTHORITY_SEQ",
+//        allocationSize = 1
+//    )
     @Column(name = "AUTHORITY_ID")
     private Long id;
     

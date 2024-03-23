@@ -2,6 +2,7 @@ package com.cho.ecommerce.domain.member.entity;
 
 import java.io.Serializable;
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,14 +28,21 @@ public class UserAuthorityEntity implements Serializable {
     private static final long serialVersionUID = 1L;  // Add this line
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_authority_seq")
+//    @SequenceGenerator(
+//        name = "user_authority_seq",
+//        sequenceName = "USER_AUTHORITY_SEQ",
+//        allocationSize = 1000
+//    )
+    @Column(name = "USER_AUTHORITY_ID")
+    private Long userAuthorityId;
     
-//    @NotNull(message = "User is required")
+    //    @NotNull(message = "User is required")
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private UserEntity userEntity;
     
-//    @NotNull(message = "Authority is required")
+    //    @NotNull(message = "Authority is required")
     @ManyToOne
     @JoinColumn(name = "AUTHORITY_ID")
     private AuthorityEntity authorityEntity;
@@ -55,7 +62,7 @@ public class UserAuthorityEntity implements Serializable {
     @Override
     public String toString() {
         return "UserAuthority{" +
-            "id=" + id +
+            "id=" + userAuthorityId +
             ", authority=" + authorityEntity +
             '}';
     }
@@ -63,7 +70,7 @@ public class UserAuthorityEntity implements Serializable {
     // Implementing hashCode() and equals() without referencing user to avoid recursion
     @Override
     public int hashCode() {
-        return Objects.hash(id, authorityEntity);
+        return Objects.hash(userAuthorityId, authorityEntity);
     }
     
     @Override
@@ -75,7 +82,7 @@ public class UserAuthorityEntity implements Serializable {
             return false;
         }
         UserAuthorityEntity that = (UserAuthorityEntity) obj;
-        return Objects.equals(id, that.id) &&
+        return Objects.equals(userAuthorityId, that.userAuthorityId) &&
             Objects.equals(authorityEntity, that.authorityEntity);
     }
 }

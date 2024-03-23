@@ -24,6 +24,12 @@ public class OptionVariationEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "option_variation_seq")
+//    @SequenceGenerator(
+//        name = "option_variation_seq",
+//        sequenceName = "OPTION_VARIATION_SEQ",
+//        allocationSize = 1000
+//    )
     @Column(name = "OPTION_VARIATION_ID")
     private Long optionVariationId;
     
@@ -36,7 +42,7 @@ public class OptionVariationEntity {
     @JoinColumn(name = "OPTION_ID")
     private OptionEntity option;
     
-//    @NotEmpty(message = "Option variation must have at least one product option variation") //optionVariation may not have product option variations
+    //    @NotEmpty(message = "Option variation must have at least one product option variation") //optionVariation may not have product option variations
     @OneToMany(mappedBy = "optionVariation")
     private Set<ProductOptionVariationEntity> productOptionVariations;
     

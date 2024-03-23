@@ -13,7 +13,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,9 +21,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CategoryEntity implements Serializable {
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_seq")
+//    @SequenceGenerator(
+//        name = "category_seq",
+//        sequenceName = "CATEGORY_SEQ",
+//        allocationSize = 1000
+//    )
     @Column(name = "CATEGORY_ID")
     private Long categoryId;
     

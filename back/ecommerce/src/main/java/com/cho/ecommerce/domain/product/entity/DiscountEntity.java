@@ -26,6 +26,12 @@ public class DiscountEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "discount_seq")
+//    @SequenceGenerator(
+//        name = "discount_seq",
+//        sequenceName = "DISCOUNT_SEQ",
+//        allocationSize = 1000
+//    )
     @Column(name = "DISCOUNT_ID")
     private Long discountId;
     

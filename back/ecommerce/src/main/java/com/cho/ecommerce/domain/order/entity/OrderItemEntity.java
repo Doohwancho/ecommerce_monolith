@@ -23,6 +23,12 @@ public class OrderItemEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_item_seq")
+//    @SequenceGenerator(
+//        name = "order_item_seq",
+//        sequenceName = "ORDER_ITEM_SEQ",
+//        allocationSize = 1000
+//    )
     @Column(name = "ORDER_ITEM_ID")
     private Long orderItemId;
     
