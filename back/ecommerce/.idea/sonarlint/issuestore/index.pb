@@ -66,12 +66,6 @@ s
 Csrc/test/java/com/cho/ecommerce/smoke_test/MySQLConnectionTest.java,e/c/ec621d769bc6d052ea7a7e2e71245876c4a5a132
 <
 build.gradle,f/0/f07866736216be0ee2aba49e392191aeae700a35
-ƒ
-Ssrc/main/java/com/cho/ecommerce/global/util/UniqueStringGeneratorWithDataFaker.java,b/0/b0848ecf9e55642412622e8f3206b823012ae0d0
-y
-Isrc/main/java/com/cho/ecommerce/global/util/ParallelDataFakerExample.java,8/8/884d42cc091a98f612c0cfdf9f0ccf66ae13a3a9
-z
-Jsrc/main/java/com/cho/ecommerce/global/util/FastUniqueStringGenerator.java,4/6/46cf01e67a2fb54594b87ec4d1b5939dbf2f899d
 ’
 bsrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertCategoriesAndOptionsStepConfig.java,d/9/d9c5c441646332e2ceaa6e4dde72b44236d4b9bb
 w
@@ -92,12 +86,6 @@ Hsrc/main/java/com/cho/ecommerce/domain/product/entity/ProductEntity.java,a/3/a
 Psrc/main/java/com/cho/ecommerce/domain/product/entity/OptionVariationEntity.java,7/e/7e1b777244bd6d49fd7f601e065e880b01ce4753
 w
 Gsrc/main/java/com/cho/ecommerce/domain/product/entity/OptionEntity.java,a/9/a98d8cc0258b09630477e65ff512259967309c70
-y
-Isrc/main/java/com/cho/ecommerce/domain/product/entity/CategoryEntity.java,4/3/43d4d3673d7184b57fc63a75fd1df374b503bd3a
-y
-Isrc/main/java/com/cho/ecommerce/domain/product/entity/DiscountEntity.java,3/3/3350f53106290c7aef147a1830321e4851721af7
-t
-Dsrc/main/java/com/cho/ecommerce/domain/order/entity/OrderEntity.java,a/6/a6b0fd9de2074fb80ce61e8d0edfe8ea45f8cba4
 x
 Hsrc/main/java/com/cho/ecommerce/domain/order/entity/OrderItemEntity.java,f/c/fce212ea50e57c59a9456a51a776bfbdad1a3aa8
 t

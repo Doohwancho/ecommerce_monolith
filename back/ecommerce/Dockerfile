@@ -33,6 +33,6 @@ COPY --from=build /app/build/libs/*.jar app.jar
 ENV SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
 
 # Command to run the application
-# CMD ["java", "-jar", "app.jar" ]
 CMD ["java", "-jar", "app.jar", "-Dspring.profiles.active=docker"]
+# CMD ["java", "-Xms512m", "-Xmx2g", "-jar", "app.jar", "-Dspring.profiles.active=docker"]
 

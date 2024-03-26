@@ -7,4 +7,4 @@ scrape_configs:
   - job_name: 'spring-boot-demo-app'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['ECOMMERCE_APP_IP:8080']
+      - targets: ['ecommerce-app1:8080']

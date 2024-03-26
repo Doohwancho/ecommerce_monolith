@@ -20,8 +20,8 @@ services:
     environment:
       MYSQL_DATABASE: ecommerce-database
       # MYSQL_ROOT_PASSWORD: admin123
-      MYSQL_USER: user123
-      MYSQL_PASSWORD: user123
+      MYSQL_USER: root
+      MYSQL_PASSWORD:
     volumes:
       - ./mysql-data:/var/lib/mysql
     networks:
@@ -36,7 +36,7 @@ services:
       dockerfile: Dockerfile
     # ports: #backend server port는 외부 접속을 막아둔다. 다만, 개발시에는 편의를 위해 여는 경우도 있다.
       # - "8080:8080" #"HOST_PORT:CONTAINER_PORT"
-    environment: 
+    environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=docker
     networks:
@@ -45,6 +45,12 @@ services:
       - redis
       - mysql
     restart: on-failure
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 2048M
+    #     reservations:
+    #       memory: 1024M
 
   # for testing multiple spring instances sharing single redis for authentication
   # ecommerce-app2:
@@ -63,31 +69,31 @@ services:
   #   restart:
   #     on-failure
 
-  nginx:
-    container_name: 'nginx'
-    restart: always
-    build:
-      context: ./web-server
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-    networks:
-      - bridge_network
-    depends_on:
-      - frontend-a
-      - ecommerce-app1
-    restart: on-failure
+  # nginx:
+  #   container_name: 'nginx'
+  #   restart: always
+  #   build:
+  #     context: ./web-server
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "80:80"
+  #   networks:
+  #     - bridge_network
+  #   depends_on:
+  #     - frontend-a
+  #     - ecommerce-app1
+  #   restart: on-failure
 
-  frontend-a:
-    container_name: 'frontend-a'
-    restart: always
-    build:
-      context: ./front/ecommerce
-      dockerfile: Dockerfile
-    networks:
-      - bridge_network
-    restart: on-failure
-  
+  # frontend-a:
+  #   container_name: 'frontend-a'
+  #   restart: always
+  #   build:
+  #     context: ./front/ecommerce
+  #     dockerfile: Dockerfile
+  #   networks:
+  #     - bridge_network
+  #   restart: on-failure
+
   prometheus:
     image: prom/prometheus
     container_name: 'prometheus'
@@ -117,7 +123,7 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./grafana/conf/provisioning/dashboards/:/usr/share/grafana/conf/provisioning/dashboards/ #주의! - os마다, grafana 버전마다 docker container에서 volume mapping해줘야하는 장소가 달라질 수 있다. 현재 config는 mac m1 기준이다. 
+      - ./grafana/conf/provisioning/dashboards/:/usr/share/grafana/conf/provisioning/dashboards/ #주의! - os마다, grafana 버전마다 docker container에서 volume mapping해줘야하는 장소가 달라질 수 있다. 현재 config는 mac m1 기준이다.
       - ./grafana/conf/provisioning/datasources/:/usr/share/grafana/conf/provisioning/datasources/
       - ./grafana/grafana_data/:/var/lib/grafana
     environment:

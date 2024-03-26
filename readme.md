@@ -994,7 +994,7 @@ Integer maxProductItemsPerOrder = 2; //4000 rows
 100만 rows 넣을 때 약 2시간 40분 소요
 
 
-### 4. spring batch(chunk size of 1000) + JPA .saveAll()
+### 4. JPA .saveAll() + spring batch(chunk size of 1000)
 
 spring batch에 chunk size를 조절하는게 있길래,\
 chunk size를 1000정도로 늘려주면 한 transaction안에 여러 데이터를 넣으니까 훨씬 빠르지 않을까? 라고 생각했지만 오판이었다.
@@ -1031,14 +1031,28 @@ bulk-insert 하는게 아니라 여전히 row by row로 한줄씩 넣어서 느�
 
 ### 6. jdbc bulk insert + batch size 1000
 
-Q. jpa.saveAll()도 bulk insert의 사이즈를 늘리면 jdbc bulk insert만큼 하나의 트렌젝션 안에 많은 양을 넣을 수 있는데, 그럼에도 불구하고 jdbc가 더 빠른 이유는 무엇일까?
+Q. 왜 JPA .saveAll()이 jdbc bulk-insert보다 느릴까?
 
-1. JPA는 .saveAll()할 때 JPA entity lifecycle 을 통한다. 그 때, entity state를 확인하고, dirty checking을 통해 entity 객체가 modified 되었는지 확인한다. 이런 safety check 단계 때문에 bulk insert시 느려진다.
-2. JPA/hibernate에서 .saveAll() 할 때, transaction 내부 동작 과정 중, session관리와 auto-flushing by hibernate due to change in entity state 단계를 스킵할 수 있음
-	- 세션은 WAS와 DB 사이에서 read or write할 때 캐시 레이어 처럼 동작함. (ex. session에 이미 있으면 read 안하고 session에서 꺼내씀.)
-	- 위에 서술한 entity state관리와 dirty check한다는게 session에 캐시된 데이터 보고 한다는 것
-	- bulk insert시, 각 rows가 unique 하다는 점을 고려, session에 캐싱하는건 오버헤드다.
-	- 또한, hibernate가 session에 캐싱된 데이터와 엔티티를 비교해서, 달라졌으면 알아서 자동으로 flush를 해주기 위해 체킹하는 단계가 있는데, bulk insert시에는 overhead 이므로, jdbc로 bulk insert하면 이 단계를 스킵할 수 있다.
+1. hibernate가 entity 객체 주기적으로 확인하고 세션에 캐싱하기 때문에 느리다.
+	- JPA는 .saveAll()할 때 JPA entity lifecycle 을 거친다. 그 때, entity state를 확인하고, dirty checking을 통해 entity 객체가 modified 되었는지 확인한다. 이런 safety check 단계 때문에 bulk insert시 느려진다.
+	- entity 생성시 세션에 캐싱해 놓는데, bulk-insert는 어짜피 한번 넣기만 하고, 읽지는 않을거라 이 단계가 오버헤드다.
+2. @Id generation strategy 때문에 .saveAll()이 느려질 수 있다.
+	- entity @Id generation strategy 중에 IDENTITY를 보통 쓰는데, 이는 id를 데이터베이스보고 id값을 구해서 넣으라는 말이다.
+	- 그래서 JPA에서 쿼리 생성시, id 부분을 "?"로 채워서 보내준다.
+	- 문제는 JPA hibernate는 객체의 상태관리를 해야하기 때문에, insert한 이후, db가 반환한 id값을 받아 해당 엔티티의 id값을 업데이트 해야한다.
+	- 이 단계 때문에, IDENTITY 전략을 쓰면, bulk-insert를 한번에 모아서 할 수 없게된다. 한줄씩 넣은 다음, db에서 id값 받아서 업데이트 해주기 때문이다.
+
+
+Q. @Id generation 전략을 IDENTITY 말고 SEQUENCE 쓴다면?
+
+- JPA단에서 id를 순차적으로 +1해주는 SEQUENCE 전략을 써봤다.
+- SEQUENCE 전략은 insert하기 전에, db에서 마지막 id값이 몇인지 읽어온 다음, 그 값에 +1한 값을 insert id에 넣는 방식이다.
+- IDENTITY보다 SEQUENCE가 bulk-insert시에 성능이 훨씬 좋은데, 이유는, IDENTITY와는 다르게, 한번만 db query로 id를 가져오면, batch_size(ex. 1000)만큼 +1씩 해서 보내기 때문에, 묶어서 보낼 수 있기 때문이다.
+- 써봤는데 문제가 있었다. @Id값이 균일하게 +1씩 올라가는게 아니라, 중간에 몇백씩 구멍이 생기는 경우가 생겼다.
+- 파라미터 중에 allocationSize라고, batch_size인 1000을 입력하면, 천개의 rows마다 db에 마지막 id값을 쿼리해주는 파라미터가 있는데, 이게 서버가 여러개면 문제가 발생할 수 있겠다라는 생각이 들었다.
+- 예를들어 스케일 아웃된 서버 A,B가 있는데, A서버가 id값을 읽어온게 1이고, B서버가 id값을 읽어온게 30이고, read 쿼리 날리는걸 bulk-insert 때문에 1000정도로 해주면, A서버는 1001될 때까지 id를 안읽어오고, B서버도 1030이 될 때 까지 안읽어온다는 말인데, B서버가 write한 id값을 A서버가 write하는 경우가 발생할 수 있기 때문에, default id generation 전략이 IDENTITY인 듯 하다.
+- bulk-insert 때문에 엔티티 id 전략을 SEQUENCE로 바꾸는건 안좋은 생각인 것 같다. IDENTITY 전략을 냅두고, bulk-insert용 jdbc 쿼리를 짜는게 맞다는 생각이 든다.
+
 
 
 JPA .saveAll() -> jdbc bulk-insert로 바꾸고 동일한 숫자의 53,000 rows를 넣은 결과,
@@ -1049,7 +1063,6 @@ Total execution time: 188,535 ms
 442,736ms -> 188,535ms로, JPA .saveAll()방법 대비, 약 254,201ms 만큼 성능향상이 되었다.
 
 442초 걸리던게 188초로 줄어든 것이니까 큰폭으로 성능 향상되었다.
-
 
 
 
@@ -1081,10 +1094,575 @@ INSERT INTO X VALUES (A1,B1,C1),(A2,B2,C2),...,(An,Bn,Cn)
 Total execution time: 152384 ms
 ```
 
-..로
-기존 5만 rows insert, 188,535 ms 대비, 36,151ms 더 빨라졌다.
+..로 기존 5만 rows insert, 188,535 ms 대비, 36,151ms 더 빨라졌다.
 
 5만 rows 넣는데 2분 30초 걸리니까, 100만 rows를 넣을 때 까지, 약 50분 정도 걸린다.
+
+
+
+### 8. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + custom random generator
+
+조금 더 성능개선할 수 있는 여지가 있지 않을까?
+
+일단 datafaker를 안쓰고, 고정된 값을 넣으면 훨씬 빠르다.
+
+```
+Total execution time: 671 ms
+```
+
+5만 rows를 넣는게 2분 30초 걸리던게 이젠 1초도 안걸린다.
+
+100만 rows도 넣어보았다.
+```
+Total execution time: 9712 ms
+```
+
+100만 rows 넣는데 10초도 안걸렸다.
+
+그만큼 bulk-insert latency의 대부분의 병목이 datafaker 라이브러리의 random String generation에 있었다.
+
+#### 8-1. datafaker, 왜 느린가?
+
+datafaker library가 어떻게 random String generate하는지 뜯어보자.
+
+주소에 넣는 컬럼중의 하나인 ZIPCODE(우리나라로 치면 우편번호)가 어떻게 생성되는지 보자.
+
+##### step1. 먼저, [address.yml](https://github.com/datafaker-net/datafaker/blob/main/src/main/resources/en/address.yml)에는 postcode가 이런식으로 저장되어있다.
+
+```yml
+en:
+    faker:
+        address:
+            postcode:
+                - "#####" /* 저 "#####"의 의미는, '5'자리 랜덤한 숫자를 의미한다. */
+```
+
+
+##### step2. 이 문자열을 File I/O로 불러온다. [link](https://github.com/datafaker-net/datafaker/blob/main/src/main/java/net/datafaker/providers/base/Address.java)
+
+저 resolve()라는 메서드를 보자.
+```java
+/**
+ * Returns a String representing a standard 5-digit zip code.
+ *
+ * @return a String representing a standard zip code
+ */
+public String zipCode() {
+	return faker.bothify(resolve("address.postcode"));
+}
+```
+
+```java
+/**
+ * Resolves a key to a method on an object or throws an exception with specified message.
+ * <p>
+ * #{hello} with result in a method call to current.hello();
+ * <p>
+ * #{Person.hello_someone} will result in a method call to person.helloSomeone();
+ */
+public String resolve(String key, Object current, ProviderRegistration root, Supplier<String> exceptionMessage, FakerContext context) {
+	String expression = root == null ? key2Expression.get(context.getSingletonLocale()).get(key) : null;
+	if (expression == null) {
+		expression = safeFetch(key, context, null);
+		if (root == null) {
+			key2Expression.updateNestedValue(context.getSingletonLocale(),
+				MAP_STRING_STRING_SUPPLIER, key, expression);
+		}
+	}
+
+	if (expression == null) {
+		throw new RuntimeException(exceptionMessage.get());
+	}
+
+	return resolveExpression(expression, current, root, context);
+}
+```
+저 `safeFetch(key, ...)`를 통해 파일을 읽어오는 듯 하다.
+
+```java
+/**
+ * Safely fetches a key.
+ * <p>
+ * If the value is null, it will return an empty string.
+ * <p>
+ * If it is a list, it will assume it is a list of strings and select a random value from it.
+ * <p>
+ * If the retrieved value is an slash encoded regular expression such as {@code /[a-b]/} then
+ * the regex will be converted to a regexify expression and returned (ex. {@code #regexify '[a-b]'})
+ * <p>
+ * Otherwise it will just return the value as a string.
+ *
+ * @param key           the key to fetch from the YML structure.
+ * @param defaultIfNull the value to return if the fetched value is null
+ * @return see above
+ */
+@SuppressWarnings("unchecked")
+public String safeFetch(String key, FakerContext context, String defaultIfNull) {
+	Object o = fetchObject(key, context);
+	String str;
+	if (o == null) return defaultIfNull;
+	if (o instanceof List) {
+		final List<String> values = (List<String>) o;
+		final int size = values.size();
+		return switch (size) {
+			case 0 -> defaultIfNull;
+			case 1 -> values.get(0);
+			default -> values.get(context.getRandomService().nextInt(size));
+		};
+	} else if (isSlashDelimitedRegex(str = o.toString())) {
+		return "#{regexify '%s'}".formatted(trimRegexSlashes(str));
+	} else {
+		return (String) o;
+	}
+}
+```
+다시 fetchObject(key, context);를 호출하는데,
+
+
+```java
+private final Map<SingletonLocale, FakeValuesInterface> fakeValuesInterfaceMap = new COWMap<>(IdentityHashMap::new);
+
+
+/**
+ * Return the object selected by the key from yaml file.
+ *
+ * @param key key contains path to an object. Path segment is separated by
+ *            dot. E.g. name.first_name
+ */
+public Object fetchObject(String key, FakerContext context) {
+	Object result = null;
+	final List<SingletonLocale> localeChain = context.getLocaleChain();
+	final boolean hasMoreThanOneLocales = localeChain.size() > 1;
+	for (SingletonLocale sLocale : localeChain) {
+		// exclude default locale from cache checks
+		if (sLocale == DEFAULT_LOCALE && hasMoreThanOneLocales) {
+			continue;
+		}
+		Map<String, Object> stringObjectMap = key2fetchedObject.get(sLocale);
+		if (stringObjectMap != null && (result = stringObjectMap.get(key)) != null) {
+			return result;
+		}
+	}
+
+	String[] path = split(key);
+	SingletonLocale local2Add = null;
+	for (SingletonLocale sLocale : localeChain) {
+		Object currentValue = fakeValuesInterfaceMap.get(sLocale);
+		for (int p = 0; currentValue != null && p < path.length; p++) {
+			String currentPath = path[p];
+			if (currentValue instanceof Map) {
+				currentValue = ((Map<?, ?>) currentValue).get(currentPath);
+			} else {
+				currentValue = ((FakeValuesInterface) currentValue).get(currentPath);
+			}
+		}
+		result = currentValue;
+		if (result != null) {
+			local2Add = sLocale;
+			break;
+		}
+	}
+	if (local2Add != null) {
+		key2fetchedObject.updateNestedValue(local2Add, MAP_STRING_OBJECT_SUPPLIER, key, result);
+	}
+	return result;
+}
+
+private String[] split(String string) {
+	String[] result = KEY_2_SPLITTED_KEY.get(string);
+	if (result != null) {
+		return result;
+	}
+	int size = 0;
+	final char splitChar = '.';
+	final int length = string.length();
+	for (int i = 0; i < length; i++) {
+		if (string.charAt(i) == splitChar) {
+			size++;
+		}
+	}
+	result = new String[size + 1];
+	final char[] chars = string.toCharArray();
+	int start = 0;
+	int j = 0;
+	for (int i = 0; i < length; i++) {
+		if (string.charAt(i) == splitChar) {
+			if (i - start > 0) {
+				result[j++] = String.valueOf(chars, start, i - start);
+			}
+			start = i + 1;
+		}
+	}
+	result[j] = String.valueOf(chars, start, chars.length - start);
+	KEY_2_SPLITTED_KEY.putIfAbsent(string, result);
+	return result;
+}
+
+```
+1. split()메서드에서 "address.postcode"에 마침표를 기준삼아 String[]에 ["address", "postcode"]를 나눠담고,
+2. `Object currentValue = fakeValuesInterfaceMap.get(sLocale);`에서, sLocale이 수동으로 랜덤 문자열을 적은 .yml파일의 위치이고, 그 파일을 읽어서 Map에 담은 값이 currentValue인 듯 하다.
+
+`private final Map<SingletonLocale, FakeValuesInterface> fakeValuesInterfaceMap = new COWMap<>(IdentityHashMap::new);`에서 저 `FakeValuesInterface`를 implement하는 클래스를 찾아보면,
+
+```java
+public class FakeValues implements FakeValuesInterface {
+
+	//...
+
+	@Override
+    public Map<String, Object> get(String key) {
+        if (values == null) {
+            lock.lock();
+            try {
+                if (values == null) {
+                    values = loadValues();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        return values == null ? null : (Map) values.get(key);
+    }
+
+	private Map<String, Object> loadValues() {
+        Map<String, Object> result = loadFromUrl();
+        if (result != null) return result;
+        result = loadFromUrl();
+        if (result != null) return result;
+        final Locale locale = fakeValuesContext.getLocale();
+        final String fileName = fakeValuesContext.getFilename();
+        final String[] paths = fileName.isEmpty()
+            ? new String[] {"/" + locale.getLanguage() + ".yml"}
+            : new String[] {
+                "/" + locale.getLanguage() + "/" + fileName,
+                "/" + fileName + ".yml",
+                "/" + locale.getLanguage() + ".yml"};
+
+        for (String path : paths) {
+            try (InputStream stream = getClass().getResourceAsStream(path)) {
+                if (stream != null) {
+                    result = readFromStream(stream);
+                    enrichMapWithJavaNames(result);
+                } else {
+                    try (InputStream stream2 = getClass().getClassLoader().getResourceAsStream(path)) {
+                        result = readFromStream(stream2);
+                        enrichMapWithJavaNames(result);
+                    } catch (Exception e) {
+                        LOG.log(Level.SEVERE, "Exception: ", e);
+                    }
+                }
+
+            } catch (IOException e) {
+                LOG.log(Level.SEVERE, "Exception: ", e);
+            }
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+	private Map<String, Object> loadFromUrl() {
+        final URL url = fakeValuesContext.getUrl();
+        if (url == null) {
+            return null;
+        }
+        try (InputStream stream = url.openStream()) {
+            return readFromStream(stream);
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, "Exception: ", e);
+        }
+        return null;
+    }
+
+	private Map<String, Object> readFromStream(InputStream stream) {
+        if (stream == null) return null;
+        final Map<String, Object> valuesMap = new Yaml().loadAs(stream, Map.class);
+        Map<String, Object> localeBased = (Map<String, Object>) valuesMap.get(fakeValuesContext.getLocale().getLanguage());
+        if (localeBased == null) {
+            localeBased = (Map<String, Object>) valuesMap.get(fakeValuesContext.getFilename());
+        }
+        return (Map<String, Object>) localeBased.get("faker");
+    }
+}
+
+
+```
+
+1. FakeValues는 모든 .yml파일을 읽어서 램에 저장해놓는게 아니라, 호출된 .yml파일만 lazy load로 읽는 듯 하다.
+2. FakeValues.get(key)는 파일을 읽기 전, ReentrantLock을 걸고, loadValues()를 호출,
+3. loadFromUrl()에서 파일 URL을 Stream 객체를 이용해 읽어, `Map<String, Object>`에 저장후 반환한다..
+
+
+
+
+##### step3. .yml 파일을 읽어 address.post에서 불러온 "#####"를 5자리 랜덤한 숫자로 변경한다. [link](https://github.com/datafaker-net/datafaker/blob/main/src/main/java/net/datafaker/service/FakeValuesService.java#L282)
+
+```java
+private static final char[] DIGITS = "0123456789".toCharArray();
+
+private String bothify(String input, FakerContext context, boolean isUpper, boolean numerify, boolean letterify) {
+	final int baseChar = isUpper ? 'A' : 'a';
+	final char[] res = input.toCharArray();
+	for (int i = 0; i < res.length; i++) {
+		switch (res[i]) {
+			case '#' -> {
+				if (numerify) {
+					res[i] = DIGITS[context.getRandomService().nextInt(10)];
+				}
+			}
+			case 'Ø' -> {
+				if (numerify) {
+					res[i] = DIGITS[context.getRandomService().nextInt(1, 9)];
+				}
+			}
+			case '?' -> {
+				if (letterify) {
+					res[i] = (char) (baseChar + context.getRandomService().nextInt(26)); // a-z
+				}
+			}
+			default -> {
+			}
+		}
+	}
+
+	return String.valueOf(res);
+}
+```
+
+파일 I/O를 파싱해서 가져온 저 "#####"값의 한자리를 지나갈 때마다, Random rand.nextInt()로 값을 얻은걸 char로 변환시켜 합친다.
+
+
+
+##### 결론: datafaker, 왜 느린가?
+
+1. `faker.address()` 관련 함수 호출시에는 address.yml 파일을 Stream객체로 파싱해 `Map<String, Object>`에 담아놓고, `faker.address().zipCode()`나 `faker.address().city()` 등 호출할 때, 저 맵에서 문자열을 가져오는 식으로 작동하는 듯 하다. 그러다 `faker.commerce()`나 `faker.name()`같은 다른 도메인을 호출하면, 다시 파일 I/O를 하는 듯 하다.
+2. 혹시 [병렬처리](https://github.com/search?q=repo%3Adatafaker-net%2Fdatafaker%20parallel&type=code)같은 성능최적화를 했나 보았으나, 하지 않은걸 확인했다. 왜 인걸 생각해 보면, 모든 row가 같은 형식인데 데이터만 다르면, 파일을 일정한 사이즈의 청크로 잘라서 parallel하게 읽을 수 있는데, 랜덤 문자열이 담긴 .yml 파일들은 파일마다 hierarchy 구조가 제각각이기 때문에, 나눠서 병렬로 읽을 수 없는 구조였다.
+3. 파일 I/O가 in-memory read보다 약 1000배정도 느리다고 하니까, 램공간만 충분하다면, in-memory에서 랜덤하게 문자열을 생성하는 알고리즘을 찾는게 성능상 더 빠르지 않을까?
+4. 커스텀 랜덤 문자열 생성기를 만들면, 범용 library에 포함되는 safety check 코드도 뺄 수 있어서 성능상 좀 더 빨라지지 않을까?
+
+
+
+
+#### 8-2. datafaker가 만드는 문자열은 반드시 unique하지도 않는다.
+
+datafaker는 File I/O 때문에 느리다 라는 단점 외에 또 다른 단점이 있었는데,\
+데이터 값이 커지면, unique한 값을 만들어내지도 않았다.
+
+```java
+public static void main(String[] args) {
+	int count = 1_000_000; // Number of strings to generate
+	Faker faker = new Faker();
+
+	Set<String> uniqueStrings = IntStream.range(0, count)
+//            .parallel()
+		.mapToObj(i -> {
+			return faker.name().fullName();
+		})
+		.collect(Collectors.toCollection(HashSet::new));
+
+	System.out.println("Generated " + uniqueStrings.size() + " unique strings");
+
+	int duplicateCount = count - uniqueStrings.size();
+	System.out.println("Found " + duplicateCount + " duplicate strings");
+}
+```
+해당 코드로 백만 랜덤 문자열 생성 시, 중복 확인 테스트를 해본 결과,
+
+```
+Generated 880416 unique strings
+Found 119584 duplicate strings
+```
+1. 백만 rows의 이름을 만들면, 그 중, 약 12만 rows가 중복이고,
+2. [공식문서](https://www.datafaker.net/documentation/unique-values/?h=unique#values-from-yaml-files)에 따르면, `.unique()`로 값을 뽑아낼 순 있으나, .yml 파일 안에 수동으로 입력한 값 이상을 요청하면 에러를 뱉는다고 한다.
+
+[name.yml](https://github.com/datafaker-net/datafaker/blob/main/src/main/resources/en/name.yml) 파일은 rows 수가 6천 rows정도 되서 이정도 카디널리티가 나오지, 다른 마이너한 도메인의 문자열은 중복도가 더 심할 것으로 예상된다.
+
+Q. 데이터가 중복으로 나오는게 왜 문제냐?
+
+중복값이 나오는건 매우 중요하다.
+
+인덱스 적용하는 컬럼의 카디널리티에 따라 적용되는 인덱스 종류와 조인 종류가 달라질 수 있고, 이는 성능에 크게 영향을 미칠 수 있기 때문이다.
+
+
+#### 8-3. in-memory에서 생성되는 random unique String generator를 만들자
+
+```java
+private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+private static final int STRING_LENGTH = 10;
+
+private static String[] generateUniqueStrings(int count) {
+	Set<String> uniqueSet = new HashSet<>(count);
+
+	ThreadLocalRandom random = ThreadLocalRandom.current();
+	while (uniqueSet.size() < count) {
+		uniqueSet.add(generateRandomString(random));
+	}
+
+	return uniqueSet.toArray(new String[0]);
+}
+
+private static String generateRandomString(ThreadLocalRandom random) {
+	StringBuilder sb = new StringBuilder(STRING_LENGTH);
+	for (int i = 0; i < STRING_LENGTH; i++) {
+		int randomIndex = random.nextInt(CHARACTERS.length());
+		sb.append(CHARACTERS.charAt(randomIndex));
+	}
+	return sb.toString();
+}
+```
+
+실험 결과, 백만 unique string을 만드는데 296ms가 걸렸다.
+
+File I/O도 없고, safety check도 없어서 빠르다.
+
+string길이도 원하는 대로 조절할 수 있다.
+
+
+같은 원리인데, 멀티 스레드 환경에서는 HashSet에서 값을 꺼낼 때, 같은 값을 두 쓰레드에서 꺼내갈 수 있으니, ConcurrentLinkedQueue에 값을 넣고 빼내는 식으로만 살짝 바꾼다.
+
+
+랜덤 int, double, 날짜도 필요하니 만들어준다.
+
+
+
+#### 8-4. 필요한 랜덤 변수의 양과 메모리 요구치를 계산하자
+```
+1. Random Strings:
+	- User-related fields (username, email, name, password, street, city, state, country, zipcode): 9 fields * 40,000 users = 360,000 strings
+	- Product-related fields (name, description): 2 fields * 80,000 products = 160,000 strings
+	- Category-related fields (category_code, name): 2 fields * (3 top categories + 12 mid categories + 60 low categories) = 150 strings
+	- Option-related fields (value): 1 field * (60 low categories * 3 options) = 180 strings
+	- OptionVariation-related fields (value): 1 field * (180 options * 3 variations) = 540 strings
+	- Total random strings needed: 360,000 + 160,000 + 150 + 180 + 540 = 520,870 strings
+	- 520,870 strings * 10 characters * 2 bytes = ~10.8 MB
+
+2. Random Integers:
+	- Product-related fields (rating_count): 1 field * 80,000 products = 80,000 integers
+	- ProductItem-related fields (quantity): 1 field * (80,000 products * 3 items) = 240,000 integers
+	- Order-related fields (quantity): 1 field * (40,000 users * 2 order items) = 80,000 integers
+	- Total random integers needed: 80,000 + 240,000 + 80,000 = 400,000 integers
+	- 400,000 integers * 4 bytes = ~1.6 MB
+
+3. Random Doubles:
+	- Product-related fields (rating): 1 field * 80,000 products = 80,000 doubles
+	- ProductItem-related fields (price): 1 field * (80,000 products * 3 items) = 240,000 doubles
+	- Discount-related fields (discount_value): 1 field * (240,000 product items * 1 discount) = 240,000 doubles
+	- Order-related fields (price): 1 field * (40,000 users * 2 order items) = 80,000 doubles
+	- Total random doubles needed: 80,000 + 240,000 + 240,000 + 80,000 = 640,000 doubles
+	- 640,000 doubles * 8 bytes = ~5.1 MB
+
+4. Random Dates:
+	- Discount-related fields (start_date, end_date): 2 fields * (240,000 product items * 1 discount) = 480,000 dates
+	- Order-related fields (order_date): 1 field * 40,000 users = 40,000 dates
+	- Total random dates needed: 480,000 + 40,000 = 520,000 dates
+	- 520,000 dates * 12 bytes = ~6.2 MB
+```
+
+대략적으로 23.7Mb의 메모리의 heap 공간을 차지한다고 나온다.
+
+각 데이터 타입당, 필요한 값의 range가 다른데, 이걸 계산해보면, 다음과 같다.
+
+---
+1. string: 520,870 rows
+	- product
+		- product name
+		- product description
+	- discount type
+		- discount type
+	- address
+	- category
+	- option
+	- optionVariation
+2. integer
+	- orderItems: 80,000 rows (40,000 * 2)
+		- 1~30
+	- productRatingCount : 80,000 rows
+		- 1~1000
+	- productItem quantity : 240,000 rows (80,000 * 3)
+		- 1~1000
+3. double
+	- orderItem price : 80,000 rows (40,000 * 2)
+		- 100~1_000_000
+	- product rating: 80,000 rows
+		- 0.5~5
+	- product price: 240,000 rows (80,000 * 3)
+		- 100~1_000_000
+	- discount
+		- discountRate : 1~100 (rate) : 120,000 (80,000 * 3 / 2)
+		- discountRate: 100~100_000 (fixed) : 120,000 (80,000 * 3 / 2)
+4. date
+	- order
+		- order date (today - 과거 2년 사이) : 80,000 (40,000 * 2)
+	- discount: 240,000 (80,000 * 3)
+		- startDate: today - 30 days
+		- endDate: today + 30 days (start date + 30일 하자)
+
+---
+필요한 수량 계산
+
+1. Integer 1~30 -> 80,000
+2. Integer 1~1000 -> 320,000
+3. double 0.5~5 -> 80,000
+4. double 1~100 -> 120,000
+5. double 100~100_000 -> 120,000
+6. double 100~1_000_000 -> 320,000
+7. date 2개월 전 ~ today -> 320,000
+
+
+
+#### 8-5. 성능 측정 해보기
+
+datafaker를 썼을 때 `Total execution time: 152384 ms` 가 나왔는데,\
+custom random value generator로 바꾼 후, `Total execution time: 152731ms`가 나왔다.
+
+왜 변화가 없을까?
+
+1. 약 2백만 random value 만드는데 걸리는 시간을 측정해본 결과 1초 미만으로 나왔다. 이건 빠르다.
+2. jvm monitoring 결과, 2백만개의 객체를 만들고, 다른 여타 datasource connection이나 preparedStatement 객체등을 만들 때, heap memory 부족으로 인해 GC가 계속 일어나는 현상을 확인했다.
+
+![](images/2024-03-26-17-18-41.png)
+
+- Allocation/Promotion metric을 보면, 초기에 프로그램 실행하고 2백만 객체를 만들 때, heap memory할당을 하다가, Eden 영역이 꽉 차서 promotion되는 객체들이 초당 884kb/s 의 메모리를 할당된다는걸 확인할 수 있다.
+- 그 후, major gc와 allocation failure gc가 100ms~400ms의 시간을 잡아먹을 동안, 오른쪽에 Allocated 메모리는 0으로 되고, Eden/Young 공간에 공간이 확보되면, 다시 메모리를 할당하다가, 꽉 차면 100ms 정도 걸리는 minor gc (allocation failure)가 발생하는걸 확인할 수 있다.
+- 만든 2백만개의 객체는, 한번 bulk-insert하면 어짜피 쓰이지 않으므로, insert이후 바로 minor gc로 메모리 해제되는 듯 하다. 다만 해제해야 하는 객체 숫자가 많아서 minor gc 시간이 오래걸리는 듯 하다.
+
+
+이렇듯, in-memory에 객체 수백만개를 만드는게 File에서 읽어오는 방식보다는 Disk I/O 가 없으니까 더 빠르긴 한데,\
+heap 메모리 부족으로 인한 잦은 gc 때문에 결과적으로 보았을 때, latency가 비슷했다.
+
+혹시나 heap size에 메모리를 더 많이 할당하면, 더 빨라지지 않을까? 해서 jvm heap memory를 2GiB까지 할당했다.
+
+```
+java -Xms512m -Xmx2g -jar app.jar
+```
+하지만 결론적으로는 성능상 별 차이는 없었다.
+
+Eden이 찰 때까지의 조금의 시간 동안만 약간 시간을 벌 수 있었으나, 더 많이 찬 만큼, minor gc가 더 오래 걸린게 상쇄해서이지 않을까? 로 예측된다.
+
+
+### 9. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + custom random generator + parallel
+
+기존에 single thread로 bulk-insert 메서드 4개를 순차실행하지 말고,
+
+bulk-insert 메서드 4개만큼 dataSource에서 Connection을 4개받아서, 동시에 병렬로 처리하면, 더 빨라지지 않을까?
+
+실험해본 결과,
+```
+Total execution time: 150127 ms
+```
+5만 rows 넣는데 2,604ms 개선으로, 약간의 개선은 있었으나 큰 차이는 없었다.
+
+왜일까?
+
+single thread로 순차적으로 bulk-insert하는거랑,
+
+4 thread로 동시에 4개의 bulk-insert를 하는거와 latency가 비슷하다는 말은,
+
+병목이 database에서 있다는 말 아닐까?
+
+database를 bulk-insert 전용으로 튜닝해보자.
 
 
 

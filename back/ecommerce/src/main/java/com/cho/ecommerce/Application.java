@@ -36,11 +36,23 @@ public class Application {
     @Bean
     public CommandLineRunner initData() {
         return args -> {
-            
-            databaseCleanup.afterPropertiesSet();
-            databaseCleanup.execute();
+
+//            databaseCleanup.afterPropertiesSet();
+//            databaseCleanup.execute();
             
             long startTime = System.currentTimeMillis();
+            
+            //total 100-ish rows
+//            int batchSize = 1000;
+//            int numberOfUsers = 10; //2,000 * 3 (user, address, user_authority)
+//            int numberOfLowCategoriesPerMidCategories = 5; //75
+//            int numberOfOptions = 3; //180
+//            int numberOfOptionVariations = 3; //540
+//            int numberOfProducts = 10; //4,000
+//            int numberOfProductItemsPerProduct = 3; //12,000
+//            int numberOfDiscountsPerProductItem = 1; //12,000
+//            int numberOfProductOptionVariationPerProductItem = 1; //12,000
+//            int numberOfOrderItemsPerOrder = 2; //2000 + 4000 (order, orderItem)
             
             //total 53,000 rows
             int batchSize = 1000;
