@@ -13,20 +13,20 @@ services:
 
   mysql:
     container_name: 'mysql'
-    image: mysql/mysql-server:8.0.23 # for arm64 m1
-    # image: mysql
+      # image: mysql/mysql-server:8.0.23 # for arm64 m1, but has problem with MYSQL_ROOT_PASSWORD, therefore switch to mysql:8.0.29
+    image: mysql:8.0.29 # arm64 compatible, from https://hub.docker.com/_/mysql/tags?page=2&name=8.0
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: ecommerce-database
-      # MYSQL_ROOT_PASSWORD: admin123
-      MYSQL_USER: root
-      MYSQL_PASSWORD:
+      MYSQL_DATABASE: ecommerce
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_USER: user123
+      MYSQL_PASSWORD: user123
     volumes:
-      - ./mysql-data:/var/lib/mysql
+      - ./mysqlData:/var/lib/mysql
     networks:
       - bridge_network
-    # restart: on-failure
+    restart: on-failure
 
   ecommerce-app1:
     container_name: 'ecommerce-app1'
