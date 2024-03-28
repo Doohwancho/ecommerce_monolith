@@ -11,9 +11,9 @@ spring:
   datasource:
     platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql:3306/ecommerce-database?autoReconnect=true&serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
-    username: user123
-    password: user123
+    url: jdbc:mysql://mysql:3306/ecommerce?autoReconnect=true&serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
+    username: root #user123
+    password: admin123 #user123
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
@@ -39,16 +39,16 @@ spring:
 
 logging:
   level:
-    #    root: DEBUG
+    root: INFO
     org:
       hibernate:
-        SQL: debug
-        type: trace
+        SQL: INFO
+        type: TRACE
       springframework:
-        security: DEBUG
+        security: INFO
         web:
           filter:
-            CommonsRequestLoggingFilter: DEBUG
+            CommonsRequestLoggingFilter: INFO
 
 management:
   endpoint:

@@ -11,7 +11,7 @@ spring:
   datasource:
     platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ecommerce-database?serverTimezone=Asia/Seoul&rewriteBatchedStatements=true #for local development
+    url: jdbc:mysql://localhost:3306/ecommerce?serverTimezone=Asia/Seoul&rewriteBatchedStatements=true #for local development
     username: root
     password:
   jpa:

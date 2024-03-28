@@ -53,6 +53,12 @@
 1. git clone https://github.com/Doohwancho/ecommerce
 2. cd ecommerce
 3. docker compose up --build
+	- ecommerce-app1이 mysql connection error 날 경우, 'ecommerce' 이름의 database를 mysql container에 접속해서 만들어 줘야 한다.
+	- docker exec -it mysql bash
+	- mysql -u root -p
+	- admin123
+	- create database ecommerce;
+	- 다시 docker compose up --build
 4. 1000 data insert 완료할 때까지 기다리기
 5. http://localhost:80  or  http://127.0.0.1:80 로 접속
 ```
@@ -1663,6 +1669,202 @@ single thread로 순차적으로 bulk-insert하는거랑,
 병목이 database에서 있다는 말 아닐까?
 
 database를 bulk-insert 전용으로 튜닝해보자.
+
+
+### 10. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + custom random generator + parallel + mysql tuning
+
+#### 10-1. buffer pool size 사이즈 키우기
+
+```sql
+mysql> SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size';
++-------------------------+-----------+
+| Variable_name           | Value     |
++-------------------------+-----------+
+| innodb_buffer_pool_size | 134217728 |
++-------------------------+-----------+
+1 row in set (0.00 sec)
+```
+
+캐시 역할을 하는 buffer pool의 크기를 134Mb에서 500Mb로 늘려보자.
+
+bulk-insert시, 한번에 flush()하는 총 량을 늘려주는 효과가 있다고 한다.
+
+```
+mysql> SET GLOBAL innodb_buffer_pool_size = 512000000;
+Query OK, 0 rows affected, 2 warnings (0.00 sec)
+
+mysql> SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size';
++-------------------------+-----------+
+| Variable_name           | Value     |
++-------------------------+-----------+
+| innodb_buffer_pool_size | 536870912 |
++-------------------------+-----------+
+1 row in set (0.00 sec)
+```
+
+
+실험 결과,
+```
+Total execution time: 150336 ms
+```
+..로 기존과 큰 차이는 없었다.
+
+
+#### 10-2. disable binary logging
+
+WAL(write ahead log)라고, 파일에 write하는 도중에 에러나면 데이터가 날아갈 수 있으니까,\
+에러났을 때 대비, 백업 retry, rollback 등을 위해 로그파일에 먼저 쓰기 작업을 하는데, 어짜피 가짜 데이터이고, 백만 rows중에 몇개 손실나도 큰 상관은 없으므로, bulk-insert 도중에는 꺼둔다.
+
+실험 결과,
+```
+Total execution time: 151768 ms
+```
+...로 기존과 큰 차이는 없었다.
+
+
+주의!
+
+root 권한이 아니면 이 설정을 할 수 없다!
+
+로컬 mysql에는 root로 접속하기 때문에 코드레벨에서 binary logging을 끌 수 있었으나,
+
+user로 접속하는 aws-rds의 경우 권한이 없으므로 실행하면 에러가 난다.
+
+rds parameter에 따로 설정을 해 주어야 한다!
+
+
+#### 10-3. increase max_allowed_packet size
+
+bulk-insert시, 하나의 쿼리에 수백, 수천개의 값을 넣는데, 이 최대치를 늘려주는 설정이다.
+
+```sql
+mysql> SHOW GLOBAL VARIABLES LIKE 'max_allowed_packet';
++--------------------+----------+
+| Variable_name      | Value    |
++--------------------+----------+
+| max_allowed_packet | 67108864 |
++--------------------+----------+
+1 row in set (0.00 sec)
+```
+
+약 67Mb인데, 100Mb로 늘려보자.
+
+```sql
+mysql> SET GLOBAL max_allowed_packet = 100000000;
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> SHOW GLOBAL VARIABLES LIKE 'max_allowed_packet';
++--------------------+----------+
+| Variable_name      | Value    |
++--------------------+----------+
+| max_allowed_packet | 99999744 |
++--------------------+----------+
+1 row in set (0.00 sec)
+```
+
+실험 결과,
+```
+Total execution time: 148634 ms
+```
+약간 빨라졌으나 큰 차이는 없다.
+
+#### 10-4. `concurrent_insert` setting
+
+동시에 insert하는게 기본은 AUTO라고 되어있다.
+
+```sql
+mysql> SHOW GLOBAL VARIABLES LIKE 'concurrent_insert';
++-------------------+-------+
+| Variable_name     | Value |
++-------------------+-------+
+| concurrent_insert | AUTO  |
++-------------------+-------+
+1 row in set (0.01 sec)
+```
+
+```sql
+mysql> SET GLOBAL concurrent_insert = 2;
+Query OK, 0 rows affected (0.00 sec)
+```
+concurrent insert를 허용한다.
+
+
+실험 결과,
+```
+Total execution time: 148767 ms
+```
+이전과 큰 차이는 없다.
+
+### 11. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + parallel + mysql tuning + custom random generator
+
+병렬처리하고, mysql 세팅을 bulk-insert 용으로 바꿔도 latency가 개선되지 않는걸 보면,
+
+결국 병목의 원인은 너무 많은 random value를 만들었는데, gc가 너무 자주 일어나서 생기는 문제로 보인다.
+
+따라서, 랜덤값을 만드는 양을 최소화 해보자.
+
+기존에 랜덤 변수 만드는 방식은 백만개 rows에서 들어가는 모든 변수들의 값을 랜덤하게 생성하는 것이었는데,
+
+어짜피 같은 column의 값만 안겹치면 되지, 다른 column의 값은 이전에 쓴거 또 써도 상관없으니까,
+
+랜덤값을 최소량으로 만들고, 최대한 여러 컬럼에 걸쳐서 돌려쓰게 만들자.
+
+
+1. String: 520,000 -> 80,000
+2. Integer, 1~30: 80000 -> 0
+3. Integer, 1~1000: 320,000 -> 0
+4. Double, 0~5: 80,000 -> 50 (0.1의자리 이상)
+5. Double, 1~100: 120,000 -> 1000 (0.1의 자리 이상)
+6. Double, 100~100,000: 120,000 -> 1,000
+7. Double, 100~1,000,000: 320,000 -> 10,000
+8. Double, today-N month: 520,000 -> N * 30
+
+
+약 150만개 객체 -> 10만개 객체로 줄여보자
+
+실험 결과,
+```
+Total execution time: 151452 ms
+```
+
+차이가 없거나 오히려 더 늘었다?
+
+![](images/2024-03-28-17-48-49.png)
+
+객체 150만개 만들적에는, major gc(metadata gc)는 400ms, minor gc(allocation failure)은 100ms 걸리던게,
+
+![](images/2024-03-28-17-49-42.png)
+
+major gc(metadata gc)는 75ms, minor gc(allocation gc)는 25ms로 많이 준걸 확인할 수 있다.
+
+그런데 왜, latency는 똑같을까?
+
+![](images/2024-03-28-17-52-01.png)
+
+mysql 컨테이너의 메트릭을 보니까,
+
+network i/o에서 read는 spring app으로부터 초당 51.8Mb나 받아오는데,
+
+disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o에서 병목이 있는 것 같다.
+
+이전 시행착오에서, mysql tuning한게 4종류 였다.
+1. increase buffer pool size
+2. disable binary logging
+3. increase max_allowed_packet size
+4. concurrent_insert setting to ON
+
+이 중에서, 사실상 1번은 read시에 disk i/o줄일려고 캐싱하려는 목적으로 buffer pool size를 늘리는거니까 별 효과 없을 것 같고,
+
+3번의 경우엔, 메트릭을 보니 mysql container가 초당 50Mb/s을 받아오는데, disk i/o write가 초당 2Mb밖에 안되니까, 이걸 더 늘려도 의미 없을 듯 하다.
+
+4번의 경우엔, default setting이 auto인데, bulk-insert같은 heavy-write 시에, mysql이 자동으로 ON으로 바꾸기 때문에, 건드려도 별 차이가 없는 듯 하다.
+
+사실상 2. disable binary logging이 가장 write disk i/o 성능을 높힐 수 있을 것 같으나,
+
+테스트 해보니, 이걸 끄면 최대 disk i/o write 속도가 12kb/s 밖에 나오지 않았다.
+
+왜 그렇게 나오는지는 ppm같은 mysql 전용 모니터링 툴을 붙여서 더 자세히 알아봐야 할 듯 싶다.
+
 
 
 

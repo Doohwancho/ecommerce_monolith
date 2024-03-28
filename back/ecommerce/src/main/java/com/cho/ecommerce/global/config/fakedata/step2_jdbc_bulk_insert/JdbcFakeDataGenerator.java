@@ -1,25 +1,18 @@
 package com.cho.ecommerce.global.config.fakedata.step2_jdbc_bulk_insert;
 
-import com.cho.ecommerce.domain.product.domain.DiscountType;
 import com.cho.ecommerce.global.util.RandomValueGenerator;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
-import net.datafaker.Faker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,29 +23,30 @@ import org.springframework.stereotype.Component;
 public class JdbcFakeDataGenerator {
     
     private static final int NUM_THREADS = 4;
-    private static final Integer NUMBER_OF_UNIQUE_STRINGS = 520_870;
+    private static final Integer NUMBER_OF_UNIQUE_STRINGS = 80_000; //520_807
     private static final Integer LENGTH_OF_STRING_FOR_UNIQUE_STRINGS = 10;
-    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY = 80010;
-    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THOUSAND = 320010;
-    private static final int NUMBER_OF_DOUBLE_ZERO_TO_FIVE = 80010;
-    private static final int NUMBER_OF_DOUBLE_ONE_TO_HUNDRED = 120010;
-    private static final int NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 120010;
-    private static final int NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 320010;
-    private static final int NUMBER_OF_DATE_2MONTH_FROM_TODAY = 320010;
+    //    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY = 0;
+//    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THOUSAND = 0;
+//    private static final int NUMBER_OF_DOUBLE_ZERO_TO_FIVE = 50;
+//    private static final int NUMBER_OF_DOUBLE_ONE_TO_HUNDRED = 1_000;
+    private static final int NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
+    private static final int NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+    private static final int NUMBER_OF_DATE_2MONTH_FROM_TODAY = 90;
+    public static final int DAYS_FROM_TODAY = 90;
     private final Logger log = LoggerFactory.getLogger(JdbcFakeDataGenerator.class);
     private DataSource dataSource;
     private BCryptPasswordEncoder passwordEncoder;
-    private final Faker faker = new Faker();
-    private final Random random = new Random();
+    //    private final Faker faker = new Faker();
+//    private final Random random = new Random();
     private RandomValueGenerator randomValueGenerator;
-    private ConcurrentLinkedQueue<String> uniqueStrings;
-    private ConcurrentLinkedQueue<Integer> uniqueIntegersOneToThirty;
-    private ConcurrentLinkedQueue<Integer> uniqueIntegersOneToThousand;
-    private ConcurrentLinkedQueue<Double> uniqueDoublesZeroToFive;
-    private ConcurrentLinkedQueue<Double> uniqueDoublesOneToHundred;
-    private ConcurrentLinkedQueue<Double> uniqueDoublesHundredToHundredThousand;
-    private ConcurrentLinkedQueue<Double> uniqueDoublesHundredToMillion;
-    private ConcurrentLinkedQueue<LocalDateTime> uniqueLocalDateTimeTwoMonthsPastToToday;
+    private String[] uniqueStrings;
+    //    private int[] uniqueIntegersOneToThirty;
+//    private int[] uniqueIntegersOneToThousand;
+    private double[] uniqueDoublesZeroToFive;
+    private double[] uniqueDoublesOneToHundred;
+    private double[] uniqueDoublesHundredToHundredThousand;
+    private double[] uniqueDoublesHundredToMillion;
+    private LocalDateTime[] uniqueLocalDateTimeThreeMonthsPastToToday;
     private LocalDateTime startTimeForDiscount;
     private LocalDateTime endTimeForDiscount;
     private final Timestamp CURRENT_TIMESTAMP = new Timestamp(System.currentTimeMillis());
@@ -87,23 +81,22 @@ public class JdbcFakeDataGenerator {
         // Generate unique strings
         this.uniqueStrings = randomValueGenerator.generateUniqueStrings(NUMBER_OF_UNIQUE_STRINGS,
             LENGTH_OF_STRING_FOR_UNIQUE_STRINGS);
-        this.uniqueIntegersOneToThirty = randomValueGenerator.generateRandomIntegers(
-            NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY,
-            1, 30);
-        this.uniqueIntegersOneToThousand = randomValueGenerator.generateRandomIntegers(
-            NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THOUSAND,
-            1, 1000);
-        this.uniqueDoublesZeroToFive = randomValueGenerator.generateRandomDoubles(
-            NUMBER_OF_DOUBLE_ZERO_TO_FIVE, 0, 5);
-        this.uniqueDoublesOneToHundred = randomValueGenerator.generateRandomDoubles(
-            NUMBER_OF_DOUBLE_ONE_TO_HUNDRED, 1, 100);
+//        this.uniqueIntegersOneToThirty = randomValueGenerator.generateRandomIntegers(
+//            NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY,
+//            1, 30);
+//        this.uniqueIntegersOneToThousand = randomValueGenerator.generateRandomIntegers(
+//            NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THOUSAND,
+//            1, 1000);
+        this.uniqueDoublesZeroToFive = randomValueGenerator.generateRandomDoublesByPointOne(0, 5);
+        this.uniqueDoublesOneToHundred = randomValueGenerator.generateRandomDoublesByPointOne(1,
+            100);
         this.uniqueDoublesHundredToHundredThousand = randomValueGenerator.generateRandomDoubles(
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND, 100, 100000);
         this.uniqueDoublesHundredToMillion = randomValueGenerator.generateRandomDoubles(
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION, 100,
             1000000);
-        this.uniqueLocalDateTimeTwoMonthsPastToToday = randomValueGenerator.generateRandomDates(
-            NUMBER_OF_DATE_2MONTH_FROM_TODAY, 60);
+        this.uniqueLocalDateTimeThreeMonthsPastToToday = randomValueGenerator.generateRandomDates(
+            NUMBER_OF_DATE_2MONTH_FROM_TODAY, DAYS_FROM_TODAY);
 
 //        log.info("size of unique strings: " + this.uniqueStrings.size());
 //        log.info("size of unique integer 1~30: " + this.uniqueIntegersOneToThirty.size());
@@ -180,19 +173,23 @@ public class JdbcFakeDataGenerator {
      */
     public void bulkInsertOrdersOrderItems(Connection connection, int numberOfUsers,
         int numberOfOrderItemsPerOrder, int batchSize) {
+//        String sqlLogBin = "SET sql_log_bin = 0";
         String orderSql = "INSERT INTO `ORDER` (ORDER_ID, ORDER_DATE, ORDER_STATUS, MEMBER_ID) VALUES (?, ?, ?, ?)";
         String orderItemSql = "INSERT INTO ORDER_ITEM (ORDER_ITEM_ID, QUANTITY, PRICE, ORDER_ID, PRODUCT_OPTION_VARIATION_ID) VALUES (?, ?, ?, ?, ?)";
         
 //        Connection connection = null;
+//        PreparedStatement sqlLogBinStatement = null;
         PreparedStatement orderStatement = null;
         PreparedStatement orderItemStatement = null;
         
         try {
 //            connection = dataSource.getConnection();
+//            sqlLogBinStatement = connection.prepareStatement(sqlLogBin);
             orderStatement = connection.prepareStatement(orderSql);
             orderItemStatement = connection.prepareStatement(orderItemSql);
             
             connection.setAutoCommit(false);
+//            sqlLogBinStatement.execute(); //disable binary-log during bulk-insert
             
             Long orderId = 1L;
             Long orderItemId = 1L;
@@ -220,7 +217,7 @@ public class JdbcFakeDataGenerator {
     
                 //case3) custom generated random value
                 orderStatement.setLong(1, orderId);
-                orderStatement.setObject(2, uniqueLocalDateTimeTwoMonthsPastToToday.poll());
+                orderStatement.setObject(2, uniqueLocalDateTimeThreeMonthsPastToToday[i % NUMBER_OF_DATE_2MONTH_FROM_TODAY]);
                 orderStatement.setString(3, "Confirmed");
                 orderStatement.setLong(4,
                     orderId); // Member ID range same as orderId range, 1:1 match
@@ -242,8 +239,8 @@ public class JdbcFakeDataGenerator {
                     //case3) custom generated random value
                     orderItemStatement.setLong(1, orderItemId);
                     orderItemStatement.setInt(2,
-                        uniqueIntegersOneToThirty.poll()); // amount of productItem ordered, warn! need to make sure it's smaller than productItem's quantity
-                    orderItemStatement.setDouble(3, uniqueDoublesHundredToMillion.poll()); // price of productItem * discounts
+                        orderItemId.intValue() % 30); // amount of productItem ordered, warn! need to make sure it's smaller than productItem's quantity
+                    orderItemStatement.setDouble(3, uniqueDoublesHundredToMillion[orderItemId.intValue() % NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION]); // price of productItem * discounts
                     orderItemStatement.setLong(4, orderId);
                     orderItemStatement.setLong(5,
                         orderItemId);
@@ -301,6 +298,13 @@ public class JdbcFakeDataGenerator {
                     e.printStackTrace();
                 }
             }
+//            if (sqlLogBinStatement != null) {
+//                try {
+//                    sqlLogBinStatement.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
             if (connection != null) {
                 try {
                     connection.close();
@@ -332,12 +336,14 @@ public class JdbcFakeDataGenerator {
         int numberOfDiscountsPerProductItem,
         int numberOfProductOptionVariationPerProductItem,
         int batchSize) {
+//        String sqlLogBin = "SET sql_log_bin = 0";
         String productSql = "INSERT INTO PRODUCT (PRODUCT_ID, NAME, DESCRIPTION, RATING, RATING_COUNT, CATEGORY_ID) VALUES (?, ?, ?, ?, ?, ?)";
         String productItemSql = "INSERT INTO PRODUCT_ITEM (PRODUCT_ITEM_ID, QUANTITY, PRICE, PRODUCT_ID) VALUES (?, ?, ?, ?)";
         String discountSql = "INSERT INTO DISCOUNT (DISCOUNT_ID, DISCOUNT_TYPE, DISCOUNT_VALUE, START_DATE, END_DATE, PRODUCT_ITEM_ID) VALUES (?, ?, ?, ?, ?, ?)";
         String productOptionVariationSql = "INSERT INTO PRODUCT_OPTION_VARIATION (PRODUCT_OPTION_VARIATION_ID, OPTION_VARIATION_ID, PRODUCT_ITEM_ID) VALUES (?, ?, ?)";
         
 //        Connection connection = null;
+//        PreparedStatement sqlLogBingStatement = null;
         PreparedStatement productStatement = null;
         PreparedStatement productItemStatement = null;
         PreparedStatement discountStatement = null;
@@ -345,6 +351,7 @@ public class JdbcFakeDataGenerator {
         
         try {
 //            connection = dataSource.getConnection();
+//            sqlLogBingStatement = connection.prepareStatement(sqlLogBin);
             productStatement = connection.prepareStatement(productSql);
             productItemStatement = connection.prepareStatement(productItemSql);
             discountStatement = connection.prepareStatement(discountSql);
@@ -352,6 +359,7 @@ public class JdbcFakeDataGenerator {
                 productOptionVariationSql);
             
             connection.setAutoCommit(false);
+//            sqlLogBingStatement.execute(); //disable binary log during bulk-insert
             
             Long productId = 1L;
             Long productItemId = 1L;
@@ -386,10 +394,10 @@ public class JdbcFakeDataGenerator {
     
                 //case3) custom unique strings
                 productStatement.setLong(1, productId);
-                productStatement.setString(2, uniqueStrings.poll());
-                productStatement.setString(3, uniqueStrings.poll());
-                productStatement.setDouble(4, uniqueDoublesZeroToFive.poll());
-                productStatement.setInt(5, uniqueIntegersOneToThousand.poll());
+                productStatement.setString(2, uniqueStrings[productId.intValue() % NUMBER_OF_UNIQUE_STRINGS]);
+                productStatement.setString(3, uniqueStrings[productId.intValue() % NUMBER_OF_UNIQUE_STRINGS]);
+                productStatement.setDouble(4, uniqueDoublesZeroToFive[productId.intValue() % 50]);
+                productStatement.setInt(5, productId.intValue() % 1000);
                 productStatement.setLong(6, i % 60 + 16); // low level Category ID range: 16 ~ 75
                 
                 productStatement.addBatch();
@@ -398,13 +406,13 @@ public class JdbcFakeDataGenerator {
                 // Insert product items
                 for (int j = 1; j <= numberOfProductItemsPerProduct; j++) {
                     //case1) datafaker
-                    Integer productItemQuantity = faker.number().numberBetween(1, 100);
-                    Double productItemPrice = faker.number().randomDouble(2, 1, 10000);
-
-                    productItemStatement.setLong(1, productItemId);
-                    productItemStatement.setInt(2, productItemQuantity);
-                    productItemStatement.setDouble(3, productItemPrice);
-                    productItemStatement.setLong(4, productId);
+//                    Integer productItemQuantity = faker.number().numberBetween(1, 100);
+//                    Double productItemPrice = faker.number().randomDouble(2, 1, 10000);
+//
+//                    productItemStatement.setLong(1, productItemId);
+//                    productItemStatement.setInt(2, productItemQuantity);
+//                    productItemStatement.setDouble(3, productItemPrice);
+//                    productItemStatement.setLong(4, productId);
                     
                     //case2) plane string
 //                    productItemStatement.setLong(1, productItemId);
@@ -414,10 +422,10 @@ public class JdbcFakeDataGenerator {
     
     
                     //case3) custom random value generated
-//                    productItemStatement.setLong(1, productItemId);
-//                    productItemStatement.setInt(2, uniqueIntegersOneToThousand.poll());
-//                    productItemStatement.setDouble(3, uniqueDoublesHundredToMillion.poll());
-//                    productItemStatement.setLong(4, productId);
+                    productItemStatement.setLong(1, productItemId);
+                    productItemStatement.setInt(2, 1000 % productItemId.intValue());
+                    productItemStatement.setDouble(3, uniqueDoublesHundredToMillion[productItemId.intValue() % NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION]);
+                    productItemStatement.setLong(4, productId);
                     
                     productItemStatement.addBatch();
                     productItemStatement.clearParameters();
@@ -425,25 +433,25 @@ public class JdbcFakeDataGenerator {
                     // Insert discounts
                     for (int k = 1; k <= numberOfDiscountsPerProductItem; k++) {
                         //case1) datafaker
-                        String discountType = DiscountType.values()[faker.number()
-                            .numberBetween(0, DiscountType.values().length)].toString();
-                        Double discountRate = faker.number().randomDouble(2, 1, 100);
-                        OffsetDateTime startTimeForDiscount = faker.date().past(10, TimeUnit.DAYS)
-                            .toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toOffsetDateTime();
-                        OffsetDateTime endTimeForDiscount = faker.date().future(10, TimeUnit.DAYS)
-                            .toInstant()
-                            .atZone(ZoneId.systemDefault()).toOffsetDateTime();
-
-                        discountStatement.setLong(1, discountId);
-                        discountStatement.setString(2, discountType);
-                        discountStatement.setDouble(3, discountRate);
-                        discountStatement.setObject(4,
-                            startTimeForDiscount); //START_TIME_FOR_DISCOUNT
-                        discountStatement.setObject(5,
-                            endTimeForDiscount); //END_TIME_FOR_DISCOUNT
-                        discountStatement.setLong(6, productItemId);
+//                        String discountType = DiscountType.values()[faker.number()
+//                            .numberBetween(0, DiscountType.values().length)].toString();
+//                        Double discountRate = faker.number().randomDouble(2, 1, 100);
+//                        OffsetDateTime startTimeForDiscount = faker.date().past(10, TimeUnit.DAYS)
+//                            .toInstant()
+//                            .atZone(ZoneId.systemDefault())
+//                            .toOffsetDateTime();
+//                        OffsetDateTime endTimeForDiscount = faker.date().future(10, TimeUnit.DAYS)
+//                            .toInstant()
+//                            .atZone(ZoneId.systemDefault()).toOffsetDateTime();
+//
+//                        discountStatement.setLong(1, discountId);
+//                        discountStatement.setString(2, discountType);
+//                        discountStatement.setDouble(3, discountRate);
+//                        discountStatement.setObject(4,
+//                            startTimeForDiscount); //START_TIME_FOR_DISCOUNT
+//                        discountStatement.setObject(5,
+//                            endTimeForDiscount); //END_TIME_FOR_DISCOUNT
+//                        discountStatement.setLong(6, productItemId);
                         
 //                        //case2) plane text
 //                        discountStatement.setLong(1, discountId);
@@ -458,17 +466,17 @@ public class JdbcFakeDataGenerator {
     
     
                         //case3) custom random generated value
-//                        LocalDateTime randPastDate = uniqueLocalDateTimeTwoMonthsPastToToday.poll();
-//
-//                        discountStatement.setLong(1, discountId);
-//                        discountStatement.setString(2,
-//                            discountId % 2 == 1 ? "Percentage" : "Flat Rate");
-//                        discountStatement.setDouble(3, discountId % 2 == 1 ? uniqueDoublesOneToHundred.poll() : uniqueDoublesHundredToHundredThousand.poll());
-//                        discountStatement.setObject(4,randPastDate
-//                            ); //START_TIME_FOR_DISCOUNT
-//                        discountStatement.setObject(5,
-//                            randPastDate.plusDays(60)); //END_TIME_FOR_DISCOUNT
-//                        discountStatement.setLong(6, productItemId);
+                        LocalDateTime randPastDate = uniqueLocalDateTimeThreeMonthsPastToToday[discountId.intValue() % 90];
+
+                        discountStatement.setLong(1, discountId);
+                        discountStatement.setString(2,
+                            discountId % 2 == 1 ? "Percentage" : "Flat Rate");
+                        discountStatement.setDouble(3, discountId % 2 == 1 ? uniqueDoublesOneToHundred[discountId.intValue() % 990] : uniqueDoublesHundredToHundredThousand[discountId.intValue() % NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND]);
+                        discountStatement.setObject(4,randPastDate
+                            ); //START_TIME_FOR_DISCOUNT
+                        discountStatement.setObject(5,
+                            randPastDate.plusDays(90)); //END_TIME_FOR_DISCOUNT
+                        discountStatement.setLong(6, productItemId);
                         
                         discountStatement.addBatch();
                         discountStatement.clearParameters();
@@ -576,6 +584,13 @@ public class JdbcFakeDataGenerator {
                     e.printStackTrace();
                 }
             }
+//            if (sqlLogBingStatement != null) {
+//                try {
+//                    sqlLogBingStatement.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
             if (connection != null) {
                 try {
                     connection.close();
@@ -598,12 +613,14 @@ public class JdbcFakeDataGenerator {
      *  - 의 값과 동일하게 세팅하는걸 권장한다.
      */
     public void bulkInsertUsersAndAddresses(Connection connection, int numberOfUsers, int batchSize) {
+//        String sqlLogBin = "SET sql_log_bin = 0";
         String addressSql = "INSERT INTO ADDRESS (ADDRESS_ID, STREET, CITY, STATE, COUNTRY, ZIP_CODE) VALUES (?, ?, ?, ?, ?, ?)";
         String authoritySql = "INSERT INTO AUTHORITY (AUTHORITY_ID, AUTHORITY) VALUES (?, ?)";
         String userSql = "INSERT INTO MEMBER (MEMBER_ID, USER_ID, EMAIL, NAME, ADDRESS_ID, PASSWORD, ROLE, ENABLED, CREATED_AT, UPDATED_AT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String userAuthoritySql = "INSERT INTO MEMBER_AUTHORITY (USER_AUTHORITY_ID, MEMBER_ID, AUTHORITY_ID) VALUES (?, ?, ?)";
     
 //        Connection connection = null;
+//        PreparedStatement sqlLogBinStatement = null;
         PreparedStatement addressStatement = null;
         PreparedStatement authorityStatement = null;
         PreparedStatement userStatement = null;
@@ -611,6 +628,7 @@ public class JdbcFakeDataGenerator {
     
         try {
 //            connection = dataSource.getConnection();
+//            sqlLogBinStatement = connection.prepareStatement(sqlLogBin);
             addressStatement = connection.prepareStatement(addressSql);
             authorityStatement = connection.prepareStatement(authoritySql);
             userStatement = connection.prepareStatement(userSql);
@@ -618,6 +636,7 @@ public class JdbcFakeDataGenerator {
     
             connection.setAutoCommit(
                 false); //disable auto-commit to perform the bulk insert as a single transaction
+//            sqlLogBinStatement.execute(); //disable binary logs during bulk-insert
             
             // step1) Insert user's addresses
             for (int i = 1; i <= numberOfUsers; i++) {
@@ -645,11 +664,11 @@ public class JdbcFakeDataGenerator {
     
                 //case3) plane string
                 addressStatement.setLong(1, i);
-                addressStatement.setString(2, uniqueStrings.poll());
-                addressStatement.setString(3, uniqueStrings.poll());
-                addressStatement.setString(4, uniqueStrings.poll());
-                addressStatement.setString(5, uniqueStrings.poll());
-                addressStatement.setString(6, uniqueStrings.poll());
+                addressStatement.setString(2, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                addressStatement.setString(3, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                addressStatement.setString(4, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                addressStatement.setString(5, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                addressStatement.setString(6, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
                 
                 // batch에 추가
                 addressStatement.addBatch();
@@ -711,11 +730,11 @@ public class JdbcFakeDataGenerator {
     
                 //case3) custom unique strings
                 userStatement.setLong(1, i);
-                userStatement.setString(2, uniqueStrings.poll());
-                userStatement.setString(3, uniqueStrings.poll());
-                userStatement.setString(4, uniqueStrings.poll());
+                userStatement.setString(2, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                userStatement.setString(3, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                userStatement.setString(4, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
                 userStatement.setLong(5, i);
-                userStatement.setString(6, passwordEncoder.encode(uniqueStrings.poll()));
+                userStatement.setString(6, passwordEncoder.encode(uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]));
                 userStatement.setString(7, "ROLE_USER");
                 userStatement.setBoolean(8, true);
                 userStatement.setTimestamp(9, CURRENT_TIMESTAMP);
@@ -750,6 +769,7 @@ public class JdbcFakeDataGenerator {
                     userAuthorityStatement.clearBatch();
                 }
             }
+            
             //step5) commit
             connection.commit();
             
@@ -793,6 +813,13 @@ public class JdbcFakeDataGenerator {
                     e.printStackTrace();
                 }
             }
+//            if (sqlLogBinStatement != null) {
+//                try {
+//                    sqlLogBinStatement.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
             if (connection != null) {
                 try {
                     connection.close();
@@ -833,17 +860,20 @@ public class JdbcFakeDataGenerator {
      */
     public void bulkInsertCategoriesOptionsAndVariations(Connection connection, int numberOfLowCategoriesPerMidCategories,
         int numberOfOptions, int numberOfOptionVariations, int batchSize) {
+//        String sqlLogBin = "SET sql_log_bin = 0";
         String categorySql = "INSERT INTO CATEGORY (CATEGORY_ID, CATEGORY_CODE, NAME, PARENT_CATEGORY_ID, DEPTH) VALUES (?, ?, ?, ?, ?)";
         String optionSql = "INSERT INTO `OPTION` (OPTION_ID, VALUE, CATEGORY_ID) VALUES (?, ?, ?)";
         String optionVariationSql = "INSERT INTO OPTION_VARIATION (OPTION_VARIATION_ID, VALUE, OPTION_ID) VALUES (?, ?, ?)";
     
 //        Connection connection = null;
+//        PreparedStatement sqlLogBinStatement = null;
         PreparedStatement categoryStatement = null;
         PreparedStatement optionStatement = null;
         PreparedStatement optionVariationStatement = null;
     
         try {
 //            connection = dataSource.getConnection();
+//            sqlLogBinStatement = connection.prepareStatement(sqlLogBin);
             categoryStatement = connection.prepareStatement(categorySql);
             optionStatement = connection.prepareStatement(optionSql);
             optionVariationStatement = connection.prepareStatement(optionVariationSql);
@@ -860,6 +890,7 @@ public class JdbcFakeDataGenerator {
             Map<String, Long> midCategories = new LinkedHashMap<>(); //Map을 insert한 순서대로 읽기 위한 자료구조
             
             connection.setAutoCommit(false);
+//            sqlLogBinStatement.execute(); //disable binary-logs during bulk-insert
             
             // step1) Insert top level categories
             for (Map.Entry<String, Long> topCategoryInfo : topCategories.entrySet()) {
@@ -882,7 +913,7 @@ public class JdbcFakeDataGenerator {
     
                 //case3) custom unique strings
                 categoryStatement.setLong(1, topCategoryInfo.getValue());
-                categoryStatement.setString(2, uniqueStrings.poll());
+                categoryStatement.setString(2, uniqueStrings[categoryIndex.intValue()]);
                 categoryStatement.setString(3, topCategoryInfo.getKey());
                 categoryStatement.setLong(4, 0);
                 categoryStatement.setInt(5, 0);
@@ -916,7 +947,7 @@ public class JdbcFakeDataGenerator {
     
                 //case3) plane strings
                 categoryStatement.setLong(1, midCategory.getValue());
-                categoryStatement.setString(2, uniqueStrings.poll());
+                categoryStatement.setString(2, uniqueStrings[categoryIndex.intValue()]);
                 categoryStatement.setString(3, midCategory.getKey());
                 categoryStatement.setLong(4, midCategory.getValue() / 4); //parent_id
                 categoryStatement.setInt(5, 1);
@@ -948,8 +979,8 @@ public class JdbcFakeDataGenerator {
     
                     //case3) custom unique strings
                     categoryStatement.setLong(1, categoryIndex++);
-                    categoryStatement.setString(2, uniqueStrings.poll());
-                    categoryStatement.setString(3, uniqueStrings.poll());
+                    categoryStatement.setString(2, uniqueStrings[categoryIndex.intValue()]);
+                    categoryStatement.setString(3, uniqueStrings[categoryIndex.intValue()]);
                     categoryStatement.setLong(4, midCategory.getValue()); //parent_id
                     categoryStatement.setInt(5, 2);
                     
@@ -975,7 +1006,7 @@ public class JdbcFakeDataGenerator {
 
                         //case3) custom unique strings
                         optionStatement.setLong(1, optionIndex++);
-                        optionStatement.setString(2, uniqueStrings.poll());
+                        optionStatement.setString(2, uniqueStrings[optionIndex.intValue()]);
                         optionStatement.setLong(3,
                             categoryIndex - 1); //category id
                         
@@ -1001,7 +1032,7 @@ public class JdbcFakeDataGenerator {
     
                             //case3) custom unique strings
                             optionVariationStatement.setLong(1, optionVariationIndex++);
-                            optionVariationStatement.setString(2, uniqueStrings.poll());
+                            optionVariationStatement.setString(2, uniqueStrings[optionVariationIndex.intValue()]);
                             optionVariationStatement.setLong(3,
                                 optionIndex - 1); //option id
                             
@@ -1056,6 +1087,13 @@ public class JdbcFakeDataGenerator {
                     e.printStackTrace();
                 }
             }
+//            if (sqlLogBinStatement!= null) {
+//                try {
+//                    sqlLogBinStatement.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
             if (connection != null) {
                 try {
                     connection.close();

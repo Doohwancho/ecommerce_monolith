@@ -64,8 +64,6 @@ Xsrc/main/java/com/cho/ecommerce/global/config/batch/job/DataInitializationJobCo
 Wsrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java,f/b/fb15af82137f984997ed08a7557d000b4bebb949
 s
 Csrc/test/java/com/cho/ecommerce/smoke_test/MySQLConnectionTest.java,e/c/ec621d769bc6d052ea7a7e2e71245876c4a5a132
-<
-build.gradle,f/0/f07866736216be0ee2aba49e392191aeae700a35
 ’
 bsrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertCategoriesAndOptionsStepConfig.java,d/9/d9c5c441646332e2ceaa6e4dde72b44236d4b9bb
 w
@@ -78,8 +76,6 @@ Ysrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeProductStepC
 bsrc/main/java/com/cho/ecommerce/global/config/fakedata/step1_jpa_saveAll/JpaFakeDataGenerator.java,9/2/926b6e366071eb547665668aff97f7a547b09b9a
 ‡
 Wsrc/main/java/com/cho/ecommerce/domain/product/entity/ProductOptionVariationEntity.java,5/f/5f076f7f133220711d799af89e48cc88fbf95b2c
-|
-Lsrc/main/java/com/cho/ecommerce/domain/product/entity/ProductItemEntity.java,e/8/e8d83f2854745aafabfd827476cf19394ef3a6af
 x
 Hsrc/main/java/com/cho/ecommerce/domain/product/entity/ProductEntity.java,a/3/a3ba2d6d8641e773e3055a5fd1cce2a9f804f5c3
 €

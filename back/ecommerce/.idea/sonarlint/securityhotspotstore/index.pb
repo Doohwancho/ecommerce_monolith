@@ -66,8 +66,6 @@ o
 ?src/test/java/com/cho/ecommerce/smoke_test/HealthCheckTest.java,e/6/e68cb7bb2e2b588c6529eb07514c0dcd02ee328f
 s
 Csrc/test/java/com/cho/ecommerce/smoke_test/MySQLConnectionTest.java,e/c/ec621d769bc6d052ea7a7e2e71245876c4a5a132
-<
-build.gradle,f/0/f07866736216be0ee2aba49e392191aeae700a35
 ’
 bsrc/main/java/com/cho/ecommerce/global/config/fakedata/step1_jpa_saveAll/JpaFakeDataGenerator.java,9/2/926b6e366071eb547665668aff97f7a547b09b9a
 ’
@@ -80,8 +78,6 @@ Ysrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeProductStepC
 Wsrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeOrderStepConfig.java,5/b/5b5ecf87ba8cb26e86fb23c0d0456462acf0ecb0
 ‡
 Wsrc/main/java/com/cho/ecommerce/domain/product/entity/ProductOptionVariationEntity.java,5/f/5f076f7f133220711d799af89e48cc88fbf95b2c
-|
-Lsrc/main/java/com/cho/ecommerce/domain/product/entity/ProductItemEntity.java,e/8/e8d83f2854745aafabfd827476cf19394ef3a6af
 x
 Hsrc/main/java/com/cho/ecommerce/domain/product/entity/ProductEntity.java,a/3/a3ba2d6d8641e773e3055a5fd1cce2a9f804f5c3
 €

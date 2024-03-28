@@ -40,6 +40,7 @@ public class Application {
 //            databaseCleanup.afterPropertiesSet();
 //            databaseCleanup.execute();
             
+            log.info("bulk-insert start!");
             long startTime = System.currentTimeMillis();
             
             //total 100-ish rows
@@ -77,7 +78,7 @@ public class Application {
 //            int numberOfDiscountsPerProductItem = 1; //240,000
 //            int numberOfProductOptionVariationPerProductItem = 1; //240,000
 //            int numberOfOrderItemsPerOrder = 2; //40,000 + 80,000
-            
+//
             jdbcDataGenerator.bulkInsert(numberOfUsers, numberOfLowCategoriesPerMidCategories,
                 numberOfOptions, numberOfOptionVariations, numberOfProducts,
                 numberOfProductItemsPerProduct,

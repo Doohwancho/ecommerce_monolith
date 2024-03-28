@@ -392,6 +392,7 @@ front/ecommerce/generated-sources/openapi/
 ### custom files ###
 debugFile
 mysql-data/**
+mysqlData/**
 !mysql-data/testFile
 
 ### end of custom files ###
