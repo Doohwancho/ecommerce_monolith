@@ -23,12 +23,13 @@
 	- c. [300 RPS 부하 테스트](#c-300-rps-부하-테스트)
 	- d. [1000 RPS 부하 테스트](#d-1000-rps-부하-테스트)
 - H. [기술적 도전 - Frontend](#h-기술적-도전---frontend)
-	- a. [프로젝트 구조](#a-프로젝트-구조)
-	- b. [component 모듈화](#b-component-모듈화)
-	- c. [state management](#c-state-managment)
-    - d. [API first design](#d-api-first-design)
-	- e. [filter 기능 구현](#e-filter-기능-구현)
-	- f. [페이지 로드 속도 개선](#f-페이지-로드-속도-개선)
+	- a. [wireframe](#a-wireframe)
+	- b. [프로젝트 구조](#b-프로젝트-구조)
+	- c. [component 모듈화](#c-component-모듈화)
+	- d. [state management](#d-state-managment)
+    - e. [API first design](#e-api-first-design)
+	- f. [filter 기능 구현](#f-filter-기능-구현)
+	- g. [페이지 로드 속도 개선](#g-페이지-로드-속도-개선)
 - I. [Trouble Shooting](#i-trouble-shooting)
     - a. [사건의 발단](#a-사건의-발단)
     - b. [가설1 - RDS connections 부족](#b-가설1---RDS의-connections-수가-부족해서-latency가-높아졌다)
@@ -2506,7 +2507,11 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 # H. 기술적 도전 - Frontend
 
-## a. 프로젝트 구조
+## a. wireframe
+
+![](./images/wireframe.svg)
+
+## b. 프로젝트 구조
 
 ```
 public
@@ -2579,7 +2584,7 @@ src
 
 
 
-## b. component 모듈화
+## c. component 모듈화
 
 ex. `<Product />`를 모듈화 한 방법
 
@@ -2605,7 +2610,7 @@ ex. `<Product />`를 모듈화 한 방법
     └── Product.util.ts
 ```
 
-## c. state managment
+## d. state managment
 
 1. react query
 	- server state를 관리한다.
@@ -2618,7 +2623,7 @@ ex. `<Product />`를 모듈화 한 방법
 	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우
 
 
-## d. API first design
+## e. API first design
 
 ### 1. 문제
 1. 기존 프론트/백 협업 방식은 프론트 개발자와 백엔드 개발자 사이의 결합도가 높아진다는 문제점이 있다.
@@ -2666,14 +2671,14 @@ redocly preview-docs back/ecommerce/src/main/resources/api/openapi.yaml
 
 
 
-## e. filter 기능 구현
+## f. filter 기능 구현
 
 ![filter-demo](documentation/images/filter-demo.gif)
 
 
 
 
-## f. 페이지 로드 속도 개선
+## g. 페이지 로드 속도 개선
 
 ### 1. 불필요한 랜더링을 React.memo() 으로 최적화
 
