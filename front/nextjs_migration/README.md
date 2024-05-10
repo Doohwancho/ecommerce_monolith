@@ -1,36 +1,166 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# A. atomic design pattern
 
-## Getting Started
+## a. theme 정하기
+### 1. theme color
+- Q. theme primary color combination for nike ecommerce?
+    1. 흰색
+    2. 검정색
+    3. 회색 
 
-First, run the development server:
+### 2. text-style
+1. font
+2. font-color
+3. font-size, in proportion to other component's font-size(rem)
+4. bold
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### b. atomic design을 나누는 기준 정하기
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. atom 
+	- 가장 작은 단위의 component
+	- ex. input, label, box, etc
+2. molecule 
+	1. atomic component의 조합 
+	2. domain logic은 들어가면 안된다.
+	3. ex. form = label + input + button
+3. oraganism 
+	1. molecule component의 조합 
+	2. domain logic이 들어갈 수 있다. 
+	3. ex. ProductCard = box + image + label
+4. template 
+	1. organism component들의 조합 
+	2. domain logic이 들어갈 수 있다.
+	3. ex. ProductCardList = ProductCard + grid
+5. page
+	1. 1~4의 조합 
+	2. ex. home page = header + top-menu-bar + image + footer
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## c. Q. what atoms & modules from shadcn-ui to build this [wireframe](https://github.com/Doohwancho/ecommerce?tab=readme-ov-file#a-wireframe)?
 
-## Learn More
+### c-1. atoms
+- theme
+- button 
+- radio 
+- input
+- checkbox 
+- label
+- box
+- icon 
+- link 
+- image 
+- spinner 
 
-To learn more about Next.js, take a look at the following resources:
+### c-2.molecules
+atomic의 조합, domain 포함 X
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- list 
+    - list of text, vertically
+- form - username, password, etc
+    1. label 
+    2. input
+- modal 
+    - list * n
+    - data function
+- filter
+    - text - bold
+    - radio 
+- highlight 
+    - text - bold 
+    - text - grey (goal: explain bold text)
+- card 
+    - box
+    - ?image
+    - ?text | ?input 
+    - ?button
+- counter
+    - input 
+    - button - increase
+    - button -decrease
+- rating 
+    - icon - stars 
+    - text - rating value 
+- slider - import from library
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### c-3. organisms
+molecule의 조합, domain과 섞임
+- common 
+    - header 
+        1. link - register
+        2. link - hyperlink to login
+    - top-menu-bar
+        1. icon 
+        2. modal
+        3. data 뿌려주는 component
+    - left menu-bar 
+        1. filter * n
+    - footer
+        1. list
+- home page
+    - 가능성은 지금부터 
+        1. highlight
+            1. text - bold-font, middle align
+            2. text - grey-font, middle align
+        2. button - 미션 참여하기 
+        3. button - 컬렉션 구매하기
+    - Top 10 Rated 
+        1. highlight
+            1. text - bold-font, middle align
+            2. text - grey-font, middle align
+        2. slider 
+            1. productCard 
+- productCard 
+    - card
+        - box
+        - image 
+        - text - title 
+        - text - explanation 
+        - text - price 
 
-## Deploy on Vercel
+### c-4. templates
+organism의 조합, domain과 섞임
+- product list page
+    - product list 
+        - products in grid 
+- product page
+    - productInfo
+        1. productTitle 
+        2. productInfo 
+        3. productSize 
+        4. Button - add to cart 
+        5. counter - quantity
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### c-5. pages
+1. home 
+    1. header 
+    2. top-menu-bar 
+    3. image 
+    4. highlight - "가능성은 지금부터"
+    5. Top 10 Rated 
+    6. footer 
+2. productList 
+    1. header 
+    2. top-menu-bar
+    3. left-menu-bar 
+    4. productItems 
+    5. footer
+3. product
+    1. header
+    2. top-menu-bar
+    3. image
+    4. productInfo
+    5. footer 
+4. register 
+    1. header
+    2. highlight - "Welcome-to-nike"
+    3. form - username
+    4. form - password
+    5. button
+    6. footer
+5. login
+    1. header 
+    2. highlight - "Welcome to Nike"
+    3. form - username
+    4. form - password
+    5. button
+    6. footer
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

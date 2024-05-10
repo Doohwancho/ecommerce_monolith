@@ -54,8 +54,9 @@ Actions per Domain
 : 도메인에 종속된 행동들
 
 1. design : 설계에 대한 커밋
-   1. db : 디비 대한 설계
-   2. api : API에 대한 설계
+   1. _db : 디비 대한 설계
+   2. _api : API에 대한 설계
+   3. _component: component design에 대한 설계
 2. feat : 새로운 기능에 대한 커밋
 3. test : 테스트 코드 수정에 대한 커밋
 4. perf : 성능향상에 대한 커밋
