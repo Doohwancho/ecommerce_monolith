@@ -1,3 +1,12 @@
+---\
+Index
+
+1. atomic design pattern\
+2. rendering pattern\
+3. app router uri
+
+
+
 # A. atomic design pattern
 
 ## a. theme 정하기
@@ -222,3 +231,16 @@ organism의 조합, domain과 섞임
 6. product page (SSR)
    - 상품설명을 바뀌면 바로 반영되어야 함 == 높은 데이터 무결성을 요구함 = SSR
    - SEO friendly
+
+# C. App Router URI
+
+1. /
+  - home
+2. /${category_name}
+  - product_list
+3. /${category_name}/${product_id}
+  - product
+4. /register
+  - register
+5. /login
+  - login
