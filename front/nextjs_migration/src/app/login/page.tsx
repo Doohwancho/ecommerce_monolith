@@ -1,14 +1,14 @@
 import Footer from "@/components/organism/footer";
 import { LoginForm } from "@/components/organism/loginForm";
-import { Navbar } from "@/components/organism/navbar";
-import BasicLayout from "@/components/template/basicLayout";
+import { Navbar } from "@/components/organism/categoryBar";
+import HeaderMainFooterLayout from "@/components/template/headerMainFooterLayout";
 
 export default function LoginPage() {
   return (
     <>
-      <BasicLayout 
+      <HeaderMainFooterLayout
         navbar={<Navbar />}
-        main={<LoginForm/>}
+        main={<LoginForm />}
         footer={<Footer />}
       />
     </>

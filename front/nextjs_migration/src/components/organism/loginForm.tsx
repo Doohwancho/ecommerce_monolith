@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/atom/button";
 import {
   Form,
   FormControl,
@@ -13,14 +13,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/molecule/form";
+import { Input } from "@/components/atom/input";
 
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
-})
+});
 
 export function LoginForm() {
   // 1. Define your form.
@@ -29,19 +29,22 @@ export function LoginForm() {
     defaultValues: {
       username: "",
     },
-  })
- 
+  });
+
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values)
+    console.log(values);
   }
 
   return (
     <div className="flex py-8 justify-center min-h-screen">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-white p-4 rounded-md w-96">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 bg-white p-4 rounded-md w-96"
+        >
           <FormField
             control={form.control}
             name="username"
@@ -65,9 +68,11 @@ export function LoginForm() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">Login</Button>
+          <Button type="submit" className="w-full">
+            Login
+          </Button>
         </form>
       </Form>
     </div>
-  )
+  );
 }

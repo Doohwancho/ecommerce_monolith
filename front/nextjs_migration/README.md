@@ -236,9 +236,9 @@ organism의 조합, domain과 섞임
 
 1. /
   - home
-2. /${category_name}
+2. /category/${category_id}
   - product_list
-3. /${category_name}/${product_id}
+3. /product/${product_id}
   - product
 4. /register
   - register

@@ -1,13 +1,11 @@
 import Footer from "@/components/organism/footer";
-import { Navbar } from "@/components/organism/navbar";
-import BasicLayout from "@/components/template/basicLayout";
 import { RegisterForm } from "../../components/organism/registerForm";
+import HeaderMainFooterLayout from "@/components/template/headerMainFooterLayout";
 
 export default function RegisterPage() {
   return (
     <>
-      <BasicLayout 
-        navbar={<Navbar />}
+      <HeaderMainFooterLayout
         main={<RegisterForm />}
         footer={<Footer />}
       />
