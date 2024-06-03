@@ -116,6 +116,7 @@
 | external library     | react-slick            | ^0.29.0 |
 |                      | slick-carousel         | ^1.8.1  |
 |                      | react-icons            | ^4.12.0 |
+| Design               | figma                  |         |
 
 
 
@@ -2510,6 +2511,26 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 ## a. wireframe
 
 ![](./images/wireframe.svg)
+
+### a-1. wireframe -> home
+
+![](./images/sc_home.png)
+
+### a-2. wireframe -> category
+![](./images/sc_category.png)
+
+
+### a-3. wireframe -> product
+![](./images/sc_product.png)
+
+
+### a-4. wireframe -> register
+![](./images/sc_register.png)
+
+
+### a-5. wireframe -> login
+![](./images/sc_login.png)
+
 
 ## b. 프로젝트 구조
 
