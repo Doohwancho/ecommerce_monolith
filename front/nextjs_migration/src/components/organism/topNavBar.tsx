@@ -1,6 +1,6 @@
 const TopNavBar: React.FC = () => {
     return (
-      <div className="bg-gray-200 flex justify-end items-center space-x-4 py-0.4 pr-4" >
+      <div className="relative z-20 bg-gray-200 flex justify-end items-center space-x-4 py-0.4 pr-4" >
         <a href="/register" className="text-black-500 hover:text-blue-700 text-sm">
           Register
         </a>

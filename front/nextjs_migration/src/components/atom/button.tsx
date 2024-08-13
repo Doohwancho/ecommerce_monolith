@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -42,10 +44,60 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+
+    //ghost variant인 경우, mouse hover이 mouse click의 역할을 한다. 
+    const [isHovered, setIsHovered] = React.useState(false)
+
+    const handleMouseEnter = (event: React.MouseEvent<HTMLButtonElement>) => {
+      if(variant === "ghost") {
+        setIsHovered(true)
+        event.currentTarget.click()
+      }
+    }
+
+    const handleMouseLeave = (event: React.MouseEvent<HTMLButtonElement>) => {
+      if(variant === "ghost") {
+        setIsHovered(false)
+        event.currentTarget.click()
+      }
+    }
+    // const [isClicked, setIsClicked] = React.useState(false)
+
+    // const handleMouseEnter = (event: React.MouseEvent<HTMLButtonElement>) => {
+    //   if (variant === "ghost") {
+    //     setIsClicked(true)
+    //     event.currentTarget.click()
+    //   }
+    // }
+
+    // const handleMouseLeave = (event: React.MouseEvent<HTMLButtonElement>) => {
+    //   if (variant === "ghost") {
+    //     setIsClicked(false)
+    //     event.currentTarget.click()
+    //     // setTimeout(() => {
+    //     //   const sheetContent = document.querySelector('.sheet-content');
+    //     //   if (sheetContent) {
+    //     //     sheetContent.setAttribute('data-state', 'closed');
+    //     //   }
+    //     // }, 300);
+    //   }
+    // }
+
+
+    // const handleMouseEnter = (event: React.MouseEvent<HTMLButtonElement>) => {
+    //   if (variant === "ghost") {
+    //     event.currentTarget.click()
+    //   }
+    // }
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        //hover시 onClick 되게끔 이벤트 추가
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        data-state={isHovered ? "open" : "closed"}
         {...props}
       />
     )

@@ -67,10 +67,25 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "navbar-slide": {
+          // '0%': { transform: "translateY(-100%) translateY(16px)" 
+          // },
+          // '100%': {
+          //   transform: "translateY(0)"
+          // }
+          from:  {transform: "translateY(16px);" },
+          to:   {transform: "translateY(80%);" },
+        },
+        slideRight: {
+          from: { left: '0px' },
+          to: { left: '10px' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        custom_navbar_slide: "navbar-slide 2.5s ease-in-out",
+        actSlideRight: 'slideRight 0.5s forwards',
       },
     },
   },
