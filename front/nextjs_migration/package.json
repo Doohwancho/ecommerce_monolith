@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "openapi": "openapi-generator-cli generate -i ../../back/ecommerce/src/main/resources/api/openapi.yaml -g typescript-axios -o ./models -c ./openapi-config.json --type-mappings date=string,object=any --additional-properties=ngVersion=6.1.7,npmName=restClient,supportsES6=true,npmVersion=6.9.0,withInterfaces=true"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -42,6 +43,7 @@
     "eslint-config-next": "14.2.3",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@openapitools/openapi-generator-cli": "^2.7.0"
   }
 }
