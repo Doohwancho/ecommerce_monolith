@@ -1,61 +1,23 @@
 import React from 'react';
 import Link from 'next/link';
+import { AllCategoriesByDepthResponseDTO } from '../../../models';
 
-export interface AllCategoriesByDepthResponseDTO {
-    /**
-     * 
-     * @type {number}
-     * @memberof AllCategoriesByDepthResponseDTO
-     */
-    'topCategoryId'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof AllCategoriesByDepthResponseDTO
-     */
-    'topCategoryName'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof AllCategoriesByDepthResponseDTO
-     */
-    'midCategoryId'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof AllCategoriesByDepthResponseDTO
-     */
-    'midCategoryName'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof AllCategoriesByDepthResponseDTO
-     */
-    'lowCategoryId'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof AllCategoriesByDepthResponseDTO
-     */
-    'lowCategoryName'?: string;
-}
-
-
-export interface ModalProps {
+  interface ModalProps {
     setMenModalOn: (value: boolean) => void;
     categories: AllCategoriesByDepthResponseDTO[];
   }
   
-  export interface LowCategory {
+  interface LowCategory {
     id: number | string;
     name: string;
   }
   
-  export interface CategoryGroupProps {
+  interface CategoryGroupProps {
     midCategoryName: string;
     lowCategories: LowCategory[];
   }
 
+  //이 유틸함수 역시 모달에서만 쓰는 함수니까 따로 분리하지 말자. 
   const groupLowCategories = (categories: AllCategoriesByDepthResponseDTO[]): CategoryGroupProps[] => {
     const grouped: { [key: string]: CategoryGroupProps } = {};
   
@@ -81,7 +43,7 @@ export interface ModalProps {
     return Object.values(grouped);
   }
   
-
+//CategoryGroup은 모달 안에서만 쓰는 컴포넌트니까 따로 모듈화 하지 말자. 만약 다른 컴포넌트에서도 CategoryGroup을 쓰면 그 때 분리하자. 
 const CategoryGroup: React.FC<{ group: CategoryGroupProps }> = ({ group }) => (
   <ul className="p-10">
     <li className="mb-4 font-bold text-lg text-black">{group.midCategoryName}</li>

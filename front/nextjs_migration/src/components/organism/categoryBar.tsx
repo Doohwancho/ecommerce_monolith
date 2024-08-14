@@ -1,308 +1,391 @@
-"use client";
+'use client'
+import React, { useState, useEffect, useRef, memo } from 'react';
+import { AllCategoriesByDepthResponseDTO } from '../../../models';
 
-import * as React from "react";
-import Link from "next/link";
+import Link from 'next/link';
+import { SiNike } from 'react-icons/si';
 
-import { SiNike } from "react-icons/si";
-import { cn } from "@/lib/utils";
+// import { getUniqueTopCategories, filterCategoriesForTopId } from './util/TopNav.utils';
+// import { throttle } from '../util/TopNav.utils';
+// import { useScrollHandler } from './hooks/useScrollHandler';
 
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/molecule/navigation-menu";
+import Modal from '../molecule/modal';
 
-//data schema for category (nested category)
-// {
-//     "topCategoryId": 1,
-//     "topCategoryName": "Men",
-//     "midCategoryId": 7,
-//     "midCategoryName": "Men's Shoes",
-//     "lowCategoryId": 31,
-//     "lowCategoryName": "CQolbJVGwz"
-// },
 
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "A",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "B",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "C",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "D",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "E",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  // {
-  //   title: "F",
-  //   href: "/docs/primitives/tooltip",
-  //   description:
-  //     "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  // },
-  // {
-  //   title: "G",
-  //   href: "/docs/primitives/tooltip",
-  //   description:
-  //     "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  // },
-  // {
-  //   title: "H",
-  //   href: "/docs/primitives/tooltip",
-  //   description:
-  //     "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  // },
-  // {
-  //   title: "I",
-  //   href: "/docs/primitives/tooltip",
-  //   description:
-  //     "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  // },
-  // {
-  //   title: "J",
-  //   href: "/docs/primitives/tooltip",
-  //   description:
-  //     "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  // },
-  // {
-  //   title: "K",
-  //   href: "/docs/primitives/tooltip",
-  //   description:
-  //     "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  // },
-  // {
-  //   title: "L",
-  //   href: "/docs/primitives/tooltip",
-  //   description:
-  //     "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  // },
-  // {
-  //   title: "M",
-  //   href: "/docs/primitives/tooltip",
-  //   description:
-  //     "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  // },
-  // {
-  //   title: "N",
-  //   href: "/docs/primitives/tooltip",
-  //   description:
-  //     "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  // },
-  // {
-  //   title: "O",
-  //   href: "/docs/primitives/tooltip",
-  //   description:
-  //     "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  // },
-];
+const categories = {
+    'Men': {
+        'topCategoryId':1,
+        'topCategoryName':'Men',
+        'midCategories': [
+            {
+                'midCategoryId':4,
+                'midCategoryName':"Men's Hat",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':16,
+                        'lowCategoryName':'Men-Hat-A'
+                    },
+                    {
+                        'lowCategoryId':17,
+                        'lowCategoryName':'Men-Hat-B'
+                    },
+                    {
+                        'lowCategoryId':18,
+                        'lowCategoryName':'Men-Hat-C'
+                    },
+                    {
+                        'lowCategoryId':19,
+                        'lowCategoryName':'Men-Hat-D'
+                    },
+                ]
+            },
+            {
+                'midCategoryId':5,
+                'midCategoryName':"Men's Top",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':21,
+                        'lowCategoryName':'Men-Top-A'
+                    },
+                    {
+                        'lowCategoryId':22,
+                        'lowCategoryName':'Men-Top-B'
+                    },
+                    {
+                        'lowCategoryId':23,
+                        'lowCategoryName':'Men-Top-C'
+                    },
+                    {
+                        'lowCategoryId':24,
+                        'lowCategoryName':'Men-Top-D'
+                    },
+                ]
+            },
+            {
+                'midCategoryId':6,
+                'midCategoryName':"Men's Bottom",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':26,
+                        'lowCategoryName':'Men-Bottom-A'
+                    },
+                    {
+                        'lowCategoryId':27,
+                        'lowCategoryName':'Men-Bottom-B'
+                    },
+                    {
+                        'lowCategoryId':28,
+                        'lowCategoryName':'Men-Bottom-C'
+                    },
+                    {
+                        'lowCategoryId':29,
+                        'lowCategoryName':'Men-Bottom-D'
+                    },
+                ]
+            },
+            {
+                'midCategoryId':7,
+                'midCategoryName':"Men's Shoes",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':31,
+                        'lowCategoryName':'Men-Shoes-A'
+                    },
+                    {
+                        'lowCategoryId':32,
+                        'lowCategoryName':'Men-Shoes-B'
+                    },
+                    {
+                        'lowCategoryId':33,
+                        'lowCategoryName':'Men-Shoes-C'
+                    },
+                    {
+                        'lowCategoryId':34,
+                        'lowCategoryName':'Men-Shoes-D'
+                    },
+                ]
+            },
+        ],
+    },
+    'Women': {
+        'topCategoryId':2,
+        'topCategoryName':'Women',
+        'midCategories': [
+            {
+                'midCategoryId':8,
+                'midCategoryName':"Women's Hat",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':36,
+                        'lowCategoryName':'Women-Hat-A'
+                    },
+                    {
+                        'lowCategoryId':37,
+                        'lowCategoryName':'Women-Hat-B'
+                    },
+                    {
+                        'lowCategoryId':38,
+                        'lowCategoryName':'Women-Hat-C'
+                    },
+                    {
+                        'lowCategoryId':39,
+                        'lowCategoryName':'Women-Hat-D'
+                    },
+                ]
+            },
+            {
+                'midCategoryId':9,
+                'midCategoryName':"Women's Top",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':41,
+                        'lowCategoryName':'Women-Top-A'
+                    },
+                    {
+                        'lowCategoryId':42,
+                        'lowCategoryName':'Women-Top-B'
+                    },
+                    {
+                        'lowCategoryId':43,
+                        'lowCategoryName':'Women-Top-C'
+                    },
+                    {
+                        'lowCategoryId':44,
+                        'lowCategoryName':'Women-Top-D'
+                    },
+                ]
+            },
+            {
+                'midCategoryId':10,
+                'midCategoryName':"Women's Bottom",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':46,
+                        'lowCategoryName':'Women-Bottom-A'
+                    },
+                    {
+                        'lowCategoryId':47,
+                        'lowCategoryName':'Women-Bottom-B'
+                    },
+                    {
+                        'lowCategoryId':48,
+                        'lowCategoryName':'Women-Bottom-C'
+                    },
+                    {
+                        'lowCategoryId':49,
+                        'lowCategoryName':'Women-Bottom-D'
+                    },
+                ]
+            },
+            {
+                'midCategoryId':11,
+                'midCategoryName':"Women's Shoes",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':51,
+                        'lowCategoryName':'Women-Shoes-A'
+                    },
+                    {
+                        'lowCategoryId':52,
+                        'lowCategoryName':'Women-Shoes-B'
+                    },
+                    {
+                        'lowCategoryId':53,
+                        'lowCategoryName':'Women-Shoes-C'
+                    },
+                    {
+                        'lowCategoryId':54,
+                        'lowCategoryName':'Women-Shoes-D'
+                    },
+                ]
+            },
+        ]
+    },
+    'Kids': {
+        'topCategoryId':3,
+        'topCategoryName':'Kids',
+        'midCategories': [
+            {
+                'midCategoryId':12,
+                'midCategoryName':"Kids' Hat",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':56,
+                        'lowCategoryName':'Kids-Hat-A'
+                    },
+                    {
+                        'lowCategoryId':57,
+                        'lowCategoryName':'Kids-Hat-B'
+                    },
+                    {
+                        'lowCategoryId':58,
+                        'lowCategoryName':'Kids-Hat-C'
+                    },
+                    {
+                        'lowCategoryId':59,
+                        'lowCategoryName':'Kids-Hat-D'
+                    },
+                ]
+            },
+            {
+                'midCategoryId':13,
+                'midCategoryName':"Kids' Top",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':61,
+                        'lowCategoryName':'Kids-Top-A'
+                    },
+                    {
+                        'lowCategoryId':62,
+                        'lowCategoryName':'Kids-Top-B'
+                    },
+                    {
+                        'lowCategoryId':63,
+                        'lowCategoryName':'Kids-Top-C'
+                    },
+                    {
+                        'lowCategoryId':64,
+                        'lowCategoryName':'Kids-Top-D'
+                    },
+                ]
+            },
+            {
+                'midCategoryId':14,
+                'midCategoryName':"Kids' Bottom",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':66,
+                        'lowCategoryName':'Kids-Bottom-A'
+                    },
+                    {
+                        'lowCategoryId':67,
+                        'lowCategoryName':'Kids-Bottom-B'
+                    },
+                    {
+                        'lowCategoryId':68,
+                        'lowCategoryName':'Kids-Bottom-C'
+                    },
+                    {
+                        'lowCategoryId':69,
+                        'lowCategoryName':'Kids-Bottom-D'
+                    },
+                ]
+            },
+            {
+                'midCategoryId':15,
+                'midCategoryName':"Kids' Shoes",
+                'lowCategories': [
+                    {
+                        'lowCategoryId':71,
+                        'lowCategoryName':'Kids-Shoes-A'
+                    },
+                    {
+                        'lowCategoryId':72,
+                        'lowCategoryName':'Kids-Shoes-B'
+                    },
+                    {
+                        'lowCategoryId':73,
+                        'lowCategoryName':'Kids-Shoes-C'
+                    },
+                    {
+                        'lowCategoryId':74,
+                        'lowCategoryName':'Kids-Shoes-D'
+                    },
+                ]
+            },
+        ]
+    }
+}
 
-export function CategoryBar() {
+const getCategoryData = (categoryName: string): AllCategoriesByDepthResponseDTO[] => {
+    const category = categories[categoryName as keyof typeof categories];
+    if (!category || !category.midCategories) return [];
+  
+    return category.midCategories.flatMap(midCategory => 
+      midCategory.lowCategories.map(lowCategory => ({
+        topCategoryId: category.topCategoryId,
+        topCategoryName: category.topCategoryName,
+        midCategoryId: midCategory.midCategoryId,
+        midCategoryName: midCategory.midCategoryName,
+        lowCategoryId: lowCategory.lowCategoryId,
+        lowCategoryName: lowCategory.lowCategoryName
+      }))
+    );
+  };
+
+const throttle = (callback: (...args: any[]) => void, waitTime: number) => {
+    let timeId: ReturnType<typeof setTimeout> | null = null;
+    return (element: any) => {
+      if (timeId) {
+        return (timeId = setTimeout(() => {
+          callback.call(this, element);
+          timeId = null;
+        }, waitTime));
+      }
+    };
+  };
+
+const useScrollHandler = () => {
+  const [hide, setHide] = useState(false);
+  const [pageY, setPageY] = useState(0);
+  const documentRef = useRef<Document>(document);
+
+  const handleScroll = () => {
+    const { pageYOffset } = window;
+    const deltaY = pageYOffset - pageY;
+    const hide = pageYOffset !== 0 && deltaY >= 0;
+    setHide(hide);
+    setPageY(pageYOffset);
+  };
+
+  const throttleScroll = throttle(handleScroll, 50);
+
+  useEffect(() => {
+    documentRef.current.addEventListener('scroll', throttleScroll);
+    return () => documentRef.current.removeEventListener('scroll', throttleScroll);
+  }, [pageY]);
+
+  return hide;
+};
+
+
+const CategoryBar: React.FC = () => {
+  const [selectedCategories, setSelectedCategories] = useState<AllCategoriesByDepthResponseDTO[]>([]);
+  const [modalOn, setModalOn] = useState(false);
+  const hide = useScrollHandler();
+
+  const handleCategoryHover = (categoryName: string) => {
+    setModalOn(true);
+    setSelectedCategories(getCategoryData(categoryName));
+  };
+
   return (
-    <div className="relative flex item-center justify-center h-[40px]">
-      <SiNike className="absolute left-4 item-center h-8 w-8" />
-      <NavigationMenu>
-        <NavigationMenuList>
-          {/* category 1 */}
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Men</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <div className="grid grid-flow-col justify-center gap-3 p-4">
-                <ul className="lg:w-[100px]">
-                  {/* <ul className="flex flex-col w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[600px]"> */}
-                  <h2 className="font-bold block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                    신발
-                  </h2>
-                  {components.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
-                      href={component.href}
-                    ></ListItem>
-                  ))}
-                </ul>
-
-                <ul className="lg:w-[100px]">
-                  {/* <ul className="flex flex-col w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[600px]"> */}
-                  <h2 className="font-bold block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                    의류
-                  </h2>
-                  {components.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
-                      href={component.href}
-                    ></ListItem>
-                  ))}
-                </ul>
-
-                <ul className="lg:w-[100px]">
-                  {/* <ul className="flex flex-col w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[600px]"> */}
-                  <h2 className="font-bold block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                    용품
-                  </h2>
-                  {components.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
-                      href={component.href}
-                    ></ListItem>
-                  ))}
-                </ul>
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          {/* category2 */}
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Women</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <div className="grid grid-flow-col justify-center gap-3 p-4">
-                <ul className="lg:w-[100px]">
-                  {/* <ul className="flex flex-col w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[600px]"> */}
-                  <h2 className="font-bold block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                    신발
-                  </h2>
-                  {components.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
-                      href={component.href}
-                    ></ListItem>
-                  ))}
-                </ul>
-
-                <ul className="lg:w-[100px]">
-                  {/* <ul className="flex flex-col w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[600px]"> */}
-                  <h2 className="font-bold block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                    의류
-                  </h2>
-                  {components.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
-                      href={component.href}
-                    ></ListItem>
-                  ))}
-                </ul>
-
-                <ul className="lg:w-[100px]">
-                  {/* <ul className="flex flex-col w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[600px]"> */}
-                  <h2 className="font-bold block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                    용품
-                  </h2>
-                  {components.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
-                      href={component.href}
-                    ></ListItem>
-                  ))}
-                </ul>
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          {/* category 3 */}
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Kids</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <div className="grid grid-flow-col justify-center gap-3 p-4">
-                <ul className="lg:w-[100px]">
-                  {/* <ul className="flex flex-col w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[600px]"> */}
-                  <h2 className="font-bold block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                    신발
-                  </h2>
-                  {components.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
-                      href={component.href}
-                    ></ListItem>
-                  ))}
-                </ul>
-
-                <ul className="lg:w-[100px]">
-                  {/* <ul className="flex flex-col w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[600px]"> */}
-                  <h2 className="font-bold block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                    의류
-                  </h2>
-                  {components.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
-                      href={component.href}
-                    ></ListItem>
-                  ))}
-                </ul>
-
-                <ul className="lg:w-[100px]">
-                  {/* <ul className="flex flex-col w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[600px]"> */}
-                  <h2 className="font-bold block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                    용품
-                  </h2>
-                  {components.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
-                      href={component.href}
-                    ></ListItem>
-                  ))}
-                </ul>
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-    </div>
+    <>
+      {modalOn && <Modal setMenModalOn={setModalOn} categories={selectedCategories} />}
+      <div className="relative w-full">
+        <div className={`box-border flex justify-start items-center px-[3vw] relative left-0 h-20 w-full z-50 bg-white ${hide ? 'hidden' : ''} sm:top-0`}>
+          <div className="absolute text-6xl">
+            <Link href="/" className="text-black hover:text-gray-500">
+              <SiNike />
+            </Link>
+          </div>
+          <div className="justify-center mx-auto box-border font-[${props => props.theme.fontContent}] hidden sm:block">
+            <div className="flex">
+              {Object.keys(categories).map((categoryName) => (
+                <div 
+                  key={categoryName}
+                  className="mx-5 cursor-pointer"
+                  onMouseEnter={() => handleCategoryHover(categoryName)}
+                >
+                  {categoryName}
+                </div>
+               ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
-const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none text-gray-400">
-            {title}
-          </div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-});
-ListItem.displayName = "ListItem";
+export default memo(CategoryBar);

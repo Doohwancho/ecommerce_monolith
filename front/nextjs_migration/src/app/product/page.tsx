@@ -2,7 +2,7 @@ import { Button } from "@/components/atom/button";
 import Image from "next/image";
 import Footer from "@/components/organism/footer";
 import TopNavBar from "@/components/organism/topNavBar";
-import { CategoryBar } from "@/components/organism/categoryBar";
+import CategoryBar from "@/components/organism/categoryBar";
 
 export default function ProductPage() {
   return (

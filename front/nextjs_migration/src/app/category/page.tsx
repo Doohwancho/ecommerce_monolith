@@ -1,10 +1,10 @@
 import React from "react";
 import TopNavBar from "@/components/organism/topNavBar";
-import { CategoryBar } from "@/components/organism/categoryBar";
 import Footer from "@/components/organism/footer";
 import { Button } from "@/components/atom/button";
 import ProductFilters from "@/components/organism/productFilters";
 import ProductList from "@/components/organism/productList";
+import CategoryBar from "@/components/organism/categoryBar";
 
 export default function CategoryPage() {
   return (
