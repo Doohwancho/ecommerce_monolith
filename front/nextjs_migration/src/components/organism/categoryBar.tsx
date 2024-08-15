@@ -5,10 +5,6 @@ import { AllCategoriesByDepthResponseDTO } from '../../../models';
 import Link from 'next/link';
 import { SiNike } from 'react-icons/si';
 
-// import { getUniqueTopCategories, filterCategoriesForTopId } from './util/TopNav.utils';
-// import { throttle } from '../util/TopNav.utils';
-// import { useScrollHandler } from './hooks/useScrollHandler';
-
 import Modal from '../molecule/modal';
 
 
@@ -328,7 +324,7 @@ const throttle = (callback: (...args: any[]) => void, waitTime: number) => {
 const useScrollHandler = () => {
   const [hide, setHide] = useState(false);
   const [pageY, setPageY] = useState(0);
-  const documentRef = useRef<Document>(document);
+  const documentRef = useRef<Document | null>(null);
 
   const handleScroll = () => {
     const { pageYOffset } = window;
@@ -338,11 +334,14 @@ const useScrollHandler = () => {
     setPageY(pageYOffset);
   };
 
-  const throttleScroll = throttle(handleScroll, 50);
-
   useEffect(() => {
-    documentRef.current.addEventListener('scroll', throttleScroll);
-    return () => documentRef.current.removeEventListener('scroll', throttleScroll);
+    // documentRef.current.addEventListener('scroll', throttleScroll);
+    documentRef.current = document;
+
+    const throttleScroll = throttle(handleScroll, 50);
+
+    window.addEventListener('scroll', throttleScroll);
+    return () => window.removeEventListener('scroll', throttleScroll);
   }, [pageY]);
 
   return hide;

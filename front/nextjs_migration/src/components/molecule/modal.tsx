@@ -50,7 +50,7 @@ const CategoryGroup: React.FC<{ group: CategoryGroupProps }> = ({ group }) => (
     <ul className="mt-0">
       {group.lowCategories.map((lowCategory: LowCategory, subIndex: number) => (
         <li key={subIndex} className="mb-2 text-sm text-gray-600 hover:text-gray-900">
-          <Link href={`/products/category/${lowCategory.id}`}>
+          <Link href={`/category/${lowCategory.id}`}>
             {lowCategory.name}
           </Link>
         </li>
