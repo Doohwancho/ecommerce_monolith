@@ -1,4 +1,5 @@
-import React from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ProductWithOptionsListResponseDTO } from '../../../../models';
 
@@ -14,65 +15,94 @@ interface CategoryPageProps {
         categoryId: string;
     };
 }
-  
 
 const fetchProductsWithOptionsByCategoryId = async (categoryId: string): Promise<ProductWithOptionsListResponseDTO> => {
     const BASE_URL= process.env.NEXT_PUBLIC_API_URL;
     const endpoint = `/products/category/${categoryId}`;
     const fullUrl = BASE_URL + endpoint;
 
-    const response = await fetch(fullUrl, { credentials: 'include' });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+    try {
+      const response = await fetch(fullUrl, {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            // Add other headers if necessary, like Authorization if token is needed
+        },
+    });
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      return response.json();
+    } catch (error) {
+        console.error("Fetch error:", error);
+        throw error; // Rethrow the error after logging
     }
-    return response.json();
 };
 
-const CategoryPage: React.FC<CategoryPageProps> = async ({ params }) => {
+// This function will run on the server side
+const CategoryPage = async ({ params }: CategoryPageProps) => {
   const { categoryId } = params;
-  const response = await fetchProductsWithOptionsByCategoryId(categoryId);
+  const initialProducts = await fetchProductsWithOptionsByCategoryId(categoryId);
 
   return (
-    <>
-        <div className="max-w-screen-lg mx-auto">
-            <TopNavBar />
-            <CategoryBar />
+      <CategoryClientSideComponent initialProducts={initialProducts} categoryId={categoryId} />
+  );
+};
 
-            <h2 className="text-2xl font-bold tracking-tight">
-                Category ID: {categoryId}
-                what: {response.products?.length}
-            </h2>
-    
-            {/* body */}
-            <section className="bg-white dark:bg-gray-950 py-12">
-            <div className="container mx-auto px-4 md:px-6">
-                {/* chunk1 - reset filters */}
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
-                <div className="grid gap-1">
-                    <h2 className="text-2xl font-bold tracking-tight">
-                    나이키 트레이닝
-                    </h2>
-                    <p className="text-gray-500 dark:text-gray-400">
-                    한계에 도전하는 여정과 함께할 아이템
-                    </p>
-                </div>
-                <Button className="mt-4 md:mt-0 shrink-0" variant="outline">
-                    <FilterIcon className="w-4 h-4 mr-2" />
-                    Reset Filters
-                </Button>
-                </div>
-    
-                <div className="grid md:grid-cols-[240px_1fr] gap-8">
-                {/* chunk2 - filters */}
-                <ProductFilters />
-                {/* chunk3 - productlist */}
-                <ProductList />
-                </div>
-            </div>
-            </section>
-    
-            <Footer />
-      </div>
+// Client-side component for handling interactivity
+const CategoryClientSideComponent: React.FC<{ initialProducts: ProductWithOptionsListResponseDTO; categoryId: string }> = ({ initialProducts, categoryId }) => {
+  const [products, setProducts] = useState(initialProducts); // State to hold products
+
+  // Effect to handle CSR after initial load
+  useEffect(() => {
+      setProducts(initialProducts); // Set products on client side
+      console.log(products);
+  }, [initialProducts]);
+
+  const handleFilterChange = async (newFilters: any) => {
+      // Example: Fetch new products based on the filter (you may need to adjust this logic)
+      const filteredProducts = await fetchProductsWithOptionsByCategoryId(categoryId);
+      setProducts(filteredProducts); // Update state with filtered products
+  };
+
+  return (
+      <>
+          <div className="max-w-screen-lg mx-auto">
+              <TopNavBar />
+              <CategoryBar />
+
+              {/* body */}
+              <section className="bg-white dark:bg-gray-950 py-12">
+                  <div className="container mx-auto px-4 md:px-6">
+                      {/* chunk1 - reset filters */}
+                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
+                          <div className="grid gap-1">
+                              <h2 className="text-2xl font-bold tracking-tight">
+                                  나이키 트레이닝
+                              </h2>
+                              <p className="text-gray-500 dark:text-gray-400">
+                                  한계에 도전하는 여정과 함께할 아이템
+                              </p>
+                          </div>
+                          <Button className="mt-4 md:mt-0 shrink-0" variant="outline">
+                              <FilterIcon className="w-4 h-4 mr-2" />
+                              Reset Filters
+                          </Button>
+                      </div>
+
+                      <div className="grid md:grid-cols-[240px_1fr] gap-8">
+                          {/* chunk2 - filters */}
+                          <ProductFilters />
+                          {/* <ProductFilters onFilterChange={handleFilterChange} /> */}
+                          {/* chunk3 - productlist */}
+                          <ProductList />
+                          {/* <ProductList products={products} /> */}
+                      </div>
+                  </div>
+              </section>
+
+              <Footer />
+          </div>
       </>
   );
 };
@@ -97,7 +127,5 @@ function FilterIcon(props: any) {
     </svg>
   );
 }
-
-
 
 export default CategoryPage;

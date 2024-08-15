@@ -48,18 +48,20 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
             .disable() //disable csrf for conveniency
             .headers()
             .frameOptions().disable() //h2-console 접속시 ui error 막기 위해 썼다.
-            .xssProtection().disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
+            .xssProtection()
+            .disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
             .and()
             .sessionManagement(s -> s
-                .maximumSessions(
-                    1) //동일 세션 개수 제한 => 1개로 설정하여 중복 로그인 방지 (localhost:8080에서 로그인하고, localhost:8081로 로그인 시도하면 http status 401 UNAUTHORIZED error 뜬다.
-                .sessionRegistry(sessionRegistry())
-                .maxSessionsPreventsLogin(
-                    true) // true : 먼저 사용 중인 사용자의 세션이 유지되며, 새로 접속 한 사람은 로그인이 되지 않음. false: it expires the oldest session
-                .expiredSessionStrategy(securitySessionExpiredStrategy) //Session 만료됐을 때 가져갈 전략 설정
+                    .maximumSessions(
+                        1) //동일 세션 개수 제한 => 1개로 설정하여 중복 로그인 방지 (localhost:8080에서 로그인하고, localhost:8081로 로그인 시도하면 http status 401 UNAUTHORIZED error 뜬다.
+                    .sessionRegistry(sessionRegistry())
+                    .maxSessionsPreventsLogin(
+                        true) // true : 먼저 사용 중인 사용자의 세션이 유지되며, 새로 접속 한 사람은 로그인이 되지 않음. false: it expires the oldest session
+                    .expiredSessionStrategy(securitySessionExpiredStrategy) //Session 만료됐을 때 가져갈 전략 설정
 //                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // This is the default, but just to be explicit
-                .and()
-                .sessionAuthenticationErrorUrl("/login") //Specifies the URL to redirect to if an authentication error occurs due to maximum sessions.
+                    .and()
+                    .sessionAuthenticationErrorUrl("/login")
+                //Specifies the URL to redirect to if an authentication error occurs due to maximum sessions.
 //                .invalidSessionUrl("/login") //fix error: redirect를 20번 이상해서 주석처리 했음. Specifies the URL to redirect to if the session is invalid.
             )
             .authorizeRequests(f -> f
@@ -114,12 +116,20 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5173", "http://127.0.0.1","http://localhost:5173", "http://localhost")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
-        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "Accept", "X-Requested-With", "Access-Control-Allow-Headers", "Origin", "Cache-Control", "Pragma", "Expires", "X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowCredentials(true); // Important for cookies like JSESSIONID, authorization headers with HTTPS
-                                                 //configuration.setAllowCredentials(true); 를 하면, .setAllowedOrigins("*"); ,.setAllowedHeaders("*") 가 시스템적으로 안되게 막혀있다. 꼭 특정 url, type으로 명시해야 한다.
+        
+        configuration.setAllowedOrigins(
+            Arrays.asList("http://127.0.0.1:5173", "http://127.0.0.1", "http://localhost:5173",
+                "http://localhost:3000", "http://127.0.0.1:3000",
+                "http://localhost")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
+        configuration.setAllowedHeaders(
+            Arrays.asList("Content-Type", "Authorization", "Accept", "X-Requested-With",
+                "Access-Control-Allow-Headers", "Origin", "Cache-Control", "Pragma", "Expires",
+                "X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto"));
+        configuration.setAllowedMethods(
+            Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowCredentials(
+            true); // Important for cookies like JSESSIONID, authorization headers with HTTPS
+        //configuration.setAllowCredentials(true); 를 하면, .setAllowedOrigins("*"); ,.setAllowedHeaders("*") 가 시스템적으로 안되게 막혀있다. 꼭 특정 url, type으로 명시해야 한다.
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
