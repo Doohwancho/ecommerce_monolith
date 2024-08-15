@@ -1,15 +1,17 @@
+import { ProductWithOptionsDTO, ProductWithOptionsListResponseDTO } from "../../../models";
 import ProductCard from "./productCard";
 
-const ProductList = () => {
+interface ProductListProps {
+  products: ProductWithOptionsListResponseDTO; // Define the type for products
+}
+
+const ProductList: React.FC<ProductListProps> = ({ products }) => {
   return (
     <div className="grid gap-8">
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
+        {products.products?.map((product: ProductWithOptionsDTO) => (
+          <ProductCard key={product.productId} product={product} /> // Pass each product to ProductCard
+        ))}
       </div>
     </div>
   );

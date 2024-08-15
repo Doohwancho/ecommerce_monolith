@@ -94,9 +94,9 @@ const CategoryClientSideComponent: React.FC<{ initialProducts: ProductWithOption
                           {/* chunk2 - filters */}
                           <ProductFilters />
                           {/* <ProductFilters onFilterChange={handleFilterChange} /> */}
+
                           {/* chunk3 - productlist */}
-                          <ProductList />
-                          {/* <ProductList products={products} /> */}
+                          <ProductList products={products} />
                       </div>
                   </div>
               </section>

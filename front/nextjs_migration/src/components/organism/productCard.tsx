@@ -1,7 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ProductWithOptionsDTO } from "../../../models";
 
-const ProductCard = () => {
+interface ProductCardProps {
+  product: ProductWithOptionsDTO; 
+}
+
+const formatPrice = (price: number) => {
+  return Math.floor(price).toLocaleString(); // Truncate and format with commas
+};
+
+const ProductCard: React.FC<ProductCardProps> = ({product}) => {
+  if (!product) return null; // Check if product is defined
+
   return (
         <div className="relative group">
           <Link className="absolute inset-0 z-10" href="#">
@@ -16,12 +27,12 @@ const ProductCard = () => {
             />
           <div className="flex-1 py-4">
             <h3 className="font-semibold tracking-tight">
-              Stylish Running Shoes
+              {product?.name}
             </h3>
             <small className="text-sm leading-none text-gray-500 dark:text-gray-400">
-              Comfortable and Durable
+              {product?.description}
             </small>
-            <h4 className="font-semibold">$79.99</h4>
+            <h4 className="font-semibold">{formatPrice(product?.price)}원</h4>
           </div>
         </div>
   );
