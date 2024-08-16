@@ -399,6 +399,29 @@ paths:
                   $ref: '#/components/schemas/OptionsOptionVariatonsResponseDTO'
         '404':
           description: Category not found
+  /categories/{categoryId}/optionVariations:
+    get:
+      summary: Get options and option variations for a category
+      operationId: getOptionVariationsByCategory
+      tags:
+        - Product
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          description: ID of the category
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response with options and option variations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryOptionsOptionVariationsResponseDTO'
+        '404':
+          description: Category not found
   /orders:
     get:
       summary: Get all orders
@@ -980,10 +1003,42 @@ components:
           type: string
         optionVariationName:
           type: string
+    CategoryOptionsOptionVariationsResponseDTO:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+          format: int64
+        categoryName:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionDTO'
+    OptionDTO:
+      type: object
+      properties:
+        optionId:
+          type: integer
+          format: int64
+        optionValue:
+          type: string
+        optionVariations:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionVariationDTO'
+    OptionVariationDTO:
+      type: object
+      properties:
+        optionVariationId:
+          type: integer
+          format: int64
+        optionVariationValue:
+          type: string
     OrderDTO: #TODO - OrderDTO와 OrderRequestDTO와 OrderResponseDTO를 분리하자!
       type: object
       required:
-#        - orderId #TODO - orderId를 반환한다는건, 총 주문 수를 파악할 수 있는 정보를 공개하는 것과 마찬가지 아닐까? 비공개해야하지 않을까?
+        #        - orderId #TODO - orderId를 반환한다는건, 총 주문 수를 파악할 수 있는 정보를 공개하는 것과 마찬가지 아닐까? 비공개해야하지 않을까?
         - orderDate
         - orderStatus
         - memberId
@@ -1021,7 +1076,7 @@ components:
         order_quantity:
           type: integer
           minimum: 1
-#          maximum: 100 # Maximum order quantity, adjust as needed
+        #          maximum: 100 # Maximum order quantity, adjust as needed
         price:
           type: integer
           format: double

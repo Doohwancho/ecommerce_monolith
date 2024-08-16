@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface OptionVariationRepository extends JpaRepository<OptionVariationEntity, Long> {
+public interface OptionVariationRepository extends JpaRepository<OptionVariationEntity, Long>,
+    OptionVariationRepositoryCustom {
+    
     List<OptionVariationEntity> findByOption_OptionId(Long optionId);
-
+    
 }
