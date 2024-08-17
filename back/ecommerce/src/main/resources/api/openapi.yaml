@@ -374,6 +374,34 @@ paths:
           description: Bad request, invalid category ID
         '404':
           description: Not found, category does not exist
+  /products/category/v2/{categoryId}:
+    get:
+      tags:
+        - Product
+      summary: Get products with options by category
+      description: Returns a list of products belonging to a specific category
+      operationId: getProductsWithOptionsByCategoryVer2
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          description: ID of the category to filter by
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: A list of products with options
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductWithOptionsListVer2ResponseDTO'
+        '204':
+          description: No content, no products found for the category
+        '400':
+          description: Bad request, invalid category ID
+        '404':
+          description: Not found, category does not exist
   /categories/{categoryId}/options:
     get:
       summary: Get options and option variations for a category
@@ -836,6 +864,45 @@ components:
           type: number
           format: double
           description: Price of the product
+    ProductWithOptionsVer2DTO:
+      type: object
+      required:
+        - categoryId
+        - productId
+        - productName
+        - description
+        - rating
+        - ratingCount
+        - productItemId
+        - price
+      properties:
+        categoryId:
+          type: integer
+          format: int64
+        productId:
+          type: integer
+          format: int64
+        productName:
+          type: string
+        description:
+          type: string
+        rating:
+          type: number
+          format: double
+        ratingCount:
+          type: integer
+        productItemId:
+          type: integer
+          format: int64
+        price:
+          type: number
+          format: double
+          description: Price of the product
+        optionVariationId:
+          type: integer
+          format: int64
+        optionVariationName:
+          type: string
     ProductWithOptionsListResponseDTO:
       type: object
       properties:
@@ -843,6 +910,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductWithOptionsDTO'
+    ProductWithOptionsListVer2ResponseDTO:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductWithOptionsVer2DTO'
     PaginatedProductResponse:
       type: object
       required:

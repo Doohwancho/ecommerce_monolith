@@ -12,6 +12,7 @@ import com.cho.ecommerce.domain.product.entity.QProductItemEntity;
 import com.cho.ecommerce.domain.product.entity.QProductOptionVariationEntity;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
@@ -31,14 +32,15 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
     
     @Override
-    public List<com.cho.ecommerce.api.domain.ProductWithOptionsDTO> findAllProductsByCategory(Long categoryId) {
+    public List<com.cho.ecommerce.api.domain.ProductWithOptionsDTO> findAllProductsByCategory(
+        Long categoryId) {
         QCategoryEntity category = QCategoryEntity.categoryEntity;
         QOptionEntity option = QOptionEntity.optionEntity;
         QOptionVariationEntity optionVariation = QOptionVariationEntity.optionVariationEntity;
         QProductEntity product = QProductEntity.productEntity;
         QProductItemEntity productItem = QProductItemEntity.productItemEntity;
         QProductOptionVariationEntity productOptionVariation = QProductOptionVariationEntity.productOptionVariationEntity;
-    
+        
         List<Tuple> results = queryFactory.select(
                 product.productId,
                 product.name,
@@ -53,17 +55,21 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 productItem.quantity,
                 productItem.price)
             .from(product)
-            .join(product.category, category) // Assuming a direct association between Product and Category
-            .join(product.productItems, productItem) // Assuming Product has a collection of ProductItems
-            .join(productItem.productOptionVariations, productOptionVariation) // Assuming ProductItem has a collection of ProductOptionVariations
-            .join(productOptionVariation.optionVariation, optionVariation) // Assuming ProductOptionVariation has an OptionVariation
+            .join(product.category,
+                category) // Assuming a direct association between Product and Category
+            .join(product.productItems,
+                productItem) // Assuming Product has a collection of ProductItems
+            .join(productItem.productOptionVariations,
+                productOptionVariation) // Assuming ProductItem has a collection of ProductOptionVariations
+            .join(productOptionVariation.optionVariation,
+                optionVariation) // Assuming ProductOptionVariation has an OptionVariation
             .join(optionVariation.option, option) // Assuming OptionVariation has an Option
             .where(category.categoryId.eq(categoryId))
             .orderBy(product.productId.asc())
             .fetch();
         
         List<com.cho.ecommerce.api.domain.ProductWithOptionsDTO> productWithOptionsDTOList = new ArrayList<>();
-        for(Tuple tuple : results) {
+        for (Tuple tuple : results) {
             com.cho.ecommerce.api.domain.ProductWithOptionsDTO dto = new com.cho.ecommerce.api.domain.ProductWithOptionsDTO();
             dto.setProductId(tuple.get(product.productId));
             dto.setName(tuple.get(product.name));
@@ -77,11 +83,44 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             dto.setOptionVariationName(tuple.get(optionVariation.value));
             dto.setQuantity(tuple.get(productItem.quantity));
             dto.setPrice(tuple.get(productItem.price));
-    
+            
             productWithOptionsDTOList.add(dto);
         }
-    
+        
         return productWithOptionsDTOList;
+    }
+    
+    @Override
+    public List<com.cho.ecommerce.api.domain.ProductWithOptionsVer2DTO> findAllProductsByCategoryVer2(
+        Long categoryId) {
+        QCategoryEntity category = QCategoryEntity.categoryEntity;
+        QProductEntity product = QProductEntity.productEntity;
+        QProductItemEntity productItem = QProductItemEntity.productItemEntity;
+        QProductOptionVariationEntity productOptionVariation = QProductOptionVariationEntity.productOptionVariationEntity;
+        QOptionVariationEntity optionVariation = QOptionVariationEntity.optionVariationEntity;
+        
+        return queryFactory.select(
+                Projections.bean(com.cho.ecommerce.api.domain.ProductWithOptionsVer2DTO.class,
+                    category.categoryId,
+                    product.productId,
+                    product.name.as("productName"),
+                    product.description,
+                    product.rating,
+                    product.ratingCount,
+                    productItem.productItemId,
+                    productItem.price,
+                    optionVariation.optionVariationId,
+                    optionVariation.value.as("optionVariationName")
+                ))
+            .from(category)
+            .join(product).on(category.categoryId.eq(product.category.categoryId))
+            .leftJoin(productItem).on(product.productId.eq(productItem.product.productId))
+            .leftJoin(productOptionVariation)
+            .on(productOptionVariation.productItem.productItemId.eq(productItem.productItemId))
+            .leftJoin(optionVariation).on(optionVariation.optionVariationId.eq(
+                productOptionVariation.optionVariation.optionVariationId))
+            .where(category.categoryId.eq(categoryId))
+            .fetch();
     }
     
     @Override

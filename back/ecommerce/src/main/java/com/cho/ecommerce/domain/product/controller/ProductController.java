@@ -93,6 +93,15 @@ public class ProductController implements ProductApi {
     }
     
     @Override
+    public ResponseEntity<com.cho.ecommerce.api.domain.ProductWithOptionsListVer2ResponseDTO> getProductsWithOptionsByCategoryVer2(
+        Long categoryId) {
+        com.cho.ecommerce.api.domain.ProductWithOptionsListVer2ResponseDTO response = productAdapter.findAllProductsByCategoryVer2(
+            categoryId);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    @Override
     public ResponseEntity<List<com.cho.ecommerce.api.domain.AllCategoriesByDepthResponseDTO>> getAllCategoriesSortByDepth() {
         List<com.cho.ecommerce.api.domain.AllCategoriesByDepthResponseDTO> allCategoriesSortByDepth = categoryRepository.findAllCategoriesSortByDepth();
         //TODO - Q. 굳이 service layer안거치고 바로 controller가 repository에서 건져 올리는게 맞는걸까?
