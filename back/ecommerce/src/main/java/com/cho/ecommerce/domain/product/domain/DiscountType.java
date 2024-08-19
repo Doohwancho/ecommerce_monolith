@@ -14,4 +14,13 @@ public enum DiscountType {
         return description;
     }
     
+    public static DiscountType fromDescription(String description) {
+        for (DiscountType type : values()) {
+            if (type.getDescription().equalsIgnoreCase(description)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException(
+            "No DiscountType with description " + description + " found");
+    }
 }

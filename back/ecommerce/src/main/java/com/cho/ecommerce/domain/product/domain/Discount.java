@@ -37,7 +37,7 @@ public class Discount {
     }
     
     public Boolean validateRequestedDiscountWithSavedDiscountEntity(DiscountEntity discountEntity) {
-        if(!(discountId.equals(discountEntity.getDiscountId()) &&
+        if (!(discountId.equals(discountEntity.getDiscountId()) &&
             discountType.equals(discountEntity.getDiscountType()) &&
             discountValue.equals(discountEntity.getDiscountValue()) &&
             startDate.isEqual(discountEntity.getStartDate()) &&
