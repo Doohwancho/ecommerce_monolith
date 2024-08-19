@@ -61,9 +61,9 @@ const CategoryGroup: React.FC<{ group: CategoryGroupProps }> = ({ group }) => (
 
 const Modal: React.FC<ModalProps> = ({ setMenModalOn, categories }) => (
   <div className="font-[theme-font-content]">
-    <div className="fixed top-20 right-0 bottom-0 left-0 bg-black bg-opacity-60 z-100 animate-slidein">
+    <div className="fixed top-20 right-0 bottom-0 left-0 bg-black bg-opacity-60 z-50 animate-slidein">
       <div 
-        className="relative w-full bg-white flex justify-center"
+        className="relative w-full bg-white flex justify-center z-60"
         onMouseLeave={() => setMenModalOn(false)}
       >
         {groupLowCategories(categories).map((group: CategoryGroupProps, index: number) => (
