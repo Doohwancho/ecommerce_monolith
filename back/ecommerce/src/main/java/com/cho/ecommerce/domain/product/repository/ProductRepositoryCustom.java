@@ -12,7 +12,7 @@ public interface ProductRepositoryCustom {
     List<com.cho.ecommerce.api.domain.ProductWithOptionsVer2DTO> findAllProductsByCategoryVer2(
         Long categoryId);
     
-    Optional<List<ProductEntity>> findProductDetailDTOsById(Long productId);
+    Optional<ProductEntity> findProductDetailDTOsById(Long productId);
     
     List<ProductEntity> findTop10ByRating();
 }

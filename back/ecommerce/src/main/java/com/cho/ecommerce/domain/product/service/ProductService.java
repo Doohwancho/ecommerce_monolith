@@ -11,8 +11,6 @@ import com.cho.ecommerce.domain.product.entity.ProductOptionVariationEntity;
 import com.cho.ecommerce.domain.product.mapper.DiscountMapper;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
-import com.cho.ecommerce.domain.product.repository.DiscountRepository;
-import com.cho.ecommerce.domain.product.repository.ProductItemRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepositoryCustomImpl;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
@@ -32,7 +30,7 @@ public class ProductService {
     private ProductRepository productRepository;
     @Autowired
     private CategoryRepository categoryRepository;
-
+    
     @Autowired
     private ProductRepositoryCustomImpl productRepositoryCustom;
     
@@ -41,7 +39,8 @@ public class ProductService {
     @Autowired
     private DiscountMapper discountMapper;
     
-    public Page<ProductEntity> getProductsWithPagination(int page, int size) { //TODO - change name from PaginatedProductResponse to PaginatedProductResponseDTO
+    public Page<ProductEntity> getProductsWithPagination(int page,
+        int size) { //TODO - change name from PaginatedProductResponse to PaginatedProductResponseDTO
         return productRepository.findAll(PageRequest.of(page, size));
     }
     
@@ -55,18 +54,19 @@ public class ProductService {
     
     @Transactional
     public List<Product> getProductDetailDTOsById(Long productId) {
-        Optional<List<ProductEntity>> productEntitiesOptional = productRepository.findProductDetailDTOsById(
+        Optional<ProductEntity> productEntitiesOptional = productRepository.findProductDetailDTOsById(
             productId);
         
-        if (!productEntitiesOptional.isPresent() || productEntitiesOptional.get().isEmpty()) {
+        if (!productEntitiesOptional.isPresent()) {
             throw new ResourceNotFoundException("Product not found with ID: " + productId);
         }
         
-        ProductEntity queryResult = productEntitiesOptional.get().get(0);
+        ProductEntity queryResult = productEntitiesOptional.get();
         
         List<ProductOptionVariationEntity> allProducts = new ArrayList<>();
         List<Product> productList = new ArrayList<>();
         
+        //해당 product에 종속된 productItem을 뽑는다. 여기에 product_option_variations와 discounts가 걸려있다.
         if (queryResult.getProductItems() != null) {
             for (ProductItemEntity productItem : queryResult.getProductItems()) {
                 for (ProductOptionVariationEntity productOptionVariation : productItem.getProductOptionVariations()) {
@@ -113,7 +113,8 @@ public class ProductService {
     @Transactional
     public ProductEntity updateProduct(com.cho.ecommerce.api.domain.ProductDTO product) {
         //1. read productEntity from database to check if it exist.
-        ProductEntity productEntity = productRepository.findById(product.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        ProductEntity productEntity = productRepository.findById(product.getProductId())
+            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         
         //2. set productEntity's columns with new productDTO's columns
         productEntity.setName(product.getName());

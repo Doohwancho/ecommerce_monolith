@@ -38,4 +38,15 @@ public class ProductOptionVariationEntity {
     @ManyToOne
     @JoinColumn(name = "PRODUCT_ITEM_ID")
     private ProductItemEntity productItem;
+    
+    public void setProductItem(ProductItemEntity productItem) {
+        if (this.productItem != null && this.productItem.getProductOptionVariations()
+            .contains(this)) {
+            this.productItem.getProductOptionVariations().remove(this);
+        }
+        this.productItem = productItem;
+        if (productItem != null && !productItem.getProductOptionVariations().contains(this)) {
+            productItem.getProductOptionVariations().add(this);
+        }
+    }
 }

@@ -63,4 +63,21 @@ public class ProductEntity implements Serializable {
     
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductItemEntity> productItems;
+    
+    public void addProductItem(ProductItemEntity productItem) {
+        productItems.add(productItem);
+        productItem.setProduct(this);
+    }
+    
+    public void removeProductItem(ProductItemEntity productItem) {
+        productItems.remove(productItem);
+        productItem.setProduct(null);
+    }
+    
+    public void setProductItems(Set<ProductItemEntity> productItems) {
+        this.productItems.clear();
+        if (productItems != null) {
+            productItems.forEach(this::addProductItem);
+        }
+    }
 }

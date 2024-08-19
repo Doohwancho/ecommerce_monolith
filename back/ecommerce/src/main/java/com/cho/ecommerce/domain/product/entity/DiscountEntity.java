@@ -1,12 +1,12 @@
 package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.domain.product.domain.DiscountType;
+import com.cho.ecommerce.domain.product.domain.converter.DiscountTypeConverter;
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
 import java.time.OffsetDateTime;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,8 +36,9 @@ public class DiscountEntity {
     private Long discountId;
     
     @NotNull(message = "Discount type is required")
-    @Enumerated(EnumType.STRING) //String 형태로 "Percentage", "Flat Rate"로 저장된다.
     @Column(name = "DISCOUNT_TYPE", length = DatabaseConstants.DISCOUNT_TYPE_SIZE, nullable = false)
+//    @Enumerated(EnumType.STRING) //before) ERROR - db query후 결과값을 DiscountEntity에 넣는 과정에서 DiscountType의 value들이 type error가 생기는 현상 발견! 아래 방법으로 대체
+    @Convert(converter = DiscountTypeConverter.class) //after
     private DiscountType discountType;
     
     @Min(0)
@@ -63,7 +64,13 @@ public class DiscountEntity {
     }
     
     public void setProductItem(ProductItemEntity productItem) {
+        if (this.productItem != null && this.productItem.getDiscounts().contains(this)) {
+            this.productItem.getDiscounts().remove(this);
+        }
         this.productItem = productItem;
+        if (productItem != null && !productItem.getDiscounts().contains(this)) {
+            productItem.getDiscounts().add(this);
+        }
     }
     
     public DiscountType getDiscountType() {

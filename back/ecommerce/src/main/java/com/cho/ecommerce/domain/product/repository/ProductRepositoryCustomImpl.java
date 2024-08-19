@@ -1,7 +1,5 @@
 package com.cho.ecommerce.domain.product.repository;
 
-import static com.google.common.base.Predicates.not;
-
 import com.cho.ecommerce.domain.product.entity.ProductEntity;
 import com.cho.ecommerce.domain.product.entity.QCategoryEntity;
 import com.cho.ecommerce.domain.product.entity.QDiscountEntity;
@@ -10,10 +8,8 @@ import com.cho.ecommerce.domain.product.entity.QOptionVariationEntity;
 import com.cho.ecommerce.domain.product.entity.QProductEntity;
 import com.cho.ecommerce.domain.product.entity.QProductItemEntity;
 import com.cho.ecommerce.domain.product.entity.QProductOptionVariationEntity;
-import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,32 +120,24 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
     
     @Override
-    public Optional<List<ProductEntity>> findProductDetailDTOsById(Long productId) {
+    public Optional<ProductEntity> findProductDetailDTOsById(Long productId) {
         QProductEntity qProduct = QProductEntity.productEntity;
         QCategoryEntity qCategory = QCategoryEntity.categoryEntity;
         QProductItemEntity qProductItem = QProductItemEntity.productItemEntity;
-        QProductOptionVariationEntity qProductOptionVariation = QProductOptionVariationEntity.productOptionVariationEntity;
         QDiscountEntity qDiscount = QDiscountEntity.discountEntity;
+        QProductOptionVariationEntity qProductOptionVariation = QProductOptionVariationEntity.productOptionVariationEntity;
         
-        JPAQuery<ProductEntity> query = queryFactory.selectDistinct(qProduct)
+        ProductEntity product = queryFactory
+            .selectDistinct(qProduct)
             .from(qProduct)
             .leftJoin(qProduct.category, qCategory).fetchJoin()
-            // Only join single-valued associations with fetchJoin
             .leftJoin(qProduct.productItems, qProductItem).fetchJoin()
-            // For collections, consider using simple joins and fetching them in separate queries if needed
-            .leftJoin(qProductItem.productOptionVariations, qProductOptionVariation)
-            .leftJoin(qProductItem.discounts, qDiscount)
-            .where(qProduct.productId.eq(productId)); // If you're looking for a specific product
+            .leftJoin(qProductItem.discounts, qDiscount).fetchJoin()
+            .leftJoin(qProductItem.productOptionVariations, qProductOptionVariation).fetchJoin()
+            .where(qProduct.productId.eq(productId))
+            .fetchOne();
         
-        // Fetch the results
-        List<ProductEntity> products = query.fetch();
-        
-        return Optional.ofNullable(Optional.ofNullable(
-                products) //Optional can also be null, therefore wrap Optional with Optional (???!)
-            .filter(not(List::isEmpty)) //if empty, returns Optional
-            .orElseThrow(
-                () -> new ResourceNotFoundException("Product not found, productId: "
-                    + productId))); //throw Exception if result is Optional
+        return Optional.ofNullable(product);
     }
     
     @Override

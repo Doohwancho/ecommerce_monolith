@@ -54,8 +54,43 @@ public class ProductItemEntity {
     //TODO - CascadeType.ALL 말고 뭘 쓸지 고려하기
     private Set<ProductOptionVariationEntity> productOptionVariations;
     
+    
     //    @NotEmpty(message = "Product item must have at least one discount") //product may not have discount
     @OneToMany(mappedBy = "productItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DiscountEntity> discounts = new ArrayList<>();
+    
+    public void addDiscount(DiscountEntity discount) {
+        discounts.add(discount);
+        discount.setProductItem(this);
+    }
+    
+    public void removeDiscount(DiscountEntity discount) {
+        discounts.remove(discount);
+        discount.setProductItem(null);
+    }
+    
+    public void setDiscounts(List<DiscountEntity> discounts) {
+        this.discounts.clear();
+        if (discounts != null) {
+            discounts.forEach(this::addDiscount);
+        }
+    }
+    
+    public void addProductOptionVariation(ProductOptionVariationEntity variation) {
+        productOptionVariations.add(variation);
+        variation.setProductItem(this);
+    }
+    
+    public void removeProductOptionVariation(ProductOptionVariationEntity variation) {
+        productOptionVariations.remove(variation);
+        variation.setProductItem(null);
+    }
+    
+    public void setProductOptionVariations(Set<ProductOptionVariationEntity> variations) {
+        this.productOptionVariations.clear();
+        if (variations != null) {
+            variations.forEach(this::addProductOptionVariation);
+        }
+    }
 }
 
