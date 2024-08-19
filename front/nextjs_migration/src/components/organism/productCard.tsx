@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ProductWithOptionsDTO } from "../../../models";
+import { GroupedProduct } from "@/app/category/[categoryId]/CategoryClientSideComponent";
 
 interface ProductCardProps {
-  product: ProductWithOptionsDTO; 
+  product: GroupedProduct; 
 }
 
 const formatPrice = (price: number) => {
@@ -27,7 +27,7 @@ const ProductCard: React.FC<ProductCardProps> = ({product}) => {
             />
           <div className="flex-1 py-4">
             <h3 className="font-semibold tracking-tight">
-              {product?.name}
+              {product?.productName}
             </h3>
             <small className="text-sm leading-none text-gray-500 dark:text-gray-400">
               {product?.description}

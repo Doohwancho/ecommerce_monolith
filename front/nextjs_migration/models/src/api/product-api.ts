@@ -24,6 +24,8 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { AllCategoriesByDepthResponseDTO } from '../../src/model';
 // @ts-ignore
+import type { CategoryOptionsOptionVariationsResponseDTO } from '../../src/model';
+// @ts-ignore
 import type { ErrorResponseDTO } from '../../src/model';
 // @ts-ignore
 import type { OptionsOptionVariatonsResponseDTO } from '../../src/model';
@@ -37,6 +39,8 @@ import type { ProductDTO } from '../../src/model';
 import type { ProductDetailResponseDTO } from '../../src/model';
 // @ts-ignore
 import type { ProductWithOptionsListResponseDTO } from '../../src/model';
+// @ts-ignore
+import type { ProductWithOptionsListVer2ResponseDTO } from '../../src/model';
 /**
  * ProductApi - axios parameter creator
  * @export
@@ -150,6 +154,40 @@ export const ProductApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        getOptionVariationsByCategory: async (categoryId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'categoryId' is not null or undefined
+            assertParamExists('getOptionVariationsByCategory', 'categoryId', categoryId)
+            const localVarPath = `/categories/{categoryId}/optionVariations`
+                .replace(`{${"categoryId"}}`, encodeURIComponent(String(categoryId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get options and option variations for a category
+         * @param {number} categoryId ID of the category
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         getOptionsByCategory: async (categoryId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'categoryId' is not null or undefined
             assertParamExists('getOptionsByCategory', 'categoryId', categoryId)
@@ -222,6 +260,40 @@ export const ProductApiAxiosParamCreator = function (configuration?: Configurati
             // verify required parameter 'categoryId' is not null or undefined
             assertParamExists('getProductsWithOptionsByCategory', 'categoryId', categoryId)
             const localVarPath = `/products/category/{categoryId}`
+                .replace(`{${"categoryId"}}`, encodeURIComponent(String(categoryId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns a list of products belonging to a specific category
+         * @summary Get products with options by category
+         * @param {number} categoryId ID of the category to filter by
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProductsWithOptionsByCategoryVer2: async (categoryId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'categoryId' is not null or undefined
+            assertParamExists('getProductsWithOptionsByCategoryVer2', 'categoryId', categoryId)
+            const localVarPath = `/products/category/v2/{categoryId}`
                 .replace(`{${"categoryId"}}`, encodeURIComponent(String(categoryId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -410,6 +482,19 @@ export const ProductApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async getOptionVariationsByCategory(categoryId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CategoryOptionsOptionVariationsResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getOptionVariationsByCategory(categoryId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ProductApi.getOptionVariationsByCategory']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get options and option variations for a category
+         * @param {number} categoryId ID of the category
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async getOptionsByCategory(categoryId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<OptionsOptionVariatonsResponseDTO>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOptionsByCategory(categoryId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -440,6 +525,19 @@ export const ProductApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getProductsWithOptionsByCategory(categoryId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['ProductApi.getProductsWithOptionsByCategory']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Returns a list of products belonging to a specific category
+         * @summary Get products with options by category
+         * @param {number} categoryId ID of the category to filter by
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getProductsWithOptionsByCategoryVer2(categoryId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProductWithOptionsListVer2ResponseDTO>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProductsWithOptionsByCategoryVer2(categoryId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ProductApi.getProductsWithOptionsByCategoryVer2']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -528,6 +626,16 @@ export const ProductApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        getOptionVariationsByCategory(categoryId: number, options?: any): AxiosPromise<CategoryOptionsOptionVariationsResponseDTO> {
+            return localVarFp.getOptionVariationsByCategory(categoryId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get options and option variations for a category
+         * @param {number} categoryId ID of the category
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         getOptionsByCategory(categoryId: number, options?: any): AxiosPromise<Array<OptionsOptionVariatonsResponseDTO>> {
             return localVarFp.getOptionsByCategory(categoryId, options).then((request) => request(axios, basePath));
         },
@@ -550,6 +658,16 @@ export const ProductApiFactory = function (configuration?: Configuration, basePa
          */
         getProductsWithOptionsByCategory(categoryId: number, options?: any): AxiosPromise<ProductWithOptionsListResponseDTO> {
             return localVarFp.getProductsWithOptionsByCategory(categoryId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Returns a list of products belonging to a specific category
+         * @summary Get products with options by category
+         * @param {number} categoryId ID of the category to filter by
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getProductsWithOptionsByCategoryVer2(categoryId: number, options?: any): AxiosPromise<ProductWithOptionsListVer2ResponseDTO> {
+            return localVarFp.getProductsWithOptionsByCategoryVer2(categoryId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -628,6 +746,16 @@ export interface ProductApiInterface {
      * @throws {RequiredError}
      * @memberof ProductApiInterface
      */
+    getOptionVariationsByCategory(categoryId: number, options?: RawAxiosRequestConfig): AxiosPromise<CategoryOptionsOptionVariationsResponseDTO>;
+
+    /**
+     * 
+     * @summary Get options and option variations for a category
+     * @param {number} categoryId ID of the category
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApiInterface
+     */
     getOptionsByCategory(categoryId: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<OptionsOptionVariatonsResponseDTO>>;
 
     /**
@@ -649,6 +777,16 @@ export interface ProductApiInterface {
      * @memberof ProductApiInterface
      */
     getProductsWithOptionsByCategory(categoryId: number, options?: RawAxiosRequestConfig): AxiosPromise<ProductWithOptionsListResponseDTO>;
+
+    /**
+     * Returns a list of products belonging to a specific category
+     * @summary Get products with options by category
+     * @param {number} categoryId ID of the category to filter by
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApiInterface
+     */
+    getProductsWithOptionsByCategoryVer2(categoryId: number, options?: RawAxiosRequestConfig): AxiosPromise<ProductWithOptionsListVer2ResponseDTO>;
 
     /**
      * 
@@ -733,6 +871,18 @@ export class ProductApi extends BaseAPI implements ProductApiInterface {
      * @throws {RequiredError}
      * @memberof ProductApi
      */
+    public getOptionVariationsByCategory(categoryId: number, options?: RawAxiosRequestConfig) {
+        return ProductApiFp(this.configuration).getOptionVariationsByCategory(categoryId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get options and option variations for a category
+     * @param {number} categoryId ID of the category
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApi
+     */
     public getOptionsByCategory(categoryId: number, options?: RawAxiosRequestConfig) {
         return ProductApiFp(this.configuration).getOptionsByCategory(categoryId, options).then((request) => request(this.axios, this.basePath));
     }
@@ -759,6 +909,18 @@ export class ProductApi extends BaseAPI implements ProductApiInterface {
      */
     public getProductsWithOptionsByCategory(categoryId: number, options?: RawAxiosRequestConfig) {
         return ProductApiFp(this.configuration).getProductsWithOptionsByCategory(categoryId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Returns a list of products belonging to a specific category
+     * @summary Get products with options by category
+     * @param {number} categoryId ID of the category to filter by
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApi
+     */
+    public getProductsWithOptionsByCategoryVer2(categoryId: number, options?: RawAxiosRequestConfig) {
+        return ProductApiFp(this.configuration).getProductsWithOptionsByCategoryVer2(categoryId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -1,14 +1,5 @@
-"use client";
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { ProductWithOptionsListResponseDTO } from '../../../../models';
-
-import TopNavBar from "@/components/organism/topNavBar";
-import Footer from "@/components/organism/footer";
-import { Button } from "@/components/atom/button";
-import ProductFilters from "@/components/organism/productFilters";
-import ProductList from "@/components/organism/productList";
-import CategoryBar from "@/components/organism/categoryBar";
+import { ProductWithOptionsListVer2ResponseDTO, CategoryOptionsOptionVariationsResponseDTO } from '../../../../models';
+import CategoryClientSideComponent from './CategoryClientSideComponent';
 
 interface CategoryPageProps {
     params: {
@@ -16,116 +7,89 @@ interface CategoryPageProps {
     };
 }
 
-const fetchProductsWithOptionsByCategoryId = async (categoryId: string): Promise<ProductWithOptionsListResponseDTO> => {
-    const BASE_URL= process.env.NEXT_PUBLIC_API_URL;
-    const endpoint = `/products/category/${categoryId}`;
+const fetchProductsWithOptionsByCategoryId = async (categoryId: string): Promise<ProductWithOptionsListVer2ResponseDTO> => {
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+    const endpoint = `/products/category/v2/${categoryId}`;
     const fullUrl = BASE_URL + endpoint;
 
     try {
-      const response = await fetch(fullUrl, {
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            // Add other headers if necessary, like Authorization if token is needed
-        },
-    });
-      if (!response.ok) {
-          throw new Error('Network response was not ok');
-      }
-      return response.json();
+        const response = await fetch(fullUrl, {
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const errorText = await response.text(); // Log the response text
+            console.error('Fetch error response:', errorText);
+            console.error('Response status:', response.status);
+            console.error('Response headers:', response.headers);
+            throw new Error('Network response was not ok');
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            const text = await response.text();
+            console.error('Received non-JSON response:', text);
+            throw new Error("Received non-JSON response from server");
+        }
+
+        return response.json();
     } catch (error) {
         console.error("Fetch error:", error);
-        throw error; // Rethrow the error after logging
+        throw error;
     }
 };
 
-// This function will run on the server side
-const CategoryPage = async ({ params }: CategoryPageProps) => {
-  const { categoryId } = params;
-  const initialProducts = await fetchProductsWithOptionsByCategoryId(categoryId);
+const fetchOptionsAndOptionVariationsByCategoryId = async (categoryId: string): Promise<CategoryOptionsOptionVariationsResponseDTO> => {
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+    const endpoint = `/categories/${categoryId}/optionVariations`;
+    const fullUrl = BASE_URL + endpoint;
 
-  return (
-      <CategoryClientSideComponent initialProducts={initialProducts} categoryId={categoryId} />
-  );
+    try {
+        const response = await fetch(fullUrl, {
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const errorText = await response.text(); // Log the response text
+            console.error('Fetch error response:', errorText);
+            console.error('Response status:', response.status);
+            console.error('Response headers:', response.headers);
+            throw new Error('Network response was not ok');
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            const text = await response.text();
+            console.error('Received non-JSON response:', text);
+            throw new Error("Received non-JSON response from server");
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error("Fetch error:", error);
+        throw error;
+    }
 };
 
-// Client-side component for handling interactivity
-const CategoryClientSideComponent: React.FC<{ initialProducts: ProductWithOptionsListResponseDTO; categoryId: string }> = ({ initialProducts, categoryId }) => {
-  const [products, setProducts] = useState(initialProducts); // State to hold products
+const CategoryPage = async ({ params }: CategoryPageProps) => {
+    const { categoryId } = params;
 
-  // Effect to handle CSR after initial load
-  useEffect(() => {
-      setProducts(initialProducts); // Set products on client side
-      console.log(products);
-  }, [initialProducts]);
-
-  const handleFilterChange = async (newFilters: any) => {
-      // Example: Fetch new products based on the filter (you may need to adjust this logic)
-      const filteredProducts = await fetchProductsWithOptionsByCategoryId(categoryId);
-      setProducts(filteredProducts); // Update state with filtered products
-  };
-
-  return (
-      <>
-          <div className="max-w-screen-lg mx-auto">
-              <TopNavBar />
-              <CategoryBar />
-
-              {/* body */}
-              <section className="bg-white dark:bg-gray-950 py-12">
-                  <div className="container mx-auto px-4 md:px-6">
-                      {/* chunk1 - reset filters */}
-                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
-                          <div className="grid gap-1">
-                              <h2 className="text-2xl font-bold tracking-tight">
-                                  나이키 트레이닝
-                              </h2>
-                              <p className="text-gray-500 dark:text-gray-400">
-                                  한계에 도전하는 여정과 함께할 아이템
-                              </p>
-                          </div>
-                          <Button className="mt-4 md:mt-0 shrink-0" variant="outline">
-                              <FilterIcon className="w-4 h-4 mr-2" />
-                              Reset Filters
-                          </Button>
-                      </div>
-
-                      <div className="grid md:grid-cols-[240px_1fr] gap-8">
-                          {/* chunk2 - filters */}
-                          <ProductFilters />
-                          {/* <ProductFilters onFilterChange={handleFilterChange} /> */}
-
-                          {/* chunk3 - productlist */}
-                          <ProductList products={products} />
-                      </div>
-                  </div>
-              </section>
-
-              <Footer />
-          </div>
-      </>
-  );
+    try {
+        const initialProducts = await fetchProductsWithOptionsByCategoryId(categoryId);
+        const optionsAndOptionVariations = await fetchOptionsAndOptionVariationsByCategoryId(categoryId);
+        
+        return <CategoryClientSideComponent initialProducts={initialProducts} optionsAndOptionVariations={optionsAndOptionVariations} categoryId={categoryId} />;
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        // You might want to render an error component here
+        return <div>Error loading products. Please try again later.</div>;
+    }
 };
 
 export const dynamic = 'force-dynamic'; // Ensure SSR
-
-function FilterIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-    </svg>
-  );
-}
 
 export default CategoryPage;

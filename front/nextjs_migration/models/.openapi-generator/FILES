@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 README.md
 api.ts
 base.ts
@@ -14,6 +13,7 @@ src/api/product-api.ts
 src/api/user-api.ts
 src/model/address-dto.ts
 src/model/all-categories-by-depth-response-dto.ts
+src/model/category-options-option-variations-response-dto.ts
 src/model/discount-dto.ts
 src/model/error-response-dto.ts
 src/model/index.ts
@@ -21,6 +21,8 @@ src/model/login-page200-response.ts
 src/model/login-request-dto.ts
 src/model/login-response-dto.ts
 src/model/login-user401-response.ts
+src/model/option-dto.ts
+src/model/option-variation-dto.ts
 src/model/options-option-variatons-response-dto.ts
 src/model/order-dto.ts
 src/model/order-item-details-response-dto.ts
@@ -32,6 +34,8 @@ src/model/product-detail-response-dto.ts
 src/model/product-dto.ts
 src/model/product-with-options-dto.ts
 src/model/product-with-options-list-response-dto.ts
+src/model/product-with-options-list-ver2-response-dto.ts
+src/model/product-with-options-ver2-dto.ts
 src/model/register-request-dto.ts
 src/model/register-request-dtoaddress.ts
 src/model/register-response-dto.ts
