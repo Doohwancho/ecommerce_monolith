@@ -9,9 +9,21 @@ import {
 import ProductCard from "./productCard";
 import Autoplay from "embla-carousel-autoplay"
 
+interface TopTenRatedProductsProps {
+  products: GroupedProduct[]; // Ensure this matches the expected type
+}
 
+export interface GroupedProduct {
+  productId: number;
+  productName: string;
+  price: number;
+  description: string;
+  rating: number;
+  ratingCount: number;
+  option_variation_id: { [key: number]: number }; // Change this to an object mapping option variation IDs to product item IDs
+}
 
-const TopTenRatedProducts = () => {
+const TopTenRatedProducts: React.FC<TopTenRatedProductsProps> = ({ products }) => {
   return (
     <div className="py-12">
       <h2 className="flex justify-center text-3xl font-extrabold text-gray-900 sm:text-4xl">
@@ -26,39 +38,13 @@ const TopTenRatedProducts = () => {
         ]}
       >
       {/* <Carousel> */}
-        <CarouselContent>
-          <CarouselItem className="lg:basis-1/3">
-            <ProductCard />
+      <CarouselContent>
+        {products.map((product) => (
+          <CarouselItem key={product.productId} className="lg:basis-1/3">
+            <ProductCard product={product} /> {/* Pass the product prop */}
           </CarouselItem>
-          <CarouselItem className="lg:basis-1/3">
-            <ProductCard />
-          </CarouselItem>
-          <CarouselItem className="lg:basis-1/3">
-            <ProductCard />
-          </CarouselItem>
-          <CarouselItem className="lg:basis-1/3">
-            <ProductCard />
-          </CarouselItem>
-          <CarouselItem className="lg:basis-1/3">
-            <ProductCard />
-          </CarouselItem>
-
-          <CarouselItem className="lg:basis-1/3">
-            <ProductCard />
-          </CarouselItem>
-          <CarouselItem className="lg:basis-1/3">
-            <ProductCard />
-          </CarouselItem>
-          <CarouselItem className="lg:basis-1/3">
-            <ProductCard />
-          </CarouselItem>
-          <CarouselItem className="lg:basis-1/3">
-            <ProductCard />
-          </CarouselItem>
-          <CarouselItem className="lg:basis-1/3">
-            <ProductCard />
-          </CarouselItem>
-        </CarouselContent>
+        ))}
+      </CarouselContent>
         {/* <CarouselPrevious /> */}
         {/* <CarouselNext /> */}
       </Carousel>

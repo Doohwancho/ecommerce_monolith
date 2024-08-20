@@ -40,7 +40,10 @@ const ProductCard: React.FC<ProductCardProps> = ({product}) => {
             <small className="text-sm leading-none text-gray-500 dark:text-gray-400">
               {product?.description}
             </small>
-            <h4 className="font-semibold">{formatPrice(product?.price)}원</h4>
+            {/* Check if price is greater than 0 before displaying */}
+            {product?.price > 0 && (
+              <h4 className="font-semibold">{formatPrice(product?.price)}원</h4>
+            )}
           </div>
       </Link>
   );
