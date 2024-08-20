@@ -64,6 +64,7 @@ const CategoryClientSideComponent: React.FC<CategoryClientSideComponentProps> = 
             setGroupedProducts(groupProducts(initialProducts)); 
             setFilteredProducts(groupProducts(initialProducts)); 
         } 
+
     }, [initialProducts]);
 
     const handleFilterChange = async (newFilters: any) => {

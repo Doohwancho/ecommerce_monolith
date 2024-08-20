@@ -36,6 +36,13 @@ const formatPrice = (price: number) => {
   return Math.floor(price).toLocaleString(); // Truncate and format with commas
 };
 
+function getFirstDigitForRandomProductImageIndex(number: number) {
+  // 숫자를 문자열로 변환
+  const numStr = Math.abs(number).toString();
+  
+  // 문자열의 첫 번째 문자를 숫자로 변환하여 반환
+  return parseInt(numStr[0]);
+}
 
 const ProductPage = async ({ params }: ProductPageProps) => {
   const { productId } = params;
@@ -58,7 +65,7 @@ const ProductPage = async ({ params }: ProductPageProps) => {
             {/* <img src="/placeholder.svg" alt="Product image thumbnail" /> */}
             {/* <img src="/placeholder.svg" alt="Product image thumbnail" /> */}
             <Image
-              src="/assets/image/category-product-image-2.webp"
+              src={`/assets/image/category-product-image-${getFirstDigitForRandomProductImageIndex(product[0].productId)}-2.webp`}
               width={300}
               height={300}
               layout="responsive"
@@ -66,7 +73,7 @@ const ProductPage = async ({ params }: ProductPageProps) => {
               alt="product image"
             />
             <Image
-              src="/assets/image/category-product-image-3.webp"
+              src={`/assets/image/category-product-image-${getFirstDigitForRandomProductImageIndex(product[0].productId)}-3.webp`}
               width={300}
               height={300}
               layout="responsive"
@@ -74,7 +81,7 @@ const ProductPage = async ({ params }: ProductPageProps) => {
               alt="product image"
             />
             <Image
-              src="/assets/image/category-product-image-4.webp"
+              src={`/assets/image/category-product-image-${getFirstDigitForRandomProductImageIndex(product[0].productId)}-4.webp`}
               width={300}
               height={300}
               layout="responsive"
@@ -82,7 +89,7 @@ const ProductPage = async ({ params }: ProductPageProps) => {
               alt="product image"
             />
             <Image
-              src="/assets/image/category-product-image-5.webp"
+              src={`/assets/image/category-product-image-${getFirstDigitForRandomProductImageIndex(product[0].productId)}-5.webp`}
               width={300}
               height={300}
               layout="responsive"

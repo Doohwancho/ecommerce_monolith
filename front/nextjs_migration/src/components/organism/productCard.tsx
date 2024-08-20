@@ -10,6 +10,14 @@ const formatPrice = (price: number) => {
   return Math.floor(price).toLocaleString(); // Truncate and format with commas
 };
 
+function getFirstDigitForRandomProductImageIndex(number: number) {
+  // 숫자를 문자열로 변환
+  const numStr = Math.abs(number).toString();
+  
+  // 문자열의 첫 번째 문자를 숫자로 변환하여 반환
+  return parseInt(numStr[0]);
+}
+
 const ProductCard: React.FC<ProductCardProps> = ({product}) => {
   if (!product) return null; // Check if product is defined
 
@@ -20,7 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({product}) => {
           </div>
 
           <Image 
-            src="/assets/image/category-product-image-1.webp"
+            src={`/assets/image/category-product-image-${getFirstDigitForRandomProductImageIndex(product.productId)}-1.webp`}
             width={300}
             height={300}
             alt="product image"
