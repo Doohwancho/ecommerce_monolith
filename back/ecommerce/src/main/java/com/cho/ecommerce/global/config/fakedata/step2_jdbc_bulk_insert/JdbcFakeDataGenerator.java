@@ -367,6 +367,8 @@ public class JdbcFakeDataGenerator {
             Long productOptionVariationId = 1L;
             
             for (int i = 1; i <= numberOfProducts; i++) {
+                long categoryId = i % 60 + 16;
+                
                 // Insert products
                 //case1) datafaker
 //                String productName = sizeTrimmer(faker.commerce().productName(),
@@ -398,13 +400,17 @@ public class JdbcFakeDataGenerator {
                 productStatement.setString(3, uniqueStrings[productId.intValue() % NUMBER_OF_UNIQUE_STRINGS]);
                 productStatement.setDouble(4, uniqueDoublesZeroToFive[productId.intValue() % 50]);
                 productStatement.setInt(5, productId.intValue() % 1000);
-                productStatement.setLong(6, i % 60 + 16); // low level Category ID range: 16 ~ 75
+                productStatement.setLong(6, categoryId); // low level Category ID range: 16 ~ 75
                 
                 productStatement.addBatch();
                 productStatement.clearParameters();
                 
                 // Insert product items
                 for (int j = 1; j <= numberOfProductItemsPerProduct; j++) {
+                    // Calculate valid option variation range for this category
+                    long optionStartId = (categoryId - 16) * 9 + 1; // 9 = 3 options * 3 variations per option
+                    long optionEndId = optionStartId + 8; // 9 variations per category, but IDs are 0-based
+                    
                     //case1) datafaker
 //                    Integer productItemQuantity = faker.number().numberBetween(1, 100);
 //                    Double productItemPrice = faker.number().randomDouble(2, 1, 10000);
@@ -490,15 +496,19 @@ public class JdbcFakeDataGenerator {
                     
                     // Insert product option variations
                     for (int k = 1; k <= numberOfProductOptionVariationPerProductItem; k++) {
-                        int minOptionVariationId = 1;
-                        int maxOptionVariationId = 541;
+                        long optionVariationId = ThreadLocalRandom.current().nextLong(optionStartId, optionEndId + 1);
                         
-                        int minProductItemId = 1;
-                        int maxProductItemId = numberOfProducts * numberOfProductItemsPerProduct + 1;
+//                        int minOptionVariationId = 1;
+//                        int maxOptionVariationId = 541;
+                        
+//                        int minProductItemId = 1;
+//                        int maxProductItemId = numberOfProducts * numberOfProductItemsPerProduct + 1;
                         
                         productOptionVariationStatement.setLong(1, productOptionVariationId);
-                        productOptionVariationStatement.setLong(2, ThreadLocalRandom.current().nextLong(minOptionVariationId, maxOptionVariationId)); // OptionVariation ID range (1~540)
-                        productOptionVariationStatement.setLong(3, ThreadLocalRandom.current().nextLong(minProductItemId, maxProductItemId)); // ProductItem ID range (1~3000), 3000 = numberOfProducts * numberOfProductItemsPerProduct
+//                        productOptionVariationStatement.setLong(2, ThreadLocalRandom.current().nextLong(minOptionVariationId, maxOptionVariationId)); // OptionVariation ID range (1~540)
+                        productOptionVariationStatement.setLong(2, optionVariationId); // OptionVariation ID range (1~540)
+//                        productOptionVariationStatement.setLong(3, ThreadLocalRandom.current().nextLong(minProductItemId, maxProductItemId)); // ProductItem ID range (1~3000), 3000 = numberOfProducts * numberOfProductItemsPerProduct
+                        productOptionVariationStatement.setLong(3, productItemId); // ProductItem ID range (1~3000), 3000 = numberOfProducts * numberOfProductItemsPerProduct
                         
                         productOptionVariationStatement.addBatch();
                         productOptionVariationStatement.clearParameters();
