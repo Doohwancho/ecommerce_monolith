@@ -14,10 +14,10 @@ const ProductCard: React.FC<ProductCardProps> = ({product}) => {
   if (!product) return null; // Check if product is defined
 
   return (
-        <div className="relative group">
-          <Link className="absolute inset-0 z-10" href="#">
+        <Link href={`/product/${product.productId}`} className="relative group">
+          <div className="absolute inset-0 z-10">
             <span className="sr-only">View</span>
-          </Link>
+          </div>
 
           <Image 
             src="/assets/image/category-product-image-1.webp"
@@ -34,7 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({product}) => {
             </small>
             <h4 className="font-semibold">{formatPrice(product?.price)}원</h4>
           </div>
-        </div>
+      </Link>
   );
 };
 

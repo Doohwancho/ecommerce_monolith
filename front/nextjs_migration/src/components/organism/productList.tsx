@@ -1,5 +1,5 @@
 import { GroupedProduct } from "@/app/category/[categoryId]/CategoryClientSideComponent";
-import { ProductWithOptionsVer2DTO, ProductWithOptionsListVer2ResponseDTO} from "../../../models";
+import { ProductWithOptionsVer2DTO } from "../../../models";
 import ProductCard from "./productCard";
 
 interface ProductListProps {

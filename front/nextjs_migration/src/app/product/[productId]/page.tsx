@@ -3,8 +3,48 @@ import Image from "next/image";
 import Footer from "@/components/organism/footer";
 import TopNavBar from "@/components/organism/topNavBar";
 import CategoryBar from "@/components/organism/categoryBar";
+import { ProductDetailResponseDTO } from '../../../../models';
 
-export default function ProductPage() {
+interface ProductPageProps {
+  params: {
+    productId: string;
+  };
+}
+
+const fetchProductById = async (productId: string): Promise<ProductDetailResponseDTO[]> => {
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+  if (!BASE_URL) {
+    console.error('NEXT_PUBLIC_API_URL is not set');
+    throw new Error('API URL is not configured');
+  }
+  const endpoint = `/products/${productId}`;
+  const fullUrl = BASE_URL + endpoint;
+
+  try {
+    const res = await fetch(fullUrl);
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    throw error;
+  }
+};
+
+const formatPrice = (price: number) => {
+  return Math.floor(price).toLocaleString(); // Truncate and format with commas
+};
+
+
+const ProductPage = async ({ params }: ProductPageProps) => {
+  const { productId } = params;
+
+  try {
+    const product = await fetchProductById(productId);
+    //TODO - product details info들을 product_item/option 별로 묶어서, discounted price 표시
+
+    
   return (
     <div className="max-w-screen-lg mx-auto">
       <TopNavBar />
@@ -52,16 +92,15 @@ export default function ProductPage() {
           </div>
           <div>
             <div className="flex justify-between items-start">
-              <h1 className="text-4xl font-bold">Nike Pegasus Trail</h1>
+              <h1 className="text-4xl font-bold">{product[0].name}</h1>
               <div className="flex items-center space-x-2">
                 <HeartIcon className="h-6 w-6" />
                 <ShareIcon className="h-6 w-6" />
               </div>
             </div>
-            <p className="text-2xl font-semibold my-4">$99</p>
+            <p className="text-2xl font-semibold my-4">{formatPrice(product[0].price)}원</p>
             <p className="text-gray-600 mb-4">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              {product[0].description}
             </p>
             <p className="text-gray-600 mb-4">by Vendor Name</p>
             <div className="mb-4">
@@ -90,7 +129,14 @@ export default function ProductPage() {
       <Footer />
     </div>
   );
+} catch (error) {
+  console.error("Error fetching product:", error);
+  return <div>Error loading product. Please try again later.</div>;
 }
+}
+
+export const dynamic = 'force-dynamic'; // Ensure SSR
+
 
 function HeartIcon(props: any) {
   return (
@@ -111,7 +157,9 @@ function HeartIcon(props: any) {
   );
 }
 
-function ShareIcon(props) {
+
+
+function ShareIcon(props: any) {
   return (
     <svg
       {...props}
@@ -132,10 +180,4 @@ function ShareIcon(props) {
   );
 }
 
-// const ProductPage = () => {
-//     return (
-
-//     );
-// }
-
-// export default ProductPage;
+export default ProductPage;
