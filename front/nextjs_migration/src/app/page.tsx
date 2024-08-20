@@ -7,7 +7,7 @@ import TopTenRatedProducts from "@/components/organism/topTenProducts";
 import { ProductDTO } from '../../../nextjs_migration/models/';
 
 export interface HomeProps {
-  products: ProductDTO[];
+  products: GroupedProduct[];
 }
 
 export interface GroupedProduct {
@@ -17,31 +17,33 @@ export interface GroupedProduct {
   description: string;
   rating: number;
   ratingCount: number;
-  option_variation_id: { [key: number]: number }; // Change this to an object mapping option variation IDs to product item IDs
+  option_variation_id: { [key: number]: number }; 
 }
 
-export async function fetchProducts() {
+async function fetchProducts() {
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   const endpoint = `/products/highestRatings`;
   const fullUrl = BASE_URL + endpoint;
 
-  const response = await fetch(fullUrl);
+  const response = await fetch(fullUrl, {
+    next: { revalidate: 10 }, // Revalidate every 10 seconds for ISR
+  });
   const products = await response.json();
 
   return products;
 }
 
 export default async function Home() {
-  const products = await fetchProducts(); // Fetch products directly here
+  const products = await fetchProducts(); 
   
-  const groupedProducts: GroupedProduct[] = products.map((product : ProductDTO) => ({
+  const groupedProducts: GroupedProduct[] = products.map((product: ProductDTO) => ({
     productId: product.productId,
     productName: product.name,
-    price: 0, // Set a default price or fetch it if available
+    price: 0,
     description: product.description,
     rating: product.rating,
     ratingCount: product.ratingCount,
-    option_variation_id: {}, // Set this as needed
+    option_variation_id: {},
   }));
 
   return (
