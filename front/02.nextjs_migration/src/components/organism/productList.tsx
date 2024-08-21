@@ -1,9 +1,8 @@
 import { GroupedProduct } from "@/app/category/[categoryId]/CategoryClientSideComponent";
-import { ProductWithOptionsVer2DTO } from "../../../models";
 import ProductCard from "./productCard";
 
 interface ProductListProps {
-  products: ProductWithOptionsVer2DTO[] | GroupedProduct[] | undefined; // Define the type for products
+  products: GroupedProduct[]; // Define the type for products
 }
 
 const ProductList: React.FC<ProductListProps> = ({ products }) => {
