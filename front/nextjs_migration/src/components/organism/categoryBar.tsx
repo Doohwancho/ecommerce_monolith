@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useRef, memo } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { AllCategoriesByDepthResponseDTO } from '../../../models';
 
 import Link from 'next/link';
@@ -309,49 +309,19 @@ const getCategoryData = (categoryName: string): AllCategoriesByDepthResponseDTO[
     );
   };
 
-const throttle = (callback: (...args: any[]) => void, waitTime: number) => {
-    let timeId: ReturnType<typeof setTimeout> | null = null;
-    return (element: any) => {
-      if (timeId) {
-        return (timeId = setTimeout(() => {
-          callback.call(this, element);
-          timeId = null;
-        }, waitTime));
-      }
-    };
-  };
-
-const useScrollHandler = () => {
-  const [hide, setHide] = useState(false);
-  const [pageY, setPageY] = useState(0);
-  const documentRef = useRef<Document | null>(null);
-
-  const handleScroll = () => {
-    const { pageYOffset } = window;
-    const deltaY = pageYOffset - pageY;
-    const hide = pageYOffset !== 0 && deltaY >= 0;
-    setHide(hide);
-    setPageY(pageYOffset);
-  };
-
-  useEffect(() => {
-    // documentRef.current.addEventListener('scroll', throttleScroll);
-    documentRef.current = document;
-
-    const throttleScroll = throttle(handleScroll, 50);
-
-    window.addEventListener('scroll', throttleScroll);
-    return () => window.removeEventListener('scroll', throttleScroll);
-  }, [pageY]);
-
-  return hide;
-};
-
-
 const CategoryBar: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<AllCategoriesByDepthResponseDTO[]>([]);
   const [modalOn, setModalOn] = useState(false);
-  const hide = useScrollHandler();
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleCategoryHover = (categoryName: string) => {
     setModalOn(true);
@@ -360,9 +330,9 @@ const CategoryBar: React.FC = () => {
 
   return (
     <>
-      {modalOn && <Modal setMenModalOn={setModalOn} categories={selectedCategories} />}
+      {modalOn && <Modal setMenModalOn={setModalOn} categories={selectedCategories} scrollY={scrollY} />}
       <div className="relative w-full">
-        <div className={`box-border flex justify-start items-center px-[3vw] relative left-0 h-20 w-full z-50 bg-white ${hide ? 'hidden' : ''} sm:top-0`}>
+        <div className="box-border flex justify-start items-center px-[3vw] h-20 w-full">
           <div className="absolute text-6xl">
             <Link href="/" className="text-black hover:text-gray-500">
               <SiNike />

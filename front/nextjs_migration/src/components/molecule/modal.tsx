@@ -5,6 +5,7 @@ import { AllCategoriesByDepthResponseDTO } from '../../../models';
   interface ModalProps {
     setMenModalOn: (value: boolean) => void;
     categories: AllCategoriesByDepthResponseDTO[];
+    scrollY: number;
   }
   
   interface LowCategory {
@@ -59,9 +60,17 @@ const CategoryGroup: React.FC<{ group: CategoryGroupProps }> = ({ group }) => (
   </ul>
 );
 
-const Modal: React.FC<ModalProps> = ({ setMenModalOn, categories }) => (
+const Modal: React.FC<ModalProps> = ({ setMenModalOn, categories, scrollY }) => {
+  const modalTop = Math.max(80 - scrollY, 0); // 80px is the initial top position
+
+  return (
   <div className="font-[theme-font-content]">
-    <div className="fixed top-20 right-0 bottom-0 left-0 bg-black bg-opacity-60 z-50 animate-slidein">
+    <div 
+      // ref={modalRef}
+      className="fixed top-20 right-0 bottom-0 left-0 bg-black bg-opacity-60 z-50 animate-slidein"
+      // style={{ transition: 'top 0.3s ease' }}
+      style={{ top: `${modalTop}px` }}
+    >
       <div 
         className="relative w-full bg-white flex justify-center z-60"
         onMouseLeave={() => setMenModalOn(false)}
@@ -72,6 +81,7 @@ const Modal: React.FC<ModalProps> = ({ setMenModalOn, categories }) => (
       </div>
     </div>
   </div>
-);
+  )
+};
 
 export default Modal;
