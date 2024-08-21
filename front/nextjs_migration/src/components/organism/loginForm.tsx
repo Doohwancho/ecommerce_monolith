@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/molecule/form";
 import { Input } from "@/components/atom/input";
+import { RegisterRequestDTO, RegisterResponseDTO } from '../../../models';
 
 const formSchema = z.object({
   username: z.string().min(2, {
