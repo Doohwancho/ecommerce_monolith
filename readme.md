@@ -4,7 +4,14 @@
 - B. [사용 기술](#b-사용-기술)
 - C. [AWS architecture](#c-aws-architecture)
 - D. [ERD diagram](#d-erd-diagram)
-- E. [기술적 도전 - Backend](#e-기술적-도전---backend)
+- E. [기술적 도전 - Frontend](#e-기술적-도전---frontend)
+	- a. [wireframe](#a-wireframe)
+	- b. [state management](#b-state-managment)
+    - c. [API first design](#c-api-first-design)
+	- d. [latency 개선](#d-latency-개선)
+	- e. [nextjs 마이그레이션, 페이지마다 최적화된 렌더링 패턴 적용](#e-nextjs-migration-for-different-rendering-patterns)
+	- f. [atomic design pattern with shadcn-ui](#f-atomic-design-pattern-with-shadcn-ui)
+- F. [기술적 도전 - Backend](#f-기술적-도전---backend)
     - a. [spring security - authentication](#a-spring-security---authentication)
     - b. [spring batch](#b-spring-batch)
 	- c. [test 전략](#c-test-전략)
@@ -12,23 +19,16 @@
     - e. [clean code](#e-clean-code)
 	- f. [refactoring](#f-refactoring)
 	- g. [요구사항을 비즈니스 로직 코드로 구현](#g-요구사항을-비즈니스-로직-코드로-구현)
-- F. [기술적 도전 - Database](#f-기술적-도전---database)
+- G. [기술적 도전 - Database](#g-기술적-도전---database)
     - a. [정규화](#a-정규화)
     - b. [통계 쿼리](#b-통계-쿼리)
     - c. [sql tuning](#c-sql-tuning)
 	- d. [bulk insert](#d-bulk-insert)
-- G. [기술적 도전 - Cloud](#g-기술적-도전---cloud)
+- H. [기술적 도전 - Cloud](#h-기술적-도전---cloud)
 	- a. [provisioning with terraform & packer](#a-provisioning-with-terraform-and-packer)
 	- b. [prometheus and grafana](#b-prometheus-and-grafana)
 	- c. [300 RPS 부하 테스트](#c-300-rps-부하-테스트)
 	- d. [1000 RPS 부하 테스트](#d-1000-rps-부하-테스트)
-- H. [기술적 도전 - Frontend](#h-기술적-도전---frontend)
-	- a. [wireframe](#a-wireframe)
-	- b. [state management](#b-state-managment)
-    - c. [API first design](#c-api-first-design)
-	- d. [latency 개선](#d-latency-개선)
-	- e. [nextjs 마이그레이션, 페이지마다 최적화된 렌더링 패턴 적용](#e-nextjs-migration-for-different-rendering-patterns)
-	- f. [atomic design pattern with shadcn-ui](#f-atomic-design-pattern-with-shadcn---ui)
 - I. [Trouble Shooting](#i-trouble-shooting)
     - a. [사건의 발단](#a-사건의-발단)
     - b. [가설1 - RDS connections 부족](#b-가설1---RDS의-connections-수가-부족해서-latency가-높아졌다)
@@ -55,7 +55,7 @@ Ecommerce MVP
 2. cd ecommerce
 3. back/ecommerce/에 있는 스프링 프로젝트 실행 (이 때 dummy data insert하는 시간 약 3분 이하 소요)
 4. cd front/02.nextjs_migration
-5. npm i 
+5. npm i
 6. npm run dev
 ```
 
@@ -156,9 +156,234 @@ Ecommerce MVP
 VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 열 수 있다.
 
 
+# E. 기술적 도전 - Frontend
+
+## a. wireframe
+
+![](./documentation/images/wireframe.svg)
+
+### a-1. wireframe -> home
+
+![](./documentation/images/ecommerce_index_page.png)
+
+### a-2. wireframe -> category
+![](./documentation/images/ecommerce_product_list_page.png)
 
 
-# E. 기술적 도전 - Backend
+### a-3. wireframe -> product
+![](./documentation/images/ecommerce_product_page.png)
+
+
+### a-4. wireframe -> register
+![](./documentation/images/ecommerce_register_login_page.png)
+
+
+### a-5. wireframe -> login
+![](./documentation/images/ecommerce_register_login_page.png)
+
+
+## b. state managment
+프론트는 같은걸 2가지 버전(reactjs, nextjs)으로 만들었다.\
+React.js 버전에서 상태관리한 방법을 기술한다.
+
+---
+1. react query
+	- server state를 관리한다.
+	- custom hooks에 react query의 fetch 함수와 더불어, 각 페이지에 맞게 가공하여 전달하는 함수까지 포함한다.
+2. recoil
+	- client state를 관리한다.
+	- global state에 담아 관리해야할 것을(ex. user authentication status) recoil로 관리한다.
+3. props
+	- 가능한 depth 1 정도만 props를 내려준다. 그 이상 depth는 recoil 사용을 고려한다. (props drilling problem)
+	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우
+
+
+## c. API first design
+
+### 1. 문제
+1. 기존 프론트/백 협업 방식은 프론트 개발자와 백엔드 개발자 사이의 결합도가 높아진다는 문제점이 있다.
+	- 기존에 frontend, backend 협업 시, 코드를 각자 짜면서 슬랙으로 프론트가 백 한테 필요 데이터를 매번 요청하는 식으로 일했다.
+	- 프론트 개발자의 요구사항이 수시로 바뀌는 경우, 백엔드 개발자도 그에 맞춰서 엔드포인트를 계속 수정해야 하는데, 이는 일의 효율을 저해한다.
+2. API endpoint 변경시, 누가 언제 어느 목적으로 추가/변경/삭제했는지 버전관리 하기 힘들다.
+3. API endpoint를 정의하는 사내 프로토콜의 부재
+
+### 2. 문제의 원인
+- API 공통 프로토콜의 부재
+
+
+### 3. 해결책
+1. API 공통 프로토콜인 openapi을 사용한다.
+2. API first approach을 사용해 프론트/백이 코드 작성 전에, 서버에 요청되는 request/response를 미리 합의해 정해두고, openapi 문서를 작성한다.
+3. openapi spec에 맞추어 작성된 문서를 코드로 변환해주는 SDK(openapi-codegen)을 사용하여 프론트는 request, response에 필요한 모델을, 백엔드는 컨트롤러 코드를 자동으로 생성해 사용한다.
+4. API를 읽는 문서는 redoc이라는 오픈소스 툴을 사용한다.
+
+
+
+
+#### 3-1. openapi codegen
+
+![](documentation/images/swagger.png)
+
+openapi3 spec으로 작성된 코드를 swagger로 변환해준 모습
+
+- Q. how to see oepnapi docs online?
+    1. https://editor.swagger.io/
+    2. [openapi-docs code](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/resources/api/openapi.yaml) 붙여넣기
+
+
+#### 3-2. redoc
+![](documentation/images/redoc.png)
+
+```
+Q. how to install redoc and run?
+
+npm i -g @redocly/cli
+git clone https://github.com/Doohwancho/ecommerce
+cd ecommerce
+redocly preview-docs back/ecommerce/src/main/resources/api/openapi.yaml
+```
+
+
+
+
+## d. latency 개선
+
+### 1. 불필요한 랜더링을 React.memo() 으로 최적화
+
+- 문제
+	- 페이지 이동할 때 마다 `<Header />, <Footer />, < TopNav />`가 불필요하게 다시 랜더링 되던 문제가 있었다.
+- 해결책
+	1. React.memo()로 감싸서 props가 바뀌지 않는한, 다시 랜더링 되지 않도록 하고,
+	2. Router에서 템플릿화 시켰다.
+
+```tsx
+  const Layout = ({ children }) => (
+    <>
+      <Header />
+      <TopNav />
+      <ScrollToTop />
+      {children}
+      <Footer />
+    </>
+  );
+
+<Routes>
+	<Route path="/" element={<Layout><Home /></Layout>} />
+	<Route path="/products/category/:lowCategoryId" element={<Layout><Category /></Layout>} />
+	<Route path="/products/:productId" element={<Layout><Product /></Layout>} />
+</Routes>
+  );
+```
+
+---
+
+### 2. useMemo()로 memoization 활용
+
+1. API fetch받은 products들을 재정리 하는 함수의 결과값을 memoization 한다.
+
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L23-L56
+
+option/price filter에서 product list를 호출할 때마다, 재정리를 요구하는데,
+이 함수를 useMemo()로 최적화 했다.
+
+
+---
+...하지만 option들을 묶는 함수에 적용한 useMemo()는 이른 최적화 같다.
+
+2. option들을 optionId를 기준으로 묶는 함수
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L9-L21
+
+- Q. 왜 useMemo()를 여기에 쓰는게 좋은 선택이 아닌가?
+	1. 무거운 연산이 아니다.
+	2. 파라미터가 자주 바뀌는 편이라, 한번 연산해놓고 두고두고 쓰는 함수가 아니다.
+
+
+
+
+### 3. code splitting
+
+```tsx
+import React, { Suspense } from 'react';
+
+const Home: React.FC = () => {
+  const CarouselComponent = React.lazy(() => import ('./component/carousel/CarouselComponent'));
+
+  return (
+    <>
+	<MainElement /> //------------------- 1
+
+	<Suspense fallback={<div>Loading...</div>}>
+          <CarouselComponent /> //----------------- 2
+        </Suspense>
+    </>
+  );
+};
+
+export default Home;
+```
+1. 메인페이지 최상단 이미지 + 텍스트는 그대로 랜더링
+2. 화면 하단부 top 10 rated products fetch는 lazy하게 랜더링
+
+
+### 4. main page caching
+
+![top-ten-rated-products](documentation/images/top-ten-rated-products.gif)
+
+main page에서 요구하는 top 10 rated products를 redis cache에 매 시간 갱신하여 뿌려준다.
+
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L51-L61
+
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L116-L126
+
+
+
+### 5. .png -> .webp로 변경
+이미지 용량이 약 60%로 축소됨으로 인해, 페이지 로드 속도가 빨라졌다.
+
+
+## e. nextjs migration for different rendering patterns
+
+1. SSG: register, login 페이지
+	- register, login 페이지는 내용이 안바뀌는 static page라 빌드타임 때 만들고 뿌리는 SSG 사용한다.
+2. ISR: index 페이지
+	- index 페이지는 첫 페이지 로드 시간이 빠른게 중요하기 때문에 대부분 컴포넌트가 static인데,
+	- top 10 trending product 컴포넌트는 주기적으로 업데이트 되기 때문에 ISR로 렌더링한다.
+3. hybrid(SSR + CSR): product_list 페이지
+	- product_list 페이지는 ecommerce 특성상 검색엔진 봇에 키워드가 상품등록 직후에 바로 잡히는게 중요하기 때문에 SSR로 하되,
+	- 옵션별 필터를 했을 때, SSR로 처리하면 UX가 너무 안좋으니, 이 부분은 CSR로 처리한다. 즉, product_list는 nextjs14의 하이브리드 렌더링(SSR + CSR)을 한다.
+	- 만약 이 앱이 쿠팡같은 쇼핑몰이라 특정 카테고리에 상품이 만개 이상 걸리면, 이런식으로 처리하는게 구조적으로 비효율적이나, nike같은 세부 카테고리가 많고, 세부 카테고리에 걸리는 상품 종류가 300개 이하인 경우엔, SSR로 한번에 가져온 후, CSR로 처리하는게 부드럽기 때문에 UX적으로 더 나은 방법이라 생각한다.
+4. SSR: product 페이지
+	- product 페이지는 상품내용이 자주 업데이트 될 수 있음과 동시에 SEO에 잡히는게 중요하므로 SSR로 렌더링한다.
+
+
+## f. atomic design pattern with shadcn-ui
+
+
+### 1. 문제
+
+가끔 카카오앱이 구린 이유.txt를 보면, 카카오에 종속된 회사 앱들의 카카오의 메인 컬러: 노란색의 RGB값을 찍어보면 약간씩 다르다. 색상도 다르고 UI 스타일도 달라서, 다른 카카오 앱 쓸 때마다, 심지어 어떤 경우는 같은 앱의 다른 페이지를 볼 때 이질감을 느낄 때도 있다.
+
+이런 이질감을 없애기 위해 스타일, 색 조합, ui에 일관성이 있는 앱을 개발해야 한다.
+
+
+### 2. 해결책
+
+디자인 일관성에 맞게 앱을 개발 하는 방법은 해당 앱의 각 페이지에서 새로운 ui, 색상을 매번 새롭게 만드는게 아니라, 먼저 약속한 디자인 프로토콜에 맞게 제작된 공통된 컴포넌트를 import해서 재사용하는 식으로 개발해야 한다고 생각한다.
+
+이런 문제를 컴포넌트 디자인 + atomic design pattern으로 해결할 수 있다고 생각한다.
+
+1. 먼저 앱을 대표하는 primary, secondary, tertiary color 색조합과 ui 스타일을 정하고,
+2. 기본적인 버튼, input form, label 등의 컴포넌트 디자인을 한 이후,
+3. 이런 약속에 맞는 컴포넌트들을 조합하여 페이지를 만든다.
+
+### 3. 시행착오
+
+처음엔 컴포넌트 설계를 직접 하려고 했으나 [몇번의 시행착오](https://github.com/Doohwancho/javascript/tree/main/05.react/01.syntax/src/05.atomic-design)\
+끝에 점점 일이 커지는걸 깨닿고, best practice opensource library인 shadcn-ui을 썼다.
+
+
+
+# F. 기술적 도전 - Backend
 
 ## a. spring security - authentication
 
@@ -442,7 +667,7 @@ https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20
 
 
 
-# F. 기술적 도전 - Database
+# G. 기술적 도전 - Database
 
 ## a. 정규화
 
@@ -1897,7 +2122,7 @@ disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o
 
 
 
-# G. 기술적 도전 - Cloud
+# H. 기술적 도전 - Cloud
 
 ## a. provisioning with terraform and packer
 
@@ -2531,231 +2756,6 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 점점 기계의 한계치까지 성능을 뽑아야 하는 상황이 오니까, 코어 노는지, 램은 꽉 찼는지, 스왑 메모리 잡혔는지, 네트워크 대역폭은 충분한지, 초당 송수신하는 요청의 throughput이 네트워크 대역폭 보다 적은지 등을 고려하게 되었다.
 
 또한 부하테스트를 위한 별도서버 구축을 왜 해야 하는지도 알게되었다.
-
-# H. 기술적 도전 - Frontend
-
-## a. wireframe
-
-![](./documentation/images/wireframe.svg)
-
-### a-1. wireframe -> home
-
-![](./documentation/images/ecommerce_index_page.png)
-
-### a-2. wireframe -> category
-![](./documentation/images/ecommerce_product_list_page.png)
-
-
-### a-3. wireframe -> product
-![](./documentation/images/ecommerce_product_page.png)
-
-
-### a-4. wireframe -> register
-![](./documentation/images/ecommerce_register_login_page.png)
-
-
-### a-5. wireframe -> login
-![](./documentation/images/ecommerce_register_login_page.png)
-
-
-## b. state managment
-프론트는 같은걸 2가지 버전(reactjs, nextjs)으로 만들었다.\
-React.js 버전에서 상태관리한 방법을 기술한다.
-
----
-1. react query
-	- server state를 관리한다.
-	- custom hooks에 react query의 fetch 함수와 더불어, 각 페이지에 맞게 가공하여 전달하는 함수까지 포함한다.
-2. recoil
-	- client state를 관리한다.
-	- global state에 담아 관리해야할 것을(ex. user authentication status) recoil로 관리한다.
-3. props
-	- 가능한 depth 1 정도만 props를 내려준다. 그 이상 depth는 recoil 사용을 고려한다. (props drilling problem)
-	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우
-
-
-## c. API first design
-
-### 1. 문제
-1. 기존 프론트/백 협업 방식은 프론트 개발자와 백엔드 개발자 사이의 결합도가 높아진다는 문제점이 있다.
-	- 기존에 frontend, backend 협업 시, 코드를 각자 짜면서 슬랙으로 프론트가 백 한테 필요 데이터를 매번 요청하는 식으로 일했다.
-	- 프론트 개발자의 요구사항이 수시로 바뀌는 경우, 백엔드 개발자도 그에 맞춰서 엔드포인트를 계속 수정해야 하는데, 이는 일의 효율을 저해한다.
-2. API endpoint 변경시, 누가 언제 어느 목적으로 추가/변경/삭제했는지 버전관리 하기 힘들다.
-3. API endpoint를 정의하는 사내 프로토콜의 부재
-
-### 2. 문제의 원인
-- API 공통 프로토콜의 부재
-
-
-### 3. 해결책
-1. API 공통 프로토콜인 openapi을 사용한다.
-2. API first approach을 사용해 프론트/백이 코드 작성 전에, 서버에 요청되는 request/response를 미리 합의해 정해두고, openapi 문서를 작성한다.
-3. openapi spec에 맞추어 작성된 문서를 코드로 변환해주는 SDK(openapi-codegen)을 사용하여 프론트는 request, response에 필요한 모델을, 백엔드는 컨트롤러 코드를 자동으로 생성해 사용한다.
-4. API를 읽는 문서는 redoc이라는 오픈소스 툴을 사용한다.
-
-
-
-
-#### 3-1. openapi codegen
-
-![](documentation/images/swagger.png)
-
-openapi3 spec으로 작성된 코드를 swagger로 변환해준 모습
-
-- Q. how to see oepnapi docs online?
-    1. https://editor.swagger.io/
-    2. [openapi-docs code](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/resources/api/openapi.yaml) 붙여넣기
-
-
-#### 3-2. redoc
-![](documentation/images/redoc.png)
-
-```
-Q. how to install redoc and run?
-
-npm i -g @redocly/cli
-git clone https://github.com/Doohwancho/ecommerce
-cd ecommerce
-redocly preview-docs back/ecommerce/src/main/resources/api/openapi.yaml
-```
-
-
-
-
-## d. latency 개선
-
-### 1. 불필요한 랜더링을 React.memo() 으로 최적화
-
-- 문제
-	- 페이지 이동할 때 마다 `<Header />, <Footer />, < TopNav />`가 불필요하게 다시 랜더링 되던 문제가 있었다.
-- 해결책
-	1. React.memo()로 감싸서 props가 바뀌지 않는한, 다시 랜더링 되지 않도록 하고,
-	2. Router에서 템플릿화 시켰다.
-
-```tsx
-  const Layout = ({ children }) => (
-    <>
-      <Header />
-      <TopNav />
-      <ScrollToTop />
-      {children}
-      <Footer />
-    </>
-  );
-
-<Routes>
-	<Route path="/" element={<Layout><Home /></Layout>} />
-	<Route path="/products/category/:lowCategoryId" element={<Layout><Category /></Layout>} />
-	<Route path="/products/:productId" element={<Layout><Product /></Layout>} />
-</Routes>
-  );
-```
-
----
-
-### 2. useMemo()로 memoization 활용
-
-1. API fetch받은 products들을 재정리 하는 함수의 결과값을 memoization 한다.
-
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L23-L56
-
-option/price filter에서 product list를 호출할 때마다, 재정리를 요구하는데,
-이 함수를 useMemo()로 최적화 했다.
-
-
----
-...하지만 option들을 묶는 함수에 적용한 useMemo()는 이른 최적화 같다.
-
-2. option들을 optionId를 기준으로 묶는 함수
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L9-L21
-
-- Q. 왜 useMemo()를 여기에 쓰는게 좋은 선택이 아닌가?
-	1. 무거운 연산이 아니다.
-	2. 파라미터가 자주 바뀌는 편이라, 한번 연산해놓고 두고두고 쓰는 함수가 아니다.
-
-
-
-
-### 3. code splitting
-
-```tsx
-import React, { Suspense } from 'react';
-
-const Home: React.FC = () => {
-  const CarouselComponent = React.lazy(() => import ('./component/carousel/CarouselComponent'));
-
-  return (
-    <>
-	<MainElement /> //------------------- 1
-
-	<Suspense fallback={<div>Loading...</div>}>
-          <CarouselComponent /> //----------------- 2
-        </Suspense>
-    </>
-  );
-};
-
-export default Home;
-```
-1. 메인페이지 최상단 이미지 + 텍스트는 그대로 랜더링
-2. 화면 하단부 top 10 rated products fetch는 lazy하게 랜더링
-
-
-### 4. main page caching
-
-![top-ten-rated-products](documentation/images/top-ten-rated-products.gif)
-
-main page에서 요구하는 top 10 rated products를 redis cache에 매 시간 갱신하여 뿌려준다.
-
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L51-L61
-
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L116-L126
-
-
-
-### 5. .png -> .webp로 변경
-이미지 용량이 약 60%로 축소됨으로 인해, 페이지 로드 속도가 빨라졌다.
-
-
-## e. nextjs migration for different rendering patterns
-
-1. SSG: register, login 페이지
-	- register, login 페이지는 내용이 안바뀌는 static page라 빌드타임 때 만들고 뿌리는 SSG 사용한다.
-2. ISR: index 페이지
-	- index 페이지는 첫 페이지 로드 시간이 빠른게 중요하기 때문에 대부분 컴포넌트가 static인데,
-	- top 10 trending product 컴포넌트는 주기적으로 업데이트 되기 때문에 ISR로 렌더링한다.
-3. hybrid(SSR + CSR): product_list 페이지
-	- product_list 페이지는 ecommerce 특성상 검색엔진 봇에 키워드가 상품등록 직후에 바로 잡히는게 중요하기 때문에 SSR로 하되,
-	- 옵션별 필터를 했을 때, SSR로 처리하면 UX가 너무 안좋으니, 이 부분은 CSR로 처리한다. 즉, product_list는 nextjs14의 하이브리드 렌더링(SSR + CSR)을 한다.
-	- 만약 이 앱이 쿠팡같은 쇼핑몰이라 특정 카테고리에 상품이 만개 이상 걸리면, 이런식으로 처리하는게 구조적으로 비효율적이나, nike같은 세부 카테고리가 많고, 세부 카테고리에 걸리는 상품 종류가 300개 이하인 경우엔, SSR로 한번에 가져온 후, CSR로 처리하는게 부드럽기 때문에 UX적으로 더 나은 방법이라 생각한다.
-4. SSR: product 페이지
-	- product 페이지는 상품내용이 자주 업데이트 될 수 있음과 동시에 SEO에 잡히는게 중요하므로 SSR로 렌더링한다.
-
-
-## f. atomic design pattern with shadcn-ui
-
-
-### 1. 문제
-
-가끔 카카오앱이 구린 이유.txt를 보면, 카카오에 종속된 회사 앱들의 카카오의 메인 컬러: 노란색의 RGB값을 찍어보면 약간씩 다르다. 색상도 다르고 UI 스타일도 달라서, 다른 카카오 앱 쓸 때마다, 심지어 어떤 경우는 같은 앱의 다른 페이지를 볼 때 이질감을 느낄 때도 있다.
-
-이런 이질감을 없애기 위해 스타일, 색 조합, ui에 일관성이 있는 앱을 개발해야 한다.
-
-
-### 2. 해결책
-
-디자인 일관성에 맞게 앱을 개발 하는 방법은 해당 앱의 각 페이지에서 새로운 ui, 색상을 매번 새롭게 만드는게 아니라, 먼저 약속한 디자인 프로토콜에 맞게 제작된 공통된 컴포넌트를 import해서 재사용하는 식으로 개발해야 한다고 생각한다.
-
-이런 문제를 컴포넌트 디자인 + atomic design pattern으로 해결할 수 있다고 생각한다.
-
-1. 먼저 앱을 대표하는 primary, secondary, tertiary color 색조합과 ui 스타일을 정하고,
-2. 기본적인 버튼, input form, label 등의 컴포넌트 디자인을 한 이후,
-3. 이런 약속에 맞는 컴포넌트들을 조합하여 페이지를 만든다.
-
-### 3. 시행착오
-
-처음엔 컴포넌트 설계를 직접 하려고 했으나 [몇번의 시행착오](https://github.com/Doohwancho/javascript/tree/main/05.react/01.syntax/src/05.atomic-design)\
-끝에 점점 일이 커지는걸 깨닿고, best practice opensource library인 shadcn-ui을 썼다.
 
 
 
