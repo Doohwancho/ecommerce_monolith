@@ -24,12 +24,11 @@
 	- d. [1000 RPS 부하 테스트](#d-1000-rps-부하-테스트)
 - H. [기술적 도전 - Frontend](#h-기술적-도전---frontend)
 	- a. [wireframe](#a-wireframe)
-	- b. [프로젝트 구조](#b-프로젝트-구조)
-	- c. [component 모듈화](#c-component-모듈화)
-	- d. [state management](#d-state-managment)
-    - e. [API first design](#e-api-first-design)
-	- f. [filter 기능 구현](#f-filter-기능-구현)
-	- g. [페이지 로드 속도 개선](#g-페이지-로드-속도-개선)
+	- b. [state management](#b-state-managment)
+    - c. [API first design](#c-api-first-design)
+	- d. [latency 개선](#d-latency-개선)
+	- e. [nextjs 마이그레이션, 페이지마다 최적화된 렌더링 패턴 적용](#e-nextjs-migration-for-different-rendering-patterns)
+	- f. [atomic design pattern with shadcn-ui](#f-atomic-design-pattern-with-shadcn---ui)
 - I. [Trouble Shooting](#i-trouble-shooting)
     - a. [사건의 발단](#a-사건의-발단)
     - b. [가설1 - RDS connections 부족](#b-가설1---RDS의-connections-수가-부족해서-latency가-높아졌다)
@@ -44,23 +43,35 @@
 
 # A. 프로젝트 소개
 
-![](./documentation/images/main-page-demo.gif)
+![](./documentation/images/ecommerce_main_gif.gif)
 
-쇼핑몰 MVP\
-인증, 상품, 주문 관련 기능이 존재한다.
+Ecommerce MVP
 
 ## a. how to start project?
+
+### 1. nextjs + spring boot server를 로컬 환경으로 직접 실행하는 방법
 ```
 1. git clone https://github.com/Doohwancho/ecommerce
 2. cd ecommerce
-3. docker compose up --build
-	- ecommerce-app1이 mysql connection error 날 경우, 'ecommerce' 이름의 database를 mysql container에 접속해서 만들어 줘야 한다.
+3. back/ecommerce/에 있는 스프링 프로젝트 실행 (이 때 dummy data insert하는 시간 약 3분 이하 소요)
+4. cd front/02.nextjs_migration
+5. npm i 
+6. npm run dev
+```
+
+
+### 2. reactjs + spring boot server를 docker compose로 실행하는 방법
+```
+1. git clone https://github.com/Doohwancho/ecommerce
+2. cd ecommerce
+3. docker compose -f ./docker-compose-reactjs-ver.yml up --build
+	- 만약 ecommerce-app1이 mysql connection error 날 경우, 'ecommerce' 이름의 database를 mysql container에 접속해서 만들어 줘야 한다.
 	- docker exec -it mysql bash
 	- mysql -u root -p
 	- admin123
 	- create database ecommerce;
 	- 다시 docker compose up --build
-4. 1000 data insert 완료할 때까지 기다리기
+4. dummy data insert 완료할 때까지 기다리기 (약 3분 이하로 소요)
 5. http://localhost:80  or  http://127.0.0.1:80 로 접속
 ```
 
@@ -103,6 +114,8 @@
 
 
 ## b. 프론트엔드
+
+### b-1. ReactJs.Ver
 | Category             | Tool/Library           | Version |
 |----------------------|------------------------|---------|
 | Language             | Typescript             | ^5.2.2  |
@@ -116,6 +129,19 @@
 | external library     | react-slick            | ^0.29.0 |
 |                      | slick-carousel         | ^1.8.1  |
 |                      | react-icons            | ^4.12.0 |
+| Design               | figma                  |         |
+
+### b-2. NextJs.Ver
+| Category             | Tool/Library           | Version |
+|----------------------|------------------------|---------|
+| Language             | Typescript             | ^5.2.2  |
+| Framework            | Next.js                | ^14.2.3 |
+| React                | React                  | ^18.2.0 |
+| Style                | Tailwind               | ^3.4.1  |
+| Form Handling        | React Hook Form        | ^7.51.4 |
+| Validation           | Zod                    | ^3.23.8 |
+| UI Components        | Shadcn-ui              |         |
+| API                  | openapi-generator-cli  | ^2.7.0  |
 | Design               | figma                  |         |
 
 
@@ -1630,7 +1656,7 @@ custom random value generator로 바꾼 후, `Total execution time: 152731ms`가
 1. 약 2백만 random value 만드는데 걸리는 시간을 측정해본 결과 1초 미만으로 나왔다. 이건 빠르다.
 2. jvm monitoring 결과, 2백만개의 객체를 만들고, 다른 여타 datasource connection이나 preparedStatement 객체등을 만들 때, heap memory 부족으로 인해 GC가 계속 일어나는 현상을 확인했다.
 
-![](images/2024-03-26-17-18-41.png)
+![](documentation/images/2024-03-26-17-18-41.png)
 
 - Allocation/Promotion metric을 보면, 초기에 프로그램 실행하고 2백만 객체를 만들 때, heap memory할당을 하다가, Eden 영역이 꽉 차서 promotion되는 객체들이 초당 884kb/s 의 메모리를 할당된다는걸 확인할 수 있다.
 - 그 후, major gc와 allocation failure gc가 100ms~400ms의 시간을 잡아먹을 동안, 오른쪽에 Allocated 메모리는 0으로 되고, Eden/Young 공간에 공간이 확보되면, 다시 메모리를 할당하다가, 꽉 차면 100ms 정도 걸리는 minor gc (allocation failure)가 발생하는걸 확인할 수 있다.
@@ -1831,17 +1857,17 @@ Total execution time: 151452 ms
 
 차이가 없거나 오히려 더 늘었다?
 
-![](images/2024-03-28-17-48-49.png)
+![](documentation/images/2024-03-28-17-48-49.png)
 
 객체 150만개 만들적에는, major gc(metadata gc)는 400ms, minor gc(allocation failure)은 100ms 걸리던게,
 
-![](images/2024-03-28-17-49-42.png)
+![](documentation/images/2024-03-28-17-49-42.png)
 
 major gc(metadata gc)는 75ms, minor gc(allocation gc)는 25ms로 많이 준걸 확인할 수 있다.
 
 그런데 왜, latency는 똑같을까?
 
-![](images/2024-03-28-17-52-01.png)
+![](documentation/images/2024-03-28-17-52-01.png)
 
 mysql 컨테이너의 메트릭을 보니까,
 
@@ -2361,7 +2387,7 @@ vus_max........................: 1000   min=1000     max=1000
 
 
 #### 5-3. EC2 metrics
-![](images/2024-03-08-21-00-24.png)
+![](documentation/images/2024-03-08-21-00-24.png)
 
 - cpu usage가 70%까지 올라가는걸 확인할 수 있다.
 - cpu load가 8까지 올라가는걸 보면, 1000 RPS 부하를 견디기 위한 8코어는 적절한 선택인 듯 하다.
@@ -2372,25 +2398,25 @@ vus_max........................: 1000   min=1000     max=1000
 	- 1000RPS -> 700 RPS 하락 원인은 차후 후출한다.
 
 
-![](images/2024-03-08-21-00-43.png)
+![](documentation/images/2024-03-08-21-00-43.png)
 
 - eden/survivor space의 메모리양이 요동치는걸 보니까, minor gc가 정상적으로 작동하고 있는걸 확인할 수 있다.
 - old space에 20시 51분경에 메모리 양이 한번 뚝 떨어지는걸 보면, 해당 시간에 major gc가 일어난 것으로 보인다.
 
-![](images/2024-03-08-21-01-11.png)
+![](documentation/images/2024-03-08-21-01-11.png)
 
 - 부하테스트가 다 끝나갈 무렵인 20:50분 부터 20:53분 경에 major gc가 일어난걸 확인할 수 있다.
 
 #### 5-4. RDS metrics
-![](images/2024-03-08-21-04-22.png)
-![](images/2024-03-08-21-04-36.png)
+![](documentation/images/2024-03-08-21-04-22.png)
+![](documentation/images/2024-03-08-21-04-36.png)
 - 1000 TPS에서 cpu usage를 60%정도 쓰는걸로 보인다.
 - 신기한점은 1000 RPS인데도 10 connection 밖에 쓰지 않는다는 것이다.
 	- 그도 그럴 것이, 부하테스트를 건 쿼리의 실행 속도 측정 결과 5ms 이내로 나오기 때문에, isolation level을 높게 설정해서 read에 락을 걸지 않은 이상, 1 connection당 1초에 200번 쿼리 수행이 가능하고, 5 connection만 있으면 1초에 1000 쿼리를 수행 가능하다는 결론이 나온다.
 
 #### 5-5. Q. 왜 8분경에 1000RPS에서 700RPS로 요청량이 감소했을까?
 
-![](images/2024-03-08-21-06-06.png)
+![](documentation/images/2024-03-08-21-06-06.png)
 
 bpytop으로 부하테스트 거는 클라이언트 pc의 네트워크 탭을 보면\
 1000 RPS걸 때, request는 최대 6.72 Mbps, response는 478 Mbps 의 처리량을 요구한다.
@@ -2510,129 +2536,33 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 ## a. wireframe
 
-![](./images/wireframe.svg)
+![](./documentation/images/wireframe.svg)
 
 ### a-1. wireframe -> home
 
-![](./images/sc_home.png)
+![](./documentation/images/ecommerce_index_page.png)
 
 ### a-2. wireframe -> category
-![](./images/sc_category.png)
+![](./documentation/images/ecommerce_product_list_page.png)
 
 
 ### a-3. wireframe -> product
-![](./images/sc_product.png)
+![](./documentation/images/ecommerce_product_page.png)
 
 
 ### a-4. wireframe -> register
-![](./images/sc_register.png)
+![](./documentation/images/ecommerce_register_login_page.png)
 
 
 ### a-5. wireframe -> login
-![](./images/sc_login.png)
+![](./documentation/images/ecommerce_register_login_page.png)
 
 
-## b. 프로젝트 구조
+## b. state managment
+프론트는 같은걸 2가지 버전(reactjs, nextjs)으로 만들었다.\
+React.js 버전에서 상태관리한 방법을 기술한다.
 
-```
-public
-├── images
-models
-├── src
-│   └── model
-src
-├── assets
-│   └── styles
-├── components
-│   ├── Footer
-│   │   └── styles
-│   ├── Header
-│   │   ├── hooks
-│   │   └── styles
-│   └── TopNav
-│       ├── hooks
-│       ├── modal
-│       │   ├── styles
-│       │   ├── type
-│       │   └── util
-│       ├── styles
-│       └── util
-├── hooks
-├── pages
-│   ├── authentication
-│   │   ├── login
-│   │   │   ├── constants
-│   │   │   ├── hooks
-│   │   │   ├── styles
-│   │   │   └── types
-│   │   └── register
-│   │       ├── constants
-│   │       ├── hooks
-│   │       └── styles
-│   └── product
-│       ├── Category
-│       │   ├── hooks
-│       │   ├── service
-│       │   ├── styles
-│       │   ├── types
-│       │   └── ui
-│       ├── Home
-│       │   ├── component
-│       │   │   └── carousel
-│       │   │       ├── service
-│       │   │       ├── styles
-│       │   │       └── types
-│       │   └── styles
-│       └── Product
-│           ├── component
-│           │   ├── discount
-│           │   ├── productDetails
-│           │   └── productImages
-│           ├── hooks
-│           ├── service
-│           ├── styles
-│           ├── types
-│           └── util
-└── store
-```
-
-1. 도메인 컴포넌트들을 도메인 별로 구분하여 page/에서 관리한다.
-2. Header, Footer과 같은 공통 컴포넌트들은 component/에서 관리한다.
-3. 각 컴포넌트마다 style, types, service, custom hooks, ui, component, util, constant를 폴더로 나눠 관리한다.
-4. 공통 custom hooks들은 hooks/에서 관리한다.
-5. openapi-codgen으로 생성된 모델 DTO들은 models/src/model/에 생성된다.
-
-
-
-
-## c. component 모듈화
-
-ex. `<Product />`를 모듈화 한 방법
-
-```
-├── Product.tsx
-├── component
-│   ├── discount
-│   │   └── Discount.tsx
-│   ├── productDetails
-│   │   └── ProductDetail.tsx
-│   └── productImages
-│       ├── ProductImages.styles.ts
-│       └── ProductImages.tsx
-├── hooks
-│   └── useProductData.ts
-├── service
-│   └── ProductService.ts
-├── styles
-│   └── Product.styles.ts
-├── types
-│   └── Product.types.ts
-└── util
-    └── Product.util.ts
-```
-
-## d. state managment
-
+---
 1. react query
 	- server state를 관리한다.
 	- custom hooks에 react query의 fetch 함수와 더불어, 각 페이지에 맞게 가공하여 전달하는 함수까지 포함한다.
@@ -2644,7 +2574,7 @@ ex. `<Product />`를 모듈화 한 방법
 	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우
 
 
-## e. API first design
+## c. API first design
 
 ### 1. 문제
 1. 기존 프론트/백 협업 방식은 프론트 개발자와 백엔드 개발자 사이의 결합도가 높아진다는 문제점이 있다.
@@ -2692,14 +2622,7 @@ redocly preview-docs back/ecommerce/src/main/resources/api/openapi.yaml
 
 
 
-## f. filter 기능 구현
-
-![filter-demo](documentation/images/filter-demo.gif)
-
-
-
-
-## g. 페이지 로드 속도 개선
+## d. latency 개선
 
 ### 1. 불필요한 랜더링을 React.memo() 으로 최적화
 
@@ -2792,6 +2715,49 @@ https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549a
 
 ### 5. .png -> .webp로 변경
 이미지 용량이 약 60%로 축소됨으로 인해, 페이지 로드 속도가 빨라졌다.
+
+
+## e. nextjs migration for different rendering patterns
+
+1. SSG: register, login 페이지
+	- register, login 페이지는 내용이 안바뀌는 static page라 빌드타임 때 만들고 뿌리는 SSG 사용한다.
+2. ISR: index 페이지
+	- index 페이지는 첫 페이지 로드 시간이 빠른게 중요하기 때문에 대부분 컴포넌트가 static인데,
+	- top 10 trending product 컴포넌트는 주기적으로 업데이트 되기 때문에 ISR로 렌더링한다.
+3. hybrid(SSR + CSR): product_list 페이지
+	- product_list 페이지는 ecommerce 특성상 검색엔진 봇에 키워드가 상품등록 직후에 바로 잡히는게 중요하기 때문에 SSR로 하되,
+	- 옵션별 필터를 했을 때, SSR로 처리하면 UX가 너무 안좋으니, 이 부분은 CSR로 처리한다. 즉, product_list는 nextjs14의 하이브리드 렌더링(SSR + CSR)을 한다.
+	- 만약 이 앱이 쿠팡같은 쇼핑몰이라 특정 카테고리에 상품이 만개 이상 걸리면, 이런식으로 처리하는게 구조적으로 비효율적이나, nike같은 세부 카테고리가 많고, 세부 카테고리에 걸리는 상품 종류가 300개 이하인 경우엔, SSR로 한번에 가져온 후, CSR로 처리하는게 부드럽기 때문에 UX적으로 더 나은 방법이라 생각한다.
+4. SSR: product 페이지
+	- product 페이지는 상품내용이 자주 업데이트 될 수 있음과 동시에 SEO에 잡히는게 중요하므로 SSR로 렌더링한다.
+
+
+## f. atomic design pattern with shadcn-ui
+
+
+### 1. 문제
+
+가끔 카카오앱이 구린 이유.txt를 보면, 카카오에 종속된 회사 앱들의 카카오의 메인 컬러: 노란색의 RGB값을 찍어보면 약간씩 다르다. 색상도 다르고 UI 스타일도 달라서, 다른 카카오 앱 쓸 때마다, 심지어 어떤 경우는 같은 앱의 다른 페이지를 볼 때 이질감을 느낄 때도 있다.
+
+이런 이질감을 없애기 위해 스타일, 색 조합, ui에 일관성이 있는 앱을 개발해야 한다.
+
+
+### 2. 해결책
+
+디자인 일관성에 맞게 앱을 개발 하는 방법은 해당 앱의 각 페이지에서 새로운 ui, 색상을 매번 새롭게 만드는게 아니라, 먼저 약속한 디자인 프로토콜에 맞게 제작된 공통된 컴포넌트를 import해서 재사용하는 식으로 개발해야 한다고 생각한다.
+
+이런 문제를 컴포넌트 디자인 + atomic design pattern으로 해결할 수 있다고 생각한다.
+
+1. 먼저 앱을 대표하는 primary, secondary, tertiary color 색조합과 ui 스타일을 정하고,
+2. 기본적인 버튼, input form, label 등의 컴포넌트 디자인을 한 이후,
+3. 이런 약속에 맞는 컴포넌트들을 조합하여 페이지를 만든다.
+
+### 3. 시행착오
+
+처음엔 컴포넌트 설계를 직접 하려고 했으나 [몇번의 시행착오](https://github.com/Doohwancho/javascript/tree/main/05.react/01.syntax/src/05.atomic-design)\
+끝에 점점 일이 커지는걸 깨닿고, best practice opensource library인 shadcn-ui을 썼다.
+
+
 
 
 
