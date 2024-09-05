@@ -1,0 +1,13 @@
+{
+  "library": "spring-mvc",
+  "dateLibrary": "java8",
+  "hideGenerationTimestamp": true,
+  "modelPackage": "com.cho.ecommerce.api.domain",
+  "apiPackage": "com.cho.ecommerce.api",
+  "invokerPackage": "com.cho.ecommerce.api",
+  "serializableModel": true,
+  "useTags": true,
+  "useGzipFeature" : true,
+  "hateoas": false,
+  "withXml": true
+}

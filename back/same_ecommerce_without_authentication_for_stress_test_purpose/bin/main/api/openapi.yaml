@@ -1,0 +1,1172 @@
+openapi: 3.0.3
+##############################################
+#  주의점                                      #
+##############################################
+# 1. components: schemas: 에 object 이름을 정의할 때, 엔티티 이름이나 도메인 객체 이름과 겹치면, mapstruct에 걸리거나, 도메인 객체와 헤깔릴 수 있으니, 맨 뒤에 DTO를 붙여준다.
+# 2. components: schemas: 에 object 이름을 정의할 때, 객체 이름이 복수면, mapstruct의 복수객체 전환시 장애가 있으니, 단수로 한다.externalDocs:
+# 3. components: schemas: 에 object를 정의할 때, field 이름에 underscore ('_') 가 들어가면,
+#    openapi-codegen이 object를 만들 때, getter에 '_'가 버려지기 때문에,(ex. PRODUCT_ID -> getPRODUCTID() 로 됨)
+#    Mapper library를 쓸 때 에러난다. 따라서 _를 쓰지 말고, camel case를 쓰도록 하자. (ex. userAddress)
+# 4. components: schemas: 에 required: true로 명시를 안해주면, client단 typescript 코드가 undefined이 아님을 표현하기 위해 !가 엄청 많이 들어가져서 코드가 더러워 지니까, 꼭 명시해주자.
+# 5. components: schemas: 의 이름 convention을 요청은 마지막에 "RequestDTO"라고 하고, 반환은 "ResponseDTO"라고 통일하자
+# 6. TODO - RESTful convention에 맞게 url path 변경을 고민하기 (ex. /register -> /users/register)
+# 7. TODO - components: schemas: 에 date format을 string으로 하고 변환시킬지를 고민하기
+# 8. TODO - components: schemas: 에 id format을 int64(Long) or int32(Integer)말고 String으로 하고 database가 허용하는 number type for id에 맞게 변환할지 고민하기
+
+
+info:
+  title: ecommerce API
+  version: 1.0.0
+  description: ecommerce API MVP
+paths:
+  /register:
+    post:
+      tags:
+        - User
+      summary: register a user
+      description: Returns the Result of Register Attempt
+      operationId: registerRoleUser
+      requestBody:
+        description: User registration details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequestDTO'
+      responses:
+        201:
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponseDTO'
+        400:
+          description: Bad Request
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
+  /login: #수동 로그인 말고 spring security에서 제공하는 방법으로 바꿈
+    get:
+      summary: Display login page or logout message
+      description: Shows the login page or a logout success message based on the logout parameter
+      tags:
+        - User
+      operationId: loginPage
+      parameters:
+        - name: logout
+          in: query
+          required: false
+          description: Logout query parameter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Login page displayed or logout message shown
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You have been logged out successfully."
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - User
+      summary: Authenticate a user
+      description: Authenticates the user and returns a login status message.
+      operationId: loginUser
+      requestBody:
+        description: User credentials for authentication
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDTO'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDTO'
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseDTO'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid username or password"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
+  /users/{username}:
+    get:
+      tags:
+        - User
+      summary: Get user information by username
+      description: Returns user details for a given username
+      operationId: getUserByUsername
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: The username of the user to retrieve.
+          schema:
+            type: string
+            minLength: 1
+            #maxLength: ?
+      responses:
+        '200':
+          description: User details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetailsResponseDTO'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /products:
+    get:
+      summary: Get all products with pagination
+      tags:
+        - Product
+      operationId: getProductsWithPagiation
+      parameters:
+        - name: page
+          in: query
+          description: Page number of the requested page
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductResponse'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      summary: Create a new product
+      tags:
+        - Product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequestDTO'
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO' #TODO - naming convention이 뒤에 Response 붙여야 하는데, 얘만을 위해 별도에 DTO를 만들어야 하나?
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /products/{productId}:
+    get:
+      summary: Get product details by product ID
+      operationId: getProductDetailDTOsById
+      tags:
+        - Product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: The ID of the product to retrieve.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: An array of product objects along with related details.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductDetailResponseDTO'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        default: #ensures any unexpected errors are handled in a consistent format, providing a clear and standardized method
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      summary: Update a product by ID
+      tags:
+        - Product
+      operationId: updateProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductDTO'
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      summary: Delete a product by ID
+      tags:
+        - Product
+      operationId: deleteProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Product deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /products/highestRatings:
+    get:
+      summary: Retrieve top 10 products sort by highest rating
+      description: Fetches top 10 higest rated products
+      operationId: getTopTenHighestRatedProducts
+      tags:
+        - Product
+      responses:
+        '200':
+          description: A list of top 10 products sort by rating
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductDTO'
+        '400':
+          description: Invalid input
+        '404':
+          description: Categories not found
+  /products/categories:
+    get:
+      summary: Retrieve all categories, sort by depth
+      description: Fetches categories organized by their depth levels.
+      operationId: getAllCategoriesSortByDepth
+      tags:
+        - Product
+      responses:
+        '200':
+          description: A list of categories organized by depth
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AllCategoriesByDepthResponseDTO'
+        '400':
+          description: Invalid input
+        '404':
+          description: Categories not found
+  /products/category/{categoryId}:
+    get:
+      tags:
+        - Product
+      summary: Get products by category
+      description: Returns a list of products belonging to a specific category
+      operationId: getProductsWithOptionsByCategory
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          description: ID of the category to filter by
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: A list of products with options
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductWithOptionsListResponseDTO'
+        '204':
+          description: No content, no products found for the category
+        '400':
+          description: Bad request, invalid category ID
+        '404':
+          description: Not found, category does not exist
+  /categories/{categoryId}/options:
+    get:
+      summary: Get options and option variations for a category
+      operationId: getOptionsByCategory
+      tags:
+        - Product
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          description: ID of the category
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response with options and option variations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OptionsOptionVariatonsResponseDTO'
+        '404':
+          description: Category not found
+  /orders:
+    get:
+      summary: Get all orders
+      tags:
+        - Order
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderDTO'
+    post:
+      summary: Create a new order
+      operationId: createOrder
+      tags:
+        - Order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderRequestDTO'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Ordered successfully
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+  /orders/{orderId}:
+    get:
+      summary: Get a specific order by ID
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDTO'
+    put:
+      summary: Update an order by ID
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDTO'
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDTO'
+    delete:
+      summary: Delete an order by ID
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Order deleted
+  /orders/orderItems/{username}:
+    get:
+      summary: Get order item details by username
+      operationId: getOrderItemDetailsByUsername
+      tags:
+        - Order
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Username to fetch order item details
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: A list of order item details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderItemDetailsResponseDTO'
+        '404':
+          description: OrderItems not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /orders/statistics/sales:
+    get:
+      summary: Get order statistics
+      description: Retrieve statistics for orders including category, product sales.
+      operationId: getMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths
+      tags:
+        - Order
+      responses:
+        '200':
+          description: A list of order statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderSalesStatisticsResponseDTO'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    ErrorResponseDTO:
+      type: object
+      required:
+        - message
+        - status
+        - code
+      properties:
+        message:
+          type: string
+          example: "User already exists"
+        status:
+          type: integer
+          example: 400
+        errors:
+          type: array
+          items:
+            type: string
+          example: [ "Detailed error message or validation issue" ]
+        code:
+          type: string
+          example: "M003"
+    RegisterRequestDTO:
+      type: object
+      required:
+        - username
+        - email
+        - name
+        - password
+        - address
+      properties:
+        username:
+          type: string
+          minLength: 1
+          nullable: false
+          description: Unique user identifier.
+        email:
+          type: string
+          format: email
+          minLength: 1
+          nullable: false
+          description: Unique email address.
+        name:
+          type: string
+          minLength: 1
+          nullable: false
+        password:
+          type: string
+          minLength: 1
+          nullable: false
+        address:
+          type: object
+          required:
+            - street
+            - city
+            - state
+            - country
+            - zipCode
+          properties:
+            street:
+              type: string
+              minLength: 1
+              description: Street name and number.
+              nullable: false
+            city:
+              type: string
+              minLength: 1
+              description: City name.
+              nullable: false
+            state:
+              type: string
+              minLength: 1
+              description: State or province name.
+              nullable: false
+            country:
+              type: string
+              minLength: 1
+              description: Country name.
+              nullable: false
+            zipCode:
+              type: string
+              minLength: 1
+              description: Postal or ZIP code.
+              nullable: false
+    RegisterResponseDTO:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "Registration successful"
+    LoginRequestDTO:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 1;
+          description: Unique user identifier.
+        password:
+          type: string
+          minLength: 1;
+          description: User's password.
+    LoginResponseDTO:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "Login successful"
+    UserDetailsResponseDTO:
+      type: object
+      required:
+        - username
+        - email
+        - name
+        # - address #admin, testUser는 주소가 없으니 편의상 주석 처리한다.
+      properties:
+        username:
+          type: string
+          description: Username of the user
+        email:
+          type: string
+          format: email
+          description: Email address of the user
+        name:
+          type: string
+          description: Full name of the user
+        address:
+          $ref: '#/components/schemas/AddressDTO'
+        role:
+          type: string
+          description: Role of the user
+        enabled:
+          type: boolean
+          description: Indicates whether the user account is enabled
+        created:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+          description: The date and time when the user account was created
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the user account was last updated
+        authorities:
+          type: array
+          items:
+            type: string
+          description: List of authorities granted to the user
+    AddressDTO:
+      type: object
+      required:
+        - street
+        - city
+        - state
+        - country
+        - zipCode
+      properties:
+        street:
+          type: string
+          description: Street name and number
+        city:
+          type: string
+          description: City name
+        state:
+          type: string
+          description: State or province name
+        country:
+          type: string
+          description: Country name
+        zipCode:
+          type: string
+          description: Postal or ZIP code
+    ProductCreateRequestDTO:
+      type: object
+      required:
+        - name
+        - description
+        - categoryId
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        categoryId:
+          type: integer
+    ProductDTO:
+      type: object
+      required:
+        - productId
+        - name
+        - description
+        - rating
+        - ratingCount
+        - categoryId
+      properties:
+        productId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        rating:
+          type: number
+          format: double
+        ratingCount:
+          type: integer
+        categoryId:
+          type: integer
+    ProductWithOptionsDTO:
+      type: object
+      required:
+        - productId
+        - name
+        - description
+        - rating
+        - ratingCount
+        - categoryId
+        - categoryName
+        - optionId
+        - optionName
+        - optionVariationName
+        - quantity
+        - price
+      properties:
+        productId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        rating:
+          type: number
+          format: double
+        ratingCount:
+          type: integer
+        categoryId:
+          type: integer
+          format: int64
+        categoryName:
+          type: string
+        optionId:
+          type: integer
+          format: int64
+        optionName:
+          type: string
+        optionVariationName:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+          description: Available quantity of the product
+        price:
+          type: number
+          format: double
+          description: Price of the product
+    ProductWithOptionsListResponseDTO:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductWithOptionsDTO'
+    PaginatedProductResponse:
+      type: object
+      required:
+        - totalPages
+        - totalElements
+        - size
+        - number
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDTO'
+        totalPages:
+          type: integer
+          example: 5
+        totalElements:
+          type: integer
+          example: 50
+        size:
+          type: integer
+          example: 10
+        number:
+          type: integer
+          description: Current page number
+          example: 0
+    ProductDetailResponseDTO:
+      type: object
+      required:
+        - productId
+        - name
+        - description
+        - rating
+        - ratingCount
+        - quantity
+        - price
+        - categoryId
+        - categoryCode
+        - categoryName
+        - optionId
+        - optionName
+        - optionVariationId
+        - optionVariationName
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: Unique identifier of the product
+        name:
+          type: string
+          description: Name of the product
+        description:
+          type: string
+          description: Description of the product
+        rating:
+          type: number
+          format: double
+          description: Average rating of the product
+        ratingCount:
+          type: integer
+          format: int32
+          description: Count of ratings received
+        quantity:
+          type: integer
+          format: int32
+          description: Available quantity of the product
+        price:
+          type: number
+          format: double
+          description: Price of the product
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiscountDTO'
+        categoryId:
+          type: integer
+          format: int64
+          description: Identifier of the category to which the product belongs
+        categoryCode:
+          type: string
+          description: Code of the category
+        categoryName:
+          type: string
+          description: Name of the category
+        optionId:
+          type: integer
+          format: int64
+        optionName:
+          type: string
+          description: Name of the product option
+        optionVariationId:
+          type: integer
+          format: int64
+        optionVariationName:
+          type: string
+          description: Name of the product option variation
+    DiscountDTO:
+      type: object
+      required:
+        - discountType
+        - discountValue
+        - startDate
+        - endDate
+      properties:
+        discountId:
+          type: integer
+          format: int64
+          description: Unique identifier of the discount
+        discountType:
+          type: string
+          description: Type of the discount
+        discountValue:
+          type: number
+          format: double
+          description: Value of the discount
+        startDate:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+          description: Start date of the discount
+        endDate:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+          description: End date of the discount
+    AllCategoriesByDepthResponseDTO:
+      type: object
+      properties:
+        topCategoryId:
+          type: integer
+          format: int64
+          minimum: 1
+        topCategoryName:
+          type: string
+          nullable: false
+        midCategoryId:
+          type: integer
+          format: int64
+        midCategoryName:
+          type: string
+        lowCategoryId:
+          type: integer
+          format: int64
+        lowCategoryName:
+          type: string
+    OptionsOptionVariatonsResponseDTO:
+      type: object
+      required:
+        - categoryId
+        - optionId
+        - optionName
+        - optionVariationName
+      properties:
+        categoryId:
+          type: integer
+          format: int64
+        optionId:
+          type: integer
+          format: int64
+        optionName:
+          type: string
+        optionVariationName:
+          type: string
+    OrderDTO: #TODO - OrderDTO와 OrderRequestDTO와 OrderResponseDTO를 분리하자!
+      type: object
+      required:
+#        - orderId #TODO - orderId를 반환한다는건, 총 주문 수를 파악할 수 있는 정보를 공개하는 것과 마찬가지 아닐까? 비공개해야하지 않을까?
+        - orderDate
+        - orderStatus
+        - memberId
+      properties:
+        orderId:
+          type: integer
+          format: int64
+          readOnly: true
+        orderDate:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+        orderStatus:
+          type: string
+        memberId:
+          type: integer
+        paymentId:
+          type: string
+        deliveryId:
+          type: string
+    OrderRequestDTO:
+      type: object
+      required:
+        - memberId
+        - productItemId
+        - order_quantity
+        - price
+        - optionVariationId
+      properties:
+        memberId:
+          type: integer
+          format: int64
+        productItemId:
+          type: integer
+          format: int64
+        order_quantity:
+          type: integer
+          minimum: 1
+#          maximum: 100 # Maximum order quantity, adjust as needed
+        price:
+          type: integer
+          format: double
+          minimum: 0.01
+        discountId:
+          type: integer
+          format: int64
+        discountType:
+          type: string
+          description: Type of the discount
+        discountValue:
+          type: number
+          format: double
+          description: Value of the discount
+        startDate:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+          description: Start date of the discount
+        endDate:
+          type: string
+          format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
+          description: End date of the discount
+        optionId:
+          type: integer
+          format: int64
+        optionVariationId:
+          type: integer
+          format: int64
+        optionVariationName:
+          type: string
+    OrderItemDetailsResponseDTO:
+      type: object
+      required:
+        - orderItemId
+        - orderId
+        - orderDate
+        - orderStatus
+        - memberId
+        - username
+        - email
+        - name
+        - role
+        - enabled
+        - createdAt
+        - updatedAt
+        - productId
+        - productName
+        - description
+        - rating
+        - ratingCount
+        - optionValue
+        - optionVariationValue
+        - quantity
+        - price
+      properties:
+        orderItemId:
+          type: integer
+          format: int64
+        orderId:
+          type: integer
+          format: int64
+        orderDate:
+          type: string
+          format: date-time
+        orderStatus:
+          type: string
+        memberId:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        enabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        productId:
+          type: integer
+          format: int64
+        productName:
+          type: string
+        description:
+          type: string
+        rating:
+          type: number
+          format: double
+        ratingCount:
+          type: integer
+        optionValue:
+          type: string
+        optionVariationValue:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+          format: double
+    OrderSalesStatisticsResponseDTO:
+      type: object
+      required:
+        - categoryId
+        - categoryName
+        - numberOfProductsPerCategory
+        - averageRating
+        - totalSalesPerCategory
+        - productId
+        - topSalesProductName
+        - topSalesOfProduct
+      properties:
+        categoryId:
+          type: integer
+          format: int64
+          description: Unique identifier for the category
+        categoryName:
+          type: string
+          description: Name of the category
+        numberOfProductsPerCategory:
+          type: integer
+          format: int32
+          description: Number of products in the category
+        averageRating:
+          type: number
+          format: double
+          description: Average rating of products in the category
+        totalSalesPerCategory:
+          type: number
+          format: double
+          description: Total sales for the category
+        productId:
+          type: integer
+          format: int64
+          description: Unique identifier for the top selling product
+        topSalesProductName:
+          type: string
+          description: Name of the top selling product
+        topSalesOfProduct:
+          type: number
+          format: double
+          description: Total sales of the top selling product
