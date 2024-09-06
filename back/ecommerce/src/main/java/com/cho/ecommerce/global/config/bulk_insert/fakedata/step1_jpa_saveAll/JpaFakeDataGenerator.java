@@ -1,4 +1,4 @@
-package com.cho.ecommerce.global.config.fakedata.step1_jpa_saveAll;
+package com.cho.ecommerce.global.config.bulk_insert.fakedata.step1_jpa_saveAll;
 
 import com.cho.ecommerce.domain.member.entity.AddressEntity;
 import com.cho.ecommerce.domain.member.entity.AuthorityEntity;

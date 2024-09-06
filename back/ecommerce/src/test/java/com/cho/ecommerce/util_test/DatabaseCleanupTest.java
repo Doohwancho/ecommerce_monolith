@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.cho.ecommerce.Application;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
-import com.cho.ecommerce.global.config.fakedata.step1_jpa_saveAll.JpaFakeDataGenerator;
+import com.cho.ecommerce.global.config.bulk_insert.fakedata.step1_jpa_saveAll.JpaFakeDataGenerator;
 import com.cho.ecommerce.global.util.DatabaseCleanup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

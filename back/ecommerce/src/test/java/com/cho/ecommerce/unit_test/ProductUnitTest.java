@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.cho.ecommerce.Application;
 import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.service.ProductService;
-import com.cho.ecommerce.global.config.fakedata.step1_jpa_saveAll.JpaFakeDataGenerator;
+import com.cho.ecommerce.global.config.bulk_insert.fakedata.step1_jpa_saveAll.JpaFakeDataGenerator;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

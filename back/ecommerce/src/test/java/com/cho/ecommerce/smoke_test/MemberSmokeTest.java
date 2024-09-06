@@ -12,7 +12,7 @@ import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.domain.member.service.AuthorityService;
 import com.cho.ecommerce.domain.member.service.UserAuthorityService;
 import com.cho.ecommerce.domain.member.service.UserService;
-import com.cho.ecommerce.global.config.fakedata.step1_jpa_saveAll.JpaFakeDataGenerator;
+import com.cho.ecommerce.global.config.bulk_insert.fakedata.step1_jpa_saveAll.JpaFakeDataGenerator;
 import com.cho.ecommerce.global.config.redis.RedisConfig;
 import com.cho.ecommerce.global.config.security.SecurityConstants;
 import java.util.List;

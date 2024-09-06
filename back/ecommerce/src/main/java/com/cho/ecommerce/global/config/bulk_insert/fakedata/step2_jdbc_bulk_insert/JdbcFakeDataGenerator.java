@@ -1,4 +1,4 @@
-package com.cho.ecommerce.global.config.fakedata.step2_jdbc_bulk_insert;
+package com.cho.ecommerce.global.config.bulk_insert.fakedata.step2_jdbc_bulk_insert;
 
 import com.cho.ecommerce.global.util.RandomValueGenerator;
 import java.sql.Connection;
@@ -16,26 +16,25 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JdbcFakeDataGenerator {
     
-    private static final int NUM_THREADS = 4;
-    private static final Integer NUMBER_OF_UNIQUE_STRINGS = 80_000; //520_807
+    private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
+    private static final int NUM_THREADS = NUM_CORES;
+    private Integer NUMBER_OF_UNIQUE_STRINGS = 80_000; //520_807
     private static final Integer LENGTH_OF_STRING_FOR_UNIQUE_STRINGS = 10;
     //    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY = 0;
 //    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THOUSAND = 0;
 //    private static final int NUMBER_OF_DOUBLE_ZERO_TO_FIVE = 50;
 //    private static final int NUMBER_OF_DOUBLE_ONE_TO_HUNDRED = 1_000;
-    private static final int NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
-    private static final int NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+    private int NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
+    private int NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
     private static final int NUMBER_OF_DATE_2MONTH_FROM_TODAY = 90;
     public static final int DAYS_FROM_TODAY = 90;
     private final Logger log = LoggerFactory.getLogger(JdbcFakeDataGenerator.class);
     private DataSource dataSource;
-    private BCryptPasswordEncoder passwordEncoder;
     //    private final Faker faker = new Faker();
 //    private final Random random = new Random();
     private RandomValueGenerator randomValueGenerator;
@@ -50,15 +49,15 @@ public class JdbcFakeDataGenerator {
     private LocalDateTime startTimeForDiscount;
     private LocalDateTime endTimeForDiscount;
     private final Timestamp CURRENT_TIMESTAMP = new Timestamp(System.currentTimeMillis());
+
+//    private final List<Connection> connectionPool = new ArrayList<>();
     
-    private final List<Connection> connectionPool = new ArrayList<>();
     
-    public JdbcFakeDataGenerator(DataSource dataSource, BCryptPasswordEncoder passwordEncoder,
+    public JdbcFakeDataGenerator(DataSource dataSource,
         RandomValueGenerator randomValueGenerator,
         @Qualifier("startTimeForDiscount") LocalDateTime startTimeForDiscount,
         @Qualifier("endTimeForDiscount") LocalDateTime endTimeForDiscount) throws SQLException {
         this.dataSource = dataSource;
-        this.passwordEncoder = passwordEncoder;
         this.randomValueGenerator = randomValueGenerator;
         this.startTimeForDiscount = startTimeForDiscount;
         this.endTimeForDiscount = endTimeForDiscount;
@@ -71,12 +70,28 @@ public class JdbcFakeDataGenerator {
         int numberOfProductOptionVariationPerProductItem,
         int numberOfOrderItemsPerOrder,
         int batchSize) throws SQLException {
-        
-        // Create the connection pool
-        for (int i = 0; i < NUM_THREADS; i++) {
-            connectionPool.add(dataSource.getConnection()); //retry-문 필요
-        }
+
 //        long startTime2 = System.currentTimeMillis();
+        
+        int baseAmount = numberOfUsers;
+        // set size of fake string/float objects in proportion to bulk-insert size
+        if (baseAmount <= 1000) {
+            NUMBER_OF_UNIQUE_STRINGS = 542; //541 이하 부터는 bulk-insert 때 option_variation_index 값인가 그것보다 작아서 에러남
+            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 500;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
+        } else if (baseAmount <= 10000) {
+            NUMBER_OF_UNIQUE_STRINGS = 10_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
+        } else if (baseAmount <= 100_000) {
+            NUMBER_OF_UNIQUE_STRINGS = 30_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+        } else {
+            NUMBER_OF_UNIQUE_STRINGS = 80_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+        }
         
         // Generate unique strings
         this.uniqueStrings = randomValueGenerator.generateUniqueStrings(NUMBER_OF_UNIQUE_STRINGS,
@@ -129,34 +144,93 @@ public class JdbcFakeDataGenerator {
         // Execute the bulk insert methods in parallel
 
 //        long startTime3 = System.currentTimeMillis();
-        CompletableFuture<Void> userAndAddressFuture = CompletableFuture.runAsync(() ->
-            bulkInsertUsersAndAddresses(connectionPool.get(0), numberOfUsers, batchSize));
         
-        CompletableFuture<Void> categoryFuture = CompletableFuture.runAsync(() ->
-            bulkInsertCategoriesOptionsAndVariations(connectionPool.get(1),
-                numberOfLowCategoriesPerMidCategories,
-                numberOfOptions, numberOfOptionVariations, batchSize));
+        List<Connection> connectionPool = new ArrayList<>();
         
-        CompletableFuture<Void> productFuture = CompletableFuture.runAsync(() ->
-            bulkInsertProductsAndRelated(connectionPool.get(2), numberOfProducts,
-                numberOfProductItemsPerProduct,
-                numberOfDiscountsPerProductItem,
-                numberOfProductOptionVariationPerProductItem,
-                batchSize));
-        
-        CompletableFuture<Void> orderFuture = CompletableFuture.runAsync(() ->
-            bulkInsertOrdersOrderItems(connectionPool.get(3), numberOfUsers,
-                numberOfOrderItemsPerOrder, batchSize));
-        
-        // Wait for all the tasks to complete
-        CompletableFuture.allOf(userAndAddressFuture, categoryFuture, productFuture, orderFuture)
-            .join();
+        if (NUM_CORES == 1) {
+            try (Connection connection = dataSource.getConnection();) {
+                bulkInsertUsersAndAddresses(connection, numberOfUsers, batchSize);
+                bulkInsertCategoriesOptionsAndVariations(connection,
+                    numberOfLowCategoriesPerMidCategories,
+                    numberOfOptions, numberOfOptionVariations, batchSize);
+                bulkInsertProductsAndRelated(connection, numberOfProducts,
+                    numberOfProductItemsPerProduct,
+                    numberOfDiscountsPerProductItem,
+                    numberOfProductOptionVariationPerProductItem,
+                    batchSize);
+                bulkInsertOrdersOrderItems(connection, numberOfUsers,
+                    numberOfOrderItemsPerOrder, batchSize);
+            } catch (SQLException e) {
+                log.error("An error occurred during bulk insert:", e);
+                throw e;
+            }
+        } else if (NUM_CORES == 2) {
+            try (
+                Connection connection1 = dataSource.getConnection();
+                Connection connection2 = dataSource.getConnection();
+            ) {
+                bulkInsertUsersAndAddresses(connection1, numberOfUsers, batchSize);
+                bulkInsertCategoriesOptionsAndVariations(connection2,
+                    numberOfLowCategoriesPerMidCategories,
+                    numberOfOptions, numberOfOptionVariations, batchSize);
+                bulkInsertProductsAndRelated(connection2, numberOfProducts,
+                    numberOfProductItemsPerProduct,
+                    numberOfDiscountsPerProductItem,
+                    numberOfProductOptionVariationPerProductItem,
+                    batchSize);
+                bulkInsertOrdersOrderItems(connection1, numberOfUsers,
+                    numberOfOrderItemsPerOrder, batchSize);
+            } catch (SQLException e) {
+                log.error("An error occurred during bulk insert:", e);
+                throw e;
+            }
+        } else {
+            try {
+                for (int i = 0; i < NUM_THREADS; i++) {
+                    Connection connection = dataSource.getConnection();
+                    connectionPool.add(connection);
+                }
+                
+                CompletableFuture<Void> userAndAddressFuture = CompletableFuture.runAsync(() ->
+                    bulkInsertUsersAndAddresses(connectionPool.get(0), numberOfUsers, batchSize));
+                
+                CompletableFuture<Void> categoryFuture = CompletableFuture.runAsync(() ->
+                    bulkInsertCategoriesOptionsAndVariations(connectionPool.get(1),
+                        numberOfLowCategoriesPerMidCategories,
+                        numberOfOptions, numberOfOptionVariations, batchSize));
+                
+                CompletableFuture<Void> productFuture = CompletableFuture.runAsync(() ->
+                    bulkInsertProductsAndRelated(connectionPool.get(2), numberOfProducts,
+                        numberOfProductItemsPerProduct,
+                        numberOfDiscountsPerProductItem,
+                        numberOfProductOptionVariationPerProductItem,
+                        batchSize));
+                
+                CompletableFuture<Void> orderFuture = CompletableFuture.runAsync(() ->
+                    bulkInsertOrdersOrderItems(connectionPool.get(3), numberOfUsers,
+                        numberOfOrderItemsPerOrder, batchSize));
 
-//        // Commit and close the connections
-//        for (Connection connection : connectionPool) {
-//            connection.commit();
-//            connection.close();
-//        }
+//             Wait for all the tasks to complete
+                CompletableFuture.allOf(userAndAddressFuture, categoryFuture, productFuture,
+                        orderFuture)
+                    .join();
+            } catch (SQLException e) {
+                log.error("An error occurred during bulk insert:", e);
+                throw e;
+            } finally {
+                // Close the connections in the finally block
+                for (Connection connection : connectionPool) {
+                    if (connection != null) {
+                        try {
+                            connection.close();
+                        } catch (SQLException e) {
+                            log.error("Error closing connection:", e);
+                        }
+                    }
+                }
+                connectionPool.clear();
+            }
+        }
     }
     
     /**
@@ -176,7 +250,7 @@ public class JdbcFakeDataGenerator {
 //        String sqlLogBin = "SET sql_log_bin = 0";
         String orderSql = "INSERT INTO `ORDER` (ORDER_ID, ORDER_DATE, ORDER_STATUS, MEMBER_ID) VALUES (?, ?, ?, ?)";
         String orderItemSql = "INSERT INTO ORDER_ITEM (ORDER_ITEM_ID, QUANTITY, PRICE, ORDER_ID, PRODUCT_OPTION_VARIATION_ID) VALUES (?, ?, ?, ?, ?)";
-        
+
 //        Connection connection = null;
 //        PreparedStatement sqlLogBinStatement = null;
         PreparedStatement orderStatement = null;
@@ -207,14 +281,14 @@ public class JdbcFakeDataGenerator {
 //                orderStatement.setString(3, "Confirmed");
 //                orderStatement.setLong(4,
 //                    orderId); // Member ID range same as orderId range, 1:1 match
-
+                
                 //case2) plane string
 //                orderStatement.setLong(1, orderId);
 //                orderStatement.setTimestamp(2, CURRENT_TIMESTAMP);
 //                orderStatement.setString(3, "Confirmed");
 //                orderStatement.setLong(4,
 //                    orderId); // Member ID range same as orderId range, 1:1 match
-    
+                
                 //case3) custom generated random value
                 orderStatement.setLong(1, orderId);
                 orderStatement.setObject(2, uniqueLocalDateTimeThreeMonthsPastToToday[i % NUMBER_OF_DATE_2MONTH_FROM_TODAY]);
@@ -235,7 +309,7 @@ public class JdbcFakeDataGenerator {
 //                    orderItemStatement.setLong(4, orderId);
 //                    orderItemStatement.setLong(5,
 //                        orderItemId);
-    
+                    
                     //case3) custom generated random value
                     orderItemStatement.setLong(1, orderItemId);
                     orderItemStatement.setInt(2,
@@ -341,7 +415,7 @@ public class JdbcFakeDataGenerator {
         String productItemSql = "INSERT INTO PRODUCT_ITEM (PRODUCT_ITEM_ID, QUANTITY, PRICE, PRODUCT_ID) VALUES (?, ?, ?, ?)";
         String discountSql = "INSERT INTO DISCOUNT (DISCOUNT_ID, DISCOUNT_TYPE, DISCOUNT_VALUE, START_DATE, END_DATE, PRODUCT_ITEM_ID) VALUES (?, ?, ?, ?, ?, ?)";
         String productOptionVariationSql = "INSERT INTO PRODUCT_OPTION_VARIATION (PRODUCT_OPTION_VARIATION_ID, OPTION_VARIATION_ID, PRODUCT_ITEM_ID) VALUES (?, ?, ?)";
-        
+
 //        Connection connection = null;
 //        PreparedStatement sqlLogBingStatement = null;
         PreparedStatement productStatement = null;
@@ -392,8 +466,8 @@ public class JdbcFakeDataGenerator {
 //                productStatement.setDouble(4, 5.3);
 //                productStatement.setInt(5, 1000);
 //                productStatement.setLong(6, i % 60 + 16); // low level Category ID range: 16 ~ 75
-    
-    
+                
+                
                 //case3) custom unique strings
                 productStatement.setLong(1, productId);
                 productStatement.setString(2, uniqueStrings[productId.intValue() % NUMBER_OF_UNIQUE_STRINGS]);
@@ -425,8 +499,8 @@ public class JdbcFakeDataGenerator {
 //                    productItemStatement.setInt(2, 30);
 //                    productItemStatement.setDouble(3, 10000);
 //                    productItemStatement.setLong(4, productId);
-    
-    
+                    
+                    
                     //case3) custom random value generated
                     productItemStatement.setLong(1, productItemId);
                     productItemStatement.setInt(2, 1000 % productItemId.intValue());
@@ -458,7 +532,7 @@ public class JdbcFakeDataGenerator {
 //                        discountStatement.setObject(5,
 //                            endTimeForDiscount); //END_TIME_FOR_DISCOUNT
 //                        discountStatement.setLong(6, productItemId);
-                        
+
 //                        //case2) plane text
 //                        discountStatement.setLong(1, discountId);
 //                        discountStatement.setString(2,
@@ -469,17 +543,17 @@ public class JdbcFakeDataGenerator {
 //                        discountStatement.setObject(5,
 //                            endTimeForDiscount); //END_TIME_FOR_DISCOUNT
 //                        discountStatement.setLong(6, productItemId);
-    
-    
+                        
+                        
                         //case3) custom random generated value
                         LocalDateTime randPastDate = uniqueLocalDateTimeThreeMonthsPastToToday[discountId.intValue() % 90];
-
+                        
                         discountStatement.setLong(1, discountId);
                         discountStatement.setString(2,
                             discountId % 2 == 1 ? "Percentage" : "Flat Rate");
                         discountStatement.setDouble(3, discountId % 2 == 1 ? uniqueDoublesOneToHundred[discountId.intValue() % 990] : uniqueDoublesHundredToHundredThousand[discountId.intValue() % NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND]);
                         discountStatement.setObject(4,randPastDate
-                            ); //START_TIME_FOR_DISCOUNT
+                        ); //START_TIME_FOR_DISCOUNT
                         discountStatement.setObject(5,
                             randPastDate.plusDays(90)); //END_TIME_FOR_DISCOUNT
                         discountStatement.setLong(6, productItemId);
@@ -497,10 +571,10 @@ public class JdbcFakeDataGenerator {
                     // Insert product option variations
                     for (int k = 1; k <= numberOfProductOptionVariationPerProductItem; k++) {
                         long optionVariationId = ThreadLocalRandom.current().nextLong(optionStartId, optionEndId + 1);
-                        
+
 //                        int minOptionVariationId = 1;
 //                        int maxOptionVariationId = 541;
-                        
+
 //                        int minProductItemId = 1;
 //                        int maxProductItemId = numberOfProducts * numberOfProductItemsPerProduct + 1;
                         
@@ -628,14 +702,14 @@ public class JdbcFakeDataGenerator {
         String authoritySql = "INSERT INTO AUTHORITY (AUTHORITY_ID, AUTHORITY) VALUES (?, ?)";
         String userSql = "INSERT INTO MEMBER (MEMBER_ID, USER_ID, EMAIL, NAME, ADDRESS_ID, PASSWORD, ROLE, ENABLED, CREATED_AT, UPDATED_AT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String userAuthoritySql = "INSERT INTO MEMBER_AUTHORITY (USER_AUTHORITY_ID, MEMBER_ID, AUTHORITY_ID) VALUES (?, ?, ?)";
-    
+
 //        Connection connection = null;
 //        PreparedStatement sqlLogBinStatement = null;
         PreparedStatement addressStatement = null;
         PreparedStatement authorityStatement = null;
         PreparedStatement userStatement = null;
         PreparedStatement userAuthorityStatement = null;
-    
+        
         try {
 //            connection = dataSource.getConnection();
 //            sqlLogBinStatement = connection.prepareStatement(sqlLogBin);
@@ -643,7 +717,7 @@ public class JdbcFakeDataGenerator {
             authorityStatement = connection.prepareStatement(authoritySql);
             userStatement = connection.prepareStatement(userSql);
             userAuthorityStatement = connection.prepareStatement(userAuthoritySql);
-    
+            
             connection.setAutoCommit(
                 false); //disable auto-commit to perform the bulk insert as a single transaction
 //            sqlLogBinStatement.execute(); //disable binary logs during bulk-insert
@@ -671,7 +745,7 @@ public class JdbcFakeDataGenerator {
 //                addressStatement.setString(4, "state");
 //                addressStatement.setString(5, "country");
 //                addressStatement.setString(6, "zipcode");
-    
+                
                 //case3) plane string
                 addressStatement.setLong(1, i);
                 addressStatement.setString(2, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
@@ -736,15 +810,15 @@ public class JdbcFakeDataGenerator {
 //                userStatement.setBoolean(8, true);
 //                userStatement.setTimestamp(9, CURRENT_TIMESTAMP);
 //                userStatement.setTimestamp(10, CURRENT_TIMESTAMP);
-    
-    
+                
+                
                 //case3) custom unique strings
                 userStatement.setLong(1, i);
                 userStatement.setString(2, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
                 userStatement.setString(3, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
                 userStatement.setString(4, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
                 userStatement.setLong(5, i);
-                userStatement.setString(6, passwordEncoder.encode(uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]));
+                userStatement.setString(6, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
                 userStatement.setString(7, "ROLE_USER");
                 userStatement.setBoolean(8, true);
                 userStatement.setTimestamp(9, CURRENT_TIMESTAMP);
@@ -874,20 +948,22 @@ public class JdbcFakeDataGenerator {
         String categorySql = "INSERT INTO CATEGORY (CATEGORY_ID, CATEGORY_CODE, NAME, PARENT_CATEGORY_ID, DEPTH) VALUES (?, ?, ?, ?, ?)";
         String optionSql = "INSERT INTO `OPTION` (OPTION_ID, VALUE, CATEGORY_ID) VALUES (?, ?, ?)";
         String optionVariationSql = "INSERT INTO OPTION_VARIATION (OPTION_VARIATION_ID, VALUE, OPTION_ID) VALUES (?, ?, ?)";
-    
+
 //        Connection connection = null;
 //        PreparedStatement sqlLogBinStatement = null;
-        PreparedStatement categoryStatement = null;
-        PreparedStatement optionStatement = null;
-        PreparedStatement optionVariationStatement = null;
-    
-        try {
+
+//        PreparedStatement categoryStatement = null;
+//        PreparedStatement optionStatement = null;
+//        PreparedStatement optionVariationStatement = null;
+
+//        try {
+        try
 //            connection = dataSource.getConnection();
 //            sqlLogBinStatement = connection.prepareStatement(sqlLogBin);
-            categoryStatement = connection.prepareStatement(categorySql);
-            optionStatement = connection.prepareStatement(optionSql);
-            optionVariationStatement = connection.prepareStatement(optionVariationSql);
-    
+            (PreparedStatement categoryStatement = connection.prepareStatement(categorySql);
+                PreparedStatement optionStatement = connection.prepareStatement(optionSql);
+                PreparedStatement optionVariationStatement = connection.prepareStatement(optionVariationSql);) {
+            
             Long categoryIndex = 1L;
             Long optionIndex = 1L;
             Long optionVariationIndex = 1L;
@@ -920,7 +996,7 @@ public class JdbcFakeDataGenerator {
 //                categoryStatement.setString(3, topCategoryInfo.getKey());
 //                categoryStatement.setLong(4, 0);
 //                categoryStatement.setInt(5, 0);
-    
+                
                 //case3) custom unique strings
                 categoryStatement.setLong(1, topCategoryInfo.getValue());
                 categoryStatement.setString(2, uniqueStrings[categoryIndex.intValue()]);
@@ -954,7 +1030,7 @@ public class JdbcFakeDataGenerator {
 //                categoryStatement.setString(3, "midCategoryName");
 //                categoryStatement.setLong(4, midCategory.getValue() / 4); //parent_id
 //                categoryStatement.setInt(5, 1);
-    
+                
                 //case3) plane strings
                 categoryStatement.setLong(1, midCategory.getValue());
                 categoryStatement.setString(2, uniqueStrings[categoryIndex.intValue()]);
@@ -985,8 +1061,8 @@ public class JdbcFakeDataGenerator {
 //                    categoryStatement.setString(3, "low_category_name");
 //                    categoryStatement.setLong(4, midCategory.getValue()); //parent_id
 //                    categoryStatement.setInt(5, 2);
-    
-    
+                    
+                    
                     //case3) custom unique strings
                     categoryStatement.setLong(1, categoryIndex++);
                     categoryStatement.setString(2, uniqueStrings[categoryIndex.intValue()]);
@@ -1013,7 +1089,7 @@ public class JdbcFakeDataGenerator {
 //                        optionStatement.setString(2, "OptionName");
 //                        optionStatement.setLong(3,
 //                            categoryIndex - 1); //category id
-
+                        
                         //case3) custom unique strings
                         optionStatement.setLong(1, optionIndex++);
                         optionStatement.setString(2, uniqueStrings[optionIndex.intValue()]);
@@ -1039,7 +1115,7 @@ public class JdbcFakeDataGenerator {
 //                            optionVariationStatement.setString(2, "OptionVariationName");
 //                            optionVariationStatement.setLong(3,
 //                                optionIndex - 1); //option id
-    
+                            
                             //case3) custom unique strings
                             optionVariationStatement.setLong(1, optionVariationIndex++);
                             optionVariationStatement.setString(2, uniqueStrings[optionVariationIndex.intValue()]);
@@ -1065,52 +1141,8 @@ public class JdbcFakeDataGenerator {
             connection.commit();
             
         } catch (SQLException e) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
-            log.error("An error occurred during bulk insert:");
-            e.printStackTrace();
-        } finally {
-            // Close the statements and connection in the finally block
-            if (optionVariationStatement != null) {
-                try {
-                    optionVariationStatement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (optionStatement != null) {
-                try {
-                    optionStatement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (categoryStatement != null) {
-                try {
-                    categoryStatement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-//            if (sqlLogBinStatement!= null) {
-//                try {
-//                    sqlLogBinStatement.close();
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
+            log.error("An error occurred during bulk insert:", e);
+            throw new RuntimeException("Bulk insert failed", e);
         }
     }
     

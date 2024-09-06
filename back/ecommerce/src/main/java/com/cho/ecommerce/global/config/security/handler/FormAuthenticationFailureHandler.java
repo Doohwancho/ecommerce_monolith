@@ -36,7 +36,7 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
         
         //없는 유저였다면, Exception을 던진다.
         if (user == null) {
-//            log.info("onAuthenticationFailure() failed! username: " + username);
+            log.info("onAuthenticationFailure() failed! username: " + username);
             throw new ResourceNotFoundException(
                 ErrorCode.RESOURCE_NOT_FOUND);
         }

@@ -73,6 +73,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                     .antMatchers("/h2-console/**").permitAll() //allow h2-console access for developer
                     .antMatchers("/actuator/health").permitAll() //allow h2-console access for developer
                     .antMatchers("/actuator/prometheus").permitAll() //allow prometheus for monitoring
+                    .antMatchers("/bulkinsert/**").permitAll() //allow prometheus for monitoring
                     .anyRequest().authenticated()
                 //Q. what is .anyRequest().authenticated()?
                 //any request not matched by the previous antMatchers should be authenticated.
@@ -118,18 +119,23 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
         CorsConfiguration configuration = new CorsConfiguration();
         
         configuration.setAllowedOrigins(
-            Arrays.asList("http://127.0.0.1:5173", "http://127.0.0.1", "http://localhost:5173",
-                "http://localhost:3000", "http://127.0.0.1:3000",
-                "http://localhost")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
+            Arrays.asList(
+                "http://127.0.0.1:5173",
+                "http://localhost:5173",
+                "http://127.0.0.1:3000",
+                "http://localhost:3000")); // Or use "*" for all origins (로컬 react-vite app의 포트가 5173이라 이 포트에서 오는 요청을 허용해준다.)
+        configuration.setAllowedMethods(
+            Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(
             Arrays.asList("Content-Type", "Authorization", "Accept", "X-Requested-With",
                 "Access-Control-Allow-Headers", "Origin", "Cache-Control", "Pragma", "Expires",
                 "X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto"));
-        configuration.setAllowedMethods(
-            Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowCredentials(
             true); // Important for cookies like JSESSIONID, authorization headers with HTTPS
         //configuration.setAllowCredentials(true); 를 하면, .setAllowedOrigins("*"); ,.setAllowedHeaders("*") 가 시스템적으로 안되게 막혀있다. 꼭 특정 url, type으로 명시해야 한다.
+        
+        configuration.setMaxAge(
+            3600L); //This sets the maximum age of the preflight request to 1 hour, which can help reduce the number of preflight requests.
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
