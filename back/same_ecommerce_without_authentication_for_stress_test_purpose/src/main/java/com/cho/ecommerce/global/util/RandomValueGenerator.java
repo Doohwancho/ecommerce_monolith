@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component;
 public class RandomValueGenerator {
     
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private final Integer NUMBER_OF_THREAD = 8;
-
+    
 //    public void main(String[] args) {
 //        long startTime = System.currentTimeMillis();
 //        int count = 1_000_000; // Number of strings to generate
@@ -32,14 +31,15 @@ public class RandomValueGenerator {
 //        System.out.println("Total execution time: " + duration + " ms");
 //    }
     
-    public String[] generateUniqueStrings(Integer count, Integer stringLength) {
+    public String[] generateUniqueStrings(Integer numberOfCores, Integer count, Integer stringLength) {
         String[] uniqueStrings = new String[count];
+        int numberOfThreads = numberOfCores;
         
-        Thread[] threads = new Thread[NUMBER_OF_THREAD];
-        for (int i = 0; i < NUMBER_OF_THREAD; i++) {
-            int startIndex = i * (count / NUMBER_OF_THREAD);
+        Thread[] threads = new Thread[numberOfThreads];
+        for (int i = 0; i < numberOfThreads; i++) {
+            int startIndex = i * (count / numberOfThreads);
             int endIndex =
-                (i == NUMBER_OF_THREAD - 1) ? count : (i + 1) * (count / NUMBER_OF_THREAD);
+                (i == numberOfThreads - 1) ? count : (i + 1) * (count / numberOfThreads);
             
             threads[i] = new Thread(() -> {
                 ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -54,7 +54,9 @@ public class RandomValueGenerator {
             try {
                 thread.join();
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 e.printStackTrace();
+                throw new RuntimeException("Thread interrupted while generating unique strings", e);
             }
         }
         

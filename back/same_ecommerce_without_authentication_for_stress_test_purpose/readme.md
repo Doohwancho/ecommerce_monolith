@@ -11,3 +11,4 @@ authentication 부분 제거한 백엔드 코드
 
 주의점:
 1. bulk-insert 후에 connection을 다 쓰면, .close() 하는 것 뿐만 아니라, connectionPool 변수로부터 제거해서 자원을 GC로 반환한다.
+2. bulk-insert시 만들어놓은 수만, 수십만개의 String, Float 객체들 자원해제해줄 필요가 있을 듯. 이 수십만개의 객체를 GC하느라 cpu usage가 높은 것으로 예상된다.

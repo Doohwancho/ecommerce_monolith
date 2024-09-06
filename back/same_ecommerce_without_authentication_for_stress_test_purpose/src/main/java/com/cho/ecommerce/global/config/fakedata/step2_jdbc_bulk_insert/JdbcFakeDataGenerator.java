@@ -74,7 +74,7 @@ public class JdbcFakeDataGenerator {
 //        long startTime2 = System.currentTimeMillis();
         
         // Generate unique strings
-        this.uniqueStrings = randomValueGenerator.generateUniqueStrings(NUMBER_OF_UNIQUE_STRINGS,
+        this.uniqueStrings = randomValueGenerator.generateUniqueStrings(NUM_CORES, NUMBER_OF_UNIQUE_STRINGS,
             LENGTH_OF_STRING_FOR_UNIQUE_STRINGS);
 //        this.uniqueIntegersOneToThirty = randomValueGenerator.generateRandomIntegers(
 //            NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY,
