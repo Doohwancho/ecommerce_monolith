@@ -25,8 +25,8 @@ spring:
       # 3. create: Hibernate will create the database schema afresh, destroying any existing data. This option is suitable for initial development or testing when starting with a clean slate
       # 4. validate: Hibernate will validate that the tables and columns in the database match the mappings in the entity classes. If there are discrepancies, the application will not start until they are resolved
     properties.hibernate:
-      format_sql: true
-      show-sql: true
+      format_sql: false
+      show-sql: false
       #      generate_statistics: true
       open-in-view: false # TODO - OIV 자세히 알아보기. log level: WARNING - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering.
       default_batch_fetch_size: 1000
