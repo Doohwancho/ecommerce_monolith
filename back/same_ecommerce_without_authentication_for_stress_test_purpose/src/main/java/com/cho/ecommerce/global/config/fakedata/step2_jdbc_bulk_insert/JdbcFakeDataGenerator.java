@@ -23,14 +23,14 @@ public class JdbcFakeDataGenerator {
     
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
     private static final int NUM_THREADS = NUM_CORES;
-    private static final Integer NUMBER_OF_UNIQUE_STRINGS = 80_000; //520_807
+    private Integer NUMBER_OF_UNIQUE_STRINGS = 80_000; //520_807
     private static final Integer LENGTH_OF_STRING_FOR_UNIQUE_STRINGS = 10;
     //    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY = 0;
 //    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THOUSAND = 0;
 //    private static final int NUMBER_OF_DOUBLE_ZERO_TO_FIVE = 50;
 //    private static final int NUMBER_OF_DOUBLE_ONE_TO_HUNDRED = 1_000;
-    private static final int NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
-    private static final int NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+    private int NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
+    private int NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
     private static final int NUMBER_OF_DATE_2MONTH_FROM_TODAY = 90;
     public static final int DAYS_FROM_TODAY = 90;
     private final Logger log = LoggerFactory.getLogger(JdbcFakeDataGenerator.class);
@@ -73,8 +73,29 @@ public class JdbcFakeDataGenerator {
         
 //        long startTime2 = System.currentTimeMillis();
         
+        int baseAmount = numberOfUsers;
+        // set size of fake string/float objects in proportion to bulk-insert size
+        if(baseAmount <= 1000) {
+            NUMBER_OF_UNIQUE_STRINGS = 542; //541 이하 부터는 bulk-insert 때 option_variation_index 값인가 그것보다 작아서 에러남
+            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 500;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
+        }
+        else if(baseAmount <= 10000) {
+            NUMBER_OF_UNIQUE_STRINGS = 10_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
+        } else if(baseAmount <= 100_000) {
+            NUMBER_OF_UNIQUE_STRINGS = 30_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+        } else {
+            NUMBER_OF_UNIQUE_STRINGS = 80_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+        }
+    
         // Generate unique strings
-        this.uniqueStrings = randomValueGenerator.generateUniqueStrings(NUM_CORES, NUMBER_OF_UNIQUE_STRINGS,
+        this.uniqueStrings = randomValueGenerator.generateUniqueStrings(NUMBER_OF_UNIQUE_STRINGS,
             LENGTH_OF_STRING_FOR_UNIQUE_STRINGS);
 //        this.uniqueIntegersOneToThirty = randomValueGenerator.generateRandomIntegers(
 //            NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY,

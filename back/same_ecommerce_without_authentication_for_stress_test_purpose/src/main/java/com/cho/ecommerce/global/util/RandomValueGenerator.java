@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 public class RandomValueGenerator {
     
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    
+    private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
+
 //    public void main(String[] args) {
 //        long startTime = System.currentTimeMillis();
 //        int count = 1_000_000; // Number of strings to generate
@@ -31,9 +32,9 @@ public class RandomValueGenerator {
 //        System.out.println("Total execution time: " + duration + " ms");
 //    }
     
-    public String[] generateUniqueStrings(Integer numberOfCores, Integer count, Integer stringLength) {
+    public String[] generateUniqueStrings(Integer count, Integer stringLength) {
         String[] uniqueStrings = new String[count];
-        int numberOfThreads = numberOfCores;
+        int numberOfThreads = NUM_CORES;
         
         Thread[] threads = new Thread[numberOfThreads];
         for (int i = 0; i < numberOfThreads; i++) {
