@@ -62,12 +62,12 @@
 
   <!-- production에서는 warn, error 로그만 파일에 저장한다. -->
   <springProfile name="prod">
-    <!--    <include resource="log/file-info-appender.xml"/>-->
+    <include resource="log/file-info-appender.xml"/>
     <include resource="log/file-warn-appender.xml"/>
     <include resource="log/file-error-appender.xml"/>
 
     <root level="WARN">
-      <!--      <appender-ref ref="FILE-INFO"/>-->
+      <appender-ref ref="FILE-INFO"/>
       <appender-ref ref="FILE-WARN"/>
       <appender-ref ref="FILE-ERROR"/> <!-- file-error-appender.xml에 FILE-ERROR이라고 이름 설정해둠 -->
     </root>

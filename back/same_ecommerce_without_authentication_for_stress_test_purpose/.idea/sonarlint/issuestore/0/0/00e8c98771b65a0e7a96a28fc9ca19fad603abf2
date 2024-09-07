@@ -1,0 +1,21 @@
+
+X	java:S125"<This block of commented-out lines of code should be removed.(¶¸Ú8ÖĞ•‹œ2
+]	java:S125"<This block of commented-out lines of code should be removed.(Î²¤ûÿÿÿÿ8 º•‹œ2
+V	java:S125%"<This block of commented-out lines of code should be removed.(®èØúÿÿÿÿ
+V	java:S125s"<This block of commented-out lines of code should be removed.(áÅ¢úÿÿÿÿ
+^	java:S125"<This block of commented-out lines of code should be removed.(®èØúÿÿÿÿ8Ö—•‹œ2
+‰
+java:S1128"lRemove this unused import 'com.cho.ecommerce.global.config.fakedata.step1_jpa_saveAll.JpaFakeDataGenerator'.(‹ˆõş8×Ğ•‹œ2
+
+java:S1128"rRemove this unused import 'com.cho.ecommerce.global.config.fakedata.step2_jdbc_bulk_insert.JdbcFakeDataGenerator'.(—Ì­ú8×Ğ•‹œ2
+g
+java:S1128"JRemove this unused import 'com.cho.ecommerce.global.util.DatabaseCleanup'.(ãúùæ8×Ğ•‹œ2
+\
+java:S1128"?Remove this unused import 'org.springframework.batch.core.Job'.(Âà»¥8¢º•‹œ2
+p
+java:S1128
+"NRemove this unused import 'org.springframework.batch.core.launch.JobLauncher'.(ãÍœøÿÿÿÿ8¢º•‹œ2
+d
+java:S1128"GRemove this unused import 'org.springframework.boot.CommandLineRunner'.(È—ÿÅ8×—•‹œ2
+e
+java:S1128"HRemove this unused import 'org.springframework.context.annotation.Bean'.(‚î‰Ş8×—•‹œ2
