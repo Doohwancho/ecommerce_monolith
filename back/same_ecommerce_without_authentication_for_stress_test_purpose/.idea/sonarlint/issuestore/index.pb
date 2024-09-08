@@ -27,8 +27,6 @@ Msrc/main/java/com/cho/ecommerce/domain/member/entity/UserAuthorityEntity.java,
 Nsrc/main/java/com/cho/ecommerce/domain/member/entity/InactiveMemberEntity.java,e/f/ef3ba10370e3569135b0d46f5ac10fc136ad2b33
 y
 Isrc/main/java/com/cho/ecommerce/domain/member/entity/AuthorityEntity.java,3/0/308895bdcaeb92d0dc026d81164879b4f5b03881
-w
-Gsrc/main/java/com/cho/ecommerce/domain/member/entity/AddressEntity.java,5/f/5f015aad38957e4016618b02947599cd1a9c88c8
 n
 >src/main/java/com/cho/ecommerce/domain/member/domain/User.java,8/8/88d9a208c60f823519a8f9dbc14d8a16bd0ed8a8
 q
@@ -55,8 +53,6 @@ Hsrc/main/java/com/cho/ecommerce/global/error/GlobalExceptionHandler.java,9/9/9
 Psrc/main/java/com/cho/ecommerce/domain/product/controller/ProductController.java,2/4/248ce408f85b159c35dab24737ae043cb1fd8ecd
 k
 ;src/main/java/com/cho/ecommerce/global/error/ErrorCode.java,0/9/09b777bd2451ddf2d312d5a17e3126acf7c4e73f
-<
-build.gradle,f/0/f07866736216be0ee2aba49e392191aeae700a35
 :
 
 Dockerfile,6/6/6651ddff6eb82c840ced7c1dddee15c6e1913dd4
@@ -64,7 +60,9 @@ Dockerfile,6/6/6651ddff6eb82c840ced7c1dddee15c6e1913dd4
 0src/main/java/com/cho/ecommerce/Application.java,0/0/00e8c98771b65a0e7a96a28fc9ca19fad603abf2
 u
 Esrc/main/java/com/cho/ecommerce/global/util/RandomValueGenerator.java,6/5/653ac4d5fa34ee5cdcb45a9c3a50b64cf801d972
-|
-Lsrc/main/java/com/cho/ecommerce/domain/bulk_insert/BulkInsertController.java,3/1/31f1c2f096c16f7f6322b50e506b7e19e1f08ced
 9
 	readme.md,2/7/275d783e298228506068436512433d343feb52aa
+|
+Lsrc/main/java/com/cho/ecommerce/domain/bulk_insert/BulkInsertController.java,3/1/31f1c2f096c16f7f6322b50e506b7e19e1f08ced
+w
+Gsrc/main/java/com/cho/ecommerce/domain/member/entity/AddressEntity.java,5/f/5f015aad38957e4016618b02947599cd1a9c88c8

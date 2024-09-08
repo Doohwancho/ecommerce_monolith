@@ -18,6 +18,8 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
       ddl_auto: create # none, create, update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl #@Table에서 지정한 설정대로 그대로 사용할 수 있다. RDS-aws가 테이블 이름을 소문자로 입력하는 문제를 수정한다.
     properties.hibernate:
       format_sql: true
       show-sql: true

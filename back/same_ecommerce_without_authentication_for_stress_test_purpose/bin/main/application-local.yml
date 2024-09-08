@@ -11,13 +11,13 @@ spring:
   datasource:
     platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ecommerce?serverTimezone=Asia/Seoul&rewriteBatchedStatements=true #for local development
+    url: jdbc:mysql://localhost:3306/ecommerce?serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
     username: root
     password:
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
-      ddl_auto: create
+      ddl_auto: create # none, create, update
     properties.hibernate:
       format_sql: true
       show-sql: true
@@ -32,12 +32,12 @@ spring:
     initialize-schema: always
     job:
       enabled: false #true로 하면 @Bean으로 등록된 cron batch steps들이 시작과 동시에 자동 실행되니까 false로 꺼둔다.
-  redis:
-    host: localhost #for local development
-    port: 6379
-  session:
-    store-type: redis
-    timeout: 60m
+#  redis:
+#    host: localhost #for local development
+#    port: 6379
+#  session:
+#    store-type: redis
+#    timeout: 60m
 
 logging.level:
   org.hibernate.SQL: DEBUG # DEBUG # warn
