@@ -62,3 +62,15 @@ Esrc/main/java/com/cho/ecommerce/global/util/RandomValueGenerator.java,6/5/653a
 	readme.md,2/7/275d783e298228506068436512433d343feb52aa
 |
 Lsrc/main/java/com/cho/ecommerce/domain/bulk_insert/BulkInsertController.java,3/1/31f1c2f096c16f7f6322b50e506b7e19e1f08ced
+<
+build.gradle,f/0/f07866736216be0ee2aba49e392191aeae700a35
+t
+Dsrc/main/java/com/cho/ecommerce/domain/member/entity/UserEntity.java,d/f/dfa5af620765d62000fad89a6cffa29c4976feac
+w
+Gsrc/main/java/com/cho/ecommerce/domain/member/entity/AddressEntity.java,5/f/5f015aad38957e4016618b02947599cd1a9c88c8
+t
+Dsrc/main/java/com/cho/ecommerce/domain/order/entity/OrderEntity.java,a/6/a6b0fd9de2074fb80ce61e8d0edfe8ea45f8cba4
+w
+Gsrc/main/java/com/cho/ecommerce/domain/product/entity/OptionEntity.java,a/9/a98d8cc0258b09630477e65ff512259967309c70
+˜
+hsrc/main/java/com/cho/ecommerce/global/config/fakedata/step2_jdbc_bulk_insert/JdbcFakeDataGenerator.java,a/9/a9ab4848c44c633e334eda38fbe891672c35e7e6
