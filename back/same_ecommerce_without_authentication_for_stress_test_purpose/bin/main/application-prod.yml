@@ -44,11 +44,11 @@ spring:
 #    timeout: 30m
 logging:
   level:
-    root: DEBUG #DEBUG, INFO, WARN
+    root: WARN #DEBUG, INFO, WARN
     org:
       hibernate:
-        SQL: DEBUG #DEBUG, WARN, ERROR
-        type: DEBUG #INFO, WARN, ERROR
+        SQL: ERROR #DEBUG, WARN, ERROR
+        type: ERROR #INFO, WARN, ERROR
       springframework:
         security: WARN
         web:

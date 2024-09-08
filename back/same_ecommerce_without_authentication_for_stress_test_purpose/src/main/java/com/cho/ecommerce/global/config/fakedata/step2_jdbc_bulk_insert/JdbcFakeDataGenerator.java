@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class JdbcFakeDataGenerator {
     
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
-    private static final int NUM_THREADS = NUM_CORES;
+    private static final int NUM_THREADS = Math.min(NUM_CORES, 4);
     private Integer NUMBER_OF_UNIQUE_STRINGS = 80_000; //520_807
     private static final Integer LENGTH_OF_STRING_FOR_UNIQUE_STRINGS = 10;
     //    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY = 0;
@@ -167,24 +167,59 @@ public class JdbcFakeDataGenerator {
                 throw e;
             }
         } else if(NUM_CORES == 2) {
-            try (
-                Connection connection1 = dataSource.getConnection();
-                Connection connection2 = dataSource.getConnection();
-            ) {
-                bulkInsertUsersAndAddresses(connection1, numberOfUsers, batchSize);
-                bulkInsertCategoriesOptionsAndVariations(connection2,
-                    numberOfLowCategoriesPerMidCategories,
-                    numberOfOptions, numberOfOptionVariations, batchSize);
-                bulkInsertProductsAndRelated(connection2, numberOfProducts,
-                    numberOfProductItemsPerProduct,
-                    numberOfDiscountsPerProductItem,
-                    numberOfProductOptionVariationPerProductItem,
-                    batchSize);
-                bulkInsertOrdersOrderItems(connection1, numberOfUsers,
-                    numberOfOrderItemsPerOrder, batchSize);
+            try {
+                for (int i = 0; i < NUM_THREADS; i++) {
+                    Connection connection = dataSource.getConnection();
+                    connectionPool.add(connection);
+                }
+                
+                CompletableFuture<Void> future1 = CompletableFuture.runAsync(() -> {
+                    try {
+                        bulkInsertUsersAndAddresses(connectionPool.get(0), numberOfUsers, batchSize);
+                        bulkInsertOrdersOrderItems(connectionPool.get(0), numberOfUsers, numberOfOrderItemsPerOrder, batchSize);
+                        connectionPool.get(0).commit();
+                    } catch (SQLException e) {
+                        log.error("Error in future1:", e);
+                        try {
+                            connectionPool.get(0).rollback();
+                        } catch (SQLException ex) {
+                            log.error("Error rolling back connection1:", ex);
+                        }
+                    }
+                });
+        
+                CompletableFuture<Void> future2 = CompletableFuture.runAsync(() -> {
+                    try {
+                        bulkInsertCategoriesOptionsAndVariations(connectionPool.get(1), numberOfLowCategoriesPerMidCategories,
+                            numberOfOptions, numberOfOptionVariations, batchSize);
+                        bulkInsertProductsAndRelated(connectionPool.get(1), numberOfProducts, numberOfProductItemsPerProduct,
+                            numberOfDiscountsPerProductItem, numberOfProductOptionVariationPerProductItem, batchSize);
+                        connectionPool.get(1).commit();
+                    } catch (SQLException e) {
+                        log.error("Error in future2:", e);
+                        try {
+                            connectionPool.get(1).rollback();
+                        } catch (SQLException ex) {
+                            log.error("Error rolling back connection2:", ex);
+                        }
+                    }
+                });
+                CompletableFuture.allOf(future1, future2).join();
             } catch (SQLException e) {
                 log.error("An error occurred during bulk insert:", e);
                 throw e;
+            } finally {
+                // Close the connections in the finally block
+                for (Connection connection : connectionPool) {
+                    if (connection != null) {
+                        try {
+                            connection.close();
+                        } catch (SQLException e) {
+                            log.error("Error closing connection:", e);
+                        }
+                    }
+                }
+                connectionPool.clear();
             }
         } else {
             try {
@@ -255,14 +290,14 @@ public class JdbcFakeDataGenerator {
         
 //        Connection connection = null;
 //        PreparedStatement sqlLogBinStatement = null;
-        PreparedStatement orderStatement = null;
-        PreparedStatement orderItemStatement = null;
+//        PreparedStatement orderStatement = null;
+//        PreparedStatement orderItemStatement = null;
         
-        try {
+        try (
 //            connection = dataSource.getConnection();
 //            sqlLogBinStatement = connection.prepareStatement(sqlLogBin);
-            orderStatement = connection.prepareStatement(orderSql);
-            orderItemStatement = connection.prepareStatement(orderItemSql);
+            PreparedStatement orderStatement = connection.prepareStatement(orderSql);
+            PreparedStatement orderItemStatement = connection.prepareStatement(orderItemSql);) {
             
             connection.setAutoCommit(false);
 //            sqlLogBinStatement.execute(); //disable binary-log during bulk-insert
@@ -358,7 +393,9 @@ public class JdbcFakeDataGenerator {
             }
             log.error("An error occurred during bulk insert:");
             e.printStackTrace();
-        } finally {
+        }
+        /*
+        finally {
             // Close the statements and connection in the finally block
             if (orderItemStatement != null) {
                 try {
@@ -389,6 +426,7 @@ public class JdbcFakeDataGenerator {
                 }
             }
         }
+        */
     }
     
     /**
@@ -420,19 +458,19 @@ public class JdbcFakeDataGenerator {
         
 //        Connection connection = null;
 //        PreparedStatement sqlLogBingStatement = null;
-        PreparedStatement productStatement = null;
-        PreparedStatement productItemStatement = null;
-        PreparedStatement discountStatement = null;
-        PreparedStatement productOptionVariationStatement = null;
+//        PreparedStatement productStatement = null;
+//        PreparedStatement productItemStatement = null;
+//        PreparedStatement discountStatement = null;
+//        PreparedStatement productOptionVariationStatement = null;
         
-        try {
+        try (
 //            connection = dataSource.getConnection();
 //            sqlLogBingStatement = connection.prepareStatement(sqlLogBin);
-            productStatement = connection.prepareStatement(productSql);
-            productItemStatement = connection.prepareStatement(productItemSql);
-            discountStatement = connection.prepareStatement(discountSql);
-            productOptionVariationStatement = connection.prepareStatement(
-                productOptionVariationSql);
+            PreparedStatement productStatement = connection.prepareStatement(productSql);
+            PreparedStatement productItemStatement = connection.prepareStatement(productItemSql);
+            PreparedStatement discountStatement = connection.prepareStatement(discountSql);
+            PreparedStatement productOptionVariationStatement = connection.prepareStatement(
+                productOptionVariationSql); ){
             
             connection.setAutoCommit(false);
 //            sqlLogBingStatement.execute(); //disable binary log during bulk-insert
@@ -640,7 +678,9 @@ public class JdbcFakeDataGenerator {
             }
             log.error("An error occurred during bulk insert:");
             e.printStackTrace();
-        } finally {
+        }
+       /*
+        finally {
             // Close the statements and connection in the finally block
             if (productOptionVariationStatement != null) {
                 try {
@@ -685,6 +725,7 @@ public class JdbcFakeDataGenerator {
                 }
             }
         }
+        */
     }
     
     /**
@@ -707,18 +748,18 @@ public class JdbcFakeDataGenerator {
     
 //        Connection connection = null;
 //        PreparedStatement sqlLogBinStatement = null;
-        PreparedStatement addressStatement = null;
-        PreparedStatement authorityStatement = null;
-        PreparedStatement userStatement = null;
-        PreparedStatement userAuthorityStatement = null;
+//        PreparedStatement addressStatement = null;
+//        PreparedStatement authorityStatement = null;
+//        PreparedStatement userStatement = null;
+//        PreparedStatement userAuthorityStatement = null;
     
-        try {
+        try (
 //            connection = dataSource.getConnection();
 //            sqlLogBinStatement = connection.prepareStatement(sqlLogBin);
-            addressStatement = connection.prepareStatement(addressSql);
-            authorityStatement = connection.prepareStatement(authoritySql);
-            userStatement = connection.prepareStatement(userSql);
-            userAuthorityStatement = connection.prepareStatement(userAuthoritySql);
+            PreparedStatement addressStatement = connection.prepareStatement(addressSql);
+            PreparedStatement authorityStatement = connection.prepareStatement(authoritySql);
+            PreparedStatement userStatement = connection.prepareStatement(userSql);
+            PreparedStatement userAuthorityStatement = connection.prepareStatement(userAuthoritySql);) {
     
             connection.setAutoCommit(
                 false); //disable auto-commit to perform the bulk insert as a single transaction
@@ -869,7 +910,9 @@ public class JdbcFakeDataGenerator {
             }
             log.error("An error occurred during bulk insert:");
             e.printStackTrace();
-        } finally {
+        }
+        /*
+        finally {
             // Close the statements and connection in the finally block
             if (userAuthorityStatement != null) {
                 try {
@@ -914,6 +957,7 @@ public class JdbcFakeDataGenerator {
                 }
             }
         }
+        */
     }
     
     /**
