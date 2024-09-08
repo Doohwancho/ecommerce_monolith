@@ -24,6 +24,8 @@ spring:
       # 2. update: Hibernate will update the schema to reflect the entity classes. If tables or columns are missing in the database, Hibernate will add them. However, it will not remove any tables or columns that are no longer used in the entity classes. This option can be convenient during development but may pose risks in a production environment due to unintended changes
       # 3. create: Hibernate will create the database schema afresh, destroying any existing data. This option is suitable for initial development or testing when starting with a clean slate
       # 4. validate: Hibernate will validate that the tables and columns in the database match the mappings in the entity classes. If there are discrepancies, the application will not start until they are resolved
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl #@Table에서 지정한 설정대로 그대로 사용할 수 있다. RDS-aws가 테이블 이름을 소문자로 입력하는 문제를 수정한다.
     properties.hibernate:
       format_sql: true
       show-sql: true
@@ -42,22 +44,18 @@ spring:
 #    timeout: 30m
 logging:
   level:
-    root: INFO #info, WARN
+    root: DEBUG #DEBUG, INFO, WARN
     org:
       hibernate:
-        SQL: INFO #info, ERROR
-        type: INFO #info, ERROR
+        SQL: DEBUG #DEBUG, WARN, ERROR
+        type: DEBUG #INFO, WARN, ERROR
       springframework:
         security: WARN
         web:
           filter:
             CommonsRequestLoggingFilter: WARN
 management:
-  endpoint:
-    metrics:
-      enabled: true
-    prometheus:
-      enabled: true
+  endpoints:
     web:
       exposure:
         include: '*'
@@ -65,4 +63,6 @@ management:
     export:
       prometheus:
         enabled: true
-
+  endpoint:
+    prometheus:
+      enabled: true

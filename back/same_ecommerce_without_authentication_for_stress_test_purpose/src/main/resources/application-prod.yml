@@ -44,22 +44,18 @@ spring:
 #    timeout: 30m
 logging:
   level:
-    root: INFO #info, WARN
+    root: DEBUG #DEBUG, INFO, WARN
     org:
       hibernate:
-        SQL: INFO #info, ERROR
-        type: INFO #info, ERROR
+        SQL: DEBUG #DEBUG, WARN, ERROR
+        type: DEBUG #INFO, WARN, ERROR
       springframework:
         security: WARN
         web:
           filter:
             CommonsRequestLoggingFilter: WARN
 management:
-  endpoint:
-    metrics:
-      enabled: true
-    prometheus:
-      enabled: true
+  endpoints:
     web:
       exposure:
         include: '*'
@@ -67,4 +63,6 @@ management:
     export:
       prometheus:
         enabled: true
-
+  endpoint:
+    prometheus:
+      enabled: true

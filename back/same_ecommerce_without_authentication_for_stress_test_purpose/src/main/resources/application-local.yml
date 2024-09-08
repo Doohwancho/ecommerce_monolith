@@ -47,3 +47,16 @@ logging.level:
   org.springframework.security: DEBUG
 
 
+management:
+  endpoints:
+    web:
+      exposure:
+#        include: health, prometheus
+        include: '*'
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoint:
+    prometheus:
+      enabled: true
