@@ -27,7 +27,7 @@ cd ecommerce/prometheus
 
 sudo chown -R ubuntu:ubuntu .
 
-sudo -u ubuntu sed -i "s/ECOMMERCE_APP_IP/${PRIVATE_IP_ADDRESS}/g" ./prometheus.yml
+sudo -u ubuntu sed -i "s/ECOMMERCE_APP_EC2_PRIVATE_IP/${PRIVATE_IP_ADDRESS}/g" ./prometheus_prod.yml
 
 cd /home/prometheus/ecommerce
 

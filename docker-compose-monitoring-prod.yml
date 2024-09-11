@@ -11,10 +11,10 @@ services:
     networks:
       - monitoring_network
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus_prod.yml:/etc/prometheus/prometheus_prod.yml
       - ./prometheus/prometheus_data:/prometheus-data
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--config.file=/etc/prometheus/prometheus_prod.yml'
     restart: on-failure
 
   grafana:
