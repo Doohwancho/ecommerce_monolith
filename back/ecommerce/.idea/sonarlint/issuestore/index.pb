@@ -48,8 +48,6 @@ w
 Gsrc/main/java/com/cho/ecommerce/domain/product/entity/OptionEntity.java,a/9/a98d8cc0258b09630477e65ff512259967309c70
 x
 Hsrc/main/java/com/cho/ecommerce/domain/order/entity/OrderItemEntity.java,f/c/fce212ea50e57c59a9456a51a776bfbdad1a3aa8
-t
-Dsrc/main/java/com/cho/ecommerce/domain/member/entity/UserEntity.java,d/f/dfa5af620765d62000fad89a6cffa29c4976feac
 }
 Msrc/main/java/com/cho/ecommerce/domain/member/entity/UserAuthorityEntity.java,e/f/efbf0c9a02db7585ad9a06b7f980cbd0461b2e8f
 ~

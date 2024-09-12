@@ -50,8 +50,6 @@ y
 Isrc/main/java/com/cho/ecommerce/domain/member/entity/AuthorityEntity.java,3/0/308895bdcaeb92d0dc026d81164879b4f5b03881
 }
 Msrc/main/java/com/cho/ecommerce/domain/member/entity/UserAuthorityEntity.java,e/f/efbf0c9a02db7585ad9a06b7f980cbd0461b2e8f
-t
-Dsrc/main/java/com/cho/ecommerce/domain/member/entity/UserEntity.java,d/f/dfa5af620765d62000fad89a6cffa29c4976feac
 x
 Hsrc/main/java/com/cho/ecommerce/domain/order/entity/OrderItemEntity.java,f/c/fce212ea50e57c59a9456a51a776bfbdad1a3aa8
 ~

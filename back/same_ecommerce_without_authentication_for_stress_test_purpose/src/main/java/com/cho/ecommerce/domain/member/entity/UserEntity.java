@@ -162,6 +162,12 @@ public class UserEntity { // UserDetailService를 구현한 클래스를 따로 
         }
         this.userAuthorities.add(userAuthorityEntity);
     }
+    public void setUserAuthorities(Set<UserAuthorityEntity> userAuthorities) {
+        if (this.userAuthorities == null) {
+            this.userAuthorities = new HashSet<>();
+        }
+        this.userAuthorities.addAll(userAuthorities);
+    }
     
     public String getUsername() {
         return this.username;

@@ -4,9 +4,13 @@ import com.cho.ecommerce.domain.member.entity.QAddressEntity;
 import com.cho.ecommerce.domain.member.entity.QAuthorityEntity;
 import com.cho.ecommerce.domain.member.entity.QUserAuthorityEntity;
 import com.cho.ecommerce.domain.member.entity.QUserEntity;
+import com.cho.ecommerce.domain.member.entity.UserAuthorityEntity;
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -24,13 +28,24 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         QUserAuthorityEntity userAuthority = QUserAuthorityEntity.userAuthorityEntity;
         QAuthorityEntity authority = QAuthorityEntity.authorityEntity;
         
+        // First, fetch the user with address
         UserEntity result = queryFactory
             .selectFrom(user)
             .leftJoin(user.address, address).fetchJoin()
-            .leftJoin(user.userAuthorities, userAuthority).fetchJoin()
-            .leftJoin(userAuthority.authorityEntity, authority).fetchJoin()
             .where(user.username.eq(username))
-            .fetchOne();
+            .fetchFirst(); //the query will return the first matching user, even if there are multiple users with the same username. This should resolve the NonUniqueResultException.
+        
+        if (result != null) {
+            // Then, fetch authorities separately
+            List<UserAuthorityEntity> authorities = queryFactory
+                .selectFrom(userAuthority)
+                .join(userAuthority.authorityEntity, authority).fetchJoin()
+                .where(userAuthority.userEntity.eq(result))
+                .fetch();
+    
+            // Set the fetched authorities
+            result.setUserAuthorities(new HashSet<>(authorities));
+        }
         
         return Optional.ofNullable(result);
     }
