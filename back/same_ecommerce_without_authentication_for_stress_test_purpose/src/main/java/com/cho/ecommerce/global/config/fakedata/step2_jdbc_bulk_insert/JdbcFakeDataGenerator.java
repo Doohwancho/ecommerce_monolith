@@ -883,7 +883,7 @@ public class JdbcFakeDataGenerator {
             for (int i = 1; i <= numberOfUsers; i++) {
                 userAuthorityStatement.setLong(1, i);
                 userAuthorityStatement.setLong(2, i);
-                userAuthorityStatement.setLong(3, i);
+                userAuthorityStatement.setLong(3, 2); //1: ROLE_ADMIN, 2: ROLE_USER
                 
                 // batch에 추가
                 userAuthorityStatement.addBatch();

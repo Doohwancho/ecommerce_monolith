@@ -19,8 +19,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JdbcFakeDataGenerator { 
- 
+public class JdbcFakeDataGenerator {
+    
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
     private static final int NUM_THREADS = Math.min(NUM_CORES, 4);
     private Integer NUMBER_OF_UNIQUE_STRINGS = 80_000; //520_807
@@ -60,21 +60,20 @@ public class JdbcFakeDataGenerator {
         int numberOfProductOptionVariationPerProductItem,
         int numberOfOrderItemsPerOrder,
         int batchSize) throws SQLException {
-        
+
 //        long startTime2 = System.currentTimeMillis();
         
         int baseAmount = numberOfUsers;
         // set size of fake string/float objects in proportion to bulk-insert size
-        if(baseAmount <= 1000) {
+        if (baseAmount <= 1000) {
             NUMBER_OF_UNIQUE_STRINGS = 542; //541 이하 부터는 bulk-insert 때 option_variation_index 값인가 그것보다 작아서 에러남
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 500;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
-        }
-        else if(baseAmount <= 10000) {
+        } else if (baseAmount <= 10000) {
             NUMBER_OF_UNIQUE_STRINGS = 10_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
-        } else if(baseAmount <= 100_000) {
+        } else if (baseAmount <= 100_000) {
             NUMBER_OF_UNIQUE_STRINGS = 30_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
@@ -83,7 +82,7 @@ public class JdbcFakeDataGenerator {
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
         }
-    
+        
         // Generate unique strings
         this.uniqueStrings = randomValueGenerator.generateUniqueStrings(NUMBER_OF_UNIQUE_STRINGS,
             LENGTH_OF_STRING_FOR_UNIQUE_STRINGS);
@@ -97,10 +96,10 @@ public class JdbcFakeDataGenerator {
             1000000);
         this.uniqueLocalDateTimeThreeMonthsPastToToday = randomValueGenerator.generateRandomDates(
             NUMBER_OF_DATE_2MONTH_FROM_TODAY, DAYS_FROM_TODAY);
-    
+        
         List<Connection> connectionPool = new ArrayList<>();
-    
-        if(NUM_CORES == 1) {
+        
+        if (NUM_CORES == 1) {
             try (Connection connection = dataSource.getConnection();) {
                 bulkInsertUsersAndAddresses(connection, numberOfUsers, batchSize);
                 bulkInsertCategoriesOptionsAndVariations(connection,
@@ -117,7 +116,7 @@ public class JdbcFakeDataGenerator {
                 log.error("An error occurred during bulk insert:", e);
                 throw e;
             }
-        } else if(NUM_CORES == 2) {
+        } else if (NUM_CORES == 2) {
             try {
                 for (int i = 0; i < NUM_THREADS; i++) {
                     Connection connection = dataSource.getConnection();
@@ -126,8 +125,10 @@ public class JdbcFakeDataGenerator {
                 
                 CompletableFuture<Void> future1 = CompletableFuture.runAsync(() -> {
                     try {
-                        bulkInsertUsersAndAddresses(connectionPool.get(0), numberOfUsers, batchSize);
-                        bulkInsertOrdersOrderItems(connectionPool.get(0), numberOfUsers, numberOfOrderItemsPerOrder, batchSize);
+                        bulkInsertUsersAndAddresses(connectionPool.get(0), numberOfUsers,
+                            batchSize);
+                        bulkInsertOrdersOrderItems(connectionPool.get(0), numberOfUsers,
+                            numberOfOrderItemsPerOrder, batchSize);
                         connectionPool.get(0).commit();
                     } catch (SQLException e) {
                         log.error("Error in future1:", e);
@@ -138,13 +139,16 @@ public class JdbcFakeDataGenerator {
                         }
                     }
                 });
-        
+                
                 CompletableFuture<Void> future2 = CompletableFuture.runAsync(() -> {
                     try {
-                        bulkInsertCategoriesOptionsAndVariations(connectionPool.get(1), numberOfLowCategoriesPerMidCategories,
+                        bulkInsertCategoriesOptionsAndVariations(connectionPool.get(1),
+                            numberOfLowCategoriesPerMidCategories,
                             numberOfOptions, numberOfOptionVariations, batchSize);
-                        bulkInsertProductsAndRelated(connectionPool.get(1), numberOfProducts, numberOfProductItemsPerProduct,
-                            numberOfDiscountsPerProductItem, numberOfProductOptionVariationPerProductItem, batchSize);
+                        bulkInsertProductsAndRelated(connectionPool.get(1), numberOfProducts,
+                            numberOfProductItemsPerProduct,
+                            numberOfDiscountsPerProductItem,
+                            numberOfProductOptionVariationPerProductItem, batchSize);
                         connectionPool.get(1).commit();
                     } catch (SQLException e) {
                         log.error("Error in future2:", e);
@@ -178,22 +182,22 @@ public class JdbcFakeDataGenerator {
                     Connection connection = dataSource.getConnection();
                     connectionPool.add(connection);
                 }
-        
+                
                 CompletableFuture<Void> userAndAddressFuture = CompletableFuture.runAsync(() ->
                     bulkInsertUsersAndAddresses(connectionPool.get(0), numberOfUsers, batchSize));
-        
+                
                 CompletableFuture<Void> categoryFuture = CompletableFuture.runAsync(() ->
                     bulkInsertCategoriesOptionsAndVariations(connectionPool.get(1),
                         numberOfLowCategoriesPerMidCategories,
                         numberOfOptions, numberOfOptionVariations, batchSize));
-        
+                
                 CompletableFuture<Void> productFuture = CompletableFuture.runAsync(() ->
                     bulkInsertProductsAndRelated(connectionPool.get(2), numberOfProducts,
                         numberOfProductItemsPerProduct,
                         numberOfDiscountsPerProductItem,
                         numberOfProductOptionVariationPerProductItem,
                         batchSize));
-        
+                
                 CompletableFuture<Void> orderFuture = CompletableFuture.runAsync(() ->
                     bulkInsertOrdersOrderItems(connectionPool.get(3), numberOfUsers,
                         numberOfOrderItemsPerOrder, batchSize));
@@ -716,7 +720,7 @@ public class JdbcFakeDataGenerator {
             for (int i = 1; i <= numberOfUsers; i++) {
                 userAuthorityStatement.setLong(1, i);
                 userAuthorityStatement.setLong(2, i);
-                userAuthorityStatement.setLong(3, i);
+                userAuthorityStatement.setLong(3, 2); //1: ROLE_ADMIN, 2: ROLE_USER
                 
                 // batch에 추가
                 userAuthorityStatement.addBatch();
