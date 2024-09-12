@@ -581,13 +581,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
-  /orders/statistics/sales:
+  /orders/statistics/sales/{numberOfMonthsForProductStatistics}:
     get:
       summary: Get order statistics
       description: Retrieve statistics for orders including category, product sales.
-      operationId: getMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths
+      operationId: getMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringLastNMonths
       tags:
         - Order
+      parameters:
+        - name: numberOfMonthsForProductStatistics
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: A list of order statistics

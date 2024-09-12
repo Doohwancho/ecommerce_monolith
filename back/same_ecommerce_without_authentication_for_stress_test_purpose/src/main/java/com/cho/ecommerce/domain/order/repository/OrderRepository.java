@@ -5,12 +5,35 @@ import com.cho.ecommerce.domain.order.entity.nativeQuery.OrderSalesStatisticsInt
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long>, OrderRepositoryCustom {
-
+    
+    /**
+     * 통계쿼리)
+     *
+     * 23년 6월 ~ 23년 12월 사이에
+     * 카테고리 별 상품 갯수
+     * 해당 카테고리의 상품들의 평균 평점
+     * 해당 카테고리의 총 상품 판매액
+     * 해당 카테고리에서 가장 많이 팔린 상품의 productId
+     * 해당 카테고리에서 가장 많이 팔린 상품의 이름
+     * 해당 카테고리에서 가장 많이 팔린 상품의 총 판매액
+     * ...을 쿼리한다.
+     *
+     * @return
+     * 1. categoryId
+     * 2. categoryName
+     * 3. numberOfProductsPerCategory
+     * 4. AverageRating
+     * 5. TotalSalesPerCategory
+     * 6. ProductId
+     * 7. TopSalesProduct
+     * 8. TopSalesOfProduct
+     */
     @Transactional
     @Query(
         value = "SELECT\n"
@@ -35,7 +58,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, Order
             + "\tJOIN product_option_variation pov ON pi.PRODUCT_ITEM_ID = pov.PRODUCT_ITEM_ID\n"
             + "\tJOIN ORDER_ITEM oi ON pov.PRODUCT_OPTION_VARIATION_ID = oi.PRODUCT_OPTION_VARIATION_ID\n"
             + "\tJOIN `ORDER` o USE INDEX (idx_order_date) ON oi.ORDER_ID = o.ORDER_ID\n"
-            + "\tWHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'\n"
+//            + "\tWHERE o.ORDER_DATE BETWEEN '2024-07-01' AND '2024-09-31'\n"
+            + "\tWHERE o.ORDER_DATE BETWEEN :startDate AND :endDate\n"
             + "\tGROUP BY c.CATEGORY_ID\n"
             + ") AS tmp1\n"
             + "JOIN\n"
@@ -63,7 +87,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, Order
             + "\t\t\tINNER JOIN PRODUCT_OPTION_VARIATION pov2 ON pi2.PRODUCT_ITEM_ID = pov2.PRODUCT_ITEM_ID\n"
             + "\t\t\tINNER JOIN ORDER_ITEM oi2 ON pov2.PRODUCT_OPTION_VARIATION_ID = oi2.PRODUCT_OPTION_VARIATION_ID\n"
             + "\t\t\tINNER JOIN `ORDER` o2 USE INDEX (idx_order_date) ON oi2.ORDER_ID = o2.ORDER_ID\n"
-            + "\t\t\tWHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'\n"
+//            + "\t\t\tWHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'\n"
+            + "\t\t\tWHERE o2.ORDER_DATE BETWEEN :startDate AND :endDate\n"
             + "\t\t\tGROUP BY c.CATEGORY_ID, p2.PRODUCT_ID\n"
             + "\t\t\t) as Sub\n"
             + "\t\tGROUP BY Sub.CategoryId\n"
@@ -81,7 +106,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, Order
             + "\t\tINNER JOIN PRODUCT_OPTION_VARIATION pov2 ON pi2.PRODUCT_ITEM_ID = pov2.PRODUCT_ITEM_ID\n"
             + "\t\tINNER JOIN ORDER_ITEM oi2 ON pov2.PRODUCT_OPTION_VARIATION_ID = oi2.PRODUCT_OPTION_VARIATION_ID\n"
             + "\t\tINNER JOIN `ORDER` o2 USE INDEX (idx_order_date) ON oi2.ORDER_ID = o2.ORDER_ID\n"
-            + "\t\tWHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'\n"
+//            + "\t\tWHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'\n"
+            + "\t\tWHERE o2.ORDER_DATE BETWEEN :startDate AND :endDate\n"
             + "\t\tGROUP BY c.CATEGORY_ID, p2.PRODUCT_ID\n"
             + "\t\t\t) b\n"
             + "\t\tON a.CategoryId = b.CategoryId AND a.TopSalesOfProduct = b.TopSalesOfProduct\n"
@@ -89,7 +115,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, Order
             + "\t) AS tmp2\n"
             + "ON tmp1.CategoryId = tmp2.CategoryId\n"
     , nativeQuery = true)
-    List<OrderSalesStatisticsInterface> findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths();
+    List<OrderSalesStatisticsInterface> findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringLastNMonths(@Param("startDate") String startDate,
+        @Param("endDate") String endDate);
     //TODO - native query에서 vectic(`)이 잘 작동하는데, 아래의 startDate, endDate를 동적으로 넣으려면 jpql을 써야하는데, jpql에서는 vectic이 안먹힘. 결국 Mysql의 vectic을 써야만 하는 테이블 명(ex. ORDER)을 바꿔야 할 듯 하다.
     //@Param("startDate") String startDate, @Param("endDate") String endDate
     

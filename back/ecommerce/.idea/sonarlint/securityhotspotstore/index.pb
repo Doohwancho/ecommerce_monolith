@@ -39,8 +39,6 @@ o
 s
 Csrc/test/java/com/cho/ecommerce/smoke_test/MySQLConnectionTest.java,e/c/ec621d769bc6d052ea7a7e2e71245876c4a5a132
 ’
-bsrc/main/java/com/cho/ecommerce/global/config/fakedata/step1_jpa_saveAll/JpaFakeDataGenerator.java,9/2/926b6e366071eb547665668aff97f7a547b09b9a
-’
 bsrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertCategoriesAndOptionsStepConfig.java,d/9/d9c5c441646332e2ceaa6e4dde72b44236d4b9bb
 ‰
 Ysrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeProductStepConfig.java,c/5/c5881b77fab88be2ee4b62d43a20fec60892ba1f
@@ -98,8 +96,6 @@ Usrc/main/java/com/cho/ecommerce/domain/product/repository/OptionRepositoryCusto
 Ssrc/main/java/com/cho/ecommerce/domain/product/repository/OptionRepositoryImpl.java,d/4/d46d8b4594a0f724307b8d3935e9e0c81beaf6ad
 €
 Psrc/main/java/com/cho/ecommerce/domain/product/repository/ProductRepository.java,3/d/3dc5f05b2b53745e38d71051ddceded05200ab5b
-v
-Fsrc/main/java/com/cho/ecommerce/domain/order/service/OrderService.java,8/d/8d93d0e4d8747f5eb1d09c8cffc40baa4ec9d02f
 }
 Msrc/main/java/com/cho/ecommerce/global/config/database/DatabaseConstants.java,7/3/731b7aea5437a3093bab227d66f2377c9001d98c
 {
@@ -124,8 +120,6 @@ Jsrc/main/java/com/cho/ecommerce/domain/product/service/ProductService.java,f/6
 Ksrc/main/java/com/cho/ecommerce/global/config/batch/config/BatchConfig.java,0/d/0d732788c24ab2d3171d20dfa650fb19264ebac4
 ˆ
 Xsrc/main/java/com/cho/ecommerce/global/config/batch/job/DataInitializationJobConfig.java,3/9/3993c1a7aed6e0121d44e92d03e27a3bf0c87280
-˜
-hsrc/main/java/com/cho/ecommerce/global/config/fakedata/step2_jdbc_bulk_insert/JdbcFakeDataGenerator.java,a/9/a9ab4848c44c633e334eda38fbe891672c35e7e6
 v
 Fsrc/main/java/com/cho/ecommerce/domain/member/service/UserService.java,f/3/f3efea16ca3c81e5ada571eb5e92e8ba2fd817dd
 |

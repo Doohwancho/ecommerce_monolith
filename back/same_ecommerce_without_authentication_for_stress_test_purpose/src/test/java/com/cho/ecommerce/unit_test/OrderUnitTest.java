@@ -70,7 +70,7 @@ public class OrderUnitTest {
         // Given
         
         // When
-        List<OrderSalesStatisticsInterface> results = orderRepository.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths();
+        List<OrderSalesStatisticsInterface> results = orderRepository.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringLastNMonths();
         
         //Then
         results.forEach(result -> {

@@ -28,7 +28,9 @@ import com.cho.ecommerce.global.error.exception.business.OrderItemsNotIncluded;
 import com.cho.ecommerce.global.error.exception.business.OrderRequestByInvalidUser;
 import com.cho.ecommerce.global.error.exception.business.RequestedOrderQuantityExceedsCurrentStock;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -207,8 +209,20 @@ public class OrderService {
         orderRepository.delete(order);
     }
     
-    public List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
-        List<OrderSalesStatisticsInterface> queryResults = orderRepository.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths();
+    public List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringLastNMonths(Long numberOfMonthsForProductStatistics) {
+        //step1) 현재 날짜와 N-개월 전 날짜 구하기
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusMonths(numberOfMonthsForProductStatistics);
+    
+        //step2) 날짜를 String 형식으로 포맷 (yyyy-MM-dd)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedStartDate = startDate.format(formatter);
+        String formattedEndDate = endDate.format(formatter);
+    
+        //step3) run query
+        List<OrderSalesStatisticsInterface> queryResults = orderRepository.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringLastNMonths(formattedStartDate, formattedEndDate);
+        
+        //step4) query한걸 response DTO에 정제하여 반환하기
         List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> list = new ArrayList<>();
         
         queryResults.forEach(result -> {

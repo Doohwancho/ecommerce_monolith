@@ -37,8 +37,6 @@ Fsrc/main/java/com/cho/ecommerce/domain/member/adapter/UserAdapter.java,1/7/173
 bsrc/main/java/com/cho/ecommerce/global/config/fakedata/step1_jpa_saveAll/JpaFakeDataGenerator.java,9/2/926b6e366071eb547665668aff97f7a547b09b9a
 t
 Dsrc/main/java/com/cho/ecommerce/domain/member/mapper/UserMapper.java,0/8/08835b0fb2c0096fc52f2296125f27f770fd41e4
-|
-Lsrc/main/java/com/cho/ecommerce/domain/order/controller/OrderController.java,c/e/ce15918988ef01575ce93fadba12deadd216e1ad
 ƒ
 Ssrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertAdminStepConfig.java,e/f/eff8ffdf399aad4b6630e184b2f24f192183e7bd
 ‡
@@ -47,8 +45,6 @@ Wsrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepCon
 Vsrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertTestUserStepConfig.java,c/7/c7ca2a37a83592c0b36fd14cb2907072510e2e3b
 x
 Hsrc/main/java/com/cho/ecommerce/global/error/GlobalExceptionHandler.java,9/9/99c524460c5f8e313e11231088cccd85b34134e9
-€
-Psrc/main/java/com/cho/ecommerce/domain/product/controller/ProductController.java,2/4/248ce408f85b159c35dab24737ae043cb1fd8ecd
 k
 ;src/main/java/com/cho/ecommerce/global/error/ErrorCode.java,0/9/09b777bd2451ddf2d312d5a17e3126acf7c4e73f
 :
@@ -72,5 +68,3 @@ t
 Dsrc/main/java/com/cho/ecommerce/domain/order/entity/OrderEntity.java,a/6/a6b0fd9de2074fb80ce61e8d0edfe8ea45f8cba4
 w
 Gsrc/main/java/com/cho/ecommerce/domain/product/entity/OptionEntity.java,a/9/a98d8cc0258b09630477e65ff512259967309c70
-˜
-hsrc/main/java/com/cho/ecommerce/global/config/fakedata/step2_jdbc_bulk_insert/JdbcFakeDataGenerator.java,a/9/a9ab4848c44c633e334eda38fbe891672c35e7e6

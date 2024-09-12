@@ -8,10 +8,8 @@ import com.cho.ecommerce.domain.order.service.OrderService;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,9 +48,10 @@ public class OrderController implements OrderApi {
     }
     
     @Override
-    public ResponseEntity<String> createOrder(@Valid List<com.cho.ecommerce.api.domain.OrderRequestDTO> orderRequest) {
+    public ResponseEntity<String> createOrder(
+        @Valid List<com.cho.ecommerce.api.domain.OrderRequestDTO> orderRequest) {
         OrderEntity order = orderService.createOrder(orderRequest);
-    
+        
         if (order.getOrderId() != null) {
             return ResponseEntity.status(201).body("Ordered successfully");
         } else {
@@ -74,13 +73,22 @@ public class OrderController implements OrderApi {
     
     @Override
 //    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO>> getMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths() {
-        List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> orderSalesStatisticsResponseDTOS = orderService.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringSixMonths(); //TODO - Q. 다른 곳에서 재사용 안할 것 같은데, adaptor로 굳이 뺄 필요가 있을까?
+    public ResponseEntity<List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO>> getMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringLastNMonths(
+        Long numberOfMonthsForProductStatistics) {
+        //step1) check whether given paramter is more than 3months(b/c fakedata only supports data within last 3 months)
+        numberOfMonthsForProductStatistics = Math.min(numberOfMonthsForProductStatistics, 3);
         
-        if(orderSalesStatisticsResponseDTOS.isEmpty()) {
+        //step2) 통계쿼리 호출
+        List<com.cho.ecommerce.api.domain.OrderSalesStatisticsResponseDTO> orderSalesStatisticsResponseDTOS = orderService.findMaxSalesProductAndAverageRatingAndTotalSalesPerCategoryDuringLastNMonths(
+            numberOfMonthsForProductStatistics); //TODO - Q. 다른 곳에서 재사용 안할 것 같은데, adaptor로 굳이 뺄 필요가 있을까?
+        
+        //step3) validation 처리
+        //TODO - 만약 요청한게 3보다 큰 숫자면, http response에 이를 알려야 한다.
+        if (orderSalesStatisticsResponseDTOS.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         
+        //step4) return http response
         return ResponseEntity.ok(orderSalesStatisticsResponseDTOS);
     }
 }
