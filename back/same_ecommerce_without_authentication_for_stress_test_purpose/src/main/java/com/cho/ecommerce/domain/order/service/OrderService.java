@@ -19,6 +19,7 @@ import com.cho.ecommerce.domain.product.entity.DiscountEntity;
 import com.cho.ecommerce.domain.product.entity.OptionVariationEntity;
 import com.cho.ecommerce.domain.product.entity.ProductItemEntity;
 import com.cho.ecommerce.domain.product.entity.ProductOptionVariationEntity;
+import com.cho.ecommerce.domain.product.repository.ProductOptionVariationRepository;
 import com.cho.ecommerce.domain.product.service.DiscountService;
 import com.cho.ecommerce.domain.product.service.OptionService;
 import com.cho.ecommerce.domain.product.service.ProductItemService;
@@ -57,6 +58,8 @@ public class OrderService {
     private OptionService optionService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ProductOptionVariationRepository productOptionVariationRepository;
     @Autowired
     private ProductItemService productItemService;
     @Autowired
@@ -151,12 +154,7 @@ public class OrderService {
                 new ArrayList<>(Collections.singletonList(discount)));
             
             //3-6. create product_option_variation
-            ProductOptionVariationEntity productOptionVariation = new ProductOptionVariationEntity();
-            
-            OptionVariationEntity optionVariation = optionService.getOptionVariationById(
-                orderRequest.getOptionVariationId());
-            productOptionVariation.setOptionVariation(optionVariation);
-            productOptionVariation.setProductItem(productItem);
+            ProductOptionVariationEntity productOptionVariation = productOptionVariationRepository.findById(orderRequest.getProductOptionVariationId()).orElseThrow(() -> new ResourceNotFoundException("해당 productOptionVariation id에 해당하는 엔티티가 존재하지 않습니다."));
             
             //3-7. create orderItems
             OrderItemEntity orderItemEntity = new OrderItemEntity();
