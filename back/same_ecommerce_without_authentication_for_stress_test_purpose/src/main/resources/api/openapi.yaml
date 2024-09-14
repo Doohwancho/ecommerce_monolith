@@ -450,6 +450,33 @@ paths:
                 $ref: '#/components/schemas/CategoryOptionsOptionVariationsResponseDTO'
         '404':
           description: Category not found
+  /discounts:
+    get:
+      summary: Get all discounts info
+      operationId: getAllDiscounts
+      tags:
+        - Product
+      responses:
+        '200':
+          description: An array of discountInfo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DiscountDTO'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        default: #ensures any unexpected errors are handled in a consistent format, providing a clear and standardized method
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
   /orders:
     get:
       summary: Get all orders
@@ -1146,7 +1173,8 @@ components:
         - productItemId
         - order_quantity
         - price
-        - optionVariationId
+#        - optionVariationId
+        - productOptionVariationId
       properties:
         memberId:
           type: integer
@@ -1180,14 +1208,17 @@ components:
           type: string
           format: date-time #date == LocalDate in java, date-time == OffsetDateTime in java
           description: End date of the discount
-        optionId:
-          type: integer
-          format: int64
-        optionVariationId:
-          type: integer
-          format: int64
-        optionVariationName:
-          type: string
+        productOptionVariationId:
+            type: integer
+            format: int64
+#        optionId:
+#          type: integer
+#          format: int64
+#        optionVariationId:
+#          type: integer
+#          format: int64
+#        optionVariationName:
+#          type: string
     OrderItemDetailsResponseDTO:
       type: object
       required:

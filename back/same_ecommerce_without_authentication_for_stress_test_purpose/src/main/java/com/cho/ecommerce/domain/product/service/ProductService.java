@@ -11,6 +11,7 @@ import com.cho.ecommerce.domain.product.entity.ProductOptionVariationEntity;
 import com.cho.ecommerce.domain.product.mapper.DiscountMapper;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
+import com.cho.ecommerce.domain.product.repository.ProductOptionVariationRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepositoryCustomImpl;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;

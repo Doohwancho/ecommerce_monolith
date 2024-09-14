@@ -9,6 +9,7 @@ import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
 import com.cho.ecommerce.domain.product.repository.OptionRepository;
 import com.cho.ecommerce.domain.product.repository.OptionVariationRepository;
+import com.cho.ecommerce.domain.product.service.DiscountService;
 import com.cho.ecommerce.domain.product.service.ProductService;
 import java.util.List;
 import javax.validation.Valid;
@@ -34,6 +35,8 @@ public class ProductController implements ProductApi {
     private OptionRepository optionRepository;
     @Autowired
     private OptionVariationRepository optionVariationRepositoryRepository;
+    @Autowired
+    private DiscountService discountService;
     
     
     @Override
@@ -132,5 +135,11 @@ public class ProductController implements ProductApi {
             categoryId);
         
         return ResponseEntity.ok(result);
+    }
+    
+    @Override
+    public ResponseEntity<List<com.cho.ecommerce.api.domain.DiscountDTO>> getAllDiscounts() {
+        List<com.cho.ecommerce.api.domain.DiscountDTO> response = discountService.getAllDiscounts();
+        return ResponseEntity.ok(response);
     }
 }
