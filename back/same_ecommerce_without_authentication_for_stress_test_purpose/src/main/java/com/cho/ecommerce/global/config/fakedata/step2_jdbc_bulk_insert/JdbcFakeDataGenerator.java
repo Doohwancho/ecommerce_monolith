@@ -350,7 +350,7 @@ public class JdbcFakeDataGenerator {
                     //case3) custom generated random value
                     orderItemStatement.setLong(1, orderItemId);
                     orderItemStatement.setInt(2,
-                        orderItemId.intValue() % 100); // amount of productItem ordered, warn! need to make sure it's smaller than productItem's quantity
+                        orderItemId.intValue() % 1000); // amount of productItem ordered, warn! need to make sure it's smaller than productItem's quantity
                     orderItemStatement.setDouble(3, uniqueDoublesHundredToMillion[orderItemId.intValue() % NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION]); // price of productItem * discounts
                     orderItemStatement.setLong(4, orderId);
                     orderItemStatement.setLong(5,

@@ -1172,8 +1172,6 @@ components:
         - memberId
         - productItemId
         - order_quantity
-        - price
-#        - optionVariationId
         - productOptionVariationId
       properties:
         memberId:
@@ -1186,10 +1184,6 @@ components:
           type: integer
           minimum: 1
         #          maximum: 100 # Maximum order quantity, adjust as needed
-        price:
-          type: integer
-          format: double
-          minimum: 0.01
         discountId:
           type: integer
           format: int64
@@ -1211,14 +1205,6 @@ components:
         productOptionVariationId:
             type: integer
             format: int64
-#        optionId:
-#          type: integer
-#          format: int64
-#        optionVariationId:
-#          type: integer
-#          format: int64
-#        optionVariationName:
-#          type: string
     OrderItemDetailsResponseDTO:
       type: object
       required:
