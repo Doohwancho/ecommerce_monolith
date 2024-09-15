@@ -55,7 +55,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, Order
             + "\tFROM CATEGORY c\n"
             + "\tJOIN PRODUCT p ON c.CATEGORY_ID = p.CATEGORY_ID\n"
             + "\tJOIN PRODUCT_ITEM pi ON p.PRODUCT_ID = pi.PRODUCT_ID\n"
-            + "\tJOIN product_option_variation pov ON pi.PRODUCT_ITEM_ID = pov.PRODUCT_ITEM_ID\n"
+            + "\tJOIN PRODUCT_OPTION_VARIATION pov ON pi.PRODUCT_ITEM_ID = pov.PRODUCT_ITEM_ID\n"
             + "\tJOIN ORDER_ITEM oi ON pov.PRODUCT_OPTION_VARIATION_ID = oi.PRODUCT_OPTION_VARIATION_ID\n"
             + "\tJOIN `ORDER` o USE INDEX (idx_order_date) ON oi.ORDER_ID = o.ORDER_ID\n"
 //            + "\tWHERE o.ORDER_DATE BETWEEN '2024-07-01' AND '2024-09-31'\n"
