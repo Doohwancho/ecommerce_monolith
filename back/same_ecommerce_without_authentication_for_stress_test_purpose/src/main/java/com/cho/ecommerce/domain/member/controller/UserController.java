@@ -3,7 +3,9 @@ package com.cho.ecommerce.domain.member.controller;
 import com.cho.ecommerce.api.UserApi;
 import com.cho.ecommerce.api.domain.RegisterResponseDTO;
 import com.cho.ecommerce.domain.member.adapter.UserAdapter;
+import com.cho.ecommerce.domain.member.service.UserService;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController implements UserApi {
     
     private final UserAdapter userAdapter;
+    private final UserService userService;
 //    private final AuthenticationManager authenticationManager;
     
     
@@ -73,4 +76,10 @@ public class UserController implements UserApi {
         return new ResponseEntity<>(userDetailsResponseDTOByUsername, HttpStatus.OK);
     }
     
+    @Override
+    public ResponseEntity<List<com.cho.ecommerce.api.domain.UserResponseForTestDTO>> getAllUsers() {
+        List<com.cho.ecommerce.api.domain.UserResponseForTestDTO> response = userService.getAllUsersForTest();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

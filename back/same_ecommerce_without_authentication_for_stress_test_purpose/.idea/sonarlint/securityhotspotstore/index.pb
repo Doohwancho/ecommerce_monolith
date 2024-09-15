@@ -56,12 +56,8 @@ Zsrc/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCust
 Vsrc/main/java/com/cho/ecommerce/domain/order/repository/OrderRepositoryCustomImpl.java,5/9/59a527afa3db6a14980ed9d1c7f56f5af1df8251
 |
 Lsrc/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java,7/a/7a4d82f7e32d9f3d697559bcf1c02ccc2e7df1cf
-|
-Lsrc/main/java/com/cho/ecommerce/domain/member/controller/UserController.java,6/1/61dc38c27b249d7650312f3624128ea16f45da3a
 v
 Fsrc/main/java/com/cho/ecommerce/domain/member/adapter/UserAdapter.java,1/7/173b1d2496c65dac2c302d41a7443b7289fd4698
-v
-Fsrc/main/java/com/cho/ecommerce/domain/member/service/UserService.java,f/3/f3efea16ca3c81e5ada571eb5e92e8ba2fd817dd
 ‚
 Rsrc/main/java/com/cho/ecommerce/domain/member/repository/UserRepositoryCustom.java,f/a/fac779799147a71335b372706848e4ac4cf01fb3
 }

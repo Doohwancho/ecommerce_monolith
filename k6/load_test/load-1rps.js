@@ -2,18 +2,15 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 
 // how to run?
-//docker run --rm -i grafana/k6 run - <./k6/load_test/load-1000rps.js
-
+//docker run --rm -i grafana/k6 run - <./k6/load_test/load-1rps.js
 
 export let options = {
     noConnectionReuse: false,
     stages: [
-        { duration: '5m', target: 1000}, //simulate ramp-up of traffic from 1 to 1000 users over 5 minutes
-        { duration: '10m', target: 1000}, // stay at 1000 users for 10 minutes
-        { duration: '5m', target: 0},  // ramp-down to 0 users
+        { duration: '1m', target: 1}, 
     ],
     thresholds: {
-        http_req_duration: ['p(99)<500'], // 99% of requests must complete below 500ms
+        http_req_duration: ['p(99)<150'], // 99% of requests must complete below 150ms
     }
 }
 
@@ -28,7 +25,6 @@ export default function () {
 
     // Send a single HTTP request to the randomly selected category ID
     http.get(`${API_BASE_URL}${randomCategoryId}`);
-    // http.get(`${API_BASE_URL}`);
     
     sleep(1);
 }

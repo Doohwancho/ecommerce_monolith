@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.member.service;
 
+import com.cho.ecommerce.api.domain.UserResponseForTestDTO;
 import com.cho.ecommerce.domain.member.domain.User;
 import com.cho.ecommerce.domain.member.entity.AuthorityEntity;
 import com.cho.ecommerce.domain.member.entity.UserAuthorityEntity;
@@ -13,6 +14,8 @@ import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundExcepti
 import com.cho.ecommerce.global.error.exception.member.InvalidatingSessionForUser;
 import com.cho.ecommerce.global.error.exception.member.LockedAccountUserFailedToAuthenticate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
@@ -177,5 +180,20 @@ public class UserService {
         invalidateUserSessions(user.getUsername()); // Invalidate session
         
         userRepository.save(user);
+    }
+    
+    public List<UserResponseForTestDTO> getAllUsersForTest() {
+        List<UserEntity> users = userRepository.findAll();
+        List<com.cho.ecommerce.api.domain.UserResponseForTestDTO> responseDTO = new ArrayList<>();
+        
+        for(UserEntity user : users) {
+            com.cho.ecommerce.api.domain.UserResponseForTestDTO dto = new UserResponseForTestDTO();
+            dto.setMemberId(user.getMemberId());
+            dto.setName(user.getName());
+            
+            responseDTO.add(dto);
+        }
+        
+        return responseDTO;
     }
 }

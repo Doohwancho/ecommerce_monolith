@@ -350,7 +350,7 @@ public class JdbcFakeDataGenerator {
                     //case3) custom generated random value
                     orderItemStatement.setLong(1, orderItemId);
                     orderItemStatement.setInt(2,
-                        orderItemId.intValue() % 1000); // amount of productItem ordered, warn! need to make sure it's smaller than productItem's quantity
+                        orderItemId.intValue() % 10 + 1); // amount of productItem ordered, warn! need to make sure it's smaller than productItem's quantity, and it should be larger than 0
                     orderItemStatement.setDouble(3, uniqueDoublesHundredToMillion[orderItemId.intValue() % NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION]); // price of productItem * discounts
                     orderItemStatement.setLong(4, orderId);
                     orderItemStatement.setLong(5,
@@ -543,7 +543,7 @@ public class JdbcFakeDataGenerator {
     
                     //case3) custom random value generated
                     productItemStatement.setLong(1, productItemId);
-                    productItemStatement.setInt(2, 1000 % productItemId.intValue());
+                    productItemStatement.setInt(2, 10000); //제품 수량, quantity는 넉넉하게 10000개로 설정한다.
                     productItemStatement.setDouble(3, uniqueDoublesHundredToMillion[productItemId.intValue() % NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION]);
                     productItemStatement.setLong(4, productId);
                     

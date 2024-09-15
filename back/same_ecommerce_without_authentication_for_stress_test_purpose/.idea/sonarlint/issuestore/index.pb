@@ -63,8 +63,6 @@ bsrc/main/java/com/cho/ecommerce/global/config/fakedata/step1_jpa_saveAll/JpaFak
 ‚
 Rsrc/main/java/com/cho/ecommerce/domain/member/repository/UserRepositoryCustom.java,f/a/fac779799147a71335b372706848e4ac4cf01fb3
 v
-Fsrc/main/java/com/cho/ecommerce/domain/member/service/UserService.java,f/3/f3efea16ca3c81e5ada571eb5e92e8ba2fd817dd
-v
 Fsrc/main/java/com/cho/ecommerce/domain/member/adapter/UserAdapter.java,1/7/173b1d2496c65dac2c302d41a7443b7289fd4698
 w
 Gsrc/main/java/com/cho/ecommerce/domain/member/entity/AddressEntity.java,5/f/5f015aad38957e4016618b02947599cd1a9c88c8
@@ -74,5 +72,3 @@ t
 Dsrc/main/java/com/cho/ecommerce/domain/member/entity/UserEntity.java,d/f/dfa5af620765d62000fad89a6cffa29c4976feac
 †
 Vsrc/main/java/com/cho/ecommerce/domain/member/repository/UserRepositoryCustomImpl.java,2/9/2980176bd216868c24aca0daf9f8029dd6c3006f
-|
-Lsrc/main/java/com/cho/ecommerce/domain/member/controller/UserController.java,6/1/61dc38c27b249d7650312f3624128ea16f45da3a

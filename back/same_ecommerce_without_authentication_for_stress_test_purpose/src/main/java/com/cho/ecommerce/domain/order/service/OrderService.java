@@ -37,11 +37,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import javax.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     
     @Autowired
     private OrderRepository orderRepository;
@@ -143,6 +146,9 @@ public class OrderService {
                 orderRequest.getProductItemId());
     
             if (orderRequest.getOrderQuantity() > productItem.getQuantity()) {
+                log.error("그래서 quantity가 얼마나 차이나는데?!");
+                log.error("orderRequest's quantity: "+orderRequest.getOrderQuantity());
+                log.error("productItem's quantity: "+productItem.getQuantity());
                 throw new RequestedOrderQuantityExceedsCurrentStock("요청하신 주문 갯수가 현재 재고수량을 초과했습니다.");
             }
             

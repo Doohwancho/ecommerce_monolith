@@ -126,6 +126,34 @@ paths:
                   message:
                     type: string
                     example: "An unexpected error occurred."
+  /users:
+    get:
+      tags:
+        - User
+      summary: Get all user information
+      description: Returns all users
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: all User data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponseForTestDTO'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
   /users/{username}:
     get:
       tags:
@@ -750,6 +778,18 @@ components:
         message:
           type: string
           example: "Login successful"
+    UserResponseForTestDTO:
+      type: object
+      required:
+        - memberId
+        - username
+      properties:
+        memberId:
+          type: integer
+          format: int64
+        name:
+          type: string
+          description: Username of the user
     UserDetailsResponseDTO:
       type: object
       required:
@@ -1171,7 +1211,7 @@ components:
       required:
         - memberId
         - productItemId
-        - order_quantity
+        - orderQuantity
         - productOptionVariationId
       properties:
         memberId:
@@ -1180,7 +1220,7 @@ components:
         productItemId:
           type: integer
           format: int64
-        order_quantity:
+        orderQuantity:
           type: integer
           minimum: 1
         #          maximum: 100 # Maximum order quantity, adjust as needed
