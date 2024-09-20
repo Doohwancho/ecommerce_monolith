@@ -26,7 +26,7 @@
 	- d. [bulk insert](#d-bulk-insert)
 - H. [기술적 도전 - Cloud](#h-기술적-도전---cloud)
 	- a. [provisioning with terraform & packer](#a-provisioning-with-terraform-and-packer)
-	- b. [prometheus and grafana](#b-prometheus-and-grafana)
+	- b. [prometheus and grafana + PMM](#b-prometheus-and-grafana-+-pmm)
 	- c. [300 RPS 부하 테스트](#c-300-rps-부하-테스트)
 	- d. [1000 RPS 부하 테스트](#d-1000-rps-부하-테스트)
 - I. [Trouble Shooting](#i-trouble-shooting)
@@ -228,7 +228,7 @@ openapi3 spec으로 작성된 코드를 swagger로 변환해준 모습
 
 - Q. how to see oepnapi docs online?
     1. https://editor.swagger.io/
-    2. [openapi-docs code](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/resources/api/openapi.yaml) 붙여넣기
+    2. [openapi-docs code](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/resources/api/openapi.yaml) 붙여넣기
 
 
 #### 3-2. redoc
@@ -240,7 +240,7 @@ Q. how to install redoc and run?
 npm i -g @redocly/cli
 git clone https://github.com/Doohwancho/ecommerce
 cd ecommerce
-redocly preview-docs back/ecommerce/src/main/resources/api/openapi.yaml
+redocly preview-docs back/1.ecommerce/src/main/resources/api/openapi.yaml
 ```
 
 
@@ -331,9 +331,9 @@ export default Home;
 
 main page에서 요구하는 top 10 rated products를 redis cache에 매 시간 갱신하여 뿌려준다.
 
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L51-L61
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L51-L61
 
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L116-L126
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L116-L126
 
 
 
@@ -440,7 +440,7 @@ authentication에 3번째 구현기능인
 
 ...를 spring batch로 구현하였다.
 
-https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L26-L146
+https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L26-L146
 
 
 
@@ -456,7 +456,7 @@ https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c
 
 구현 코드)
 
-https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java#L28-L153
+https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java#L28-L153
 
 
 
@@ -495,7 +495,7 @@ Q. ecommerce app은 어떤 테스트 방법론을 써야 적합할까?
     - 도메인 별로 굵직한 서비스 레이어 위주로 테스트한다.
     - mocking 보다는, 최대한 넓은 범위의 모듈을 커버하여 깨지는 부분이 있는지, 있다면 대략 어느 부분인지 확인한다.
 3. property based test (PBT)
-    - 절대 문제 생기면 안되는 기능(ex. 돈 관련 코드 등..)을 PBT로 테스트한다. ([PBT code link](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java))
+    - 절대 문제 생기면 안되는 기능(ex. 돈 관련 코드 등..)을 PBT로 테스트한다. ([PBT code link](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java))
 4. unit test
     - 이 외 작은 기능 단위는 unit test로 처리한다.
 
@@ -505,7 +505,7 @@ Q. ecommerce app은 어떤 테스트 방법론을 써야 적합할까?
 ## d. defensive programming
 
 ### 1. exception 전략
-1. [custom Error Code Protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java) 에 맞추어 error code를 enum으로 선언한다.
+1. [custom Error Code Protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java) 에 맞추어 error code를 enum으로 선언한다.
 2. 도메인 별로 Error Code를 나누고 파일 하나에 일괄 관리한다.
 3. 도메인 별로 Runtime Exception을 나누어 일괄관리한다.
     - 모든 business 관련 Exception들은 BusinessException을 상속받아 일괄관리하고,
@@ -544,8 +544,8 @@ https://github.com/Doohwancho/ecommerce/blob/dc963b102c65178fe7bd52960a344991272
 
 ### 1. code convention & protocol 설정
 1. [google style java code convention](https://google.github.io/styleguide/javaguide.html)
-2. [custom error code protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java)
-3. [common / business / member, 도메인 별 exception](https://github.com/Doohwancho/ecommerce/tree/main/back/ecommerce/src/main/java/com/cho/ecommerce/global/error/exception)
+2. [custom error code protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java)
+3. [common / business / member, 도메인 별 exception](https://github.com/Doohwancho/ecommerce/tree/main/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/error/exception)
 4. [commit-message protocol](https://github.com/Doohwancho/ecommerce/blob/main/documentation/protocols/commit-message.md)
 
 ### 2. linter를 단축키로 적용
@@ -641,29 +641,29 @@ public class ProductService {
 2. 악성 request라면, invalidate session + lock user account 한다.
 
 구현 코드)
-https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L68-L88
+https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L68-L88
 
 
 ### 3. domain 메서드
 
 1. product의 가격을 계산하는 함수
 
-https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/ecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/Product.java#L57-L66
+https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/Product.java#L57-L66
 
 2. 상품 가격에 discount를 적용하는 함수
 
-https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/ecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/Discount.java#L20-L37
+https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/Discount.java#L20-L37
 
 ### 4. domain 메서드는 PBT로 테스트
 
 Discount 도메인 객체에 applyDiscount()는 돈이 걸린 아주 중요한 함수이므로,\
 Property Based Testing을 한다.
 
-https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L25-L100
+https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L25-L100
 
 
 ### 5. 요구사항을 구현한 주문 코드
-https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L68-L174
+https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L68-L174
 
 
 
@@ -860,7 +860,7 @@ INNER JOIN
 ON tmp1.CategoryId = tmp2.CategoryId
 ORDER BY tmp1.CategoryId
 ```
-https://github.com/Doohwancho/ecommerce/blob/4e978a6279c639991811bc4628dc5bfb0a2bbea4/back/ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java#L11-L97
+https://github.com/Doohwancho/ecommerce/blob/4e978a6279c639991811bc4628dc5bfb0a2bbea4/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java#L11-L97
 
 
 ## c. sql tuning

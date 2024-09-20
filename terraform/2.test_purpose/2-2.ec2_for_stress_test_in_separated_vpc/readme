@@ -1,7 +1,11 @@
-# what
+# A. what
 stress test를 거는 2core 2GiB RAM AMD64 짜리 ec2
 
 
-# 기능
+# B. 기능
 1. docker, k6, git이 깔려있다.
 2. aws-session_manager로 접속 가능하다.
+
+# C. scripts to run inside ec2
+1. /k6/load_test/load-9to1_read_write_ratio_scenario_load_test.js 에 설정값 수정하기 
+2. `docker run --rm -i --net=host grafana/k6 run - <./k6/load_test/load-9to1_read_write_ratio_scenario_load_test.js`

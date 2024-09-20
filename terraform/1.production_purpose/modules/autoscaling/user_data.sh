@@ -22,7 +22,7 @@ sudo git clone --depth 1 https://github.com/Doohwancho/ecommerce.git
 cd ecommerce
 sudo chown -R ubuntu:ubuntu .
 
-cd /home/ubuntu/ecommerce/back/ecommerce
+cd /home/ubuntu/ecommerce/back/1.ecommerce
 chmod +x gradlew
 sudo ./gradlew build -x test
 

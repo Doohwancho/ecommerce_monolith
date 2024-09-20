@@ -1,0 +1,23 @@
+
+Z
+java:S2629Ÿ"7Use the built-in formatting to construct this argument.(ß³ç½ÿÿÿÿÿ8Âú¨£Ÿ2
+X	java:S1252"<This block of commented-out lines of code should be removed.(ï¼•Æ8Ïú¨£Ÿ2
+]	java:S125_"<This block of commented-out lines of code should be removed.(ïÃµäùÿÿÿÿ8Òú¨£Ÿ2
+T
+java:S1135{"2Complete the task associated to this TODO comment.(õ«ğıÿÿÿÿÿ8Óú¨£Ÿ2
+c
+java:S2175‰"@A "Set<UserAuthorityEntity>" cannot contain a "AuthorityEntity".(ÿË–ùÿÿÿÿ8Ôú¨£Ÿ2
+U
+java:S1135‰"2Complete the task associated to this TODO comment.(ÿË–ùÿÿÿÿ8Ôú¨£Ÿ2
+^	java:S125’"<This block of commented-out lines of code should be removed.(¿¿•Æşÿÿÿÿ8Õú¨£Ÿ2
+d
+java:S3457Ÿ"AFormat specifiers should be used instead of string concatenation.(ß³ç½ÿÿÿÿÿ8Õú¨£Ÿ2
+M
+java:S1172¦"/Remove this unused method parameter "username".(ÑˆÍ‘8Öú¨£Ÿ2
+^	java:S125¨"<This block of commented-out lines of code should be removed.(ñ¥ùšøÿÿÿÿ8×ú¨£Ÿ2
+„
+java:S1128"gRemove this unused import 'com.cho.ecommerce.global.error.exception.member.InvalidatingSessionForUser'.(™ÇÔ¿8Ğ©£Ÿ2
+”
+java:S1128"rRemove this unused import 'com.cho.ecommerce.global.error.exception.member.LockedAccountUserFailedToAuthenticate'.(…Äúøÿÿÿÿ8Ğ©£Ÿ2
+e
+java:S1128"HRemove this unused import 'org.springframework.context.annotation.Lazy'.(İ·­æ8Ğ©£Ÿ2

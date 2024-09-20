@@ -6,7 +6,10 @@ import { sleep } from 'k6';
   read:write 비율 9:1인 load-test script 
 
   B. how to run?
-  docker run --rm -i --net=host grafana/k6 run - <./k6/load_test/load-9to1_read_write_ratio_scenario_load_test.js
+  1. on local
+    - docker run --rm -i --net=host grafana/k6 run - <./k6/load_test/load-9to1_read_write_ratio_scenario_load_test.js
+  2. on ec2 server 
+    - sudo docker run --rm -i grafana/k6 run - <./k6/load_test/load-9to1_read_write_ratio_scenario_load_test.js
 
   C. how to configure?
   1. BASE_URL을 엔드포인트 url로 설정
@@ -17,30 +20,32 @@ import { sleep } from 'k6';
 export let options = {
     noConnectionReuse: false,
     stages: [
-        { duration: '5m', target: 100}, //simulate ramp-up of traffic from 1 to 100 users over 5 minutes
-        { duration: '10m', target: 100}, // stay at 100 users for 10 minutes
+        { duration: '5m', target: 150}, //simulate ramp-up of traffic from 1 to 100 users over 5 minutes
+        { duration: '10m', target: 300}, // stay at 100 users for 10 minutes
         { duration: '5m', target: 0},  // ramp-down to 0 users
     ],
     thresholds: {
         http_req_duration: ['p(99)<150'], // 99% of requests must complete below 150ms
-    }
+    },
+    setupTimeout: '370s', //setup() 때 GET /discounts, GET /users 시간이 오래걸려서 timeout 시간을 3분정도로 설정한다.
 }
 
-const BASE_URL = 'http://host.docker.internal:8080';
+// const BASE_URL = 'http://host.docker.internal:8080';
+const BASE_URL = 'http://13.209.179.59:8080';
 const BULK_INSERT_BASE_AMOUNT = 1000;
 
 export function setup() {
   let discounts = [];
   let usernames = [];
 
-  const discountsResponse = http.get(`${BASE_URL}/discounts`, { timeout: 30000 });
+  const discountsResponse = http.get(`${BASE_URL}/discounts`, { timeout: "120s"});
   if (discountsResponse.status === 200) {
     discounts = JSON.parse(discountsResponse.body);
   } else {
     console.error(`Failed to fetch discounts. Status: ${discountsResponse.status}`);
   }
 
-  const usersResponse = http.get(`${BASE_URL}/users`, { timeout: 30000 });
+  const usersResponse = http.get(`${BASE_URL}/users`, { timeout: "240s" });
   if (usersResponse.status === 200) {
     const users = JSON.parse(usersResponse.body);
     usernames = users.map(user => user.name);
@@ -48,7 +53,8 @@ export function setup() {
     console.error(`Failed to fetch users. Status: ${usersResponse.status}`);
   }
 
-  sleep(3);
+  // sleep(300);  //options 안에 setupTimeout이 있으면 이 설정 필요없다.
+                  //bulkinsert/100000 기준, GET /users 만 response.size가 40만줄 나옴. /discounts 도 response 사이즈만 44.1Mb이고.
   return { discounts, usernames };
 }
 
@@ -88,7 +94,7 @@ function getOrderItemsByUsername(usernames) {
 }
 
 function getSalesStatistics() {
-  const months = Math.floor(Math.random() * 3) + 1;
+  const months = Math.floor(Math.random() * 3) + 1; //1~3
   const url = `${BASE_URL}/orders/statistics/sales/${months}`;
   const response = http.get(url);
   if (response.status !== 200) {

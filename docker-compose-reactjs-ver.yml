@@ -32,7 +32,7 @@ services:
     container_name: 'ecommerce-app1'
     hostname: ecommerce-app1
     build:
-      context: ./back/ecommerce
+      context: ./back/1.ecommerce
       dockerfile: Dockerfile
     # ports: #backend server port는 외부 접속을 막아둔다. 다만, 개발시에는 편의를 위해 여는 경우도 있다.
       # - "8080:8080" #"HOST_PORT:CONTAINER_PORT"

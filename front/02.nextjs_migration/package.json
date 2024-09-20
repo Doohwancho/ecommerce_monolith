@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "openapi": "openapi-generator-cli generate -i ../../back/ecommerce/src/main/resources/api/openapi.yaml -g typescript-axios -o ./models -c ./openapi-config.json --type-mappings date=string,object=any --additional-properties=ngVersion=6.1.7,npmName=restClient,supportsES6=true,npmVersion=6.9.0,withInterfaces=true"
+    "openapi": "openapi-generator-cli generate -i ../../back/1.ecommerce/src/main/resources/api/openapi.yaml -g typescript-axios -o ./models -c ./openapi-config.json --type-mappings date=string,object=any --additional-properties=ngVersion=6.1.7,npmName=restClient,supportsES6=true,npmVersion=6.9.0,withInterfaces=true"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",

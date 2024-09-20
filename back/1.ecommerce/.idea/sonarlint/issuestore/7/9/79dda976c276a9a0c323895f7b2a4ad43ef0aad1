@@ -1,0 +1,13 @@
+
+j
+java:S1128"ORemove this unused import 'com.cho.ecommerce.domain.order.entity.QOrderEntity'.(Ã¢ÿ½üÿÿÿÿ
+n
+java:S1128"SRemove this unused import 'com.cho.ecommerce.domain.order.entity.QOrderItemEntity'.(¸ÉıËıÿÿÿÿ
+i
+java:S1128"SRemove this unused import 'com.cho.ecommerce.domain.product.entity.QProductEntity'.(ó¸Ù°
+m
+java:S1128"WRemove this unused import 'com.cho.ecommerce.domain.product.entity.QProductItemEntity'.(«€Ôé
+}
+java:S1128	"bRemove this unused import 'com.cho.ecommerce.domain.product.entity.QProductOptionVariationEntity'.(—ì¡„úÿÿÿÿ
+Q
+java:S1128";Remove this unused import 'com.querydsl.jpa.impl.JPAQuery'.(Ï®ô

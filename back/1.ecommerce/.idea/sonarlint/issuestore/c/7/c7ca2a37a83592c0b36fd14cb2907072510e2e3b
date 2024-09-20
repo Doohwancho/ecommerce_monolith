@@ -1,0 +1,15 @@
+
+_
+java:S11924"IDefine a constant instead of duplicating this literal "testUser" 3 times.(¦Ëãç
+r
+java:S3305"\Inject this field value directly into "createTestUserTasklet", the only method that uses it.(õ«©
+o
+java:S3305#"YInject this field value directly into "createTestUserStep", the only method that uses it.(Êµ¼Û
+r
+java:S3305"\Inject this field value directly into "createTestUserTasklet", the only method that uses it.(¼•æŒ
+w
+java:S3305!"\Inject this field value directly into "createTestUserTasklet", the only method that uses it.(û·øÿÿÿÿÿ
+r
+java:S3305"\Inject this field value directly into "createTestUserTasklet", the only method that uses it.(×Š¾
+Q
+java:S6437="6Revoke and change this password, as it is compromised.(ûïÛÄøÿÿÿÿ

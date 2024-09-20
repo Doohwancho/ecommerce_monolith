@@ -19,6 +19,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 yum install git -y
 
 # step3) prometheus, grafana를 docker로 띄운다. 
+sudo su -
 sudo mkdir /home/prometheus
 cd /home/prometheus
 git clone --depth 1 https://github.com/Doohwancho/ecommerce.git
