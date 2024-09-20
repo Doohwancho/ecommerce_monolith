@@ -2145,14 +2145,14 @@ disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o
 3. aws 학습 목적으로도 좋았다.
 	- 세세한 설정 하나만 빠지거나 잘못 입력해도 테라폼은 작동을 안하기 때문에 vpc, sg, rt, igw 등의 세부 설정을 왜 해야하는지 이해하는데 도움을 주었다.
 
-## b. prometheus and grafana
+## b. prometheus and grafana + PMM
 
 ### 1. 문제
 서버를 구축하면, 에러 예방/핸들링, 성능 튜닝을 위한 스트레스 테스트 메트릭을 뽑기 위해 모니터링 서버를 구축해야 한다.
 
 ### 2. 해결방안
 
-고려한 APM 툴은 3가지 이다.
+ec2 monitoring을 위해 고려한 APM 툴은 3가지 이다.
 1. datadog
 2. uptime kuma
 3. prometheus
@@ -2167,11 +2167,21 @@ disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o
 3. prometheus + grafana 조합이 현업에서 자주 이용되는 점과, 추후 이 프로젝트를 monolith에서 MSA로 변경할 때, k8s APM 툴로 prometheus를 많이 사용한다고 한다.
 
 
+---
+PMM도 같은 위와 같은 이유로 선택하게 되었다.
+
+
 ### 4. 구현 화면
+#### 4-1. ec2 monitoring
 ![](documentation/images/prometheus-grafana.png)
 
 1. spring API 서버의 APM을 spring actuator + prometheus + grafana로 구성했다.
 2. jvm metric dashboard는 가장 사람들이 많이 다운받은 micrometer에서 제공한 jvm metric dashboard을 썼다. (5.7M download)
+
+#### 4-2. RDS monitoring using PMM
+![](documentation/images/pmm-1.png)
+![](documentation/images/pmm-2.png)
+
 
 
 ## c. 300 RPS 부하 테스트
