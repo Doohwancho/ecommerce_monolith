@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/3.denormalized_ver_without_authentication_for_stress_test_purpose.iml" filepath="$PROJECT_DIR$/.idea/3.denormalized_ver_without_authentication_for_stress_test_purpose.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/denormalized_ecommerce.main.iml" filepath="$PROJECT_DIR$/.idea/modules/denormalized_ecommerce.main.iml" />
     </modules>
   </component>
 </project>

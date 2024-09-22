@@ -32,8 +32,6 @@ k
 :
 
 Dockerfile,6/6/6651ddff6eb82c840ced7c1dddee15c6e1913dd4
-u
-Esrc/main/java/com/cho/ecommerce/global/util/RandomValueGenerator.java,6/5/653ac4d5fa34ee5cdcb45a9c3a50b64cf801d972
 9
 	readme.md,2/7/275d783e298228506068436512433d343feb52aa
 z
@@ -60,8 +58,6 @@ _src/main/java/com/cho/ecommerce/domain/product/repository/ProductOptionVariatio
 Ksrc/main/java/com/cho/ecommerce/domain/product/service/DiscountService.java,b/c/bc6164e531402e01b31f0b1ea47eb38227e83270
 v
 Fsrc/main/java/com/cho/ecommerce/domain/member/service/UserService.java,f/3/f3efea16ca3c81e5ada571eb5e92e8ba2fd817dd
-˜
-hsrc/main/java/com/cho/ecommerce/global/config/fakedata/step2_jdbc_bulk_insert/JdbcFakeDataGenerator.java,a/9/a9ab4848c44c633e334eda38fbe891672c35e7e6
 v
 Fsrc/main/java/com/cho/ecommerce/domain/order/adapter/OrderAdapter.java,a/d/addb3a4b4a8f63769e0593fd4517476d489e1b71
 |

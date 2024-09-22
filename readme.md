@@ -26,7 +26,7 @@
 	- d. [bulk insert](#d-bulk-insert)
 - H. [기술적 도전 - Cloud](#h-기술적-도전---cloud)
 	- a. [provisioning with terraform & packer](#a-provisioning-with-terraform-and-packer)
-	- b. [prometheus and grafana + PMM](#b-prometheus-and-grafana---pmm)
+	- b. [prometheus and grafana + PMM](#b-prometheus-and-grafana--pmm)
 	- c. [300 RPS 부하 테스트](#c-300-rps-부하-테스트)
 	- d. [1000 RPS 부하 테스트](#d-1000-rps-부하-테스트)
 - I. [Trouble Shooting](#i-trouble-shooting)

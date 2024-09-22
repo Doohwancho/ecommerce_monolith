@@ -36,6 +36,7 @@ public class DenormalizedMemberEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull(message = "Member ID is required")
     @Column(name = "MEMBER_ID")
     private Long memberId;
     
@@ -84,10 +85,10 @@ public class DenormalizedMemberEntity {
     @NotNull(message = "User must have updated datetime")
     private LocalDateTime updated;
     
-    @JsonIgnore
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Builder.Default
-    private Set<DenormalizedOrderEntity> orders = new HashSet<>();
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @Builder.Default
+//    private Set<DenormalizedOrderEntity> orders = new HashSet<>();
     
     public boolean isAccountNonExpired() {
         return enabled;

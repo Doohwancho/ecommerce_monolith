@@ -1,4 +1,4 @@
-package com.cho.ecommerce.global.util;
+package com.cho.ecommerce.global.config.util;
 
 import com.google.common.base.CaseFormat;
 import java.util.List;
@@ -13,7 +13,6 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 
 /**
  * RestAssured test시 persistent context에 cache 지우기 + Entity의 id 초기화 코드

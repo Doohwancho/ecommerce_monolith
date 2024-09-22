@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.order.entity;
 
+import com.cho.ecommerce.domain.member.entity.DenormalizedMemberEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -7,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
@@ -23,9 +26,8 @@ import lombok.Setter;
 @Table(
     name = "DENORMALIZED_ORDER",
     indexes = {
-        @Index(name = "idx_order_date", columnList = "ORDER_DATE"),
-        @Index(name = "idx_member_id", columnList = "MEMBER_ID"),
-        @Index(name = "idx_order_status", columnList = "ORDER_STATUS")
+        @Index(name = "IDX_ORDER_DATE", columnList = "ORDER_DATE"),
+        @Index(name = "IDX_MEMBER_ID", columnList = "MEMBER_ID"),
     }
 )
 @Getter
@@ -92,6 +94,10 @@ public class DenormalizedOrderEntity {
     @Column(name = "TOTAL_DISCOUNT")
     @Min(0)
     private Double totalDiscount;
+    
+//    @ManyToOne
+//    @JoinColumn(name = "MEMBER_ID", nullable = false)
+//    private DenormalizedMemberEntity member;
     
     // Business logic methods
     @JsonIgnore
