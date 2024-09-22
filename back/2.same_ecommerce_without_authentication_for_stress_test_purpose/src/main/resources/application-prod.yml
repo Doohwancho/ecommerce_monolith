@@ -17,7 +17,7 @@ spring:
     #    password: root #mysql로 접속시 root유저의 비밀번호 또한 root로 설정함.
     password: ${RDS_PASSWORD:adminPassword} #local에서 접속시엔 root user's password is null
   jpa:
-    database-platform: org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl_auto: create
       # 1. none: no action will be taken. safest for producion
@@ -27,6 +27,7 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl #@Table에서 지정한 설정대로 그대로 사용할 수 있다. RDS-aws가 테이블 이름을 소문자로 입력하는 문제를 수정한다.
     properties.hibernate:
+      dialect: org.hibernate.dialect.MySQL8Dialect
       format_sql: true
       show-sql: true
       #      generate_statistics: true
