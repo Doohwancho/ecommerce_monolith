@@ -83,10 +83,10 @@ public class RandomValueGenerator {
     }
     
     public double[] generateRandomDoublesByPointOne(double min, double max) {
-        int size = ((int) max - (int) min) * 10;
+        int size = (int) ((max - min) * 10);
         double[] randomDoubles = new double[size];
         for (int i = 0; i < size; i++) {
-            randomDoubles[i] = min + 0.1;
+            randomDoubles[i] = min + i * 0.1; // Increment by 0.1 for each element
         }
         return randomDoubles;
     }
