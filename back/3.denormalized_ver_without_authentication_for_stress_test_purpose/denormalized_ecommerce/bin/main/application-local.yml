@@ -11,7 +11,7 @@ spring:
   datasource:
     platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ecommerce?serverTimezone=Asia/Seoul&rewriteBatchedStatements=true #for local development
+    url: jdbc:mysql://localhost:3306/ecommerce?serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
     username: root
     password:
   jpa:
@@ -22,9 +22,9 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl #@Table에서 지정한 설정대로 그대로 사용할 수 있다. RDS-aws가 테이블 이름을 소문자로 입력하는 문제를 수정한다.
     properties.hibernate:
       dialect: org.hibernate.dialect.MySQL8Dialect
-      format_sql: true
-      show-sql: true
-      #      generate_statistics: true
+      format_sql: false
+      show-sql: false
+      generate_statistics: true
       open-in-view: false # TODO - OIV 자세히 알아보기. log level: WARNING - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering.
       default_batch_fetch_size: 1000
       jdbc:
@@ -35,17 +35,18 @@ spring:
     initialize-schema: always
     job:
       enabled: false #true로 하면 @Bean으로 등록된 cron batch steps들이 시작과 동시에 자동 실행되니까 false로 꺼둔다.
-  redis:
-    host: localhost #for local development
-    port: 6379
-  session:
-    store-type: redis
-    timeout: 60m
+#  redis:
+#    host: localhost #for local development
+#    port: 6379
+#  session:
+#    store-type: redis
+#    timeout: 60m
 
 logging.level:
-  org.hibernate.SQL: DEBUG # DEBUG # warn
-  org.hibernate.type: trace # trace # warn
+  org.hibernate.SQL: warn # DEBUG # warn
+  org.hibernate.type: warn # trace # warn
   org.springframework.security: DEBUG
+
 
 management:
   endpoints:

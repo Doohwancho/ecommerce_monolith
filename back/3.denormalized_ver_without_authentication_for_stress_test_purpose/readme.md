@@ -10,8 +10,21 @@ table size가 100,000+ 일 때,\
 # C. APIs
 
 1. /products
-    1. GET fetch all products that belongs to categoryId with pagination
-    2. GET product_details by productId
-    3. GET products with highest ratings (cached, reset every hour)
+    1. GET `/products/category/${category_id}`
+       - fetch all products that belongs to categoryId with pagination
+    2. GET `/products/${product_id}`
+       - product_details by productId
+    3. GET `/products/highestRatings` 
+       - products with highest ratings (cached, reset every hour)
 2. /users
+   1. GET `/users`
+      - get all users
+   2. GET `/users/${username}`
+      - get specific user_info
 3. /orders
+   1. GET `/orders/orderItems/${username}`
+      - 해당 유저의 주문 리스트 보여주는 쿼리
+   2. GET `/orders/statistics/sales/${month}`
+      - 최근 n번째 달 주문 통계 쿼리
+   3. POST `/orders/`
+      - 주문 접수

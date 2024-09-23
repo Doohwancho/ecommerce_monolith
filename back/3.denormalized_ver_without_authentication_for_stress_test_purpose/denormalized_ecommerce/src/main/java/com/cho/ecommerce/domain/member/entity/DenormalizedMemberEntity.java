@@ -3,6 +3,7 @@ package com.cho.ecommerce.domain.member.entity;
 import com.cho.ecommerce.domain.order.entity.DenormalizedOrderEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -42,48 +43,59 @@ public class DenormalizedMemberEntity {
     
     @NotBlank(message = "Username is required")
     @Column(name = "USER_ID")
-    private String username;
+    private String userId;
     
     @Email(message = "Invalid email format")
+//    @Column(name = "EMAIL")
     @NotBlank(message = "Email is required")
     private String email;
     
+    @Column(name = "NAME")
     @NotBlank(message = "Name is required")
     private String name;
     
+    @Column(name = "PASSWORD")
     @JsonIgnore
     private String password;
     
+    @Column(name = "ROLE")
     @NotBlank(message = "Role is required")
     private String role;
     
+    @Column(name = "ENABLED")
     private boolean enabled;
     
+    @Column(name = "FAILED_ATTEMPT")
     @Min(0)
     private Integer failedAttempt;
     
+    @Column(name = "STREET")
     @NotBlank(message = "Street is required")
     private String street;
     
+    @Column(name = "CITY")
     @NotBlank(message = "City is required")
     private String city;
     
+    @Column(name = "STATE")
     @NotBlank(message = "State is required")
     private String state;
     
+    @Column(name = "COUNTRY")
     @NotBlank(message = "Country is required")
     private String country;
     
+    @Column(name = "ZIP_CODE")
     @NotBlank(message = "Zip code is required")
     private String zipCode;
     
     @Column(name = "CREATED_AT")
     @NotNull(message = "User must have created datetime")
-    private LocalDateTime created;
+    private OffsetDateTime created;
     
     @Column(name = "UPDATED_AT")
     @NotNull(message = "User must have updated datetime")
-    private LocalDateTime updated;
+    private OffsetDateTime updated;
     
 //    @JsonIgnore
 //    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -106,7 +118,7 @@ public class DenormalizedMemberEntity {
     public String toString() {
         return "DenormalizedMember{" +
             "memberId=" + memberId +
-            ", username='" + username + '\'' +
+            ", userId='" + userId + '\'' +
             ", email='" + email + '\'' +
             ", name='" + name + '\'' +
             ", role='" + role + '\'' +
@@ -118,7 +130,7 @@ public class DenormalizedMemberEntity {
     
     @Override
     public int hashCode() {
-        return Objects.hash(memberId, username, email, name, password, role, enabled, created, updated);
+        return Objects.hash(memberId, userId, email, name, password, role, enabled, created, updated);
     }
     
     @Override
@@ -128,7 +140,7 @@ public class DenormalizedMemberEntity {
         DenormalizedMemberEntity that = (DenormalizedMemberEntity) obj;
         return enabled == that.enabled &&
             Objects.equals(memberId, that.memberId) &&
-            Objects.equals(username, that.username) &&
+            Objects.equals(userId, that.userId) &&
             Objects.equals(email, that.email) &&
             Objects.equals(name, that.name) &&
             Objects.equals(password, that.password) &&

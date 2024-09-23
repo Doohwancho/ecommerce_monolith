@@ -142,7 +142,3 @@ y
 Isrc/main/java/com/cho/ecommerce/domain/product/entity/CategoryEntity.java,4/3/43d4d3673d7184b57fc63a75fd1df374b503bd3a
 y
 Isrc/main/java/com/cho/ecommerce/domain/product/entity/DiscountEntity.java,3/3/3350f53106290c7aef147a1830321e4851721af7
-˜
-hsrc/main/java/com/cho/ecommerce/global/config/fakedata/step2_jdbc_bulk_insert/JdbcFakeDataGenerator.java,a/9/a9ab4848c44c633e334eda38fbe891672c35e7e6
-u
-Esrc/main/java/com/cho/ecommerce/global/util/RandomValueGenerator.java,6/5/653ac4d5fa34ee5cdcb45a9c3a50b64cf801d972

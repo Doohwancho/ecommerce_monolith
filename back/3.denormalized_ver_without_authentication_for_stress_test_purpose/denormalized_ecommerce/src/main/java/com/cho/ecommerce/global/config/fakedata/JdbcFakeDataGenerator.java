@@ -55,6 +55,7 @@ public class JdbcFakeDataGenerator {
     private LocalDateTime startTimeForDiscount;
     private LocalDateTime endTimeForDiscount;
     private final Timestamp CURRENT_TIMESTAMP = new Timestamp(System.currentTimeMillis());
+    private final OffsetDateTime nowInOffsetDateTimeFormat = OffsetDateTime.now();
     
     public JdbcFakeDataGenerator(DataSource dataSource,
         RandomValueGenerator randomValueGenerator,
@@ -122,6 +123,7 @@ public class JdbcFakeDataGenerator {
 //        if(NUM_CORES == 1) {
             try (Connection connection = dataSource.getConnection();) {
                 bulkInsertDenormalizedProducts(connection, numberOfProducts, batchSize);
+                bulkInsertDenormalizedUsers(connection, numberOfUsers, batchSize);
             } catch (SQLException e) {
                 log.error("An error occurred during bulk insert:", e);
                 throw e;
@@ -226,5 +228,74 @@ public class JdbcFakeDataGenerator {
 //            }
         }
         return Math.max(lowestPrice, 0);
+    }
+    
+    public void bulkInsertDenormalizedUsers(Connection connection, int numberOfUsers, int batchSize) throws SQLException {
+        String sql = "INSERT INTO DENORMALIZED_MEMBER (MEMBER_ID, USER_ID, EMAIL, NAME, PASSWORD, ROLE, ENABLED, FAILED_ATTEMPT, STREET, CITY, STATE, COUNTRY, ZIP_CODE, CREATED_AT, UPDATED_AT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            connection.setAutoCommit(false);
+            
+            for (int i = 1; i <= numberOfUsers; i++) {
+                // MEMBER_ID
+                pstmt.setLong(1, i);
+                // USER_ID
+                pstmt.setString(2, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                // EMAIL
+//                pstmt.setString(3, "user" + i + "@example.com");
+                pstmt.setString(3, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                // NAME
+                pstmt.setString(4, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                // PASSWORD (hashed)
+                pstmt.setString(5, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+//                pstmt.setString(5, "$2a$10$" + uniqueStrings[(i + 1) % NUMBER_OF_UNIQUE_STRINGS]);
+                // ROLE
+                pstmt.setString(6, "ROLE_USER");
+                // ENABLED
+                pstmt.setBoolean(7, true);
+                // FAILED_ATTEMPT
+                pstmt.setInt(8, 0);
+                // STREET
+                pstmt.setString(9, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                // CITY
+                pstmt.setString(10, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                // STATE
+                pstmt.setString(11, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                // COUNTRY
+                pstmt.setString(12, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                // ZIP_CODE
+                pstmt.setString(13, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                // CREATED_AT
+//                OffsetDateTime createdAt = OffsetDateTime.now().minusDays(i % 365);
+                pstmt.setObject(14, nowInOffsetDateTimeFormat);
+                // UPDATED_AT
+//                OffsetDateTime updatedAt = createdAt.plusDays(i % 30);
+                pstmt.setObject(15, nowInOffsetDateTimeFormat);
+                
+                pstmt.addBatch();
+                pstmt.clearParameters();
+                
+                if (i % batchSize == 0) {
+                    pstmt.executeBatch();
+                    pstmt.clearBatch();
+                }
+            }
+            
+            // Execute remaining batches
+            pstmt.executeBatch();
+            pstmt.clearBatch();
+            connection.commit();
+            
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            log.error("An error occurred during bulk insert of users:", e);
+            throw e;
+        }
     }
 }
