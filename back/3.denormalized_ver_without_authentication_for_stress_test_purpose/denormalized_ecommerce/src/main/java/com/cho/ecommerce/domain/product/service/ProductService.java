@@ -77,8 +77,8 @@ public class ProductService {
             OffsetDateTime latestStart = null;
             OffsetDateTime latestEnd = null;
             for (Product.DiscountDTO discount : productRequestDto.getDiscounts()) {
-                OffsetDateTime start = OffsetDateTime.parse(discount.getStartDate());
-                OffsetDateTime end = OffsetDateTime.parse(discount.getEndDate());
+                OffsetDateTime start = discount.getStartDate();
+                OffsetDateTime end = discount.getEndDate();
                 if (latestStart == null || start.isAfter(latestStart)) {
                     latestStart = start;
                 }

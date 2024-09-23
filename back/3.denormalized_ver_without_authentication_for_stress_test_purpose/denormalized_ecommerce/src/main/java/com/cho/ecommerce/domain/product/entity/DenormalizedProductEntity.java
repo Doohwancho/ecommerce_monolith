@@ -2,6 +2,7 @@ package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.domain.Product.OptionDTO;
+import com.cho.ecommerce.global.config.parser.ObjectMapperUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -162,17 +163,33 @@ public class DenormalizedProductEntity {
     /*****************************************************
      * Json fields methods
      */
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper getObjectMapper() {
+        return ObjectMapperUtil.getObjectMapper();
+    }
     
     /*****************************************************
      * json option method
      */
     public List<OptionDTO> getOptionsAsList() throws IOException {
-        return objectMapper.readValue(this.options, new TypeReference<List<Product.OptionDTO>>(){});
+        if (this.options == null || this.options.isEmpty()) {
+            return new ArrayList<>();
+        }
+        //주의! 이 처리를 미리 해주지 않으면, objectMapper.readValue()에서 파싱 에러난다!
+        //database에서 read 해왔을 때는 ""[{\"name\":"hello\", ...
+        //여기서 맨 앞에 "와 중간에 섞인 \, backspace 때문에 objectMapper.readValue() 시 에러난다.
+        //따라서 이 둘을 먼저 없애 준 후 파싱해야 한다.
+        String jsonString = this.options;
+        if (jsonString.startsWith("\"") && jsonString.endsWith("\"")) {
+            jsonString = jsonString.substring(1, jsonString.length() - 1);
+        }
+        // Unescape the inner quotes
+        jsonString = jsonString.replace("\\\"", "\"");
+//        log.info("Cleaned JSON string: " + jsonString);
+        return getObjectMapper().readValue(jsonString, new TypeReference<List<Product.OptionDTO>>(){});
     }
     
     public void setOptionsFromList(List<Product.OptionDTO> optionsList) throws IOException {
-        this.options = objectMapper.writeValueAsString(optionsList);
+        this.options = getObjectMapper().writeValueAsString(optionsList);
     }
     
     
@@ -181,13 +198,29 @@ public class DenormalizedProductEntity {
      */
     public List<Product.DiscountDTO> getDiscountsAsList() throws IOException {
         if (this.discounts == null || this.discounts.isEmpty()) {
-            return new ArrayList<>(); //TODO - null로 처리할 것인가? 아니면 empty array로 처리할 것인가? null을 시스템 에러나는 경우가 있어서 일단 empty array로 처리한다.
+            return new ArrayList<>();
         }
-        return objectMapper.readValue(this.discounts, new TypeReference<List<Product.DiscountDTO>>(){});
+    
+        //주의! 이 처리를 미리 해주지 않으면, objectMapper.readValue()에서 파싱 에러난다!
+        //database에서 read 해왔을 때는 ""[{\"name\":"hello\", ...
+        //여기서 맨 앞에 "와 중간에 섞인 \, backspace 때문에 objectMapper.readValue() 시 에러난다.
+        //따라서 이 둘을 먼저 없애 준 후 파싱해야 한다.
+        String jsonString = this.discounts;
+        if (jsonString.startsWith("\"") && jsonString.endsWith("\"")) {
+            jsonString = jsonString.substring(1, jsonString.length() - 1);
+        }
+        // Unescape the inner quotes
+        jsonString = jsonString.replace("\\\"", "\"");
+        try {
+            return getObjectMapper().readValue(jsonString, new TypeReference<List<Product.DiscountDTO>>(){});
+        } catch (IOException e) {
+            log.error("Error parsing discounts JSON: " + jsonString, e);
+            throw e;
+        }
     }
     
     public void setDiscountsFromList(List<Product.DiscountDTO> discountsList) throws IOException {
-        this.discounts = objectMapper.writeValueAsString(discountsList);
+        this.discounts = getObjectMapper().writeValueAsString(discountsList);
     }
     
     public boolean hasActiveDiscount() {
@@ -198,9 +231,7 @@ public class DenormalizedProductEntity {
             
             return discountsList.stream()
                 .anyMatch(discount -> {
-                    OffsetDateTime startDate = OffsetDateTime.parse(discount.getStartDate(), formatter);
-                    OffsetDateTime endDate = OffsetDateTime.parse(discount.getEndDate(), formatter);
-                    return now.isAfter(startDate) && now.isBefore(endDate);
+                    return now.isAfter(discount.getStartDate()) && now.isBefore(discount.getEndDate());
                 });
         } catch (IOException e) {
             // Log the exception
@@ -210,15 +241,15 @@ public class DenormalizedProductEntity {
     
     // You should also update the getEffectivePrice() method similarly:
     public Double getDiscountedPrice() {
+        log.info("discounted price", this.discounts);
         try {
             List<Product.DiscountDTO> discountsList = getDiscountsAsList();
             OffsetDateTime now = OffsetDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
             double effectivePrice = this.basePrice;
             
             for (Product.DiscountDTO discount : discountsList) {
-                OffsetDateTime startDate = OffsetDateTime.parse(discount.getStartDate(), formatter);
-                OffsetDateTime endDate = OffsetDateTime.parse(discount.getEndDate(), formatter);
+                OffsetDateTime startDate = discount.getStartDate();
+                OffsetDateTime endDate = discount.getEndDate();
                 if (now.isAfter(startDate) && now.isBefore(endDate)) {
                     if (discount.getType().equals("PERCENTAGE")) {
                         effectivePrice *= (1 - discount.getValue() / 100);
@@ -230,8 +261,10 @@ public class DenormalizedProductEntity {
             
             return Math.max(effectivePrice, 0);
         } catch (IOException e) {
-            // Log the exception
-            log.error("error on getEffectivePrice()", e);
+            log.error("Error parsing discounts JSON: {}", this.discounts, e);
+            return this.basePrice;
+        } catch (Exception e) {
+            log.error("Unexpected error in getDiscountedPrice", e);
             return this.basePrice;
         }
     }

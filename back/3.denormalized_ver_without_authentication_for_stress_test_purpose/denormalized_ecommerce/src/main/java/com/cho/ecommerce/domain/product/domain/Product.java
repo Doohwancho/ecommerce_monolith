@@ -1,5 +1,8 @@
 package com.cho.ecommerce.domain.product.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Data;
 
@@ -19,17 +22,27 @@ public class Product {
     private Double lowestPrice;
     private Double highestPrice;
     
+    @JsonIgnoreProperties
     @Data
     public static class OptionDTO {
+        public OptionDTO() {}
+        @JsonProperty("name")
         private String name;
+        @JsonProperty("values")
         private List<String> values;
     }
     
+    @JsonIgnoreProperties
     @Data
     public static class DiscountDTO {
+        public DiscountDTO() {}
+        @JsonProperty("type")
         private String type;
+        @JsonProperty("value")
         private Double value;
-        private String startDate;
-        private String endDate;
+        @JsonProperty("startDate")
+        private OffsetDateTime startDate;
+        @JsonProperty("endDate")
+        private OffsetDateTime endDate;
     }
 }

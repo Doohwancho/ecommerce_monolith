@@ -2,6 +2,7 @@ package com.cho.ecommerce.global.config.util;
 
 import com.cho.ecommerce.domain.product.domain.Product.DiscountDTO;
 import com.cho.ecommerce.domain.product.domain.Product.OptionDTO;
+import com.cho.ecommerce.global.config.parser.ObjectMapperUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Component
 public class RandomValueGenerator {
-    private final ObjectMapper objectMapper;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
     private String[] uniqueStrings;
@@ -42,6 +42,9 @@ public class RandomValueGenerator {
 //        long duration = endTime - startTime;
 //        System.out.println("Total execution time: " + duration + " ms");
 //    }
+    private ObjectMapper getObjectMapper() {
+        return ObjectMapperUtil.getObjectMapper();
+    }
     
     public String[] generateUniqueStrings(Integer count, Integer stringLength) {
         this.uniqueStrings = new String[count];
@@ -138,7 +141,7 @@ public class RandomValueGenerator {
         List<String> preGeneratedOptionJsons = new ArrayList<>(numberOfOptions);
         for (int i = 0; i < numberOfOptions; i++) {
             List<OptionDTO> options = generateRandomOptions(i);
-            preGeneratedOptionJsons.add(objectMapper.writeValueAsString(options));
+            preGeneratedOptionJsons.add(getObjectMapper().writeValueAsString(options));
         }
         return preGeneratedOptionJsons;
     }
@@ -170,7 +173,7 @@ public class RandomValueGenerator {
         for (int i = 0; i < numberOfDiscounts; i++) {
             List<DiscountDTO> discounts = generateRandomDiscountsInDiscountDTOFormat(i, uniqueDoublesOneToHundred, uniqueLocalDateTimeThreeMonthsPastToToday);
             listOfRandomDiscounts.add(discounts);
-            uniqueDiscountJsons.add(objectMapper.writeValueAsString(discounts));
+            uniqueDiscountJsons.add(getObjectMapper().writeValueAsString(discounts));
         }
         return new List[]{uniqueDiscountJsons, listOfRandomDiscounts};
     }
@@ -184,9 +187,10 @@ public class RandomValueGenerator {
             discount.setType("PERCENTAGE");
             discount.setValue(uniqueDoublesOneToHundred[index % 100]);
             LocalDateTime startDate = uniqueLocalDateTimeThreeMonthsPastToToday[index % 90];
-            discount.setStartDate(startDate.atOffset(OffsetDateTime.now().getOffset()).toString());
-            discount.setEndDate(startDate.plusDays(45).atOffset(
-                OffsetDateTime.now().getOffset()).toString()); //discount_start_day가 90일 전부터 랜덤하게 시작되니, 그 이후 45일까지 되도록 해서, 절반은 discount가 valid하고 나머지 반은 invalid하게 설정
+//            discount.setStartDate(startDate.atOffset(OffsetDateTime.now().getOffset()).toString());
+            discount.setStartDate(startDate.atOffset(OffsetDateTime.now().getOffset()));
+//            discount.setEndDate(startDate.plusDays(45).atOffset(OffsetDateTime.now().getOffset()).toString()); //discount_start_day가 90일 전부터 랜덤하게 시작되니, 그 이후 45일까지 되도록 해서, 절반은 discount가 valid하고 나머지 반은 invalid하게 설정
+            discount.setEndDate(startDate.plusDays(45).atOffset(OffsetDateTime.now().getOffset())); //discount_start_day가 90일 전부터 랜덤하게 시작되니, 그 이후 45일까지 되도록 해서, 절반은 discount가 valid하고 나머지 반은 invalid하게 설정
             discounts.add(discount);
         }
         return discounts;

@@ -3,6 +3,7 @@ package com.cho.ecommerce.domain.product.mapper;
 import com.cho.ecommerce.domain.product.dto.ProductResponseDTO;
 import com.cho.ecommerce.domain.product.entity.DenormalizedProductEntity;
 import java.io.IOException;
+import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +22,15 @@ public class ProductMapper {
         try {
             dto.setOptions(entity.getOptionsAsList());
         } catch (IOException e) {
-            log.error("convertToProductResponseDTO() error", e);
+            log.error("Error parsing options: {}", entity.getOptions(), e);
+            dto.setOptions(new ArrayList<>()); // Set empty list as fallback
         }
-        dto.setLowestPrice(entity.getDiscountedPrice());
+        try {
+            dto.setLowestPrice(entity.getDiscountedPrice());
+        } catch (Exception e) {
+            log.error("Error calculating discounted price", e);
+            dto.setLowestPrice(entity.getBasePrice()); // Use base price as fallback
+        }
         dto.setBasePrice(entity.getBasePrice());
         return dto;
     }

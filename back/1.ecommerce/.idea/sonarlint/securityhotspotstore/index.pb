@@ -144,3 +144,9 @@ Lsrc/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java,7
 Rsrc/main/java/com/cho/ecommerce/domain/member/repository/UserRepositoryCustom.java,f/a/fac779799147a71335b372706848e4ac4cf01fb3
 |
 Lsrc/main/java/com/cho/ecommerce/domain/order/controller/OrderController.java,c/e/ce15918988ef01575ce93fadba12deadd216e1ad
+†
+Vsrc/main/java/com/cho/ecommerce/domain/member/repository/UserRepositoryCustomImpl.java,2/9/2980176bd216868c24aca0daf9f8029dd6c3006f
+t
+Dsrc/main/java/com/cho/ecommerce/domain/member/entity/UserEntity.java,d/f/dfa5af620765d62000fad89a6cffa29c4976feac
+u
+Esrc/main/java/com/cho/ecommerce/global/util/RandomValueGenerator.java,6/5/653ac4d5fa34ee5cdcb45a9c3a50b64cf801d972

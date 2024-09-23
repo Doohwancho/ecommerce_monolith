@@ -1,6 +1,7 @@
 package com.cho.ecommerce.global.config.fakedata;
 
 import com.cho.ecommerce.domain.product.domain.Product.DiscountDTO;
+import com.cho.ecommerce.global.config.parser.ObjectMapperUtil;
 import com.cho.ecommerce.global.config.util.RandomValueGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JdbcFakeDataGenerator {
     private final Logger log = LoggerFactory.getLogger(JdbcFakeDataGenerator.class);
-    private final ObjectMapper objectMapper;
     private final RandomValueGenerator randomValueGenerator;
     
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
@@ -58,14 +58,16 @@ public class JdbcFakeDataGenerator {
     
     public JdbcFakeDataGenerator(DataSource dataSource,
         RandomValueGenerator randomValueGenerator,
-        ObjectMapper objectMapper,
         @Qualifier("startTimeForDiscount") LocalDateTime startTimeForDiscount,
         @Qualifier("endTimeForDiscount") LocalDateTime endTimeForDiscount) throws SQLException {
         this.dataSource = dataSource;
         this.randomValueGenerator = randomValueGenerator;
-        this.objectMapper = objectMapper;
         this.startTimeForDiscount = startTimeForDiscount;
         this.endTimeForDiscount = endTimeForDiscount;
+    }
+    
+    private ObjectMapper getObjectMapper() {
+        return ObjectMapperUtil.getObjectMapper();
     }
     
     public void bulkInsert(int numberOfUsers, int numberOfProducts, int numberOfOrders, int batchSize)
@@ -126,7 +128,8 @@ public class JdbcFakeDataGenerator {
             }
 //        }
     }
-        
+    
+    
     public void bulkInsertDenormalizedProducts(Connection connection, int numberOfProducts, int batchSize) throws SQLException, JsonProcessingException {
         String sql = "INSERT INTO DENORMALIZED_PRODUCT (PRODUCT_ID, NAME, DESCRIPTION, RATING, RATING_COUNT, CATEGORY_ID, CATEGORY_NAME, TOTAL_QUANTITY, OPTIONS, DISCOUNTS, HAS_DISCOUNT, BASE_PRICE, LOWEST_PRICE, HIGHEST_PRICE, LATEST_DISCOUNT_START, LATEST_DISCOUNT_END) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -154,14 +157,9 @@ public class JdbcFakeDataGenerator {
                 //TOTAL_QUANTITY,
                 pstmt.setInt(8, 100000);
                 //OPTIONS,
-                //? how to insert json type?
-                // Generate and set OPTIONS JSON
-                pstmt.setString(9, objectMapper.writeValueAsString(uniqueOptionJsons.get(i % NUMBER_OF_OPTIONS)));
-    
+                pstmt.setString(9, getObjectMapper().writeValueAsString(uniqueOptionJsons.get(i % NUMBER_OF_OPTIONS)));
                 // DISCOUNTS
-                //? how to insert json type?
-                pstmt.setString(10, objectMapper.writeValueAsString(uniqueDiscountInJsonFormat.get(i % NUMBER_OF_DISCOUNTS)));
-                
+                pstmt.setString(10, getObjectMapper().writeValueAsString(uniqueDiscountInJsonFormat.get(i % NUMBER_OF_DISCOUNTS)));
                 //HAS_DISCOUNT,
                 pstmt.setBoolean(11, true);
 //                boolean hasDiscount = !discounts.isEmpty();
@@ -175,16 +173,18 @@ public class JdbcFakeDataGenerator {
                 List<DiscountDTO> discountsList = uniqueDiscountInDiscountDTOFormat.get(i % NUMBER_OF_DISCOUNTS);
                 double lowestPrice = calculateLowestPrice(basePrice, discountsList);
                 pstmt.setDouble(13, lowestPrice);
+                
                 //HIGHEST_PRICE,
                 pstmt.setDouble(14, basePrice);
+                
                 // LATEST_DISCOUNT_START
                 OffsetDateTime latestStart = discountsList.isEmpty() ? null :
-                    discountsList.stream().map(d -> OffsetDateTime.parse(d.getStartDate())).max(OffsetDateTime::compareTo).orElse(null);
+                    discountsList.stream().map(d -> d.getStartDate()).max(OffsetDateTime::compareTo).orElse(null);
                 pstmt.setObject(15, latestStart);
     
                 // LATEST_DISCOUNT_END
                 OffsetDateTime latestEnd = discountsList.isEmpty() ? null :
-                    discountsList.stream().map(d -> OffsetDateTime.parse(d.getEndDate())).max(OffsetDateTime::compareTo).orElse(null);
+                    discountsList.stream().map(d -> d.getEndDate()).max(OffsetDateTime::compareTo).orElse(null);
                 pstmt.setObject(16, latestEnd);
     
                 pstmt.addBatch();
