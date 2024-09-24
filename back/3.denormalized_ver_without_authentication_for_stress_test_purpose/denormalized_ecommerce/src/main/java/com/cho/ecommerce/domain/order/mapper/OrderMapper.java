@@ -1,10 +1,14 @@
 package com.cho.ecommerce.domain.order.mapper;
 
+import com.cho.ecommerce.domain.order.domain.Order.OrderItem;
+import com.cho.ecommerce.domain.order.dto.CreateOrderRequestDTO;
 import com.cho.ecommerce.domain.order.dto.OrderItemsResponseDTO;
 import com.cho.ecommerce.domain.order.entity.DenormalizedOrderEntity;
 import com.cho.ecommerce.global.config.parser.ObjectMapperUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -34,5 +38,43 @@ public class OrderMapper {
         }
         
         return dto;
+    }
+    
+    public DenormalizedOrderEntity convertToEntity(CreateOrderRequestDTO dto) {
+        DenormalizedOrderEntity entity = new DenormalizedOrderEntity();
+        entity.setMemberId(dto.getMemberId());
+        entity.setMemberName(dto.getMemberName());
+        entity.setMemberEmail(dto.getMemberEmail());
+        entity.setStreet(dto.getStreet());
+        entity.setCity(dto.getCity());
+        entity.setState(dto.getState());
+        entity.setCountry(dto.getCountry());
+        entity.setZipCode(dto.getZipCode());
+        
+        // Set default values
+        entity.setOrderDate(OffsetDateTime.now());
+        entity.setOrderStatus("PENDING");
+        
+        // Calculate total price and quantity
+        double totalPrice = 0;
+        int totalQuantity = 0;
+    
+        List<OrderItem> orderItems = dto.getOrderItems();
+        for (OrderItem item : orderItems) {
+            totalPrice += item.getDiscountedPrice() * item.getQuantity(); //TODO - 원래대로라면 DB에 해당 item에 discount가 맞는지 validation 해줘야 함
+            totalQuantity += item.getQuantity();
+        }
+        entity.setTotalPrice(totalPrice);
+        entity.setTotalQuantity(totalQuantity);
+        
+        // Set order items
+        try {
+            entity.setOrderItemsFromList(orderItems);
+        } catch (Exception e) {
+            log.error("Error setting order items", e);
+            // Handle the error appropriately
+        }
+        
+        return entity;
     }
 }

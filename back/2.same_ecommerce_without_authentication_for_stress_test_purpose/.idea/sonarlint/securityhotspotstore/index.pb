@@ -27,8 +27,6 @@ Wsrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepCon
 Vsrc/main/java/com/cho/ecommerce/global/config/batch/step/InsertTestUserStepConfig.java,c/7/c7ca2a37a83592c0b36fd14cb2907072510e2e3b
 x
 Hsrc/main/java/com/cho/ecommerce/global/error/GlobalExceptionHandler.java,9/9/99c524460c5f8e313e11231088cccd85b34134e9
-k
-;src/main/java/com/cho/ecommerce/global/error/ErrorCode.java,0/9/09b777bd2451ddf2d312d5a17e3126acf7c4e73f
 9
 	readme.md,2/7/275d783e298228506068436512433d343feb52aa
 :

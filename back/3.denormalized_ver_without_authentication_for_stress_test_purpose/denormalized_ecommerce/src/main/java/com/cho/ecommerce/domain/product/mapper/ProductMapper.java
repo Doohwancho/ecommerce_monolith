@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.product.mapper;
 
+import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.dto.ProductResponseDTO;
 import com.cho.ecommerce.domain.product.entity.DenormalizedProductEntity;
 import java.io.IOException;
@@ -33,5 +34,38 @@ public class ProductMapper {
         }
         dto.setBasePrice(entity.getBasePrice());
         return dto;
+    }
+    
+    public static Product convertToProduct(DenormalizedProductEntity entity) {
+        Product product = new Product();
+        product.setProductId(entity.getProductId());
+        product.setName(entity.getName());
+        product.setDescription(entity.getDescription());
+        product.setRating(entity.getRating());
+        product.setRatingCount(entity.getRatingCount());
+        product.setCategoryId(entity.getCategoryId());
+        product.setCategoryName(entity.getCategoryName());
+        product.setTotalQuantity(entity.getTotalQuantity());
+        product.setBasePrice(entity.getBasePrice());
+        product.setHighestPrice(entity.getHighestPrice());
+        
+        //set json options
+        try {
+            product.setOptions(entity.getOptionsAsList());
+        } catch (IOException e) {
+            log.error("Error parsing options: {}", entity.getOptions(), e);
+            product.setOptions(new ArrayList<>()); // Set empty list as fallback
+        }
+    
+        //set json discounts
+        try {
+            product.setDiscounts(entity.getDiscountsAsList());
+            product.setLowestPrice(entity.getDiscountedPrice());
+        } catch (Exception e) {
+            log.error("Error calculating discounted price", e);
+            product.setLowestPrice(entity.getBasePrice()); // Use base price as fallback
+        }
+        
+        return product;
     }
 }

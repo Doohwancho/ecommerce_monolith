@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,14 @@ public class ProductService {
         product.setDiscounts(entity.getDiscountsAsList());
         
         return product;
+    }
+    
+    public Product getProductByName(String productName) {
+        DenormalizedProductEntity entity = productRepository.findProductsByName(productName);
+        if(entity == null) {
+            throw new RuntimeException("product's named " + productName + " does not exists!");
+        }
+        return ProductMapper.convertToProduct(entity);
     }
     
     public ProductResponseDTO getProductResponse(Long productId) {
@@ -93,5 +102,21 @@ public class ProductService {
         DenormalizedProductEntity savedEntity = productRepository.save(entity);
         
         return ProductMapper.convertToProductResponseDTO(savedEntity);
+    }
+    
+    @Transactional
+    public void decreaseStock(String productName, int quantity) {
+        DenormalizedProductEntity product = productRepository.findProductsByName(productName);
+        if (product == null) {
+            throw new RuntimeException("Product " + productName + " not found");
+        }
+        
+        int newQuantity = product.getTotalQuantity() - quantity;
+        if (newQuantity < 0) {
+            throw new RuntimeException("Insufficient stock for product " + productName);
+        }
+        
+        product.setTotalQuantity(newQuantity);
+        productRepository.save(product);
     }
 }

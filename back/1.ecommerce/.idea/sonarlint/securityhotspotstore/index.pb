@@ -112,8 +112,6 @@ s
 Csrc/main/java/com/cho/ecommerce/domain/product/domain/Discount.java,b/b/bb4b87232f0d50ad9ed55940898bd8e63da0060e
 y
 Isrc/main/java/com/cho/ecommerce/domain/product/entity/DiscountEntity.java,3/3/3350f53106290c7aef147a1830321e4851721af7
-z
-Jsrc/main/java/com/cho/ecommerce/domain/product/service/ProductService.java,f/6/f6d389bbf801ddc195c1617292ee64aa87d8ea11
 {
 Ksrc/main/java/com/cho/ecommerce/global/config/batch/config/BatchConfig.java,0/d/0d732788c24ab2d3171d20dfa650fb19264ebac4
 ˆ
@@ -136,17 +134,9 @@ Jsrc/main/java/com/cho/ecommerce/global/config/security/SecurityConfig.java,a/5
 \src/main/java/com/cho/ecommerce/global/config/bulk_insert/fakedata/BulkInsertController.java,0/3/03495e2513c4d7867f93678cc390e4b4a9bc587a
 ¤
 tsrc/main/java/com/cho/ecommerce/global/config/bulk_insert/fakedata/step2_jdbc_bulk_insert/JdbcFakeDataGenerator.java,e/6/e637cf0f7d76688b4e69fb8ef85eb84e39cb2ec8
-v
-Fsrc/main/java/com/cho/ecommerce/domain/order/service/OrderService.java,8/d/8d93d0e4d8747f5eb1d09c8cffc40baa4ec9d02f
 |
 Lsrc/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java,7/a/7a4d82f7e32d9f3d697559bcf1c02ccc2e7df1cf
 ‚
 Rsrc/main/java/com/cho/ecommerce/domain/member/repository/UserRepositoryCustom.java,f/a/fac779799147a71335b372706848e4ac4cf01fb3
 |
 Lsrc/main/java/com/cho/ecommerce/domain/order/controller/OrderController.java,c/e/ce15918988ef01575ce93fadba12deadd216e1ad
-†
-Vsrc/main/java/com/cho/ecommerce/domain/member/repository/UserRepositoryCustomImpl.java,2/9/2980176bd216868c24aca0daf9f8029dd6c3006f
-t
-Dsrc/main/java/com/cho/ecommerce/domain/member/entity/UserEntity.java,d/f/dfa5af620765d62000fad89a6cffa29c4976feac
-u
-Esrc/main/java/com/cho/ecommerce/global/util/RandomValueGenerator.java,6/5/653ac4d5fa34ee5cdcb45a9c3a50b64cf801d972

@@ -45,8 +45,8 @@ public class DenormalizedMemberEntity {
     @Column(name = "USER_ID")
     private String userId;
     
-    @Email(message = "Invalid email format")
-//    @Column(name = "EMAIL")
+//    @Email(message = "Invalid email format")
+    @Column(name = "EMAIL")
     @NotBlank(message = "Email is required")
     private String email;
     

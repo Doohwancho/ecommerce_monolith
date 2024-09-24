@@ -25,6 +25,33 @@ table size가 100,000+ 일 때,\
    1. GET `/orders/orderItems/${username}`
       - 해당 유저의 주문 리스트 보여주는 쿼리
    2. GET `/orders/statistics/sales/${month}`
-      - 최근 n번째 달 주문 통계 쿼리
+      - 최근 n번째 달 주문 통계 쿼리 (n is maximum 3)
    3. POST `/orders/`
       - 주문 접수
+      - validation checks
+         1. memberName이 Member 테이블에 존재해야 한다.
+         2. orderItems에 productName이 products에 존재해야 하고, basePrice와 discountedPrice가 맞아야 한다.
+         3. order.quantity가 현재 product table에 quantity를 초과하면 안된다.
+      - example)
+      ```json
+      curl -X POST http://localhost:8080/orders \
+        -H "Content-Type: application/json" \
+        -d '{
+          "memberId": 1,
+          "memberName": "John Doe",
+          "memberEmail": "john.doe@example.com",
+          "orderItems": [
+            {
+              "productName": "VTzxhFBpsU",
+              "quantity": 2,
+              "basePrice": 14617.096149058603,
+              "discountedPrice": 14456.308091418958
+            }
+          ],
+          "street": "123 Main St",
+          "city": "Anytown",
+          "state": "CA",
+          "country": "USA",
+          "zipCode": "12345"
+        }'
+      ```

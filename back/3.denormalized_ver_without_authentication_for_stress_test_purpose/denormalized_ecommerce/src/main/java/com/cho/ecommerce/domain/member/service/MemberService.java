@@ -20,4 +20,7 @@ public class MemberService {
     public DenormalizedMemberEntity getUserByUserId(String userId) {
         return memberRepository.findByUserId(userId);
     }
+    public boolean userExists(Long memberId) {
+        return memberRepository.existsById(memberId);
+    }
 }
