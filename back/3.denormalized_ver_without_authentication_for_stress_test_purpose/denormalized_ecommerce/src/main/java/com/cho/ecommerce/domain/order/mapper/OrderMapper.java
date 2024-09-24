@@ -4,8 +4,6 @@ import com.cho.ecommerce.domain.order.domain.Order.OrderItem;
 import com.cho.ecommerce.domain.order.dto.CreateOrderRequestDTO;
 import com.cho.ecommerce.domain.order.dto.OrderItemsResponseDTO;
 import com.cho.ecommerce.domain.order.entity.DenormalizedOrderEntity;
-import com.cho.ecommerce.global.config.parser.ObjectMapperUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;

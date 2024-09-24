@@ -1,5 +1,7 @@
 package com.cho.ecommerce.global.config.fakedata;
 
+import com.cho.ecommerce.domain.order.domain.Order;
+import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.domain.Product.DiscountDTO;
 import com.cho.ecommerce.global.config.parser.ObjectMapperUtil;
 import com.cho.ecommerce.global.config.util.RandomValueGenerator;
@@ -11,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JdbcFakeDataGenerator {
+    
     private final Logger log = LoggerFactory.getLogger(JdbcFakeDataGenerator.class);
     private final RandomValueGenerator randomValueGenerator;
     
@@ -55,6 +59,7 @@ public class JdbcFakeDataGenerator {
     private LocalDateTime startTimeForDiscount;
     private LocalDateTime endTimeForDiscount;
     private final Timestamp CURRENT_TIMESTAMP = new Timestamp(System.currentTimeMillis());
+    private final ZoneOffset offset = ZoneOffset.UTC;
     private final OffsetDateTime nowInOffsetDateTimeFormat = OffsetDateTime.now();
     
     public JdbcFakeDataGenerator(DataSource dataSource,
@@ -71,34 +76,39 @@ public class JdbcFakeDataGenerator {
         return ObjectMapperUtil.getObjectMapper();
     }
     
-    public void bulkInsert(int numberOfUsers, int numberOfProducts, int numberOfOrders, int batchSize)
+    public void bulkInsert(int numberOfUsers, int numberOfProducts, int numberOfOrders,
+        int batchSize)
         throws SQLException, JsonProcessingException {
         
         int baseAmount = numberOfUsers;
     
         // set size of fake string/float objects in proportion to bulk-insert size
-        if(baseAmount <= 1000) {
+        if (baseAmount <= 1000) {
             NUMBER_OF_UNIQUE_STRINGS = 542;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 500;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
             NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
             NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
-        }
-        else if(baseAmount <= 10000) {
+        } else if (baseAmount <= 10000) {
             NUMBER_OF_UNIQUE_STRINGS = 10_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
-        } else if(baseAmount <= 100_000) {
+            NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
+            NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
+        } else if (baseAmount <= 100_000) {
             NUMBER_OF_UNIQUE_STRINGS = 30_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+            NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
+            NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
         } else {
             NUMBER_OF_UNIQUE_STRINGS = 80_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+            NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
+            NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
         }
-        
-        
+    
         // Generate unique strings
         this.uniqueStrings = randomValueGenerator.generateUniqueStrings(NUMBER_OF_UNIQUE_STRINGS,
             LENGTH_OF_STRING_FOR_UNIQUE_STRINGS);
@@ -113,35 +123,38 @@ public class JdbcFakeDataGenerator {
         this.uniqueLocalDateTimeThreeMonthsPastToToday = randomValueGenerator.generateRandomDates(
             NUMBER_OF_DATE_3MONTH_FROM_TODAY, DAYS_FROM_TODAY);
         this.uniqueOptionJsons = randomValueGenerator.generateRandomOptionsList(NUMBER_OF_OPTIONS);
-        List[] randomDiscounts = randomValueGenerator.generateRandomDiscountsInJsonFormatAndDiscountDTOFormat(NUMBER_OF_DISCOUNTS, uniqueDoublesOneToHundred, uniqueLocalDateTimeThreeMonthsPastToToday);
+        List[] randomDiscounts = randomValueGenerator.generateRandomDiscountsInJsonFormatAndDiscountDTOFormat(
+            NUMBER_OF_DISCOUNTS, uniqueDoublesOneToHundred,
+            uniqueLocalDateTimeThreeMonthsPastToToday);
         this.uniqueDiscountInJsonFormat = randomDiscounts[0];
         this.uniqueDiscountInDiscountDTOFormat = randomDiscounts[1];
     
         List<Connection> connectionPool = new ArrayList<>();
-    
-        
+
 //        if(NUM_CORES == 1) {
-            try (Connection connection = dataSource.getConnection();) {
-                bulkInsertDenormalizedProducts(connection, numberOfProducts, batchSize);
-                bulkInsertDenormalizedUsers(connection, numberOfUsers, batchSize);
-            } catch (SQLException e) {
-                log.error("An error occurred during bulk insert:", e);
-                throw e;
-            }
+        try (Connection connection = dataSource.getConnection();) {
+            bulkInsertDenormalizedProducts(connection, numberOfProducts, batchSize);
+            bulkInsertDenormalizedUsers(connection, numberOfUsers, batchSize);
+            bulkInsertDenormalizedOrders(connection, numberOfOrders, numberOfUsers, numberOfProducts, batchSize);
+        } catch (SQLException e) {
+            log.error("An error occurred during bulk insert:", e);
+            throw e;
+        }
 //        }
     }
     
     
-    public void bulkInsertDenormalizedProducts(Connection connection, int numberOfProducts, int batchSize) throws SQLException, JsonProcessingException {
+    public void bulkInsertDenormalizedProducts(Connection connection, int numberOfProducts,
+        int batchSize) throws SQLException, JsonProcessingException {
         String sql = "INSERT INTO DENORMALIZED_PRODUCT (PRODUCT_ID, NAME, DESCRIPTION, RATING, RATING_COUNT, CATEGORY_ID, CATEGORY_NAME, TOTAL_QUANTITY, OPTIONS, DISCOUNTS, HAS_DISCOUNT, BASE_PRICE, LOWEST_PRICE, HIGHEST_PRICE, LATEST_DISCOUNT_START, LATEST_DISCOUNT_END) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-
-            connection.setAutoCommit(false);
     
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        
+            connection.setAutoCommit(false);
+        
             for (int i = 1; i <= numberOfProducts; i++) { //i = productId
                 long categoryId = i % 60 + 16;
-    
+            
                 //PRODUCT_ID
                 pstmt.setLong(1, i);
                 //NAME
@@ -153,26 +166,31 @@ public class JdbcFakeDataGenerator {
                 //RATING_COUNT
                 pstmt.setInt(5, 100);
                 //CATEGORY_ID
-                pstmt.setDouble(6, categoryId); //16~75 까지 입력(원래 back/1.ecommerce에서 카테고리가 nested_category 식이라, 최상위 카테고리 1~3, 중간단계 카테고리 4~15, 하위단계 카테고리 16~75라서 그렇다.
+                pstmt.setDouble(6,
+                    categoryId); //16~75 까지 입력(원래 back/1.ecommerce에서 카테고리가 nested_category 식이라, 최상위 카테고리 1~3, 중간단계 카테고리 4~15, 하위단계 카테고리 16~75라서 그렇다.
                 //CATEGORY_NAME,
                 pstmt.setString(7, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
                 //TOTAL_QUANTITY,
                 pstmt.setInt(8, 100000);
                 //OPTIONS,
-                pstmt.setString(9, getObjectMapper().writeValueAsString(uniqueOptionJsons.get(i % NUMBER_OF_OPTIONS)));
+                pstmt.setString(9, getObjectMapper().writeValueAsString(
+                    uniqueOptionJsons.get(i % NUMBER_OF_OPTIONS)));
                 // DISCOUNTS
-                pstmt.setString(10, getObjectMapper().writeValueAsString(uniqueDiscountInJsonFormat.get(i % NUMBER_OF_DISCOUNTS)));
+                pstmt.setString(10, getObjectMapper().writeValueAsString(
+                    uniqueDiscountInJsonFormat.get(i % NUMBER_OF_DISCOUNTS)));
                 //HAS_DISCOUNT,
                 pstmt.setBoolean(11, true);
 //                boolean hasDiscount = !discounts.isEmpty();
 //                pstmt.setBoolean(11, hasDiscount);
                 
                 //BASE_PRICE,
-                Double basePrice = uniqueDoublesHundredToMillion[i % NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION];
+                Double basePrice = uniqueDoublesHundredToMillion[i
+                    % NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION];
                 pstmt.setDouble(12, basePrice);
                 
                 //LOWEST_PRICE
-                List<DiscountDTO> discountsList = uniqueDiscountInDiscountDTOFormat.get(i % NUMBER_OF_DISCOUNTS);
+                List<DiscountDTO> discountsList = uniqueDiscountInDiscountDTOFormat.get(
+                    i % NUMBER_OF_DISCOUNTS);
                 double lowestPrice = calculateLowestPrice(basePrice, discountsList);
                 pstmt.setDouble(13, lowestPrice);
                 
@@ -181,23 +199,25 @@ public class JdbcFakeDataGenerator {
                 
                 // LATEST_DISCOUNT_START
                 OffsetDateTime latestStart = discountsList.isEmpty() ? null :
-                    discountsList.stream().map(d -> d.getStartDate()).max(OffsetDateTime::compareTo).orElse(null);
+                    discountsList.stream().map(d -> d.getStartDate()).max(OffsetDateTime::compareTo)
+                        .orElse(null);
                 pstmt.setObject(15, latestStart);
-    
+            
                 // LATEST_DISCOUNT_END
                 OffsetDateTime latestEnd = discountsList.isEmpty() ? null :
-                    discountsList.stream().map(d -> d.getEndDate()).max(OffsetDateTime::compareTo).orElse(null);
+                    discountsList.stream().map(d -> d.getEndDate()).max(OffsetDateTime::compareTo)
+                        .orElse(null);
                 pstmt.setObject(16, latestEnd);
-    
+            
                 pstmt.addBatch();
                 pstmt.clearParameters();
-    
+            
                 if (i % batchSize == 0) {
                     pstmt.executeBatch();
                     pstmt.clearBatch();
                 }
             }
-    
+        
             // Execute remaining batches - TODO - is there better way? cuz sometimes this step could be unnecessary
             pstmt.executeBatch(); // Insert remaining records
             pstmt.clearBatch();
@@ -230,7 +250,8 @@ public class JdbcFakeDataGenerator {
         return Math.max(lowestPrice, 0);
     }
     
-    public void bulkInsertDenormalizedUsers(Connection connection, int numberOfUsers, int batchSize) throws SQLException {
+    public void bulkInsertDenormalizedUsers(Connection connection, int numberOfUsers, int batchSize)
+        throws SQLException {
         String sql = "INSERT INTO DENORMALIZED_MEMBER (MEMBER_ID, USER_ID, EMAIL, NAME, PASSWORD, ROLE, ENABLED, FAILED_ATTEMPT, STREET, CITY, STATE, COUNTRY, ZIP_CODE, CREATED_AT, UPDATED_AT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -297,5 +318,123 @@ public class JdbcFakeDataGenerator {
             log.error("An error occurred during bulk insert of users:", e);
             throw e;
         }
+    }
+    
+    public void bulkInsertDenormalizedOrders(Connection connection, int numberOfOrders, int numberOfUsers, int numberOfProducts, int batchSize) throws SQLException, JsonProcessingException {
+        String sql = "INSERT INTO DENORMALIZED_ORDER (ORDER_ID, ORDER_DATE, ORDER_STATUS, MEMBER_ID, MEMBER_NAME, MEMBER_EMAIL, TOTAL_PRICE, TOTAL_QUANTITY, ORDER_ITEMS, STREET, CITY, STATE, COUNTRY, ZIP_CODE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String[] statuses = {"PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"};
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            connection.setAutoCommit(false);
+            
+            for (int i = 1, memberId = 1, productId = 1; i <= numberOfOrders; i++, memberId++, productId++) {
+                // ORDER_ID
+                pstmt.setLong(1, i);
+                
+                // ORDER_DATE
+                OffsetDateTime orderDate = uniqueLocalDateTimeThreeMonthsPastToToday[i % NUMBER_OF_DATE_3MONTH_FROM_TODAY].atOffset(offset);
+                pstmt.setObject(2, orderDate);
+                
+                // ORDER_STATUS
+                pstmt.setString(3, statuses[i % 5]);
+                
+                // MEMBER_ID
+                // 수동으로 memberId = orderId를 맞춘다.
+                pstmt.setLong(4, memberId);
+                
+                // MEMBER_NAME
+                // 수동으로 member name 을 uniqueStrings 순서대로 써서 맞춘다.
+                pstmt.setString(5, uniqueStrings[memberId % NUMBER_OF_UNIQUE_STRINGS]);
+                
+                // MEMBER_EMAIL
+                // 수동으로 member email을 uniqueStrings 순서대로 써서 맞춘다.
+                pstmt.setString(6, uniqueStrings[memberId % NUMBER_OF_UNIQUE_STRINGS]);
+                
+                // Generate List<Order.OrderItem> based on List<DiscountDTO>
+                List<Order.OrderItem> orderItems = generateOrderItems(productId);
+    
+                // TOTAL_PRICE based on List<DiscountDTO>
+                double totalPrice = orderItems.stream().mapToDouble(item -> item.getDiscountedPrice() * item.getQuantity()).sum();
+                pstmt.setDouble(7, totalPrice);
+                
+                // TOTAL_QUANTITY
+                int totalQuantity = orderItems.stream().mapToInt(Order.OrderItem::getQuantity).sum();
+                pstmt.setInt(8, totalQuantity);
+                
+                // ORDER_ITEMS
+                pstmt.setString(9, getObjectMapper().writeValueAsString(orderItems));
+                
+                // Address fields
+                pstmt.setString(10, uniqueStrings[memberId % NUMBER_OF_UNIQUE_STRINGS]); // STREET
+                pstmt.setString(11, uniqueStrings[memberId % NUMBER_OF_UNIQUE_STRINGS]); // CITY
+                pstmt.setString(12, uniqueStrings[memberId % NUMBER_OF_UNIQUE_STRINGS]); // STATE
+                pstmt.setString(13, uniqueStrings[memberId % NUMBER_OF_UNIQUE_STRINGS]); // COUNTRY
+                pstmt.setString(14, uniqueStrings[memberId % NUMBER_OF_UNIQUE_STRINGS]); // ZIP_CODE
+                
+                pstmt.addBatch();
+                pstmt.clearParameters();
+                
+                if(memberId == numberOfUsers) {
+                    memberId = 1;
+                }
+                if(productId == numberOfProducts) {
+                    productId = 1;
+                }
+                
+                if (i % batchSize == 0) {
+                    pstmt.executeBatch();
+                    pstmt.clearBatch();
+                }
+            }
+            
+            // Execute remaining batches
+            pstmt.executeBatch();
+            pstmt.clearBatch();
+            connection.commit();
+            
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            log.error("An error occurred during bulk insert of orders:", e);
+            throw e;
+        }
+    }
+    private List<Order.OrderItem> generateOrderItems(int productId) {
+        List<Order.OrderItem> orderItems = new ArrayList<>();
+        Order.OrderItem item1 = new Order.OrderItem();
+        Order.OrderItem item2 = new Order.OrderItem();
+        
+        //OrderItem1
+        item1.setProductName(uniqueStrings[productId % NUMBER_OF_UNIQUE_STRINGS]);
+        item1.setQuantity(1); // Fixed quantity of 1 for simplicity
+    
+        double basePrice1 = uniqueDoublesHundredToMillion[productId % NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION];
+        item1.setBasePrice(basePrice1);
+        
+        List<Product.DiscountDTO> discountsForItem1 = uniqueDiscountInDiscountDTOFormat.get(productId % NUMBER_OF_DISCOUNTS);
+        double discountedPrice1 = calculateLowestPrice(basePrice1, discountsForItem1);
+        item1.setDiscountedPrice(discountedPrice1);
+    
+        //OrderItem2
+        item2.setProductName(uniqueStrings[productId * 2 % NUMBER_OF_UNIQUE_STRINGS]);
+        item2.setQuantity(1); // Fixed quantity of 1 for simplicity
+    
+        double basePrice2 = uniqueDoublesHundredToMillion[productId * 2 % NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION];
+        item2.setBasePrice(basePrice2);
+    
+        List<Product.DiscountDTO> discountsForItem2 = uniqueDiscountInDiscountDTOFormat.get(productId * 2 % NUMBER_OF_DISCOUNTS);
+        double discountedPrice2 = calculateLowestPrice(basePrice2, discountsForItem2);
+        item2.setDiscountedPrice(discountedPrice2);
+        
+        //add OrderItem1, OrderItem2
+        orderItems.add(item1);
+        orderItems.add(item2);
+        
+        return orderItems;
     }
 }

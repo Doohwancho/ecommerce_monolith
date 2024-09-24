@@ -146,7 +146,7 @@ public class DenormalizedOrderEntity {
     /*****************************************************
      * Json fields methods
      */
-    private ObjectMapper getObjectMapper() {
+    private static ObjectMapper getObjectMapper() {
         return ObjectMapperUtil.getObjectMapper();
     }
     
@@ -175,4 +175,7 @@ public class DenormalizedOrderEntity {
         this.orderItems = getObjectMapper().writeValueAsString(orderItemList);
     }
     
+    public static String convertToJsonFromOrderItemList(List<Order.OrderItem> orderItemList) throws IOException {
+        return getObjectMapper().writeValueAsString(orderItemList);
+    }
 }
