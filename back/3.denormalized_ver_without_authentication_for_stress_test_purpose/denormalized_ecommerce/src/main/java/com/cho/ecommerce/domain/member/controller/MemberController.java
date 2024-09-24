@@ -22,7 +22,7 @@ public class MemberController {
         return ResponseEntity.ok(users);
     }
     
-    @GetMapping("/{username}")
+    @GetMapping("/{userId}")
     public ResponseEntity<DenormalizedMemberEntity> getUserByUsername(@PathVariable String userId) {
         DenormalizedMemberEntity user = memberService.getUserByUserId(userId);
         if (user != null) {
