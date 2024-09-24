@@ -1,15 +1,22 @@
 package com.cho.ecommerce.domain.order.entity;
 
-import com.cho.ecommerce.domain.member.entity.DenormalizedMemberEntity;
+import com.cho.ecommerce.domain.order.domain.Order;
+import com.cho.ecommerce.domain.product.domain.Product;
+import com.cho.ecommerce.domain.product.domain.Product.OptionDTO;
+import com.cho.ecommerce.global.config.parser.ObjectMapperUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
@@ -26,8 +33,9 @@ import lombok.Setter;
 @Table(
     name = "DENORMALIZED_ORDER",
     indexes = {
-        @Index(name = "IDX_ORDER_DATE", columnList = "ORDER_DATE"),
-        @Index(name = "IDX_MEMBER_ID", columnList = "MEMBER_ID"),
+        @Index(name = "IDX_ORDER_DATE", columnList = "ORDER_DATE"), //order query시 기간을 where절에 조건으로 넣는 경우가 많음
+        @Index(name = "IDX_MEMBER_NAME", columnList = "MEMBER_NAME"), //username으로 orders 찾는 쿼리에 쓰임
+//        @Index(name = "IDX_MEMBER_ID", columnList = "MEMBER_ID"),
     }
 )
 @Getter
@@ -43,12 +51,13 @@ public class DenormalizedOrderEntity {
     
     @Column(name = "ORDER_DATE")
     @NotNull(message = "Order date cannot be null")
-    private LocalDateTime orderDate;
+    private OffsetDateTime orderDate;
     
     @Column(name = "ORDER_STATUS")
     @NotBlank(message = "Order status is required")
     private String orderStatus;
     
+    //Q. JPA 관계 설정 with DenormalizedMemberEntity 묶어줘야 하나?
     @Column(name = "MEMBER_ID")
     @NotNull(message = "Member ID is required")
     private Long memberId;
@@ -70,30 +79,45 @@ public class DenormalizedOrderEntity {
     @Min(0)
     private Integer totalQuantity;
     
+    //Q. JSON으로 한다면, 어떤 structure 여야 하지?
+    // [
+    //  {
+    //      "productName": {product_name},
+    //      "quantity": {quantity},
+    //      "basePrice": ${base_price},
+    //      "discountedPrice": {discounted_price}
+    //  },
+    //  ...
+    // ]
     @Column(name = "ORDER_ITEMS", columnDefinition = "JSON")
     @NotNull(message = "Order items cannot be null")
     private String orderItems;
     
-    @Column(name = "SHIPPING_ADDRESS", columnDefinition = "JSON")
-    private String shippingAddress;
+    @Column(name = "STREET")
+    @NotBlank(message = "Street is required")
+    private String street;
     
-    @Column(name = "BILLING_ADDRESS", columnDefinition = "JSON")
-    private String billingAddress;
+    @Column(name = "CITY")
+    @NotBlank(message = "City is required")
+    private String city;
     
-    @Column(name = "PAYMENT_INFO", columnDefinition = "JSON")
-    private String paymentInfo;
+    @Column(name = "STATE")
+    @NotBlank(message = "State is required")
+    private String state;
+    
+    @Column(name = "COUNTRY")
+    @NotBlank(message = "Country is required")
+    private String country;
+    
+    @Column(name = "ZIP_CODE")
+    @NotBlank(message = "Zip code is required")
+    private String zipCode;
+    
+    //yet
+//    @Column(name = "PAYMENT_INFO", columnDefinition = "JSON")
+//    private String paymentInfo;
     
     // Additional fields for efficient querying and analytics
-    @Column(name = "ITEM_COUNT")
-    @Min(1)
-    private Integer itemCount;
-    
-    @Column(name = "HAS_DISCOUNTED_ITEMS")
-    private Boolean hasDiscountedItems;
-    
-    @Column(name = "TOTAL_DISCOUNT")
-    @Min(0)
-    private Double totalDiscount;
     
 //    @ManyToOne
 //    @JoinColumn(name = "MEMBER_ID", nullable = false)
@@ -102,12 +126,7 @@ public class DenormalizedOrderEntity {
     // Business logic methods
     @JsonIgnore
     public boolean isRecentOrder() {
-        return LocalDateTime.now().minusDays(7).isBefore(this.orderDate);
-    }
-    
-    @JsonIgnore
-    public boolean isHighValueOrder() {
-        return this.totalPrice > 1000; // Assuming 1000 is the threshold for high-value orders
+        return LocalDateTime.now().minusDays(7).isBefore(this.orderDate.toLocalDateTime());
     }
     
     // Override toString() for logging
@@ -121,7 +140,39 @@ public class DenormalizedOrderEntity {
             ", memberName='" + memberName + '\'' +
             ", totalPrice=" + totalPrice +
             ", totalQuantity=" + totalQuantity +
-            ", itemCount=" + itemCount +
             '}';
     }
+    
+    /*****************************************************
+     * Json fields methods
+     */
+    private ObjectMapper getObjectMapper() {
+        return ObjectMapperUtil.getObjectMapper();
+    }
+    
+    /*****************************************************
+     * json option method
+     */
+    public List<Order.OrderItem> getOrderItemsAsList() throws IOException {
+        if (this.orderItems == null || this.orderItems.isEmpty()) {
+            return new ArrayList<>();
+        }
+        //주의! 이 처리를 미리 해주지 않으면, objectMapper.readValue()에서 파싱 에러난다!
+        //database에서 read 해왔을 때는 ""[{\"name\":"hello\", ...
+        //여기서 맨 앞에 "와 중간에 섞인 \, backspace 때문에 objectMapper.readValue() 시 에러난다.
+        //따라서 이 둘을 먼저 없애 준 후 파싱해야 한다.
+        String jsonString = this.orderItems;
+        if (jsonString.startsWith("\"") && jsonString.endsWith("\"")) {
+            jsonString = jsonString.substring(1, jsonString.length() - 1);
+        }
+        // Unescape the inner quotes
+        jsonString = jsonString.replace("\\\"", "\"");
+//        log.info("Cleaned JSON string: " + jsonString);
+        return getObjectMapper().readValue(jsonString, new TypeReference<List<Order.OrderItem>>(){});
+    }
+    
+    public void setOrderItemsFromList(List<Order.OrderItem> orderItemList) throws IOException {
+        this.orderItems = getObjectMapper().writeValueAsString(orderItemList);
+    }
+    
 }
