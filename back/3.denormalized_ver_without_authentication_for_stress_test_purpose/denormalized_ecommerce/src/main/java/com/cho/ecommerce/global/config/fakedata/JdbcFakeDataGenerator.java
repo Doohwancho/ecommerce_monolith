@@ -31,9 +31,6 @@ public class JdbcFakeDataGenerator {
     
     private final Logger log = LoggerFactory.getLogger(JdbcFakeDataGenerator.class);
     private final RandomValueGenerator randomValueGenerator;
-    
-    private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
-    private static final int NUM_THREADS = Math.min(NUM_CORES, 4);
     private Integer NUMBER_OF_UNIQUE_STRINGS = 80_000; //520_807
     private static final Integer LENGTH_OF_STRING_FOR_UNIQUE_STRINGS = 10;
     //    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY = 0;
@@ -133,8 +130,8 @@ public class JdbcFakeDataGenerator {
         this.uniqueDiscountInJsonFormat = randomDiscounts[0];
         this.uniqueDiscountInDiscountDTOFormat = randomDiscounts[1];
     
-        int numThreads = Math.min(NUM_CORES, 8); // Cap at 8 threads
-        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+        int numThreads = Runtime.getRuntime().availableProcessors(); //cpu core 수 만큼 bulk-insert를 분할정복할 thread 생성
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads); //bulk-insert를 불할정복할 thread pool 생성
     
         List<Future<?>> futures = new ArrayList<>();
     
