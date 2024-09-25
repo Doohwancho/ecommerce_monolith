@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -57,33 +56,22 @@ public class JdbcFakeDataGenerator {
     private List<String> uniqueDiscountInJsonFormat;
     private List<List<DiscountDTO>> uniqueDiscountInDiscountDTOFormat;
     private LocalDateTime[] uniqueLocalDateTimeThreeMonthsPastToToday;
-    private LocalDateTime startTimeForDiscount;
-    private LocalDateTime endTimeForDiscount;
-    private final Timestamp CURRENT_TIMESTAMP = new Timestamp(System.currentTimeMillis());
     private final ZoneOffset offset = ZoneOffset.UTC;
     private final OffsetDateTime nowInOffsetDateTimeFormat = OffsetDateTime.now();
     
     public JdbcFakeDataGenerator(DataSource dataSource,
-        RandomValueGenerator randomValueGenerator,
-        @Qualifier("startTimeForDiscount") LocalDateTime startTimeForDiscount,
-        @Qualifier("endTimeForDiscount") LocalDateTime endTimeForDiscount) throws SQLException {
+        RandomValueGenerator randomValueGenerator) {
         this.dataSource = dataSource;
         this.randomValueGenerator = randomValueGenerator;
-        this.startTimeForDiscount = startTimeForDiscount;
-        this.endTimeForDiscount = endTimeForDiscount;
-    }
-    
-    private ObjectMapper getObjectMapper() {
-        return ObjectMapperUtil.getObjectMapper();
     }
     
     public void bulkInsert(int numberOfUsers, int numberOfProducts, int numberOfOrders,
         int batchSize)
         throws SQLException, JsonProcessingException, InterruptedException, ExecutionException {
         
+        //step1) bulk-insert 전, 얼마나 많은 양의 fake-data를 만들건지 정하기 based on requested input
         int baseAmount = numberOfUsers;
     
-        // set size of fake string/float objects in proportion to bulk-insert size
         if (baseAmount <= 1000) {
             NUMBER_OF_UNIQUE_STRINGS = 542;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 500;
@@ -97,20 +85,20 @@ public class JdbcFakeDataGenerator {
             NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
             NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
         } else if (baseAmount <= 100_000) {
-            NUMBER_OF_UNIQUE_STRINGS = 30_000;
+            NUMBER_OF_UNIQUE_STRINGS = baseAmount;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
             NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
             NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
         } else {
-            NUMBER_OF_UNIQUE_STRINGS = 80_000;
+            NUMBER_OF_UNIQUE_STRINGS = 100_000; //strings를 너무 많이 만들면 RAM 부족함. 최대 10만개로 고정.
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
             NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
             NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
         }
     
-        // Generate unique strings
+        // step2) Generate fake data(ex. unique strings, doubles, etc)
         this.uniqueStrings = randomValueGenerator.generateUniqueStrings(NUMBER_OF_UNIQUE_STRINGS,
             LENGTH_OF_STRING_FOR_UNIQUE_STRINGS);
         this.uniqueDoublesZeroToFive = randomValueGenerator.generateRandomDoublesByPointOne(0, 5);
@@ -130,6 +118,8 @@ public class JdbcFakeDataGenerator {
         this.uniqueDiscountInJsonFormat = randomDiscounts[0];
         this.uniqueDiscountInDiscountDTOFormat = randomDiscounts[1];
     
+        
+        //step3) cpu core 수 만큼 threadpool에 threads를 만들고, 전체 bulk-insert할 양을 1/n 해서 쓰레드한테 각자 할당 후, 동시에 bulk-insert 실행
         int numThreads = Runtime.getRuntime().availableProcessors(); //cpu core 수 만큼 bulk-insert를 분할정복할 thread 생성
         ExecutorService executorService = Executors.newFixedThreadPool(numThreads); //bulk-insert를 불할정복할 thread pool 생성
     
@@ -449,5 +439,9 @@ public class JdbcFakeDataGenerator {
         orderItems.add(item2);
         
         return orderItems;
+    }
+    
+    private ObjectMapper getObjectMapper() {
+        return ObjectMapperUtil.getObjectMapper();
     }
 }
