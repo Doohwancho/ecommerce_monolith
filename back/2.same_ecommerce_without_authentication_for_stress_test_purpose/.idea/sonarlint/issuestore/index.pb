@@ -70,12 +70,6 @@ Vsrc/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCust
 Wsrc/main/java/com/cho/ecommerce/domain/product/repository/CategoryRepositoryCustom.java,d/1/d167610efc68a524b14c3d8b3ff94d0842f904cf
 <
 build.gradle,f/0/f07866736216be0ee2aba49e392191aeae700a35
-s
-Csrc/main/java/com/cho/ecommerce/infra/monitoring/MetricsConfig.java,d/2/d2b666eece56f1665eb171f510dacf1189985494
-`
-0src/main/java/com/cho/ecommerce/Application.java,0/0/00e8c98771b65a0e7a96a28fc9ca19fad603abf2
-€
-Psrc/main/java/com/cho/ecommerce/infra/monitoring/RequestLoggingFilterConfig.java,1/f/1fbd9873a1c51ca9defa1a3babbee09609883001
 }
 Msrc/main/java/com/cho/ecommerce/domain/member/entity/UserAuthorityEntity.java,e/f/efbf0c9a02db7585ad9a06b7f980cbd0461b2e8f
 ~

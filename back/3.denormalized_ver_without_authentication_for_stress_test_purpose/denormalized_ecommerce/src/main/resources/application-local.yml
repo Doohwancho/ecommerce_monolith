@@ -24,17 +24,17 @@ spring:
       dialect: org.hibernate.dialect.MySQL8Dialect
       format_sql: false
       show-sql: false
-      generate_statistics: true
+      generate_statistics: false
       open-in-view: false # TODO - OIV 자세히 알아보기. log level: WARNING - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering.
       default_batch_fetch_size: 1000
       jdbc:
         batch_size: 1000
   #      id:
   #        new_generator_mappings: false
-  batch:
-    initialize-schema: always
-    job:
-      enabled: false #true로 하면 @Bean으로 등록된 cron batch steps들이 시작과 동시에 자동 실행되니까 false로 꺼둔다.
+#  batch:
+#    initialize-schema: always
+#    job:
+#      enabled: false #true로 하면 @Bean으로 등록된 cron batch steps들이 시작과 동시에 자동 실행되니까 false로 꺼둔다.
 #  redis:
 #    host: localhost #for local development
 #    port: 6379
