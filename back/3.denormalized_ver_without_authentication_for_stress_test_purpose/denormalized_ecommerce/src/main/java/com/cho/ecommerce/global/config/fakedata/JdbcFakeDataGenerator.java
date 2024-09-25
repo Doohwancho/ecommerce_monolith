@@ -16,6 +16,10 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +82,7 @@ public class JdbcFakeDataGenerator {
     
     public void bulkInsert(int numberOfUsers, int numberOfProducts, int numberOfOrders,
         int batchSize)
-        throws SQLException, JsonProcessingException {
+        throws SQLException, JsonProcessingException, InterruptedException, ExecutionException {
         
         int baseAmount = numberOfUsers;
     
@@ -129,34 +133,57 @@ public class JdbcFakeDataGenerator {
         this.uniqueDiscountInJsonFormat = randomDiscounts[0];
         this.uniqueDiscountInDiscountDTOFormat = randomDiscounts[1];
     
-        List<Connection> connectionPool = new ArrayList<>();
-
-//        if(NUM_CORES == 1) {
-        try (Connection connection = dataSource.getConnection();) {
-            bulkInsertDenormalizedProducts(connection, numberOfProducts, batchSize);
-            bulkInsertDenormalizedUsers(connection, numberOfUsers, batchSize);
-            bulkInsertDenormalizedOrders(connection, numberOfOrders, numberOfUsers, numberOfProducts, batchSize);
-        } catch (SQLException e) {
-            log.error("An error occurred during bulk insert:", e);
-            throw e;
+        int numThreads = Math.min(NUM_CORES, 8); // Cap at 8 threads
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+    
+        List<Future<?>> futures = new ArrayList<>();
+    
+        for (int i = 0; i < numThreads; i++) {
+            int startUser = i * (numberOfUsers / numThreads);
+            int endUser = (i == numThreads - 1) ? numberOfUsers : (i + 1) * (numberOfUsers / numThreads);
+        
+            int startProduct = i * (numberOfProducts / numThreads);
+            int endProduct = (i == numThreads - 1) ? numberOfProducts : (i + 1) * (numberOfProducts / numThreads);
+        
+            int startOrder = i * (numberOfOrders / numThreads);
+            int endOrder = (i == numThreads - 1) ? numberOfOrders : (i + 1) * (numberOfOrders / numThreads);
+        
+            futures.add(executorService.submit(() -> {
+                try (Connection connection = dataSource.getConnection()) {
+                    connection.setAutoCommit(false);
+                    bulkInsertDenormalizedUsers(connection, startUser, endUser, batchSize);
+                    bulkInsertDenormalizedProducts(connection, startProduct, endProduct, batchSize);
+                    bulkInsertDenormalizedOrders(connection, startOrder, endOrder, numberOfUsers, numberOfProducts, batchSize);
+                    connection.commit();
+                } catch (SQLException | JsonProcessingException e) {
+                    log.error("Error in bulk insert thread", e);
+                    throw new RuntimeException(e);
+                }
+            }));
         }
-//        }
+    
+        // Wait for all threads to complete
+        for (Future<?> future : futures) {
+            future.get();
+        }
+    
+        executorService.shutdown();
     }
     
     
-    public void bulkInsertDenormalizedProducts(Connection connection, int numberOfProducts,
-        int batchSize) throws SQLException, JsonProcessingException {
+    public void bulkInsertDenormalizedProducts(Connection connection, int start, int end, int batchSize) throws SQLException, JsonProcessingException {
         String sql = "INSERT INTO DENORMALIZED_PRODUCT (PRODUCT_ID, NAME, DESCRIPTION, RATING, RATING_COUNT, CATEGORY_ID, CATEGORY_NAME, TOTAL_QUANTITY, OPTIONS, DISCOUNTS, HAS_DISCOUNT, BASE_PRICE, LOWEST_PRICE, HIGHEST_PRICE, LATEST_DISCOUNT_START, LATEST_DISCOUNT_END) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
         
             connection.setAutoCommit(false);
         
-            for (int i = 1; i <= numberOfProducts; i++) { //i = productId
+            for (int i = start; i < end; i++) { //i = productId
+                int id = i + 1; // ID starts from 1
                 long categoryId = i % 60 + 16;
             
                 //PRODUCT_ID
-                pstmt.setLong(1, i);
+                pstmt.setLong(1, id);
                 //NAME
                 pstmt.setString(2, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
                 //DESCRIPTION
@@ -211,8 +238,8 @@ public class JdbcFakeDataGenerator {
             
                 pstmt.addBatch();
                 pstmt.clearParameters();
-            
-                if (i % batchSize == 0) {
+    
+                if ((i - start + 1) % batchSize == 0) {
                     pstmt.executeBatch();
                     pstmt.clearBatch();
                 }
@@ -231,8 +258,10 @@ public class JdbcFakeDataGenerator {
                     ex.printStackTrace();
                 }
             }
+            connection.rollback();
             log.error("An error occurred during bulk insert:");
             e.printStackTrace();
+            throw e;
         }
     }
     
@@ -250,16 +279,19 @@ public class JdbcFakeDataGenerator {
         return Math.max(lowestPrice, 0);
     }
     
-    public void bulkInsertDenormalizedUsers(Connection connection, int numberOfUsers, int batchSize)
+//    public void bulkInsertDenormalizedUsers(Connection connection, int numberOfUsers, int batchSize)
+    public void bulkInsertDenormalizedUsers(Connection connection, int start, int end, int batchSize)
         throws SQLException {
         String sql = "INSERT INTO DENORMALIZED_MEMBER (MEMBER_ID, USER_ID, EMAIL, NAME, PASSWORD, ROLE, ENABLED, FAILED_ATTEMPT, STREET, CITY, STATE, COUNTRY, ZIP_CODE, CREATED_AT, UPDATED_AT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             connection.setAutoCommit(false);
             
-            for (int i = 1; i <= numberOfUsers; i++) {
+            for (int i = start; i < end; i++) {
+                int id = i + 1; // ID starts from 1
+    
                 // MEMBER_ID
-                pstmt.setLong(1, i);
+                pstmt.setLong(1, id);
                 // USER_ID
                 pstmt.setString(2, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
                 // EMAIL
@@ -296,7 +328,7 @@ public class JdbcFakeDataGenerator {
                 pstmt.addBatch();
                 pstmt.clearParameters();
                 
-                if (i % batchSize == 0) {
+                if ((i - start + 1) % batchSize == 0) {
                     pstmt.executeBatch();
                     pstmt.clearBatch();
                 }
@@ -308,28 +340,26 @@ public class JdbcFakeDataGenerator {
             connection.commit();
             
         } catch (SQLException e) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
+            connection.rollback();
             log.error("An error occurred during bulk insert of users:", e);
             throw e;
         }
     }
     
-    public void bulkInsertDenormalizedOrders(Connection connection, int numberOfOrders, int numberOfUsers, int numberOfProducts, int batchSize) throws SQLException, JsonProcessingException {
+    public void bulkInsertDenormalizedOrders(Connection connection, int start, int end, int numberOfUsers, int numberOfProducts, int batchSize) throws SQLException, JsonProcessingException {
         String sql = "INSERT INTO DENORMALIZED_ORDER (ORDER_ID, ORDER_DATE, ORDER_STATUS, MEMBER_ID, MEMBER_NAME, MEMBER_EMAIL, TOTAL_PRICE, TOTAL_QUANTITY, ORDER_ITEMS, STREET, CITY, STATE, COUNTRY, ZIP_CODE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String[] statuses = {"PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"};
         
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             connection.setAutoCommit(false);
             
-            for (int i = 1, memberId = 1, productId = 1; i <= numberOfOrders; i++, memberId++, productId++) {
+            for (int i = start; i < end; i++) {
+                int id = i + 1; // ID starts from 1
+                int memberId = ((id - 1) % numberOfUsers) + 1;
+                int productId = ((id - 1) % numberOfProducts) + 1;
+                
                 // ORDER_ID
-                pstmt.setLong(1, i);
+                pstmt.setLong(1, id);
                 
                 // ORDER_DATE
                 OffsetDateTime orderDate = uniqueLocalDateTimeThreeMonthsPastToToday[i % NUMBER_OF_DATE_3MONTH_FROM_TODAY].atOffset(offset);
@@ -374,14 +404,7 @@ public class JdbcFakeDataGenerator {
                 pstmt.addBatch();
                 pstmt.clearParameters();
                 
-                if(memberId == numberOfUsers) {
-                    memberId = 1;
-                }
-                if(productId == numberOfProducts) {
-                    productId = 1;
-                }
-                
-                if (i % batchSize == 0) {
+                if ((i - start + 1) % batchSize == 0) {
                     pstmt.executeBatch();
                     pstmt.clearBatch();
                 }
@@ -393,16 +416,9 @@ public class JdbcFakeDataGenerator {
             connection.commit();
             
         } catch (SQLException e) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
+            connection.rollback();
             log.error("An error occurred during bulk insert of orders:", e);
-            throw e;
-        }
+            throw e;        }
     }
     private List<Order.OrderItem> generateOrderItems(int productId) {
         List<Order.OrderItem> orderItems = new ArrayList<>();
