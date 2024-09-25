@@ -134,3 +134,15 @@ y
 Isrc/main/java/com/cho/ecommerce/domain/product/entity/DiscountEntity.java,3/3/3350f53106290c7aef147a1830321e4851721af7
 o
 ?src/main/java/com/cho/ecommerce/global/util/DateTimeConfig.java,2/7/2753e46705c5108add917dc9822f7d54a9d23716
+u
+Esrc/main/java/com/cho/ecommerce/global/util/RandomValueGenerator.java,6/5/653ac4d5fa34ee5cdcb45a9c3a50b64cf801d972
+˜
+hsrc/main/java/com/cho/ecommerce/global/config/fakedata/step2_jdbc_bulk_insert/JdbcFakeDataGenerator.java,a/9/a9ab4848c44c633e334eda38fbe891672c35e7e6
+k
+;src/main/java/com/cho/ecommerce/global/error/ErrorCode.java,0/9/09b777bd2451ddf2d312d5a17e3126acf7c4e73f
+`
+0src/main/java/com/cho/ecommerce/Application.java,0/0/00e8c98771b65a0e7a96a28fc9ca19fad603abf2
+s
+Csrc/main/java/com/cho/ecommerce/infra/monitoring/MetricsConfig.java,d/2/d2b666eece56f1665eb171f510dacf1189985494
+€
+Psrc/main/java/com/cho/ecommerce/infra/monitoring/RequestLoggingFilterConfig.java,1/f/1fbd9873a1c51ca9defa1a3babbee09609883001

@@ -24,9 +24,7 @@ table size가 100,000+ 일 때,\
 3. /orders
    1. GET `/orders/orderItems/${username}`
       - 해당 유저의 주문 리스트 보여주는 쿼리
-   2. GET `/orders/statistics/sales/${month}`
-      - 최근 n번째 달 주문 통계 쿼리 (n is maximum 3)
-   3. POST `/orders/`
+   2. POST `/orders/`
       - 주문 접수
       - validation checks
          1. memberName이 Member 테이블에 존재해야 한다.

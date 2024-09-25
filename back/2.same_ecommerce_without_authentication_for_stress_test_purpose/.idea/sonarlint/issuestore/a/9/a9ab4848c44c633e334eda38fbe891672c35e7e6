@@ -1,0 +1,85 @@
+
+c	java:S112§	"FDefine and throw a dedicated exception instead of using a generic one.(«Å›Ğ8äÄ”‘2
+‰
+java:S1192¦"fDefine a constant instead of duplicating this literal "An error occurred during bulk insert:" 7 times.(·ÿ¼–ıÿÿÿÿ8İå‘2
+c
+java:S2184ä"@Cast one of the operands of this addition operation to a "long".(È¯œÍşÿÿÿÿ8èÄ”‘2
+„	java:S116"cRename this field "NUMBER_OF_UNIQUE_STRINGS" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(äô´ƒøÿÿÿÿ8›ê‘2
+—	java:S116 "vRename this field "NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ù‡÷½ÿÿÿÿÿ8›ê‘2
+Š	java:S116!"nRename this field "NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(»Ú¡›8›ê‘2
+}	java:S1163"\Rename this field "CURRENT_TIMESTAMP" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(”…ˆãúÿÿÿÿ8›ê‘2
+Y	java:S107B"=Method has 10 parameters, which is greater than 7 authorized.(íÄÆ8ê‘2
+X	java:S125"<This block of commented-out lines of code should be removed.(¤ñŞ€8Ÿê‘2
+]	java:S125&"<This block of commented-out lines of code should be removed.(ñ¥Êıÿÿÿÿ8 ê‘2
+X	java:S125*"<This block of commented-out lines of code should be removed.(’‹İƒ8 ê‘2
+•
+java:S1130;"sRemove the declaration of thrown exception 'java.sql.SQLException', as it cannot be thrown from constructor's body.(û‹îùøÿÿÿÿ8 ê‘2
+]	java:S1255"<This block of commented-out lines of code should be removed.(‘’Ÿşşÿÿÿÿ8 ê‘2
+o
+java:S3776B"RRefactor this method to reduce its Cognitive Complexity from 49 to the 15 allowed.(íÄÆ8 ê‘2
+X	java:S125J"<This block of commented-out lines of code should be removed.(±şñ¤8¡ê‘2
+X	java:S125f"<This block of commented-out lines of code should be removed.(²Ùê§8¢ê‘2
+]	java:S125u"<This block of commented-out lines of code should be removed.(ò‡æúÿÿÿÿ8¢ê‘2
+^	java:S125…"<This block of commented-out lines of code should be removed.(õ¹Âşûÿÿÿÿ8¢ê‘2
+Y	java:S125“"<This block of commented-out lines of code should be removed.(›ÈÉÈ8¢ê‘2
+v
+java:S2139¥"XEither log this exception and handle it, or rethrow it with some contextual information.(É®£8£ê‘2
+v
+java:S2139Ğ"XEither log this exception and handle it, or rethrow it with some contextual information.(É®£8È”‘2
+v
+java:S2139ş"XEither log this exception and handle it, or rethrow it with some contextual information.(É®£8’È”‘2
+p
+java:S3776"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(ÇœÄ8’È”‘2
+Y	java:S125Ÿ"<This block of commented-out lines of code should be removed.(Ò”ğ³8“È”‘2
+^	java:S125£"<This block of commented-out lines of code should be removed.(ıß³Àûÿÿÿÿ8“È”‘2
+^	java:S125©"<This block of commented-out lines of code should be removed.(µ‡¼şÿÿÿÿ8“È”‘2
+^	java:S125º"<This block of commented-out lines of code should be removed.(½­ë·ûÿÿÿÿ8“È”‘2
+^	java:S125Ã"<This block of commented-out lines of code should be removed.(Í»ïøÿÿÿÿ8”È”‘2
+^	java:S125Ö"<This block of commented-out lines of code should be removed.(Ÿÿ»­ûÿÿÿÿ8”È”‘2
+X	java:S125"<This block of commented-out lines of code should be removed.(˜£­8•È”‘2
+u
+java:S3776À"RRefactor this method to reduce its Cognitive Complexity from 40 to the 15 allowed.(¤…–°úÿÿÿÿ8–È”‘2
+Y	java:S125Å"<This block of commented-out lines of code should be removed.(Ò”ğ³8–È”‘2
+^	java:S125Ë"<This block of commented-out lines of code should be removed.(ıß³Àûÿÿÿÿ8–È”‘2
+^	java:S125Ó"<This block of commented-out lines of code should be removed.(µ‡¼şÿÿÿÿ8–È”‘2
+^	java:S125é"<This block of commented-out lines of code should be removed.(®®â¶ùÿÿÿÿ8—È”‘2
+Y	java:S125÷"<This block of commented-out lines of code should be removed.(ÈÑõ8—È”‘2
+^	java:S125‘"<This block of commented-out lines of code should be removed.(µ½ÿıÿÿÿÿÿ8˜È”‘2
+^	java:S125š"<This block of commented-out lines of code should be removed.(³ı£éûÿÿÿÿ8˜È”‘2
+^	java:S125­"<This block of commented-out lines of code should be removed.(ŠÙÖ‘ÿÿÿÿÿ8™È”‘2
+^	java:S125Á"<This block of commented-out lines of code should be removed.(ïºöûÿÿÿÿ8™È”‘2
+^	java:S125ç"<This block of commented-out lines of code should be removed.(µÒÇ”úÿÿÿÿ8šÈ”‘2
+Y	java:S125ê"<This block of commented-out lines of code should be removed.(É¿€ş8šÈ”‘2
+X	java:S125«"<This block of commented-out lines of code should be removed.(˜£­8›È”‘2
+u
+java:S3776æ"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(½›Ñ¦ùÿÿÿÿ8œÈ”‘2
+Y	java:S125ç"<This block of commented-out lines of code should be removed.(Ò”ğ³8œÈ”‘2
+^	java:S125í"<This block of commented-out lines of code should be removed.(ıß³Àûÿÿÿÿ8œÈ”‘2
+^	java:S125õ"<This block of commented-out lines of code should be removed.(µ‡¼şÿÿÿÿ8œÈ”‘2
+^	java:S125ƒ"<This block of commented-out lines of code should be removed.(±¿âÊüÿÿÿÿ8È”‘2
+Y	java:S125‘"<This block of commented-out lines of code should be removed.(¯³Ö´8È”‘2
+Y	java:S125½"<This block of commented-out lines of code should be removed.(Õ°µĞ8ŸÈ”‘2
+Y	java:S125Î"<This block of commented-out lines of code should be removed.(ãò÷Ø8ŸÈ”‘2
+X	java:S125“"<This block of commented-out lines of code should be removed.(˜£­8 È”‘2
+Y	java:S125á"<This block of commented-out lines of code should be removed.(Ò”ğ³8¡È”‘2
+^	java:S125æ"<This block of commented-out lines of code should be removed.(ıß³Àûÿÿÿÿ8¡È”‘2
+Y	java:S125é"<This block of commented-out lines of code should be removed.(Àóœ¡8¡È”‘2
+^	java:S125í"<This block of commented-out lines of code should be removed.(ñ¥ùšøÿÿÿÿ8¡È”‘2
+^	java:S125ï"<This block of commented-out lines of code should be removed.(µ‡¼şÿÿÿÿ8¢È”‘2
+^	java:S125‡"<This block of commented-out lines of code should be removed.(´Œ´˜ûÿÿÿÿ8£È”‘2
+Y	java:S125"<This block of commented-out lines of code should be removed.(›–‹8£È”‘2
+^	java:S125ª"<This block of commented-out lines of code should be removed.(´Œ´˜ûÿÿÿÿ8¤È”‘2
+^	java:S125²"<This block of commented-out lines of code should be removed.(ùÉÔıÿÿÿÿ8·ê‘2
+^	java:S125Æ"<This block of commented-out lines of code should be removed.(´Œ´˜ûÿÿÿÿ8¥È”‘2
+Y	java:S125Ñ"<This block of commented-out lines of code should be removed.(Ó™äá8¥È”‘2
+Y	java:S125æ"<This block of commented-out lines of code should be removed.(¡Ø–‘8¦È”‘2
+Y	java:S125î"<This block of commented-out lines of code should be removed.(ÑÉ¾¿8¦È”‘2
+X	java:S125€	"<This block of commented-out lines of code should be removed.(È«’N8¦È”‘2
+^	java:S125ˆ	"<This block of commented-out lines of code should be removed.( „Ğ›úÿÿÿÿ8¦È”‘2
+v
+java:S2139¥	"XEither log this exception and handle it, or rethrow it with some contextual information.(É®£8§È”‘2
+^	java:S125ª	"<This block of commented-out lines of code should be removed.(¤Î–éûÿÿÿÿ8¨È”‘2
+Z
+java:S10681"8Remove this unused "startTimeForDiscount" private field.(‚¯”áüÿÿÿÿ8¼ê‘2
+S
+java:S10682"6Remove this unused "endTimeForDiscount" private field.(ôÆÂÅ8¼ê‘2

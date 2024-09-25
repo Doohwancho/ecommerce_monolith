@@ -1,0 +1,40 @@
+
+h	java:S112“"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8Æä¬Ã¢2
+c
+java:S2184ª"@Cast one of the operands of this addition operation to a "long".(È¯œÍşÿÿÿÿ8Èä¬Ã¢2
+„	java:S116!"cRename this field "NUMBER_OF_UNIQUE_STRINGS" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(äô´ƒøÿÿÿÿ8 æ¬Ã¢2
+—	java:S116'"vRename this field "NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ù‡÷½ÿÿÿÿÿ8 æ¬Ã¢2
+Š	java:S116("nRename this field "NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(»Ú¡›8 æ¬Ã¢2
+w	java:S116)"\Rename this field "NUMBER_OF_OPTIONS" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ï‡Ì8 æ¬Ã¢2
+y	java:S116*"^Rename this field "NUMBER_OF_DISCOUNTS" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(·Á‡s8 æ¬Ã¢2
+>
+java:S1170;"!Make this final field static too.(ÒÏú8¡æ¬Ã¢2
+œ
+java:S1450'"zRemove the "NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND" field and declare it as a local variable in the relevant methods.(Ù‡÷½ÿÿÿÿÿ8¢æ¬Ã¢2
+–
+java:S14505"tRemove the "uniqueDoublesHundredToHundredThousand" field and declare it as a local variable in the relevant methods.(Šÿô¦üÿÿÿÿ8£æ¬Ã¢2
+Š
+java:S14504"hRemove the "uniqueDoublesOneToHundred" field and declare it as a local variable in the relevant methods.(Ÿıåûÿÿÿÿ8£æ¬Ã¢2
+X	java:S125#"<This block of commented-out lines of code should be removed.(¤ñŞ€8¥æ¬Ã¢2
+]	java:S125."<This block of commented-out lines of code should be removed.(ñ¥Êıÿÿÿÿ8¦æ¬Ã¢2
+X	java:S1251"<This block of commented-out lines of code should be removed.(’‹İƒ8¦æ¬Ã¢2
+
+java:S1130F"nRemove the declaration of thrown exception 'java.sql.SQLException', as it cannot be thrown from method's body.(ˆ¼Êÿÿÿÿÿ8§æ¬Ã¢2
+{
+java:S2139‘"XEither log this exception and handle it, or rethrow it with some contextual information.(Ê¢üâùÿÿÿÿ8ªæ¬Ã¢2
+^	java:S125Å"<This block of commented-out lines of code should be removed.(§ÿ°ßúÿÿÿÿ8²æ¬Ã¢2
+P
+java:S1135ë"2Complete the task associated to this TODO comment.(Ú½Çü8¾æ¬Ã¢2
+Y	java:S125„"<This block of commented-out lines of code should be removed.(âõÙ–8Àæ¬Ã¢2
+Y	java:S125"<This block of commented-out lines of code should be removed.(ÊÑƒù8Àæ¬Ã¢2
+Y	java:S125£"<This block of commented-out lines of code should be removed.(Ïº®£8Àæ¬Ã¢2
+^	java:S125µ"<This block of commented-out lines of code should be removed.(¥¿¾‚ıÿÿÿÿ8Áæ¬Ã¢2
+^	java:S125¸"<This block of commented-out lines of code should be removed.(ÅœÏ…ıÿÿÿÿ8Áæ¬Ã¢2
+v
+java:S2139É"XEither log this exception and handle it, or rethrow it with some contextual information.(É®£8Áæ¬Ã¢2
+v
+java:S2139•"XEither log this exception and handle it, or rethrow it with some contextual information.(É®£8Äæ¬Ã¢2
+u
+java:S1128"SRemove this unused import 'org.springframework.beans.factory.annotation.Qualifier'.(íàÄ®ıÿÿÿÿ8Åæ¬Ã¢2
+k
+java:S10685"IRemove this unused "uniqueDoublesHundredToHundredThousand" private field.(Šÿô¦üÿÿÿÿ8Åæ¬Ã¢2

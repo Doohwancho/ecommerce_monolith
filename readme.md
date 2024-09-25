@@ -24,6 +24,7 @@
     - b. [통계 쿼리](#b-통계-쿼리)
     - c. [sql tuning](#c-sql-tuning)
 	- d. [bulk insert](#d-bulk-insert)
+	- e. [반정규화](#e-반정규화)
 - H. [기술적 도전 - Cloud](#h-기술적-도전---cloud)
 	- a. [provisioning with terraform & packer](#a-provisioning-with-terraform-and-packer)
 	- b. [prometheus and grafana + PMM](#b-prometheus-and-grafana--pmm)
@@ -151,7 +152,11 @@ Ecommerce MVP
 
 
 # D. ERD diagram
+## a. 정규화 버전 ERD
 ![](documentation/images/erd.png)
+
+## b. 반정규화 버전 ERD
+![](documentation/images/반정규화된_ERD.png)
 
 VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 열 수 있다.
 
@@ -2118,6 +2123,18 @@ disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o
 
 왜 그렇게 나오는지는 ppm같은 mysql 전용 모니터링 툴을 붙여서 더 자세히 알아봐야 할 듯 싶다.
 
+
+
+## e. 반정규화
+before)
+![](documentation/images/erd.png)
+
+after)
+![](documentation/images/반정규화된_ERD.png)
+
+- option_json, discount_json은 별도 테이블이 아닌 product table의 json field를 구체적으로 적은 것이다.
+- FK도 성능향상 목적으로 모두 제거
+- db에서는 최대한 index타서 최소량만 i/o 해오는 식으로 짠다(join X). 나머지 데이터 조립은 서버에서 한다.
 
 
 
