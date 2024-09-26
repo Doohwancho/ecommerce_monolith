@@ -30,32 +30,22 @@ public class JdbcFakeDataGenerator {
     
     private final Logger log = LoggerFactory.getLogger(JdbcFakeDataGenerator.class);
     private final RandomValueGenerator randomValueGenerator;
-    private Integer NUMBER_OF_UNIQUE_STRINGS = 80_000; //520_807
+    private Integer NUMBER_OF_UNIQUE_STRINGS = 1_000;
     private static final Integer LENGTH_OF_STRING_FOR_UNIQUE_STRINGS = 10;
-    //    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THIRTY = 0;
-//    private static final int NUMBER_OF_UNIQUE_INTEGER_ONE_TO_THOUSAND = 0;
-//    private static final int NUMBER_OF_DOUBLE_ZERO_TO_FIVE = 50;
-//    private static final int NUMBER_OF_DOUBLE_ONE_TO_HUNDRED = 1_000;
-    private int NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
     private int NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
     private int NUMBER_OF_OPTIONS = 1000;
     private int NUMBER_OF_DISCOUNTS = 1000;
     private static final int NUMBER_OF_DATE_3MONTH_FROM_TODAY = 90;
     public static final int DAYS_FROM_TODAY = 90;
     private DataSource dataSource;
-    //    private final Faker faker = new Faker();
-//    private final Random random = new Random();
-    private String[] uniqueStrings;
-    //    private int[] uniqueIntegersOneToThirty;
-//    private int[] uniqueIntegersOneToThousand;
-    private double[] uniqueDoublesZeroToFive;
-    private double[] uniqueDoublesOneToHundred;
-    private double[] uniqueDoublesHundredToHundredThousand;
-    private double[] uniqueDoublesHundredToMillion;
-    private List<String> uniqueOptionJsons;
-    private List<String> uniqueDiscountInJsonFormat;
-    private List<List<DiscountDTO>> uniqueDiscountInDiscountDTOFormat;
-    private LocalDateTime[] uniqueLocalDateTimeThreeMonthsPastToToday;
+    private String[] uniqueStrings; //user, product, orders 에 String값들에 자주 쓰인다. 사이즈가 매우 커서(baseAmount * 10) 신경써야 한다.
+    private double[] uniqueDoublesZeroToFive; //평점, RATING에 쓰이며, 0.0~5.0 사이의 값이 쓰인다. 사이즈가 작아서 신경 꺼도 됨.
+    private double[] uniqueDoublesOneToHundred; //할인율, DISCOUNT_RATES. 1.0~100.0 사이의 값이 쓰인다. 사이즈가 작아서 신경 꺼도 됨.
+    private double[] uniqueDoublesHundredToMillion; //제품 가격(base_price). 약 1,000개의 unique 값을 만든다. (NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION)
+    private List<String> uniqueOptionJsons; //product에 들어가는 Options. numberOfProducts만큼 만든다. 양이 많다.
+    private List<String> uniqueDiscountInJsonFormat; //product에 들어가는 Discounts. numberOfProducts만큼 만든다. 양이 많다.
+    private List<List<DiscountDTO>> uniqueDiscountInDiscountDTOFormat; //product에 들어가는 Discounts. numberOfProducts만큼 만든다. 양이 많다.
+    private LocalDateTime[] uniqueLocalDateTimeThreeMonthsPastToToday; //discounts 쿠폰 유효기간이 현재 - 3달 이전 랜덤값. 90개정도 만든다.
     private final ZoneOffset offset = ZoneOffset.UTC;
     private final OffsetDateTime nowInOffsetDateTimeFormat = OffsetDateTime.now();
     
@@ -72,31 +62,19 @@ public class JdbcFakeDataGenerator {
         //step1) bulk-insert 전, 얼마나 많은 양의 fake-data를 만들건지 정하기 based on requested input
         int baseAmount = numberOfUsers;
     
-        if (baseAmount <= 1000) {
-            NUMBER_OF_UNIQUE_STRINGS = 542;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 500;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount * 10; //가격의 종류도 amountOfProducts와 비례하도록 설정
-            NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
-            NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
-        } else if (baseAmount <= 10000) {
-            NUMBER_OF_UNIQUE_STRINGS = 10_000;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount * 10; //가격의 종류도 amountOfProducts와 비례하도록 설정
-            NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
-            NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
-        } else if (baseAmount <= 100_000) {
-            NUMBER_OF_UNIQUE_STRINGS = baseAmount;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000; //가격의 갯수는 최대 10000종류로 고정
-            NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
-            NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
+        //user(baseAmount) : product : order = 1 : 10 : 5
+        //String[] 수가 10만개 까지 random-unique-values 쓰도록 하고, 그 이상은 만든 10만개에서 중복값 꺼내서 쓰도록 한다.
+        //주의!) uniqueStrings의 갯수가 numberOfUsers 보다 적으면, 중복 유저가 생기고, getUserByUserId(userId)에서 중복값이 검색되 에러난다.
+        if(baseAmount <= 10000) {
+            NUMBER_OF_UNIQUE_STRINGS = numberOfProducts;
+            NUMBER_OF_OPTIONS = numberOfProducts;
+            NUMBER_OF_DISCOUNTS = numberOfProducts;
         } else {
-            NUMBER_OF_UNIQUE_STRINGS = 100_000; //strings를 너무 많이 만들면 RAM 부족함. 최대 10만개로 고정.
-            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000; //가격의 갯수는 최대 10000종류로 고정
-            NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
-            NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
+            NUMBER_OF_UNIQUE_STRINGS = 100_000;
+            NUMBER_OF_OPTIONS = 100_000;
+            NUMBER_OF_DISCOUNTS = 100_000;
         }
+        
     
         // step2) Generate fake data(ex. unique strings, doubles, etc)
         this.uniqueStrings = randomValueGenerator.generateUniqueStrings(NUMBER_OF_UNIQUE_STRINGS,
@@ -104,8 +82,6 @@ public class JdbcFakeDataGenerator {
         this.uniqueDoublesZeroToFive = randomValueGenerator.generateRandomDoublesByPointOne(0, 5);
         this.uniqueDoublesOneToHundred = randomValueGenerator.generateRandomDoublesByPointOne(1,
             100);
-        this.uniqueDoublesHundredToHundredThousand = randomValueGenerator.generateRandomDoubles(
-            NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND, 100, 100000);
         this.uniqueDoublesHundredToMillion = randomValueGenerator.generateRandomDoubles(
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION, 100,
             1000000);

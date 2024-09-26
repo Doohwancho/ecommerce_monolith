@@ -1,9 +1,0 @@
-
-g	java:S112K"FDefine and throw a dedicated exception instead of using a generic one.(‡­ğÚıÿÿÿÿ8 ¼Ïó¡2
-~
-java:S3008"aRename this field "SIZE_OF_UNIQUE_STRINGS" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¼úÆ8º¼Ïó¡2
-X	java:S125"<This block of commented-out lines of code should be removed.(°¦Å×8½¼Ïó¡2
-S
-java:S26964"6Make the enclosing method "static" or remove this set.(Ôîø¾8¾¼Ïó¡2
-Y	java:S125¾"<This block of commented-out lines of code should be removed.(ùá“8Ç¼Ïó¡2
-Y	java:S125Î"<This block of commented-out lines of code should be removed.(ÛÄÇÏ8É¼Ïó¡2
