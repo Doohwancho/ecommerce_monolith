@@ -20,7 +20,7 @@ sudo git clone --depth 1 https://github.com/Doohwancho/ecommerce.git
 cd ecommerce
 sudo chown -R ubuntu:ubuntu .
 
-cd /home/ubuntu/ecommerce/back/3.denormalized_ver_without_authentication_for_stress_test_purpose
+cd /home/ubuntu/ecommerce/back/3.denormalized_ver_without_authentication_for_stress_test_purpose/denormalized_ecommerce
 chmod +x gradlew
 sudo ./gradlew build -x test
 
