@@ -7,9 +7,9 @@ import { sleep } from 'k6';
 
   B. how to run?
   1. on local
-    - docker run --rm -i --net=host grafana/k6 run - <./k6/load_test/load-9to1_read_write_ratio_scenario_load_test.js
+    - docker run --rm -i --net=host grafana/k6 run - <./k6/1.load_test_정규화된_backend_server/load-9to1_read_write_ratio_scenario_load_test.js
   2. on ec2 server 
-    - sudo docker run --rm -i grafana/k6 run - <./k6/load_test/load-9to1_read_write_ratio_scenario_load_test.js
+    - sudo docker run --rm -i grafana/k6 run - <./k6/1.load_test_정규화된_backend_server/load-9to1_read_write_ratio_scenario_load_test.js
 
   C. how to configure?
   1. BASE_URL을 엔드포인트 url로 설정
