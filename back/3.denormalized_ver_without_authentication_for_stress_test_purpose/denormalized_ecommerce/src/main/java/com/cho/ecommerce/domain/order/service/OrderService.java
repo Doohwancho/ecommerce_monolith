@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,6 +49,8 @@ public class OrderService {
         for (OrderItem item : createOrderRequestDTO.getOrderItems()) {
             productService.decreaseStock(item.getProductName(), item.getQuantity());
         }
+        
+        //TODO - 기존에 해당 유저의 order을 가져와서, totalPrice, totalQuantity 업데이트 후, orderItems를 추가하는 코드 필요
         
         // 5. save order
         DenormalizedOrderEntity orderEntity = orderMapper.convertToEntity(createOrderRequestDTO);

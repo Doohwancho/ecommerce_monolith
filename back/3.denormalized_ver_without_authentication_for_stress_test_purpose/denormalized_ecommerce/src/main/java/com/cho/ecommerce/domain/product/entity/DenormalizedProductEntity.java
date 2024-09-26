@@ -239,9 +239,7 @@ public class DenormalizedProductEntity {
         }
     }
     
-    // You should also update the getEffectivePrice() method similarly:
     public Double getDiscountedPrice() {
-        log.info("discounted price", this.discounts);
         try {
             List<Product.DiscountDTO> discountsList = getDiscountsAsList();
             OffsetDateTime now = OffsetDateTime.now();
@@ -258,7 +256,6 @@ public class DenormalizedProductEntity {
                     }
                 }
             }
-            
             return Math.max(effectivePrice, 0);
         } catch (IOException e) {
             log.error("Error parsing discounts JSON: {}", this.discounts, e);

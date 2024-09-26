@@ -75,25 +75,25 @@ public class JdbcFakeDataGenerator {
         if (baseAmount <= 1000) {
             NUMBER_OF_UNIQUE_STRINGS = 542;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 500;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount * 10; //가격의 종류도 amountOfProducts와 비례하도록 설정
             NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
             NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
         } else if (baseAmount <= 10000) {
             NUMBER_OF_UNIQUE_STRINGS = 10_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount * 10; //가격의 종류도 amountOfProducts와 비례하도록 설정
             NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
             NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
         } else if (baseAmount <= 100_000) {
             NUMBER_OF_UNIQUE_STRINGS = baseAmount;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000; //가격의 갯수는 최대 10000종류로 고정
             NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
             NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
         } else {
             NUMBER_OF_UNIQUE_STRINGS = 100_000; //strings를 너무 많이 만들면 RAM 부족함. 최대 10만개로 고정.
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
-            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
+            NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000; //가격의 갯수는 최대 10000종류로 고정
             NUMBER_OF_OPTIONS = NUMBER_OF_UNIQUE_STRINGS;
             NUMBER_OF_DISCOUNTS = NUMBER_OF_UNIQUE_STRINGS;
         }
@@ -253,17 +253,16 @@ public class JdbcFakeDataGenerator {
     }
     
     private double calculateLowestPrice(double basePrice, List<DiscountDTO> discounts) {
-        double lowestPrice = basePrice;
+        double discountedPrice = basePrice;
         for (DiscountDTO discount : discounts) {
-            //its always "PERCENTAGE" type
-            lowestPrice = Math.min(lowestPrice, basePrice * (1 - discount.getValue() / 100));
-//            if ("PERCENTAGE".equals(discount.getType())) {
-//                lowestPrice = Math.min(lowestPrice, basePrice * (1 - discount.getValue() / 100));
-//            } else if ("FLAT_RATE".equals(discount.getType())) {
-//                lowestPrice = Math.min(lowestPrice, basePrice - discount.getValue());
-//            }
+            if ("PERCENTAGE".equals(discount.getType())) {
+                double discountAmount = discountedPrice * (discount.getValue() / 100);
+                discountedPrice -= discountAmount;
+            } else if ("FLAT_RATE".equals(discount.getType())) {
+                discountedPrice -= discount.getValue();
+            }
         }
-        return Math.max(lowestPrice, 0);
+        return Math.max(discountedPrice, 0);
     }
     
 //    public void bulkInsertDenormalizedUsers(Connection connection, int numberOfUsers, int batchSize)

@@ -15,8 +15,6 @@ edenormalized_ecommerce/src/main/java/com/cho/ecommerce/domain/member/repository
 fdenormalized_ecommerce/src/main/java/com/cho/ecommerce/domain/product/dto/ProductCreateRequestDTO.java,2/8/28b6eccef149d8b8b7e711a4f1bdab68bfc65983
 í
 bdenormalized_ecommerce/src/main/java/com/cho/ecommerce/domain/order/dto/OrderItemsResponseDTO.java,f/d/fd19c3f5d9da10ddaec02ef694f4d22f6a31f59a
-å
-\denormalized_ecommerce/src/main/java/com/cho/ecommerce/domain/order/dto/OrderCreatedDTO.java,5/d/5d356554c7d3ecfda97a9e4c971de9ed7060b117
 è
 _denormalized_ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/MemberService.java,7/6/760e9dd5eac57ad2f25236819fd7f5b7ddcb1fdc
 ì
@@ -25,8 +23,6 @@ cdenormalized_ecommerce/src/main/java/com/cho/ecommerce/global/config/util/Rando
 [denormalized_ecommerce/src/main/java/com/cho/ecommerce/domain/order/mapper/OrderMapper.java,4/8/48925c3e0c2682ed08559b58ecb864472b440397
 ì
 cdenormalized_ecommerce/src/main/java/com/cho/ecommerce/domain/bulk_insert/BulkInsertController.java,8/3/839666c2558e054a628704ce4134beb9e96d2d9a
-ì
-cdenormalized_ecommerce/src/main/java/com/cho/ecommerce/domain/order/controller/OrderController.java,e/5/e5f36eca1d5886d1724460d2d6c8c098c9c08b71
 ì
 cdenormalized_ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java,f/4/f44d324da17e90c8a39073e09531cc81724c0558
 S
