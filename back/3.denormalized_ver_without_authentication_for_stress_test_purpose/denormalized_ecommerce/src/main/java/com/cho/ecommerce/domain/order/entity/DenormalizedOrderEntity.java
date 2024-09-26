@@ -68,7 +68,7 @@ public class DenormalizedOrderEntity {
     
     @Column(name = "MEMBER_EMAIL")
     @NotBlank(message = "Member email is required")
-    @Email(message = "Invalid email format")
+//    @Email(message = "Invalid email format")
     private String memberEmail;
     
     @Column(name = "TOTAL_PRICE")
