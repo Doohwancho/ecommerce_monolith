@@ -32,4 +32,4 @@ nohup java -jar \
   -DRDS_PASSWORD=$RDS_PASSWORD \
   -DRDS_DATABASE=$RDS_DATABASE \
   -DRDS_PORT=$RDS_PORT \
-  ./build/libs/ecommerce-0.0.1-SNAPSHOT.jar > application.log 2>&1 &
+  ./build/libs/denormalized_ecommerce-0.0.1-SNAPSHOT.jar > application.log 2>&1 &
