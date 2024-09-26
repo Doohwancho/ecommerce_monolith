@@ -1912,6 +1912,45 @@ Eden이 찰 때까지의 조금의 시간 동안만 약간 시간을 벌 수 있
 
 bulk-insert 메서드 4개만큼 dataSource에서 Connection을 4개받아서, 동시에 병렬로 처리하면, 더 빨라지지 않을까?
 
+```java
+int numThreads = Runtime.getRuntime().availableProcessors(); //cpu core 수 만큼 bulk-insert를 분할정복할 thread 생성
+ExecutorService executorService = Executors.newFixedThreadPool(numThreads); //bulk-insert를 불할정복할 thread pool 생성
+
+List<Future<?>> futures = new ArrayList<>();
+
+for (int i = 0; i < numThreads; i++) {
+	int startUser = i * (numberOfUsers / numThreads);
+	int endUser = (i == numThreads - 1) ? numberOfUsers : (i + 1) * (numberOfUsers / numThreads);
+
+	int startProduct = i * (numberOfProducts / numThreads);
+	int endProduct = (i == numThreads - 1) ? numberOfProducts : (i + 1) * (numberOfProducts / numThreads);
+
+	int startOrder = i * (numberOfOrders / numThreads);
+	int endOrder = (i == numThreads - 1) ? numberOfOrders : (i + 1) * (numberOfOrders / numThreads);
+
+	futures.add(executorService.submit(() -> {
+		try (Connection connection = dataSource.getConnection()) {
+			connection.setAutoCommit(false);
+			bulkInsertDenormalizedUsers(connection, startUser, endUser, batchSize);
+			bulkInsertDenormalizedProducts(connection, startProduct, endProduct, batchSize);
+			bulkInsertDenormalizedOrders(connection, startOrder, endOrder, numberOfUsers, numberOfProducts, batchSize);
+			connection.commit();
+		} catch (SQLException | JsonProcessingException e) {
+			log.error("Error in bulk insert thread", e);
+			throw new RuntimeException(e);
+		}
+	}));
+}
+
+// Wait for all threads to complete
+for (Future<?> future : futures) {
+	future.get();
+}
+
+executorService.shutdown();
+```
+
+
 실험해본 결과,
 ```
 Total execution time: 150127 ms
@@ -2132,9 +2171,9 @@ before)
 after)
 ![](documentation/images/반정규화된_ERD.png)
 
-- option_json, discount_json은 별도 테이블이 아닌 product table의 json field를 구체적으로 적은 것이다.
-- FK도 성능향상 목적으로 모두 제거
-- db에서는 최대한 index타서 최소량만 i/o 해오는 식으로 짠다(join X). 나머지 데이터 조립은 서버에서 한다.
+1. `option_json`, `discount_json`, `order_item_json`은 별도 테이블이 아닌 product table의 json field를 구체적으로 적은 것이다.
+2. FK도 성능향상 목적으로 모두 제거
+3. db에서는 최대한 index타서 최소량만 i/o 해오는 식으로 짠다(join X). 나머지 데이터 조립/가공은 서버에서 한다.
 
 
 
