@@ -29,6 +29,10 @@ public class ProductService {
     @Autowired
     private ObjectMapper objectMapper;
     
+    public List<Product> getAllProducts() {
+        List<DenormalizedProductEntity> allProducts = productRepository.findAll();
+        return allProducts.stream().map(ProductMapper::convertToProduct).collect(Collectors.toList());
+    }
     public Product getProduct(Long productId) throws IOException {
         DenormalizedProductEntity entity = productRepository.findById(productId)
             .orElseThrow(() -> new RuntimeException(productId + " does not exist in database"));

@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.product.controller;
 
+import com.cho.ecommerce.domain.product.domain.Product;
 import com.cho.ecommerce.domain.product.dto.PaginatedProductResponse;
 import com.cho.ecommerce.domain.product.dto.ProductCreateRequestDTO;
 import com.cho.ecommerce.domain.product.dto.ProductResponseDTO;
@@ -32,6 +33,11 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
     
+    @GetMapping
+    public ResponseEntity<List<Product>> getAllProduct() {
+        List<Product> product = productService.getAllProducts();
+        return ResponseEntity.ok(product);
+    }
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<PaginatedProductResponse> getProductsByCategoryId(
         @PathVariable Long categoryId,
