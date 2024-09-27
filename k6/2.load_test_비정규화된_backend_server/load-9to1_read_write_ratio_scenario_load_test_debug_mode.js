@@ -1,9 +1,11 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
+import { sleep, check } from 'k6';
+import { Rate } from 'k6/metrics';
 
 
 /**
   A. what is this?
+  모든 요청 메서드 마다 latency가 몇ms 찍혔는지 console.log로 보여주는 디버그 모드
   back/3.반정규화 프로젝트에 스트레스 테스트 하는 스크립트 
   read:write 비율 9:1인 load-test-script
 
@@ -11,8 +13,8 @@ import { sleep } from 'k6';
   1. on local
     - docker run --rm -i --net=host grafana/k6 run - <./k6/2.load_test_비정규화된_backend_server/load-9to1_read_write_ratio_scenario_load_test.js
   2. on ec2 server 
-    - sudo docker run --rm -i grafana/k6 run - <./k6/2.load_test_비정규화된_backend_server/load-9to1_read_write_ratio_scenario_load_test.js
-    - sudo docker run --rm -i grafana/k6 run - <./load-9to1_read_write_ratio_scenario_load_test.js
+    - sudo docker run --rm -i grafana/k6 run - <./k6/2.load_test_비정규화된_backend_server/load-9to1_read_write_ratio_scenario_load_test_debug_mode.js
+    - sudo docker run --rm -i grafana/k6 run - <./load-9to1_read_write_ratio_scenario_load_test_debug_mode.js
 
   C. how to configure?
   1. BASE_URL을 엔드포인트 url로 설정
@@ -177,30 +179,51 @@ export function setup() {
   return { users, products };
 }
 
+const errorRate = new Rate('errors');
+
+function makeRequest(name, requestFunc) {
+  const startTime = new Date();
+  const response = requestFunc();
+  const endTime = new Date();
+  const duration = endTime - startTime;
+
+  console.log(`${name} took ${duration}ms`);
+
+  if (response.status !== 200) {
+    console.error(`${name} failed. Status: ${response.status}, Body: ${response.body}`);
+    errorRate.add(1);
+  } else {
+    errorRate.add(0);
+  }
+
+  // check 함수 사용 방식 수정
+  const checkResult = check(response, {
+    'status is 200': (r) => r.status === 200,
+  });
+
+  if (!checkResult) {
+    console.error(`${name} check failed`);
+  }
+
+  return response;
+}
+
+
 function getProductsByCategory() {
   const categoryId = Math.floor(Math.random() * (75 - 16 + 1)) + 16;
   const url = `${BASE_URL}/products/category/${categoryId}`;
-  const response = http.get(url);
-  if (response.status !== 200) {
-      console.error(`getProductsByCategory failed. Status: ${response.status}, Body: ${response.body}`);
-  }
+  makeRequest('getProductsByCategory', () => http.get(url));
 }
 
 function getProductById(products) {
   const product = products[Math.floor(Math.random() * products.length)];
   const url = `${BASE_URL}/products/${product.productId}`;
-  const response = http.get(url);
-  if (response.status !== 200) {
-      console.error(`getProductById failed with status: ${response.status}, Body: ${response.body}`);
-  }
+  makeRequest('getProductById', () => http.get(url));
 }
 
 function getHighestRatedProducts() {
   const url = `${BASE_URL}/products/highestRatings`;
-  const response = http.get(url);
-  if (response.status !== 200) {
-      console.error(`getHighestRatedProducts failed with status: ${response.status}, Body: ${response.body}`);
-  }
+  makeRequest('getHighestRatedProducts', () => http.get(url));
 }
 
 function getOrderItemsByUsername(users) {
@@ -210,10 +233,7 @@ function getOrderItemsByUsername(users) {
   }
   const user = users[Math.floor(Math.random() * users.length)];
   const url = `${BASE_URL}/orders/orderItems/${user.name}`;
-  const response = http.get(url);
-  if (response.status !== 200) {
-      console.error(`getOrderItemsByUsername failed with status: ${response.status}, Body: ${response.body}`);
-  }
+  makeRequest('getOrderItemsByUsername', () => http.get(url));
 }
 
 function getUserByUsername(users) {
@@ -223,10 +243,7 @@ function getUserByUsername(users) {
   }
   const user = users[Math.floor(Math.random() * users.length)];
   const url = `${BASE_URL}/users/${user.name}`;
-  const response = http.get(url);
-  if (response.status !== 200) {
-      console.error(`getUserByUsername failed with status: ${response.status}, Body: ${response.body}`);
-  }
+  makeRequest('getUserByUsername', () => http.get(url));
 }
 
 function createOrder(users, products) {
@@ -256,21 +273,9 @@ function createOrder(users, products) {
       zipCode: user.zipCode
   };
 
-  // console.log("----------------------payload---------------------")
-  // console.log(payload);
-  // console.log("-----------------------user---------------------")
-  // console.log(user);
-  // console.log("----------------------product-----------------------")
-  // console.log(product);
-  // console.log("--------------------------------------------------")
-
-  const response = http.post(`${BASE_URL}/orders`, JSON.stringify(payload), {
-      headers: { 'Content-Type': 'application/json' },
-  });
-
-  if (response.status !== 200) {
-      console.error('Order creation failed with status:', response.status);
-  }
+  makeRequest('createOrder', () => http.post(`${BASE_URL}/orders`, JSON.stringify(payload), {
+    headers: { 'Content-Type': 'application/json' },
+  }));
 }
 
 export default function (data) {
