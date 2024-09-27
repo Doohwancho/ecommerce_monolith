@@ -101,18 +101,41 @@ resource "aws_iam_role_policy_attachment" "ssm_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-# EC2 Instance
+/*
+# case1) EC2 Instance (AMD version with limited cpu credits)
 resource "aws_instance" "stress_test_instance" {
-  ami = "ami-0419dc605b6dde61f"
-  instance_type = "t3a.small" #AMD x86_64 architecture, 2-core 2-GiB RAM
+  ami = "ami-0419dc605b6dde61f" # ami for ap-northeast-2 region, ubuntu 18.04 ver, AMD architecture 
 #   ami           = "ami-0a5a6128e65676ebb"  # Amazon Linux 2 ARM64 AMI in Seoul region
-#   instance_type = "t4g.small"
+  # 주의! aws-ec2에 t2,t3,t4g 에는 'cpu credit'이라는 개념이 있는데, cpu usage 제한량이 있고, 딱 1분만 max core 쓸 수 수있음. 이를 초과하면 자동으로 중지됨. ex. t3a.xlarge는 cpu usage 50% 초과하니까 서버 터짐 
+  # instance_type = "t3a.small" #AMD x86_64 architecture, 2-core 2-GiB RAM # 주의! 300 RPS 테스트 하니까 서버 터짐
+  # instance_type = "t3a.medium" #AMD x86_64 architecture, 2-core 4-GiB RAM # 주의! 300 RPS 테스트 하니까 서버 터짐
+  # instance_type = "t3a.large" #AMD x86_64 architecture, 2-core 8-GiB RAM # 주의! 300 RPS 테스트 하니까 서버 터짐
+  instance_type = "t3a.xlarge" #AMD x86_64 architecture, 4-core 16-GiB RAM 
   subnet_id     = aws_subnet.stress_test_subnet.id
 
   vpc_security_group_ids      = [aws_security_group.stress_test_sg.id]
   iam_instance_profile        = aws_iam_instance_profile.stress_test_profile.name
   associate_public_ip_address = true
-  user_data = base64encode(file("./user_data.sh"))
+  user_data = base64encode(file("./user_data_AMD.sh"))
+
+  tags = {
+    Name = "stress-test-instance"
+  }
+}
+*/
+
+# EC2 Instance (arm64 version without limited cpu credits)
+resource "aws_instance" "stress_test_instance" {
+  //ap-northeast-2에 ubuntu 18.04ver에 arm64 에 맞는 ec2's ami 찾기 from 'https://cloud-images.ubuntu.com/locator/ec2/'
+  ami = "ami-0195178fef736f4ed" # ami for ap-northeast-2 region, ubuntu 18.04 ver, ARM64 architecture 
+  # https://instances.vantage.sh/aws/ec2/c6g.xlarge
+  instance_type = "c6g.xlarge" #ARM64, 4-core 8-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. 
+  subnet_id     = aws_subnet.stress_test_subnet.id
+
+  vpc_security_group_ids      = [aws_security_group.stress_test_sg.id]
+  iam_instance_profile        = aws_iam_instance_profile.stress_test_profile.name
+  associate_public_ip_address = true
+  user_data = base64encode(file("./user_data_ARM64.sh"))
 
   tags = {
     Name = "stress-test-instance"
