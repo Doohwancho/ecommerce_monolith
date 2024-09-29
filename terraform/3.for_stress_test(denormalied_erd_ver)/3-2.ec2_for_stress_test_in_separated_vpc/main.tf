@@ -129,7 +129,8 @@ resource "aws_instance" "stress_test_instance" {
   //ap-northeast-2에 ubuntu 18.04ver에 arm64 에 맞는 ec2's ami 찾기 from 'https://cloud-images.ubuntu.com/locator/ec2/'
   ami = "ami-0195178fef736f4ed" # ami for ap-northeast-2 region, ubuntu 18.04 ver, ARM64 architecture 
   # https://instances.vantage.sh/aws/ec2/c6g.xlarge
-  instance_type = "c6g.xlarge" #ARM64, 4-core 8-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. 
+  # instance_type = "c6g.xlarge" #ARM64, 4-core 8-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. -> 300RPS 테스트시 cpu load average가 4정도 나오기 때문에, peak 하면 죽는 경우 발생. 8코어 이상 써야 함.
+  instance_type = "c6g.2xlarge" #ARM64, 4-core 8-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. 
   subnet_id     = aws_subnet.stress_test_subnet.id
 
   vpc_security_group_ids      = [aws_security_group.stress_test_sg.id]

@@ -2175,7 +2175,30 @@ after)
 2. FK도 성능향상 목적으로 모두 제거
 3. db에서는 최대한 index타서 최소량만 i/o 해오는 식으로 짠다(join X). 나머지 데이터 조립/가공은 서버에서 한다.
 
+```json 
+[
+	{
+		"item_id": 1,
+		// ... 상품 정보 필드
 
+		"options": [
+			{"option_id": 1, "name": "Color", "value": "Red"},
+			{"option_id": 2, "name": "Size", "value": "Large"}
+		],
+		"discounts": [
+			{"discount_id": 1, "type": "PERCENTAGE", "value": 10, "start_date": "2023-01-01", "end_date": "2023-12-31"}
+		]
+	},
+	// 다른 Product
+]
+```
+
+원래 정규화된 ERD였다면 `PRODUCT, PRODUCT_ITEM, OPTION, DISCOUNT` 테이블 4개를 조인해서 가져왔었다면,
+
+비정규화된 ERD에서는 `OPTION`, `DISCOUNT`를 json타입으로 넣고, 통째고 가져와서 백엔드에서 파싱하는 식으로 처리한다.
+
+여러 테이블 join에서 오는 cost 줄여준다.\
+테이블 사이즈가 커질수록 효과적이다. 
 
 
 # H. 기술적 도전 - Cloud
@@ -2242,22 +2265,52 @@ PMM도 같은 위와 같은 이유로 선택하게 되었다.
 
 ## c. 300 RPS 부하 테스트
 
+### 0. RPS 별 DAU 예측
+
+목표: RPS당 피크 시간대 유저와 DAU 계산 in ecommerce app
+
+1. 만약 100RPS 인 경우, 시간당 36만 request, 하루에 864만 request가 온다. 
+2. 1 유저당 평균 50 request를 보낸다고 가정하면, 864만 / 50 = 172,800 DAU 
+3. 만약 피크 시간대에 20%의 DAU가 active하다고 가정하면, 34,560 users 
+4. 결론1: DAU가 17만인 서비스에서, 피크시간에 3.5만명이 100RPS 를 보낸다. 
+5. 결론2: DAU가 51만인 서비스에서, 피크시간에 10.5만명이 300RPS 를 보낸다. 
+6. 결론3: DAU가 170만인 서비스에서, 피크시간에 35만명이 1,000RPS 를 보낸다. 
+
+이게 예측이 얼추 맞다고 보이는 근거는 디스패치의 aws 컨퍼런스를 보면 유추할 수 있다.
+
+DAU가 60만명인데 [이 구간](https://youtu.be/8uesJLEXxyk?t=1425)에서 공개한 디스패치 트래픽 양을 보면
+
+![디스패치 트래픽](documentation/images/디스패치_트래픽.png)
+
+평소에 1.5 Mbps ~ 3.0 Mbps 왔다갔다 한다. (특종 기사대는 훨씬 높아짐)
+
+근데 RPS 바꿔가며 실험했던 데이터 중에 
+300 RPS 때에 네트워크 트래픽 양이
+```
+ data_received..................: 1.4 GB 1.3 MB/s
+ data_sent......................: 35 MB  33 kB/s
+```
+1.3 Mbps 정도 된다.
+
+근데 저건 백엔드에서 가져오는 json만 고려한거라 
+html 페이지 용량까지 고려하면 
+
+대략 3.0 Mbps 정도 나온다고 본다.
+
+처음에 디스패치 DAU가 60만명인데 
+위에 계산한 
+'DAU가 51만인 서비스에서, 피크시간에 10.5만명이 300RPS 를 보낸다.'
+...에서 남는 9만명은 특종기사 같은거 떴을 때 갑작스럽게 몰리는 유저인 것으로 보인다. 
+
+
 ### 1. 실험 방향 설정
 
-1. 가정
-	1. 일일 평균 동시접속자 수는 DAU 대비, 10% 이라고 가정한다.
-		- ex. [당근마켓](https://youtu.be/3iLTBBC9ZX4?t=191)의 경우, 21년도 3분기 8월 기준, 1600만 MAU, 400만 DAU, 75k http request per second, gRPG 60k RPS라고 한다.
-		- 통합 약 130k RPS를 감당하면 대략 400만 DAU까지 커버할 수 있다 예측할 수 있다.
-		- RPS to DAU ratio 는 약 3%이다.
-	2. 일일 최대 동시접속자 수는 평균 동시 접속자 수 대비 3배라고 가정한다.
-	3. DAU to MAU ratio는 ecommerce가 매일 접속하는 종류의 앱이 아닌 점을 고려해 약 10%로 가정한다.
-2. 실험 케이스
-	- case. 일평균 RPS(request per second): 100, 일일 최대 RPS: 300, DAU: 1,000, MAU: 10,000
-3. 실험 목표
+1. 실험 목표
 	1. failover률이 1% 미만이면서
 	2. latency가 500ms 이상 걸리지 않는 aws 아키텍처를 구성한다.
 	3. 위 아키텍처의 1달 유지 비용을 구한다. (on-demand 기준)
-4. 실험 환경
+2. 실험 환경
+	- back/1.ecommerce (정규화버전) 을 테스트한다.
 	- ecommerce는 write/read 비중에서 read 비중이 압도적으로 높다. (9:1 이상)
 	- 캐싱된 index 페이지 다음으로, 트래픽이 가장 많이 몰리는 페이지의 쿼리를 부하 테스트 한다.
 	- 부하 테스트할 쿼리는 아래와 같다. (join을 5번 한다.)
