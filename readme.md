@@ -336,9 +336,9 @@ export default Home;
 
 main page에서 요구하는 top 10 rated products를 redis cache에 매 시간 갱신하여 뿌려준다.
 
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L51-L61
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L76-L79
 
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L116-L126
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L143-L153
 
 
 
@@ -445,7 +445,7 @@ authentication에 3번째 구현기능인
 
 ...를 spring batch로 구현하였다.
 
-https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L26-L146
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L24-L144
 
 
 
@@ -461,8 +461,7 @@ https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c
 
 구현 코드)
 
-https://github.com/Doohwancho/ecommerce/blob/73ddd650c20ca7349cdbf3d992ca1fe357c67da4/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java#L28-L153
-
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java#L26-L155
 
 
 
@@ -646,30 +645,24 @@ public class ProductService {
 2. 악성 request라면, invalidate session + lock user account 한다.
 
 구현 코드)
-https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L68-L88
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L65-L90
 
 
 ### 3. domain 메서드
 
-1. product의 가격을 계산하는 함수
+상품 가격에 discount를 적용하는 함수
 
-https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/Product.java#L57-L66
-
-2. 상품 가격에 discount를 적용하는 함수
-
-https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/Discount.java#L20-L37
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/Discount.java#L20-L37
 
 ### 4. domain 메서드는 PBT로 테스트
 
 Discount 도메인 객체에 applyDiscount()는 돈이 걸린 아주 중요한 함수이므로,\
 Property Based Testing을 한다.
 
-https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L25-L100
-
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L25-L100
 
 ### 5. 요구사항을 구현한 주문 코드
-https://github.com/Doohwancho/ecommerce/blob/c595a8dd1f9932577be4a40f4e3c42d5b20b79d9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L68-L174
-
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L65-L178
 
 
 # G. 기술적 도전 - Database
@@ -865,8 +858,7 @@ INNER JOIN
 ON tmp1.CategoryId = tmp2.CategoryId
 ORDER BY tmp1.CategoryId
 ```
-https://github.com/Doohwancho/ecommerce/blob/4e978a6279c639991811bc4628dc5bfb0a2bbea4/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java#L11-L97
-
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java#L15-L110
 
 ## c. sql tuning
 [b. 통계 쿼리](#b-통계-쿼리)를 튜닝해보자.
