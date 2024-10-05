@@ -37,9 +37,10 @@ resource "aws_db_instance" "database" {
     // EC2: c5.2xlarge (8 vCPU, 16 GB RAM) 또는 c5.4xlarge (16 vCPU, 32 GB RAM)
     // RDS: db.m5.2xlarge (8 vCPU, 32 GB RAM) 또는 db.m5.4xlarge (16 vCPU, 64 GB RAM)
   */
-  instance_class         = "db.m5.large" # intel 64x, 2 vCPU core, 8 GiB RAM, 원래는 최대 1000RPS까지 견뎌야 하나, 현 프로젝트에 stress_test 1000 RPS 테스트 결과, cpu 100% 찍고 사망
-                                         # db.t3.medium (2 vCPU, 4 GB RAM) 정도로 낮춰도 됨. m5.large로 실험해보니 300 RPS 때 RAM 안부족함. CPU는 80% 찍음
-                                         # "db.m6g.2xlarge" # AWS Graviton2 processor, 8 vCPU core, 32 GiB RAM, 1000RPS까지 견딤 
+  instance_class         = "db.m4g.medium" 
+                                         # db.t3.medium or db.t4g.medium(2 vCPU, 4 GB RAM) 정도로 낮춰도 됨. m5.large(2core 8GiB RAM)로 실험해보니 300 RPS 때 RAM 안부족함. CPU는 80% 찍음
+                                         # db.m5.large (2 vCPU, 8 GB RAM) 로 1000 RPS 테스트 결과, cpu 100% 찍고 사망
+                                         # "db.m6g.2xlarge" # AWS Graviton2 processor, 8 vCPU core, 32 GiB RAM -> 1000RPS까지 견딤 
   identifier             = "${var.namespace}-db-instance"
   db_name                = "ecommerce"
   username               = "admin"

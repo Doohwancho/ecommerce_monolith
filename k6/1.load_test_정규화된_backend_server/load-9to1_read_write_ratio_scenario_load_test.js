@@ -17,18 +17,41 @@ import { sleep } from 'k6';
   3. options에 target에 RPS값 설정
  */
 
-export let options = {
+  export let options = {
     noConnectionReuse: false,
     stages: [
-        { duration: '5m', target: 150}, //simulate ramp-up of traffic from 1 to 100 users over 5 minutes
-        { duration: '10m', target: 300}, // stay at 100 users for 10 minutes
-        { duration: '5m', target: 0},  // ramp-down to 0 users
-    ],
+      { duration: '5m', target: 50 },    // Ramp up to 50 RPS over 5 minutes
+      { duration: '10m', target: 50 },   // Stay at 50 RPS for 10 minutes
+      { duration: '5m', target: 100 },   // Ramp up to 100 RPS over 5 minutes
+      { duration: '10m', target: 100 },  // Stay at 100 RPS for 10 minutes
+      { duration: '5m', target: 200 },   // Ramp up to 200 RPS over 5 minutes
+      { duration: '10m', target: 200 },  // Stay at 200 RPS for 10 minutes
+      { duration: '5m', target: 300 },   // Ramp up to 300 RPS over 5 minutes
+      { duration: '10m', target: 300 },  // Stay at 300 RPS for 10 minutes
+      { duration: '5m', target: 400 },   // Ramp up to 400 RPS over 5 minutes
+      { duration: '10m', target: 400 },  // Stay at 400 RPS for 10 minutes
+      { duration: '5m', target: 500 },   // Ramp up to 500 RPS over 5 minutes
+      { duration: '10m', target: 500 },  // Stay at 500 RPS for 10 minutes
+      { duration: '5m', target: 600 },   // Ramp up to 600 RPS over 5 minutes
+      { duration: '10m', target: 600 },  // Stay at 600 RPS for 10 minutes
+      { duration: '5m', target: 700 },   // Ramp up to 700 RPS over 5 minutes
+      { duration: '10m', target: 700 },  // Stay at 700 RPS for 10 minutes
+      { duration: '5m', target: 800 },   // Ramp up to 800 RPS over 5 minutes
+      { duration: '10m', target: 800 },  // Stay at 800 RPS for 10 minutes
+      { duration: '5m', target: 900 },   // Ramp up to 900 RPS over 5 minutes
+      { duration: '10m', target: 900 },  // Stay at 900 RPS for 10 minutes
+      { duration: '5m', target: 1000 },  // Ramp up to 1000 RPS over 5 minutes
+      { duration: '10m', target: 1000 }, // Stay at 1000 RPS for 10 minutes
+      { duration: '5m', target: 0 },     // Ramp down to 0 RPS over 5 minutes
+  ],
     thresholds: {
-        http_req_duration: ['p(99)<150'], // 99% of requests must complete below 150ms
+      errors: ['rate<0.1'], // 10% 이하의 에러율 허용
+      http_req_duration: ['p(95)<5000'], // 95%의 요청이 5초 이내에 완료되어야 함
     },
     setupTimeout: '370s', //setup() 때 GET /discounts, GET /users 시간이 오래걸려서 timeout 시간을 3분정도로 설정한다.
+    // http_req_timeout: '30s',
 }
+
 
 // const BASE_URL = 'http://host.docker.internal:8080';
 const BASE_URL = 'http://13.209.179.59:8080';
@@ -156,12 +179,12 @@ export default function ({ discounts, usernames }) {
       getProductsByCategory();
     } else if (readRandom < 0.4) {
       getProductById();
-    } else if (readRandom < 0.6) {
-      getHighestRatedProducts();
     } else if (readRandom < 0.7) {
+      getHighestRatedProducts();
+    } else if (readRandom < 0.9) {
       getOrderItemsByUsername(usernames);
-    } else if (readRandom < 0.8) {
-      getSalesStatistics();
+    // } else if (readRandom < 0.8) {
+    //   getSalesStatistics(); //실험의 공평성을 위해 statistics-query를 삭제. 반정규화 k6 load_script에서도 통계쿼리는 없다.
     } else {
       getUserByUsername(usernames);
     }

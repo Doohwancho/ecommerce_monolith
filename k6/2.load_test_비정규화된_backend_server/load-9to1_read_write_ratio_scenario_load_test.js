@@ -137,17 +137,33 @@ import { sleep } from 'k6';
 export let options = {
     noConnectionReuse: false,
     stages: [
-      { duration: '2m', target: 10 },
-      { duration: '5m', target: 50 },
-      { duration: '5m', target: 100 }, // 5분동안 100 RPS로 부하를 준다. 주의) 1분만에 100RPS 부하걸면, load test거는쪽의 ec2가 버티지 못하고 터지더라. 
-      { duration: '10m', target: 200 }, // 그 다음 5분동안 200 RPS로 부하를 준다. 100RPS 부하 늘리는 텀은 5분으로 설정. 
-      { duration: '10m', target: 300 }, // 그 다음 5분동안 300 RPS로 부하를 준다. 100RPS 부하 늘리는 텀은 5분으로 설정. 
-      { duration: '10m', target: 300 }, // 10분동안 부하 300RPS를 유지하며 시스템이 어떻게 반응하는지 본다. 
-      { duration: '2m', target: 0 },   
-    ],
+      { duration: '5m', target: 50 },    // Ramp up to 50 RPS over 5 minutes
+      { duration: '10m', target: 50 },   // Stay at 50 RPS for 10 minutes
+      { duration: '5m', target: 100 },   // Ramp up to 100 RPS over 5 minutes
+      { duration: '10m', target: 100 },  // Stay at 100 RPS for 10 minutes
+      { duration: '5m', target: 200 },   // Ramp up to 200 RPS over 5 minutes
+      { duration: '10m', target: 200 },  // Stay at 200 RPS for 10 minutes
+      { duration: '5m', target: 300 },   // Ramp up to 300 RPS over 5 minutes
+      { duration: '10m', target: 300 },  // Stay at 300 RPS for 10 minutes
+      { duration: '5m', target: 400 },   // Ramp up to 400 RPS over 5 minutes
+      { duration: '10m', target: 400 },  // Stay at 400 RPS for 10 minutes
+      { duration: '5m', target: 500 },   // Ramp up to 500 RPS over 5 minutes
+      { duration: '10m', target: 500 },  // Stay at 500 RPS for 10 minutes
+      { duration: '5m', target: 600 },   // Ramp up to 600 RPS over 5 minutes
+      { duration: '10m', target: 600 },  // Stay at 600 RPS for 10 minutes
+      { duration: '5m', target: 700 },   // Ramp up to 700 RPS over 5 minutes
+      { duration: '10m', target: 700 },  // Stay at 700 RPS for 10 minutes
+      { duration: '5m', target: 800 },   // Ramp up to 800 RPS over 5 minutes
+      { duration: '10m', target: 800 },  // Stay at 800 RPS for 10 minutes
+      { duration: '5m', target: 900 },   // Ramp up to 900 RPS over 5 minutes
+      { duration: '10m', target: 900 },  // Stay at 900 RPS for 10 minutes
+      { duration: '5m', target: 1000 },  // Ramp up to 1000 RPS over 5 minutes
+      { duration: '10m', target: 1000 }, // Stay at 1000 RPS for 10 minutes
+      { duration: '5m', target: 0 },     // Ramp down to 0 RPS over 5 minutes
+  ],
     thresholds: {
       errors: ['rate<0.1'], // 10% 이하의 에러율 허용
-      // http_req_duration: ['p(95)<5000'], // 95%의 요청이 5초 이내에 완료되어야 함
+      http_req_duration: ['p(95)<5000'], // 95%의 요청이 5초 이내에 완료되어야 함
     },
     setupTimeout: '370s', //setup() 때 GET /discounts, GET /users 시간이 오래걸려서 timeout 시간을 3분정도로 설정한다.
     // http_req_timeout: '30s',
@@ -281,13 +297,13 @@ export default function (data) {
   if (random < readWeight) {
       // Read requests (90%)
       const readRandom = Math.random();
-      if (readRandom < 0.2) {
+      if (readRandom < 0.1) {
           getProductsByCategory();
       } else if (readRandom < 0.4) {
           getProductById(data.products);
-      } else if (readRandom < 0.6) {
+      } else if (readRandom < 0.7) {
           getHighestRatedProducts();
-      } else if (readRandom < 0.8) {
+      } else if (readRandom < 0.9) {
           getOrderItemsByUsername(data.users);
       } else {
           getUserByUsername(data.users);
