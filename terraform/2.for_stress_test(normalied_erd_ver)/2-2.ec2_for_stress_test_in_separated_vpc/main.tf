@@ -103,16 +103,18 @@ resource "aws_iam_role_policy_attachment" "ssm_policy_attachment" {
 
 # EC2 Instance
 resource "aws_instance" "stress_test_instance" {
-  ami = "ami-0419dc605b6dde61f"
-  instance_type = "t3a.small" #AMD x86_64 architecture, 2-core 2-GiB RAM
-#   ami           = "ami-0a5a6128e65676ebb"  # Amazon Linux 2 ARM64 AMI in Seoul region
-#   instance_type = "t4g.small"
+  //ap-northeast-2에 ubuntu 18.04ver에 arm64 에 맞는 ec2's ami 찾기 from 'https://cloud-images.ubuntu.com/locator/ec2/'
+  ami = "ami-0195178fef736f4ed" # ami for ap-northeast-2 region, ubuntu 18.04 ver, ARM64 architecture 
+  # https://instances.vantage.sh/aws/ec2/c6g.xlarge
+  # instance_type = "c6g.xlarge" #ARM64, 4-core 8-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. -> 300RPS 테스트시 cpu load average가 4정도 나오기 때문에, peak 하면 죽는 경우 발생. 8코어 이상 써야 함.
+  # instance_type = "c6g.2xlarge" #ARM64, 8-core 16-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. -> 300RPS가 cpu load avg가 4정도 나오니까, 8core는 600정도 버틴다고 가정.
+  instance_type = "c6g.4xlarge" #ARM64, 16-core 32-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. -> 300RPS가 cpu load avg가 4정도 나오니까, 16core는 1200정도 버틴다고 가정, load test 부하를 1000 rps까지 하니까, 넉넉하게 16 core cpu로 결정.
   subnet_id     = aws_subnet.stress_test_subnet.id
 
   vpc_security_group_ids      = [aws_security_group.stress_test_sg.id]
   iam_instance_profile        = aws_iam_instance_profile.stress_test_profile.name
   associate_public_ip_address = true
-  user_data = base64encode(file("./user_data.sh"))
+  user_data = base64encode(file("./user_data_ARM64.sh"))
 
   tags = {
     Name = "stress-test-instance"
