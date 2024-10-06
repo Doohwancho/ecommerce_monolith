@@ -120,6 +120,7 @@ public class JdbcFakeDataGenerator {
             try {
                 for (int i = 0; i < NUM_THREADS; i++) {
                     Connection connection = dataSource.getConnection();
+                    connection.createStatement().execute("SET FOREIGN_KEY_CHECKS=0");
                     connectionPool.add(connection);
                 }
                 
@@ -168,6 +169,7 @@ public class JdbcFakeDataGenerator {
                 for (Connection connection : connectionPool) {
                     if (connection != null) {
                         try {
+                            connection.createStatement().execute("SET FOREIGN_KEY_CHECKS=1");
                             connection.close();
                         } catch (SQLException e) {
                             log.error("Error closing connection:", e);
@@ -180,6 +182,7 @@ public class JdbcFakeDataGenerator {
             try {
                 for (int i = 0; i < NUM_THREADS; i++) {
                     Connection connection = dataSource.getConnection();
+                    connection.createStatement().execute("SET FOREIGN_KEY_CHECKS=0");
                     connectionPool.add(connection);
                 }
                 
@@ -214,6 +217,7 @@ public class JdbcFakeDataGenerator {
                 for (Connection connection : connectionPool) {
                     if (connection != null) {
                         try {
+                            connection.createStatement().execute("SET FOREIGN_KEY_CHECKS=1");
                             connection.close();
                         } catch (SQLException e) {
                             log.error("Error closing connection:", e);

@@ -11,6 +11,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+
+/*
+    mysql commandline to drop all tables manually that belongs to 'ecommerce' database
+    
+    SELECT GROUP_CONCAT(CONCAT('`', table_name, '`'))
+    INTO @tables
+    FROM information_schema.tables
+    WHERE table_schema = 'ecommerce';
+    SET @query = CONCAT('DROP TABLE IF EXISTS ', @tables);
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+    SET FOREIGN_KEY_CHECKS = 1;
+ */
+
+
 @Slf4j
 @AllArgsConstructor
 @RestController
