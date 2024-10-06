@@ -1,9 +1,0 @@
-
-{
-java:S3305"eInject this field value directly into "createCategoriesAndOptionsStep", the only method that uses it.(Êµ¼Û
-ƒ
-java:S3305 "hInject this field value directly into "createCategoriesAndOptionsTasklet", the only method that uses it.(ÃØÀÒþÿÿÿÿ
-h
-java:S37768"RRefactor this method to reduce its Cognitive Complexity from 21 to the 15 allowed.(Á„Ì‘
-W	java:S125„"<This block of commented-out lines of code should be removed.(ùÆ¯Ñûÿÿÿÿ
-W	java:S125‘"<This block of commented-out lines of code should be removed.(ë„²Áýÿÿÿÿ

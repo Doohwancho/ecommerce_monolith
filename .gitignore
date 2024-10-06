@@ -86,6 +86,8 @@ fabric.properties
 ### Intellij Patch ###
 # Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
 
+.idea/
+
 # *.iml
 # modules.xml
 # .idea/misc.xml
@@ -94,6 +96,7 @@ fabric.properties
 # Sonarlint plugin
 # https://plugins.jetbrains.com/plugin/7973-sonarlint
 .idea/**/sonarlint/
+.sonarlint/
 
 # SonarQube Plugin
 # https://plugins.jetbrains.com/plugin/7238-sonarqube-community-plugin

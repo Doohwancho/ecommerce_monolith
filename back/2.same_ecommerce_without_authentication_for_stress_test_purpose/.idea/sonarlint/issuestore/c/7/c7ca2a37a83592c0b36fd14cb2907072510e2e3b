@@ -1,11 +1,0 @@
-
-_
-java:S11921"IDefine a constant instead of duplicating this literal "testUser" 3 times.(¦Ëãç
-o
-java:S3305 "YInject this field value directly into "createTestUserStep", the only method that uses it.(Êµ¼Û
-r
-java:S3305"\Inject this field value directly into "createTestUserTasklet", the only method that uses it.(õ«©
-r
-java:S3305"\Inject this field value directly into "createTestUserTasklet", the only method that uses it.(×Š¾
-r
-java:S3305"\Inject this field value directly into "createTestUserTasklet", the only method that uses it.(¼•æŒ
