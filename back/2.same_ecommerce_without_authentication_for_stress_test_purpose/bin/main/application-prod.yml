@@ -4,10 +4,16 @@ server:
   servlet:
     session:
       timeout: 30m  # 30 minutes
+  connection-timeout: 1800000  # 30 minutes in milliseconds.
+  tomcat:
+    connection-timeout: 1800000  # 30 minutes in milliseconds
 spring:
   config:
     activate:
       on-profile: prod
+  mvc:
+    async:
+      request-timeout: 1800000  # 30 minutes in milliseconds
   datasource:
     platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
