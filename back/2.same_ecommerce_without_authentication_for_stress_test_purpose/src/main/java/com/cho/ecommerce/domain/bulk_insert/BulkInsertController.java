@@ -55,9 +55,11 @@ public class BulkInsertController {
         int numberOfOptionVariations = 3; //540 (180 from options * 3)
         
         //크기가 유동적으로 바뀜
+        //ecommerce에서 user : products : orders = 1 : 10 : 5 비율 이라고 한다.
+        
         int numberOfUsers = baseAmount; //base_number * 4 만큼 총 rows수 늘어남 (user, address, user_authority, order 수 결정)
-        int numberOfOrderItemsPerOrder = 2; //number of orders * 2
-        int numberOfProducts = baseAmount;
+        int numberOfOrderItemsPerOrder = 1; //number of orders = number of users * 5, and there is only 1 order_item per order
+        int numberOfProducts = baseAmount * 10;
         int numberOfProductItemsPerProduct = 3; //base_number * 3
         int numberOfDiscountsPerProductItem = 1; //1:1 ratio, productItem : discount
         int numberOfProductOptionVariationPerProductItem = 1; //1:1 ratio, productItem : productOptionVariation

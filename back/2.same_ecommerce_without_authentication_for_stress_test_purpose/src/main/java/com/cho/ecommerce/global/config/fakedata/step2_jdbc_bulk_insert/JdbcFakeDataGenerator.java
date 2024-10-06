@@ -309,7 +309,7 @@ public class JdbcFakeDataGenerator {
             Long orderId = 1L;
             Long orderItemId = 1L;
             
-            for (int i = 1; i <= numberOfUsers; i++) {
+            for (int i = 1; i <= numberOfUsers * 5; i++) {
                 // Insert orders
                 //case1) datafaker
 //                LocalDateTime orderDate = Instant.ofEpochMilli(
