@@ -148,7 +148,7 @@ public class RandomValueGenerator {
     private List<OptionDTO> generateRandomOptions(int index) {
         List<OptionDTO> options = new ArrayList<>();
 //        int optionCount = ThreadLocalRandom.current().nextInt(1, 4); // 1 to 3 options
-        int optionCount = 2; //많은 양을 bulk-insert할 때, random 변수 넣으면 속도가 매우매우 느려지기 때문에 fixed number로 채운다.
+        int optionCount = 3; //많은 양을 bulk-insert할 때, random 변수 넣으면 속도가 매우매우 느려지기 때문에 fixed number로 채운다.
         for (int i = 0; i < optionCount; i++) {
             OptionDTO option = new OptionDTO();
             option.setName(uniqueStrings[index % SIZE_OF_UNIQUE_STRINGS]);
