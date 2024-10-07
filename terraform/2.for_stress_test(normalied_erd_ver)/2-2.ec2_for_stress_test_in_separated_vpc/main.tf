@@ -108,7 +108,8 @@ resource "aws_instance" "stress_test_instance" {
   # https://instances.vantage.sh/aws/ec2/c6g.xlarge
   # instance_type = "c6g.xlarge" #ARM64, 4-core 8-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. -> 300RPS 테스트시 cpu load average가 4정도 나오기 때문에, peak 하면 죽는 경우 발생. 8코어 이상 써야 함.
   # instance_type = "c6g.2xlarge" #ARM64, 8-core 16-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. -> 300RPS가 cpu load avg가 4정도 나오니까, 8core는 600정도 버틴다고 가정.
-  instance_type = "c6g.4xlarge" #ARM64, 16-core 32-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. -> 300RPS가 cpu load avg가 4정도 나오니까, 16core는 1200정도 버틴다고 가정, load test 부하를 1000 rps까지 하니까, 넉넉하게 16 core cpu로 결정.
+  # instance_type = "c6g.4xlarge" #ARM64, 16-core 32-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음. -> 300RPS가 cpu load avg가 4정도 나오니까, 16core는 1200정도 버틴다고 가정, load test 부하를 1000 rps까지 하니까, 넉넉하게 16 core cpu로 결정.
+  instance_type = "c6g.8xlarge" #ARM64, 32-core 64-GiB RAM, cpu-burst 버전이 아님. 따라서 cap이 없음.
   subnet_id     = aws_subnet.stress_test_subnet.id
 
   vpc_security_group_ids      = [aws_security_group.stress_test_sg.id]
