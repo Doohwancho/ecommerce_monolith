@@ -19,7 +19,6 @@ public interface ProductRepository extends JpaRepository<DenormalizedProductEnti
     DenormalizedProductEntity findProductsByName(@Param("productname") String productname);
     
     @Cacheable(value = "topTenRatedProductsCached", key = "#pageable.pageSize")
-    
     @Query("SELECT p FROM DenormalizedProductEntity p WHERE p.ratingCount > 0 ORDER BY p.rating DESC")
     List<DenormalizedProductEntity> findTopTenRatedProducts(Pageable pageable);
 }

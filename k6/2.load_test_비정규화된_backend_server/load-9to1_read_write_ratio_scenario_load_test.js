@@ -162,7 +162,7 @@ export let options = {
       { duration: '5m', target: 0 },     // Ramp down to 0 RPS over 5 minutes
   ],
     thresholds: {
-      errors: ['rate<0.1'], // 10% 이하의 에러율 허용
+      http_req_failed: ['rate<0.1'], // 10% or less error rate allowed
       http_req_duration: ['p(95)<5000'], // 95%의 요청이 5초 이내에 완료되어야 함
     },
     setupTimeout: '370s', //setup() 때 GET /discounts, GET /users 시간이 오래걸려서 timeout 시간을 3분정도로 설정한다.
@@ -170,7 +170,7 @@ export let options = {
 }
 
 // const BASE_URL = 'http://host.docker.internal:8080'; //for local 
-const BASE_URL = 'http://3.35.113.61:8080';
+const BASE_URL = 'http://43.200.132.128:8080';
 
 export function setup() {
   let users = [];

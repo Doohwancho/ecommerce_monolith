@@ -42,12 +42,14 @@ public class ProductController {
     public ResponseEntity<PaginatedProductResponse> getProductsByCategoryId(
         @PathVariable Long categoryId,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size,
-        @RequestParam(defaultValue = "name") String sortBy,
-        @RequestParam(defaultValue = "asc") String sortDirection) {
+        @RequestParam(defaultValue = "20") int size
+//        @RequestParam(defaultValue = "name") String sortBy,
+//        @RequestParam(defaultValue = "asc") String sortDirection
+    ) {
     
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+//        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Pageable pageable = PageRequest.of(page, size);
     
         Page<ProductResponseDTO> productPage = productService.getProductsByCategoryId(categoryId, pageable);
         PaginatedProductResponse response = new PaginatedProductResponse(productPage);
