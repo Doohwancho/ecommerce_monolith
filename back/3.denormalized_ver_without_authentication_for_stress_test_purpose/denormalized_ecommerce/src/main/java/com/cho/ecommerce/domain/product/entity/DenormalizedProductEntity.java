@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Entity
 @Table(name = "DENORMALIZED_PRODUCT", indexes = {
     @Index(name = "IDX_CATEGORY_ID", columnList = "CATEGORY_ID"),
+    @Index(name = "IDX_NAME", columnList = "NAME"),
     @Index(name = "IDX_RATING_COUNT", columnList = "RATING_COUNT"),
     @Index(name = "IDX_RATING", columnList = "RATING")
 })
