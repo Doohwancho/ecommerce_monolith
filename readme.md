@@ -22,9 +22,11 @@
 - G. [기술적 도전 - Database](#g-기술적-도전---database)
     - a. [정규화](#a-정규화)
     - b. [통계 쿼리](#b-통계-쿼리)
-    - c. [sql tuning](#c-sql-tuning)
-	- d. [bulk insert](#d-bulk-insert)
-	- e. [반정규화](#e-반정규화)
+    - c. [sql tuning 1 - 인덱스 튜닝](#c-sql-tuning-1---index-튜닝)
+    - d. [sql tuning 2 - order by 튜닝](#d-sql-tuning-2---order-by-튜닝)
+    - e. [sql tuning 3 - 통계 쿼리 튜닝](#e-sql-tuning-3---통계-쿼리-튜닝)
+	- f. [bulk insert](#f-bulk-insert)
+	- g. [반정규화](#g-반정규화)
 - H. [기술적 도전 - Cloud](#h-기술적-도전---cloud)
 	- a. [provisioning with terraform & packer](#a-provisioning-with-terraform-and-packer)
 	- b. [prometheus and grafana + PMM](#b-prometheus-and-grafana--pmm)
@@ -860,7 +862,155 @@ ORDER BY tmp1.CategoryId
 ```
 https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java#L15-L110
 
-## c. sql tuning
+
+
+## c. sql tuning 1 - index 튜닝
+
+### 1. 문제
+동일 조건에서 정규화 vs 반정규화의 성능차이가 얼마나 날까 실험중이었는데,
+
+반정규화 DB의 cpu usage가 정규화보다 더 높았다?!
+
+단순히 100 RPS에서 측정된 값을 비교해보면,
+
+| Metric | 1. 정규화 버전 | 2. 반정규화 버전 |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 10% | 7.8% |
+| Load Average | 0.2 | 0.1 |
+| Heap Used | 8.73% | N/A |
+| Non-Heap Used | 12.41% | N/A |
+| Last HTTP Latency | 88ms | 9ms |
+| Last Max Latency | N/A | 600ms |
+| Errors | None | None |
+| **RDS** |
+| CPU Usage | 4.2% | 16.3% |
+| Load Average | 0.3 | 0.8 |
+| Memory Availability | 71.35% | 71.64% |
+| QPS | 361 | 291 |
+| TPS | 280 | 155 |
+
+QPS(query per second)가 더 낮은데(join 덜하니까 쿼리를 여러번 쪼개서 날리지 않아서 그렇다고 해석)
+
+cpu usage가 12.3%가 더 높다?
+
+(심지어 이 점유율도 적게 잡힌것이다. 나중에 알았는데 pmm에 cpu usage 지표는 {node_name="ecommerce-db-instance"} 이걸 읽거나 전체 usage를 합친 값을 읽었어야 했는데 이땐 nice라고 써진 지표 기준으로 기록함)
+
+
+### 2. 문제 원인 분석
+
+![](./documentation/images/sql-tuning-index-1.png)
+
+pmm query analyzer에서 latency 순으로 정렬하니까
+
+한 쿼리가 75ms 걸리는게 확인된다.
+
+![](./documentation/images/sql-tuning-index-2.png)
+
+확인해보니
+
+1. type:ALL = full scan
+2. table_size가 10000rows인데 rows수 9628이면 전부 i/o 하는건데
+3. filtered = 10% 이면, 힘들게 i/o한 것에 90%는 버린다는 뜻이니까,
+
+인덱스를 안타서 엄청 비효율적이다라고 해석.
+
+
+### 3. 해결방안
+![](./documentation/images/sql-tuning-index-3.png)
+
+where절에 조건걸리는 필드에 인덱스를 걸어준다.
+
+### 4. 개선된 결과
+![](./documentation/images/sql-tuning-index-4.png)
+
+1. latency가 75ms -> 21ms 로 줄었고,
+2. type:All -> ref (인덱스 탐)
+3. key_len: 1023 -> 아마 9천개 rows i/o 안하고 천개만 i/o함.
+4. filtered 100% -> 필터율 100%이니까 힘들게 io한걸 버리지 않는다는 뜻
+
+
+## d. sql tuning 2 - order by 튜닝
+
+### 1. 문제
+
+index tuning했으니까
+
+동일 조건에서 반정규화한 앱이 정규화된 앱보다 부하테스트 성능이 더 좋겠지?
+
+실험해봤는데, 이번에도 반정규화 앱의 RDS cpu usage가 더 높게 잡힘.
+
+?
+
+### 2. 문제 원인 분석
+정규화 버전 PMM 지표와 반정규화 버전 PMM 지표 비교해봤는데
+
+![](./documentation/images/sql-tuning-orderby-1.png)
+정규화 버전은 RPS 부하가 늘어나도 Sorts가 15ops/s 고정임을 확인할 수 있다.
+
+![](./documentation/images/sql-tuning-orderby-2.png)
+반면 비정규화 버전은 RPS 부하가 늘어나면 Sorts가 Mysql Questions(total # of query executed)와 비례하게 늘어난다?
+
+근데 부하테스트 하는 6개의 쿼리에서 sort를 쓴 기억이 없는데...?
+
+![](./documentation/images/sql-tuning-orderby-3.png)
+
+aws-rds에 ssl 접속해서 sort 빈도수가 가장 많은 순으로 쿼리 히스토리 정렬해봤더니,
+
+저 맨 위에 쿼리가 148만개의 rows를 sort했다는걸 확인할 수 있다.
+
+
+
+### 3. 해결방안
+저 쿼리 담당하는 repository, service에서는 문제가 없었는데
+
+controller에서 Pageable 객체 만들 때 sort 하는 코드가 있었다.
+
+```java
+Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+```
+
+성능 테스트 목적으로 ai한테 짜달라고 해서 나온건데
+
+무지성 복붙의 폐혜가...
+
+
+
+
+### 4. 개선된 결과
+![](./documentation/images/sql-tuning-orderby-4.png)
+
+기존 order by 쓰던 쿼리가 안잡히는 모습이다.
+
+
+![](./documentation/images/sql-tuning-orderby-5.png)
+
+부하 테스트를 해봐도 이젠 RPS, QPS에 비례해서 Sorts ops/s가 올라가질 않는걸 확인할 수 있다.
+
+
+### 5. 느낀점
+
+인덱스 하나, order by 하나
+
+쿼리 딱 2개 잘못짰는데 전체 데이터베이스 성능이 매우 하락하더라.
+
+디비 모니터링 붙이고 슬로우 쿼리 바로바로 잡는게 중요하다는걸 느꼈고,
+
+order by 케이스는 심지어 슬로쿼리로도 안잡혔다.
+
+수행시간은 빠른데 cpu usage를 많이 잡아먹은 케이스가 존재하더라.
+
+PMM에 Mysql Sorts 메트릭에 잡혀서 망정이지 아니었으면...
+
+
+
+
+
+
+
+
+## e. sql tuning 3 - 통계 쿼리 튜닝
 [b. 통계 쿼리](#b-통계-쿼리)를 튜닝해보자.
 
 ### 1. before tuning
@@ -1080,7 +1230,7 @@ productOptionVariation: 30000 rows
 
 하나의 컬럼에 index를 태웠는지 여부가 약 455ms latency 차이를 보여준다.
 
-## d. bulk insert
+## f. bulk insert
 
 ### 1. 문제
 소규모 데이터 핸들링은, 어떤 DBMS를 사용하던, 어떻게 SQL을 짜던 큰 문제없이 처리 가능한데,\
@@ -2156,7 +2306,7 @@ disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o
 
 
 
-## e. 반정규화
+## g. 반정규화
 before)
 ![](documentation/images/erd.png)
 
@@ -2167,7 +2317,7 @@ after)
 2. FK도 성능향상 목적으로 모두 제거
 3. db에서는 최대한 index타서 최소량만 i/o 해오는 식으로 짠다(join X). 나머지 데이터 조립/가공은 서버에서 한다.
 
-```json 
+```json
 [
 	{
 		"item_id": 1,
@@ -2190,7 +2340,7 @@ after)
 비정규화된 ERD에서는 `OPTION`, `DISCOUNT`를 json타입으로 넣고, 통째고 가져와서 백엔드에서 파싱하는 식으로 처리한다.
 
 여러 테이블 join에서 오는 cost 줄여준다.\
-테이블 사이즈가 커질수록 효과적이다. 
+테이블 사이즈가 커질수록 효과적이다.
 
 
 # H. 기술적 도전 - Cloud
@@ -2261,12 +2411,12 @@ PMM도 같은 위와 같은 이유로 선택하게 되었다.
 
 목표: RPS당 피크 시간대 유저와 DAU 계산 in ecommerce app
 
-1. 만약 100RPS 인 경우, 시간당 36만 request, 하루에 864만 request가 온다. 
-2. 1 유저당 평균 50 request를 보낸다고 가정하면, 864만 / 50 = 172,800 DAU 
-3. 만약 피크 시간대에 20%의 DAU가 active하다고 가정하면, 34,560 users 
-4. 결론1: DAU가 17만인 서비스에서, 피크시간에 3.5만명이 100RPS 를 보낸다. 
-5. 결론2: DAU가 51만인 서비스에서, 피크시간에 10.5만명이 300RPS 를 보낸다. 
-6. 결론3: DAU가 170만인 서비스에서, 피크시간에 35만명이 1,000RPS 를 보낸다. 
+1. 만약 100RPS 인 경우, 시간당 36만 request, 하루에 864만 request가 온다.
+2. 1 유저당 평균 50 request를 보낸다고 가정하면, 864만 / 50 = 172,800 DAU
+3. 만약 피크 시간대에 20%의 DAU가 active하다고 가정하면, 34,560 users
+4. 결론1: DAU가 17만인 서비스에서, 피크시간에 3.5만명이 100RPS 를 보낸다.
+5. 결론2: DAU가 51만인 서비스에서, 피크시간에 10.5만명이 300RPS 를 보낸다.
+6. 결론3: DAU가 170만인 서비스에서, 피크시간에 35만명이 1,000RPS 를 보낸다.
 
 이게 예측이 얼추 맞다고 보이는 근거는 디스패치의 aws 컨퍼런스를 보면 유추할 수 있다.
 
@@ -2276,7 +2426,7 @@ DAU가 60만명인데 [이 구간](https://youtu.be/8uesJLEXxyk?t=1425)에서 �
 
 평소에 1.5 Mbps ~ 3.0 Mbps 왔다갔다 한다. (특종 기사대는 훨씬 높아짐)
 
-근데 RPS 바꿔가며 실험했던 데이터 중에 
+근데 RPS 바꿔가며 실험했던 데이터 중에
 300 RPS 때에 네트워크 트래픽 양이
 ```
  data_received..................: 1.4 GB 1.3 MB/s
@@ -2284,15 +2434,15 @@ DAU가 60만명인데 [이 구간](https://youtu.be/8uesJLEXxyk?t=1425)에서 �
 ```
 1.3 Mbps 정도 된다.
 
-근데 저건 백엔드에서 가져오는 json만 고려한거라 
-html 페이지 용량까지 고려하면 
+근데 저건 백엔드에서 가져오는 json만 고려한거라
+html 페이지 용량까지 고려하면
 
 대략 3.0 Mbps 정도 나온다고 본다.
 
-처음에 디스패치 DAU가 60만명인데 
-위에 계산한 
+처음에 디스패치 DAU가 60만명인데
+위에 계산한
 'DAU가 51만인 서비스에서, 피크시간에 10.5만명이 300RPS 를 보낸다.'
-...에서 남는 9만명은 특종기사 같은거 떴을 때 갑작스럽게 몰리는 유저인 것으로 보인다. 
+...에서 남는 9만명은 특종기사 같은거 떴을 때 갑작스럽게 몰리는 유저인 것으로 보인다.
 
 
 ### 1. 실험 방향 설정
