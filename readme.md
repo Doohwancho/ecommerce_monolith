@@ -2307,6 +2307,8 @@ disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o
 
 
 ## g. 반정규화
+
+### 1. 정규화 -> 반정규화
 before)
 ![](documentation/images/erd.png)
 
@@ -2341,6 +2343,301 @@ after)
 
 여러 테이블 join에서 오는 cost 줄여준다.\
 테이블 사이즈가 커질수록 효과적이다.
+
+
+### 2. 성능테스트 (100~800 RPS)
+
+#### 2-1. 실험 조건
+1. ec2, rds 둘다 2 core 4GiB RAM
+2. table size: user = 1000, product = 10000, order = 5000
+3. table rows ratio -> user:product:order = 1 : 10 : 5
+4. http request read:write ratio: 9:1
+
+
+#### 2-2. RDS CPU usage 메트릭 해석시 주의점
+
+PMM에서 제공하는 CPU usage 메트릭이 총 7개 이다.
+1. `{node_name="ecommerce-db-instance"}`: MySQL 인스턴스의 전체 CPU 사용률
+2. `nice`: 낮은 우선순위로 실행되는 프로세스의 CPU 사용률
+3. `system`: 시스템 프로세스의 CPU 사용률
+4. `wait`: I/O 대기 시간의 CPU 사용률
+5. `irq`: 하드웨어 인터럽트 처리에 사용된 CPU 시간
+6. `user`: 사용자 프로세스의 CPU 사용률
+7. `steal`: 가상화 환경에서 다른 VM에 의해 "훔쳐진" CPU 시간
+
+처음에 잘 모를 땐 'nice'라고 써진걸 기준으로 실험결과를 기록했는데,\
+나중에 알고보니 {node_name="ecommerce-db-instance"}가 전체 cpu usage를 종합한거라더라.
+
+그런데 막상 실험해보니 저 {node_name="ecommerce-db-instance"} 에 나머지 지표까지 모두 더한게 실제 cpu usage인 것으로 추측된다.\
+서버 터지는 구간이 저 모든 cpu usage 합산이 90% 넘어가는 지점이더라.
+
+
+## 100 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 10% | 7.1% |
+| Load Average | 0.2 | 0.1 |
+| Heap Used | 8.73% | N/A |
+| Non-Heap Used | 12.41% | N/A |
+| Last HTTP Latency | 88ms | 5ms |
+| Last Max Latency | N/A | 290ms |
+| Errors | None | None |
+| **RDS** |
+| CPU Usage | 4.2% | 3.1% (node: 5.78%, total: ~20%) |
+| Load Average | 0.3 | 0.39 |
+| Memory Availability | 71.35% | 67% |
+| QPS | 361 | 285 |
+| TPS | 280 | 163 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 20k ops/s | 10k ops/s |
+| read_next | 1-2k ops/s | 2.1 ops/s |
+| read_key | 1-2k ops/s | 115 ops/s |
+| write | 1-2k ops/s | 162 ops/s |
+| external_lock | N/A | 252 ops/s |
+| **Network Traffic** |
+| Inbound | 250 kb/s | 117 kb/s |
+| Outbound | 610 kb/s | 439 kb/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most queries < 20ms, longest 21ms |
+
+## 200 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 20% | 14.3% |
+| Load Average | 0.6 | 0.6 |
+| Heap Used | 13.21% | N/A |
+| Non-Heap Used | 12.43% | N/A |
+| Avg Latency | 8ms | 5ms |
+| Max Latency | 500ms | 292ms |
+| Errors | None | None |
+| **RDS** |
+| CPU Usage | 8.6% | 5.3% (node: 10.73%, total: ~25%) |
+| Load Average | 0.41 | 0.36 |
+| Memory Availability | 71.16% | 67% |
+| QPS | 704 | 576 |
+| TPS | 577 | 324 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 40k ops/s | 18.5k ops/s |
+| read_next | 3-6k ops/s | 4.5 ops/s |
+| read_key | 3-6k ops/s | 225 ops/s |
+| write | 3-6k ops/s | 172 ops/s |
+| external_lock | N/A | 534 ops/s |
+| **Network Traffic** |
+| Inbound | 596 kb/s | 234 kb/s |
+| Outbound | 1.5 MB/s | 1.03 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+## 300 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 30% | 23.4% |
+| Load Average | 0.8 | 0.8 |
+| Heap Used | 28.13% | N/A |
+| Non-Heap Used | 12.73% | N/A |
+| Last Avg Latency | 12.7ms | 6ms |
+| Last Max Latency | 1.14s | 276ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 14.6% | 7.73% (node: 12.05%, total: ~30%) |
+| Load Average | 1.77 | 0.57 |
+| Memory Availability | 70.80% | 67% |
+| QPS | 1080 | 836 |
+| TPS | 855 | 483 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 63.9k ops/s | 29.4k ops/s |
+| read_next | 5-13k ops/s | 7.6k ops/s |
+| read_key | 5-13k ops/s | 343 ops/s |
+| write | 5-13k ops/s | 182 ops/s |
+| external_lock | N/A | 748 ops/s |
+| **Network Traffic** |
+| Inbound | 888 kb/s | 345 kb/s |
+| Outbound | 2.94 MB/s | 1.76 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+## 400 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 51% | 33.4% |
+| Load Average | 2.3/2.0 | 1.0 |
+| Heap Used | 41.83% | N/A |
+| Non-Heap Used | 12.66% | N/A |
+| Last Avg Latency | 10.9ms | 5ms |
+| Last Max Latency | 664ms | 215ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 21.4% | 11.9% (node: 18.78%, total: ~43%) |
+| Load Average | 1.38 | 0.41 |
+| Memory Availability | 70.50% | 66% |
+| QPS | 1.47k | 1.16k |
+| TPS | 1.17k | 657 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 83.1k ops/s | 35.2k ops/s |
+| read_next | 18.7k ops/s | 12.9k ops/s |
+| read_key | 15.3k ops/s | 449 ops/s |
+| write | 500 ops/s | 269 ops/s |
+| external_lock | N/A | 954 ops/s |
+| **Network Traffic** |
+| Inbound | 1.18 MB/s | 465 kb/s |
+| Outbound | 5.71 MB/s | 3.01 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+## 500 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 73% | 43.0% |
+| Load Average | 4.3/2.0 | 1.4 |
+| Heap Used | 40.83% | N/A |
+| Non-Heap Used | 12.66% | N/A |
+| Last Avg Latency | 10.9ms | 6ms |
+| Last Max Latency | 664ms | 285ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 30.3% | 15.9% (node: 24.3%, total: ~50%) |
+| Load Average | 0.63 | 0.76 |
+| Memory Availability | 70.24% | 66% |
+| QPS | 1.78k | 1.44k |
+| TPS | 1.41k | 778 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 101.1k ops/s | 45.2k ops/s |
+| read_next | 48k ops/s | 19.4k ops/s |
+| read_key | 33k ops/s | 551 ops/s |
+| write | 640 ops/s | 201 ops/s |
+| external_lock | N/A | 1.21k ops/s |
+| **Network Traffic** |
+| Inbound | 1.48 MB/s | 577 kb/s |
+| Outbound | 9.24 MB/s | 4.65 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+## 600 RPS and above
+
+| Metric | Normalized Version (600+ RPS) | Denormalized Version (600 RPS) |
+|--------|------------------------------|--------------------------------|
+| **EC2** |
+| CPU Usage | 97% | 56.2% |
+| Load Average | 6.6/2.0 | 2.3 |
+| Heap Used | 40.83% | N/A |
+| Non-Heap Used | 12.66% | N/A |
+| Last Avg Latency | 10.9ms | 8s |
+| Last Max Latency | 664ms | 374ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 39.1% | 20.0% (node: 28%, total: ~70%) |
+| Load Average | 2.27 | 3.13 |
+| Memory Availability | 69% | 66% |
+| QPS | 2.04k | 1.75k |
+| TPS | 1.6k | 985 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 111.1k ops/s | 56.3k ops/s |
+| read_next | 65k ops/s | 27.4k ops/s |
+| read_key | 43k ops/s | 671 ops/s |
+| write | 712 ops/s | 211 ops/s |
+| external_lock | N/A | 1.45k ops/s |
+| **Network Traffic** |
+| Inbound | 1.71 MB/s | 682 kb/s |
+| Outbound | 12.56 MB/s | 6.93 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+
+## 700 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | N/A (> 97% at 600 RPS) | 70.9% |
+| Load Average | N/A (> 6.6 at 600 RPS) | 4.9 |
+| Heap Used | N/A | N/A |
+| Non-Heap Used | N/A | N/A |
+| Last Avg Latency | N/A | 10ms |
+| Last Max Latency | N/A | 2.23s |
+| Errors | N/A | None |
+| Actual RPS | N/A (< 568 at 600 RPS) | 680-690 |
+| **RDS** |
+| CPU Usage | N/A (> 39.1% at 600 RPS) | 25.3% (node: 32.55%, total: ~75%) |
+| Load Average | N/A (> 2.27 at 600 RPS) | 1.16 |
+| Memory Availability | N/A (< 69% at 600 RPS) | 65% |
+| QPS | N/A (> 2.04k at 600 RPS) | 1.97k |
+| TPS | N/A (> 1.6k at 600 RPS) | 1.095k |
+| **MySQL Handlers Metric** |
+| read_rnd_next | N/A (> 111.1k ops/s at 600 RPS) | 64.47k ops/s |
+| read_next | N/A (> 65k ops/s at 600 RPS) | 40.9k ops/s |
+| read_key | N/A (> 43k ops/s at 600 RPS) | 775 ops/s |
+| write | N/A (> 712 ops/s at 600 RPS) | 220 ops/s |
+| external_lock | N/A | 1.64k ops/s |
+| **Network Traffic** |
+| Inbound | N/A (> 1.71 MB/s at 600 RPS) | 796 kb/s |
+| Outbound | N/A (> 12.56 MB/s at 600 RPS) | 9.96 MB/s |
+| **Query Analysis** |
+| Query Duration | N/A (All queries < 70ms at 600 RPS) | Most < 3ms, longest 20ms |
+
+## 800 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | N/A (> 97% at 600 RPS) | 92.9% |
+| Load Average | N/A (> 6.6 at 600 RPS) | 9.6 |
+| Heap Used | N/A | N/A |
+| Non-Heap Used | N/A | N/A |
+| Last Avg Latency | N/A | 52.4ms |
+| Last Max Latency | N/A | 1.29s |
+| Errors | N/A | None |
+| Actual RPS | N/A (< 568 at 600 RPS) | 750-770 |
+| **RDS** |
+| CPU Usage | N/A (> 39.1% at 600 RPS) | 32.17% (node: 39.48%, total: ~95%) |
+| Load Average | N/A (> 2.27 at 600 RPS) | 1.99 |
+| Memory Availability | N/A (< 69% at 600 RPS) | 65% |
+| QPS | N/A (> 2.04k at 600 RPS) | 2.19k |
+| TPS | N/A (> 1.6k at 600 RPS) | 1.2k |
+| **MySQL Handlers Metric** |
+| read_rnd_next | N/A (> 111.1k ops/s at 600 RPS) | 67.5k ops/s |
+| read_next | N/A (> 65k ops/s at 600 RPS) | 52.6k ops/s |
+| read_key | N/A (> 43k ops/s at 600 RPS) | 848 ops/s |
+| write | N/A (> 712 ops/s at 600 RPS) | 240 ops/s |
+| external_lock | N/A | 1.82k ops/s |
+| **Network Traffic** |
+| Inbound | N/A (> 1.71 MB/s at 600 RPS) | 891 kb/s |
+| Outbound | N/A (> 12.56 MB/s at 600 RPS) | 13.5 MB/s |
+| **Query Analysis** |
+| Query Duration | N/A (All queries < 70ms at 600 RPS) | Most < 3ms, longest 20ms |
+
+
+## 반정규화 성능테스트 결과(monitoring app version)
+
+
+![](./documentation/images/3_반정규화_1000_ec2_ver2_after_orderby_index.png)
+
+![](./documentation/images/3_반정규화_1000_rds_ver2_after_orderby_index.png)
+
+
+### 3. 성능테스트 결과 비교
+
+같은 스펙의 ec2, rds에서, 같은 테이블 사이즈에 동일한 load test를 했을 때,\
+정규화 버전의 한계는 560 RPS, 비정규화 버전의 한계는 750 RPS 정도 된다.
+
+
+정규화 버전에 560RPS일 때, 2k QPS정도 나온다.\
+2k QPS는 비정규화 버전에서는 700 RPS에서 나오는 수치다.\
+join할 때 쿼리 한번할껄 여러번 쪼개서 하기 때문에 QPS도 많이 찍히고\
+join(nested loop join, hash join)할 때 드는 cpu cost가 더 많이 드는 듯 하다.
+
+실험한 테이블 사이즈가 user:product:order = 1000:10000:5000 인데,\
+테이블 사이즈가 10만, 100만 으로 커질 수록\
+join cost이 늘어나기 때문에 정규화, 비정규화 성능 격차는 더 커질 것으로 예상된다.
 
 
 # H. 기술적 도전 - Cloud
