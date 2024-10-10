@@ -32,6 +32,7 @@
 	- b. [prometheus and grafana + PMM](#b-prometheus-and-grafana--pmm)
 	- c. [300 RPS 부하 테스트](#c-300-rps-부하-테스트)
 	- d. [1000 RPS 부하 테스트](#d-1000-rps-부하-테스트)
+	- e. [비용 고려한 scale out 전략](#e-비용을-고려한-scale-out-전략)
 - I. [Trouble Shooting](#i-trouble-shooting)
     - a. [사건의 발단](#a-사건의-발단)
     - b. [가설1 - RDS connections 부족](#b-가설1---RDS의-connections-수가-부족해서-latency가-높아졌다)
@@ -3317,6 +3318,22 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 
 
+
+## e. 비용을 고려한 scale out 전략
+
+1. 성능테스트를 할 수록 느끼는건 쿼리만 신경써서 짜도 서버 스펙에 들어가는 돈을 많이 아낄 수 있다는 것이다.
+2. [반정규화](#g-반정규화) 실험에서 느낀건, 반정규화만 해놔도 서버 비용을 많이 아낄 수 있다.
+3. 서비스 초기 때 HA고려를 배제하면 많은 비용을 아낄 수 있다.
+	1. ALB가 생각보다 비용이 엄청 나온다. (기본 요금은 싼데 데이터 요금이 어마어마하게 많이 나온다. RDS보다 더 나온다.) 따라서 서비스 초기에 ALB + scale out 세팅 비용보다 단순 ec2 scale up이 훨씬 싸게 먹힌다.
+	2. elastic cache도 scale out된 ec2들이 authentication 목적으로 동일한 장소에서 동기화 되는 유저 정보를 쓰기 위함 + 통계쿼리 같은 DB 자원 많이먹는 쿼리 캐싱해두기 위해 썼는데 고스펙 ec2 하나에 local cache 쓰면 elastic cache 비용도 아낄 수 있다
+4. DB 스케일업 전략
+	1. RDS는 scale up할 때마다 기하급수적으로 비용이 늘어나기 때문에, 8코어 쓰는 것 보다 1~2코어 master/read replicas 쓰는게 더 싸다.
+	2. master/slave 구조의 장점은 read heavy, write heavy 앱에 따라 전략이 달라질 수 있다. ecommerce app의 경우 read:write 9:1 비율이기 때문에, write 담당 master node는 싼거 쓰고 read replica는 CPU usage 40~70% 내에 속하는 스펙을 고르면 된다.
+	3. master/slave 구조의 또 다른 장점은 RDS proxy라는 서비스를 쓰면 master/read replicas thread pool 관리를 RDS proxy가 대신 해주기 때문에 CPU usage을 조금 낮출 수 있다. 다른 지표는 괜찮은데 CPU usage가 70%가 넘어가서 어쩔 수 없이 scale up 하는 상황에서 RDS proxy를 쓰면 CPU usage를 낮추고 scale up 안해도 된다.
+	4. cache layer(ex. elastic cache)를 붙이는 기준도, RDS scale up 비용이 기하급수적으로 올라가니까, RDS scale up 하느니 차라리 elastic cache 써서 거기에 쿼리 캐싱해서 RDS i/o줄이는게 이득일 때 하는 것이다.
+5. webapp에 따라 캐싱을 효율적으로 쓸 수 있는 서비스가 있다.
+	1. ecommerce 같은 경우엔 아무래도 판매자가 상품페이지 업데이트를 자주 할 수 있고, 했던게 바로 반영되어야 하니까, 캐싱을 이용할 수 있는 부분이 유저 인증이나 홈페이지에 뿌려지는 top 10 products 이런것들 뿐인데,
+	2. 디스패치같이 평소엔 트래픽 없다가 특종 터지면 트래픽이 10배, 20배 이상 터지는 서비스의 경우, 특종된 기사를 캐시에 저장하면 디비를 거치지 않고 빠르게 뿌릴 수 있기 때문에 DB 유지비용이 많이 줄어든다. ([디스패치 트래픽 대응 컨퍼런스](https://youtu.be/8uesJLEXxyk?t=1605))
 
 
 
