@@ -13,12 +13,13 @@
 	- f. [atomic design pattern with shadcn-ui](#f-atomic-design-pattern-with-shadcn-ui)
 - F. [기술적 도전 - Backend](#f-기술적-도전---backend)
     - a. [spring security - authentication](#a-spring-security---authentication)
-    - b. [spring batch](#b-spring-batch)
-	- c. [test 전략](#c-test-전략)
-    - d. [defensive programming](#d-defensive-programming)
-    - e. [clean code](#e-clean-code)
-	- f. [refactoring](#f-refactoring)
-	- g. [요구사항을 비즈니스 로직 코드로 구현](#g-요구사항을-비즈니스-로직-코드로-구현)
+    - b. [앱 특성에 따른 맞춤형 설계](#b-ecommerce-특성에-따른-맞춤형-설계)
+    - c. [spring batch](#c-spring-batch)
+	- d. [test 전략](#d-test-전략)
+    - e. [defensive programming](#e-defensive-programming)
+    - f. [clean code](#f-clean-code)
+	- g. [refactoring](#g-refactoring)
+	- h. [요구사항을 비즈니스 로직 코드로 구현](#h-요구사항을-비즈니스-로직-코드로-구현)
 - G. [기술적 도전 - Database](#g-기술적-도전---database)
     - a. [정규화](#a-정규화)
     - b. [통계 쿼리](#b-통계-쿼리)
@@ -445,7 +446,55 @@ https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95
 https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95f366c/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserService.java#L168-L184
 
 
-## b. spring batch
+## b. ecommerce 특성에 따른 맞춤형 설계
+
+### 1. 나이키와 쿠팡의 차별화된 설계 전략
+
+ecommerce는 각 브랜드의 특성과 운영 방식에 따라 차별화된 설계가 필요하다.\
+본 앱은 나이키를 모델로 삼아 개발되었다.
+
+나이키의 웹사이트를 살펴보면, 상품 카테고리가 매우 세분화되어 있으며, 각 카테고리에 속한 상품의 수가 상대적으로 적다.\
+예를 들어, '여성 재킷' 카테고리는 다음과 같이 세분화된다.
+
+1. 봄버 재킷
+2. 파카 재킷
+3. 푸퍼 재킷
+4. 레인 재킷
+5. 트랙 재킷
+6. 베스트
+
+
+이러한 세부 카테고리는 매우 다양하며, 각 카테고리에 속한 상품 수는 대체로 10개 미만이다.\
+(이는 나이키가 상품을 주기적으로 출시하고 단종시키는 전략 때문)
+
+
+이러한 특성으로 인해, 카테고리별 상품 쿼리 시 응답 크기가 작다. 따라서 다음과 같은 접근 방식을 채택했다.
+
+1. 카테고리에 속한 모든 상품 목록을 한 번에 불러온다.
+2. 클라이언트 사이드 렌더링(CSR)으로 필터를 적용한다.
+3. 이 방식은 GET 파라미터로 필터를 적용하는 것보다 사용자 경험(UX)이 월등히 우수하다. (페이지 새로고침이 없기 때문)
+
+이러한 이유로 `front/01.reactjs`와 `front/02.nextjs_migration`에서는 카테고리의 모든 상품을 한 번에 가져와 CSR로 필터를 적용하여 UX를 개선했다.
+
+
+### 2. 테이블 크기에 따른 최적화 설계
+나이키는 상품을 정기적으로 출시하고 단종시키기 때문에, 상품 테이블의 크기가 크지 않으며(약 1000행 예상) 지속적으로 증가하진 않는다.
+
+반면, 쿠팡과 같은 오픈마켓 플랫폼의 경우, 다수의 판매자가 상품을 등록하기 때문에 상품 테이블의 크기가 초기에는 1000행 정도지만, 시간이 지남에 따라 수만, 수십만, 수백만 행으로 증가할 수 있다.
+
+back/2.정규화 버전에서는 카테고리에 속한 모든 상품을 쿼리하도록 설계되어 있다. 이 구조는 상품 테이블이 작을 때는 효과적이지만, 10만, 100만 행 이상으로 증가하면 상품 목록 페이지에서 카테고리별 상품을 가져올 때 성능 문제가 발생할 수 있다.
+
+실험을 해보면,
+1. product table이 1000행, productItem table이 3000행일 때
+2. 59개의 카테고리(16~75)에 대해
+3. 카테고리별 상품 쿼리 시 평균적으로 40개의 productItem을 반환하며, 응답 크기는 약 12.2KB이다.
+
+테이블 크기가 10배 증가하면, 쿼리당 500개의 productItem을 반환하고 응답 크기는 약 130KB로 늘어난다. 로컬 테스트에서 124ms가 소요되었습니다. 이는 중요한 쿼리의 경우 주요 병목 지점이 될 수 있다.
+
+따라서, 나이키와 같이 상품별 세부 카테고리로 저장된 경우가 아니라 쿠팡과 같이 상품 테이블 크기가 지속적으로 증가하는 서비스의 경우, UX를 일부 희생하더라도 일반적인 페이지네이션 방식과 서버 사이드 렌더링(SSR) 방식으로 설계하는 것이 바람직해 보인다.
+
+
+## c. spring batch
 
 ### 1. inactive user를 Member 테이블로부터 이관하기
 ![](documentation/images/inactive-user.png)
@@ -476,7 +525,7 @@ https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be74
 
 
 
-## c. test 전략
+## d. test 전략
 
 ### 1. 문제
 Q. ecommerce app은 어떤 테스트 방법론을 써야 적합할까?
@@ -517,7 +566,7 @@ Q. ecommerce app은 어떤 테스트 방법론을 써야 적합할까?
 
 
 
-## d. defensive programming
+## e. defensive programming
 
 ### 1. exception 전략
 1. [custom Error Code Protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java) 에 맞추어 error code를 enum으로 선언한다.
@@ -555,7 +604,7 @@ https://github.com/Doohwancho/ecommerce/blob/dc963b102c65178fe7bd52960a344991272
 
 
 
-## e. clean code
+## f. clean code
 
 개발자 마다 코딩하는 스타일이 천차만별이고,
 
@@ -588,7 +637,7 @@ clean code라는게 오답은 있으나 정답이 없는 경우가 많다보니,
 
 
 
-## f. refactoring
+## g. refactoring
 
 ### 1. 문제
 ```java
@@ -657,7 +706,7 @@ public class ProductService {
 
 
 
-## g. 요구사항을 비즈니스 로직 코드로 구현
+## h. 요구사항을 비즈니스 로직 코드로 구현
 
 ### 1. 요구사항
 클라이언트가 요청한 product_item에 대해 할인된 가격을 적용하여 주문을 등록한다.
