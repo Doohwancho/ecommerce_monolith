@@ -434,7 +434,15 @@ ecommerce에 유저 인증 시스템이 필요하다.
 
 
 ### 3. 결과
-![](documentation/sequence-diagram/authentication-sequence.png)
+![](documentation/architecture/uml/sequence-diagram/authentication-sequence.png)
+
+ex.
+1. login attempt 실패할 때마다 카운트+1
+2. 카운트가 일정 수치 이상 쌓이면, 비정상적인 유저라고 판단, invalidate session && lock account
+
+https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95f366c/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserService.java#L147-L166
+
+https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95f366c/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserService.java#L168-L184
 
 
 ## b. spring batch
