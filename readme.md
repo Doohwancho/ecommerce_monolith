@@ -549,6 +549,17 @@ https://github.com/Doohwancho/ecommerce/blob/dc963b102c65178fe7bd52960a344991272
 
 ## e. clean code
 
+개발자 마다 코딩하는 스타일이 천차만별이고,
+
+clean code라는게 오답은 있으나 정답이 없는 경우가 많다보니,
+
+클린코드 규칙을 논의하고 코드리뷰로 하나하나 체크하는 것 보다,
+
+시스템적으로 google-style-code-convention 적용해서 단축키 누르면 자동으로 포멧 변환하거나 수정해야 하는 부분 체크하는 식으로 처리한다.
+
+
+
+
 ### 1. code convention & protocol 설정
 1. [google style java code convention](https://google.github.io/styleguide/javaguide.html)
 2. [custom error code protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java)
