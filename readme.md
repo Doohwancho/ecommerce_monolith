@@ -55,14 +55,15 @@ Ecommerce MVP
 ## a. how to start project?
 
 ### 1. nextjs + spring boot server를 로컬 환경으로 직접 실행하는 방법
-```
-1. git clone https://github.com/Doohwancho/ecommerce
+
+``1. git clone https://github.com/Doohwancho/ecommerce
 2. cd ecommerce
 3. back/ecommerce/에 있는 스프링 프로젝트 실행 (이 때 dummy data insert하는 시간 약 3분 이하 소요)
 4. cd front/02.nextjs_migration
 5. npm i
 6. npm run dev
 ```
+
 
 
 ### 2. reactjs + spring boot server를 docker compose로 실행하는 방법
@@ -76,7 +77,9 @@ Ecommerce MVP
 	- admin123
 	- create database ecommerce;
 	- 다시 docker compose up --build
-4. dummy data insert 완료할 때까지 기다리기 (약 3분 이하로 소요)
+4. dummy data insert (이걸 해야 카테고리가 보인다)
+	-  `curl -X GET http://localhost:8080/bulkinsert/1000`
+	-  `curl -X GET http://localhost:8080/products`
 5. http://localhost:80  or  http://127.0.0.1:80 로 접속
 ```
 
@@ -3393,7 +3396,7 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 2. [반정규화](#g-반정규화) 실험에서 느낀건, 반정규화만 해놔도 서버 비용을 많이 아낄 수 있다.
 3. 서비스 초기 때 HA고려를 배제하면 많은 비용을 아낄 수 있다.
 	1. ALB가 생각보다 비용이 엄청 나온다. (기본 요금은 싼데 데이터 요금이 어마어마하게 많이 나온다. RDS보다 더 나온다.) 따라서 서비스 초기에 ALB + scale out 세팅 비용보다 단순 ec2 scale up이 훨씬 싸게 먹힌다.
-	2. elastic cache도 scale out된 ec2들이 authentication 목적으로 동일한 장소에서 동기화 되는 유저 정보를 쓰기 위함 + 통계쿼리 같은 DB 자원 많이먹는 쿼리 캐싱해두기 위해 썼는데 고스펙 ec2 하나에 local cache 쓰면 elastic cache 비용도 아낄 수 있다
+	2. elastic cache도 scale out된 ec2들이 authentication 목적으로 동일한 장소에서 동기화 되는 유저 정보를 쓰기 위함 + 통계쿼리 같은 DB 자원 많이먹는 쿼리 캐싱해두기 위해 썼는데 고스펙 ec2 하나에 local cache 쓰면 elastic cache 비용도 아낄 수 있다. CPU가 비싼거지 RAM은 싸다.
 4. DB 스케일업 전략
 	1. RDS는 scale up할 때마다 기하급수적으로 비용이 늘어나기 때문에, 8코어 쓰는 것 보다 1~2코어 master/read replicas 쓰는게 더 싸다.
 	2. master/slave 구조의 장점은 read heavy, write heavy 앱에 따라 전략이 달라질 수 있다. ecommerce app의 경우 read:write 9:1 비율이기 때문에, write 담당 master node는 싼거 쓰고 read replica는 CPU usage 40~70% 내에 속하는 스펙을 고르면 된다.
