@@ -4,14 +4,7 @@
 - B. [사용 기술](#b-사용-기술)
 - C. [AWS architecture](#c-aws-architecture)
 - D. [ERD diagram](#d-erd-diagram)
-- E. [기술적 도전 - Frontend](#e-기술적-도전---frontend)
-	- a. [wireframe](#a-wireframe)
-	- b. [state management](#b-state-managment)
-    - c. [API first design](#c-api-first-design)
-	- d. [latency 개선](#d-latency-개선)
-	- e. [nextjs 마이그레이션, 페이지마다 최적화된 렌더링 패턴 적용](#e-nextjs-migration-for-different-rendering-patterns)
-	- f. [atomic design pattern with shadcn-ui](#f-atomic-design-pattern-with-shadcn-ui)
-- F. [기술적 도전 - Backend](#f-기술적-도전---backend)
+- E. [기술적 도전 - Backend](#e-기술적-도전---backend)
     - a. [spring security - authentication](#a-spring-security---authentication)
     - b. [앱 특성에 따른 맞춤형 설계](#b-ecommerce-특성에-따른-맞춤형-설계)
     - c. [spring batch](#c-spring-batch)
@@ -20,30 +13,30 @@
     - f. [clean code](#f-clean-code)
 	- g. [refactoring](#g-refactoring)
 	- h. [요구사항을 비즈니스 로직 코드로 구현](#h-요구사항을-비즈니스-로직-코드로-구현)
-- G. [기술적 도전 - Database](#g-기술적-도전---database)
+- F. [기술적 도전 - Database](#f-기술적-도전---database)
     - a. [정규화](#a-정규화)
-    - b. [통계 쿼리](#b-통계-쿼리)
-    - c. [sql tuning 1 - 인덱스 튜닝](#c-sql-tuning-1---index-튜닝)
-    - d. [sql tuning 2 - order by 튜닝](#d-sql-tuning-2---order-by-튜닝)
-    - e. [sql tuning 3 - 통계 쿼리 튜닝](#e-sql-tuning-3---통계-쿼리-튜닝)
-	- f. [bulk insert](#f-bulk-insert)
-	- g. [반정규화](#g-반정규화)
-- H. [기술적 도전 - Cloud](#h-기술적-도전---cloud)
-	- a. [provisioning with terraform & packer](#a-provisioning-with-terraform-and-packer)
-	- b. [prometheus and grafana + PMM](#b-prometheus-and-grafana--pmm)
-	- c. [300 RPS 부하 테스트](#c-300-rps-부하-테스트)
-	- d. [1000 RPS 부하 테스트](#d-1000-rps-부하-테스트)
-	- e. [비용 고려한 scale out 전략](#e-비용을-고려한-scale-out-전략)
-- I. [Trouble Shooting](#i-trouble-shooting)
-    - a. [사건의 발단](#a-사건의-발단)
-    - b. [가설1 - RDS connections 부족](#b-가설1---RDS의-connections-수가-부족해서-latency가-높아졌다)
-    - c. [가설2 - 느린 query](#c-가설2---query가-느려서-latency가-높아졌다)
-    - d. [가설3 - RDS의 네트워크 대역폭](#d-가설3---RDS의-네트워크-문제인가?)
-	- e. [가설4 - ec2 spec을 올려보자](#e-가설4---ec2-spec을-올려보자)
-	- f. [가설5 - core 수를 늘려보자](#f-가설5---core-수를-늘려보자)
-	- g. [문제의 원인 및 해결방안](#g-문제의-원인-및-해결방안)
-	- h. [실험](#h-실험)
-	- i. [결과 및 배운 점](#i-결과-및-배운-점)
+	- b. [반정규화](#b-반정규화)
+    - c. [통계 쿼리](#c-통계-쿼리)
+    - d. [sql tuning 1 - 인덱스 튜닝](#d-sql-tuning-1---index-튜닝)
+    - e. [sql tuning 2 - order by 튜닝](#e-sql-tuning-2---order-by-튜닝)
+    - f. [sql tuning 3 - 통계 쿼리 튜닝](#f-sql-tuning-3---통계-쿼리-튜닝)
+	- g. [bulk insert](#g-bulk-insert)
+- G. [기술적 도전 - Cloud](#g-기술적-도전---cloud)
+	- a. [docker-compose로 개발환경 구성](#a-docker---compose로-개발환경-구성)
+	- b. [provisioning with terraform & packer](#b-provisioning-with-terraform-and-packer)
+	- c. [prometheus and grafana + PMM](#c-prometheus-and-grafana--pmm)
+	- d. [시행착오: 배포서버에서 log는 error랑 warn만 키자](#d-시행착오---배포서버에서-log는-error랑-warn만-키자)
+	- e. [300 RPS 부하 테스트](#e-300-rps-부하-테스트)
+	- f. [1000 RPS 부하 테스트](#f-1000-rps-부하-테스트)
+	- g. [비용 고려한 scale out 전략](#g-비용을-고려한-scale-out-전략)
+- H. [기술적 도전 - Frontend](#h-기술적-도전---frontend)
+	- a. [wireframe](#a-wireframe)
+	- b. [state management](#b-state-managment)
+    - c. [API first design](#c-api-first-design)
+	- d. [latency 개선](#d-latency-개선)
+	- e. [nextjs 마이그레이션, 페이지마다 최적화된 렌더링 패턴 적용](#e-nextjs-migration-for-different-rendering-patterns)
+	- f. [atomic design pattern with shadcn-ui](#f-atomic-design-pattern-with-shadcn-ui)
+
 
 
 # A. 프로젝트 소개
@@ -189,234 +182,9 @@ Ecommerce MVP
 VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 열 수 있다.
 
 
-# E. 기술적 도전 - Frontend
 
-## a. wireframe
 
-![](./documentation/images/wireframe.svg)
-
-### a-1. wireframe -> home
-
-![](./documentation/images/ecommerce_index_page.png)
-
-### a-2. wireframe -> category
-![](./documentation/images/ecommerce_product_list_page.png)
-
-
-### a-3. wireframe -> product
-![](./documentation/images/ecommerce_product_page.png)
-
-
-### a-4. wireframe -> register
-![](./documentation/images/ecommerce_register_login_page.png)
-
-
-### a-5. wireframe -> login
-![](./documentation/images/ecommerce_register_login_page.png)
-
-
-## b. state managment
-프론트는 같은걸 2가지 버전(reactjs, nextjs)으로 만들었다.\
-React.js 버전에서 상태관리한 방법을 기술한다.
-
----
-1. react query
-	- server state를 관리한다.
-	- custom hooks에 react query의 fetch 함수와 더불어, 각 페이지에 맞게 가공하여 전달하는 함수까지 포함한다.
-2. recoil
-	- client state를 관리한다.
-	- global state에 담아 관리해야할 것을(ex. user authentication status) recoil로 관리한다.
-3. props
-	- 가능한 depth 1 정도만 props를 내려준다. 그 이상 depth는 recoil 사용을 고려한다. (props drilling problem)
-	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우
-
-
-## c. API first design
-
-### 1. 문제
-1. 기존 프론트/백 협업 방식은 프론트 개발자와 백엔드 개발자 사이의 결합도가 높아진다는 문제점이 있다.
-	- 기존에 frontend, backend 협업 시, 코드를 각자 짜면서 슬랙으로 프론트가 백 한테 필요 데이터를 매번 요청하는 식으로 일했다.
-	- 프론트 개발자의 요구사항이 수시로 바뀌는 경우, 백엔드 개발자도 그에 맞춰서 엔드포인트를 계속 수정해야 하는데, 이는 일의 효율을 저해한다.
-2. API endpoint 변경시, 누가 언제 어느 목적으로 추가/변경/삭제했는지 버전관리 하기 힘들다.
-3. API endpoint를 정의하는 사내 프로토콜의 부재
-
-### 2. 문제의 원인
-- API 공통 프로토콜의 부재
-
-
-### 3. 해결책
-1. API 공통 프로토콜인 openapi을 사용한다.
-2. API first approach을 사용해 프론트/백이 코드 작성 전에, 서버에 요청되는 request/response를 미리 합의해 정해두고, openapi 문서를 작성한다.
-3. openapi spec에 맞추어 작성된 문서를 코드로 변환해주는 SDK(openapi-codegen)을 사용하여 프론트는 request, response에 필요한 모델을, 백엔드는 컨트롤러 코드를 자동으로 생성해 사용한다.
-4. API를 읽는 문서는 redoc이라는 오픈소스 툴을 사용한다.
-
-
-
-
-#### 3-1. openapi codegen
-
-![](documentation/images/swagger.png)
-
-openapi3 spec으로 작성된 코드를 swagger로 변환해준 모습
-
-- Q. how to see oepnapi docs online?
-    1. https://editor.swagger.io/
-    2. [openapi-docs code](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/resources/api/openapi.yaml) 붙여넣기
-
-
-#### 3-2. redoc
-![](documentation/images/redoc.png)
-
-```
-Q. how to install redoc and run?
-
-npm i -g @redocly/cli
-git clone https://github.com/Doohwancho/ecommerce
-cd ecommerce
-redocly preview-docs back/1.ecommerce/src/main/resources/api/openapi.yaml
-```
-
-
-
-
-## d. latency 개선
-
-### 1. 불필요한 랜더링을 React.memo() 으로 최적화
-
-- 문제
-	- 페이지 이동할 때 마다 `<Header />, <Footer />, < TopNav />`가 불필요하게 다시 랜더링 되던 문제가 있었다.
-- 해결책
-	1. React.memo()로 감싸서 props가 바뀌지 않는한, 다시 랜더링 되지 않도록 하고,
-	2. Router에서 템플릿화 시켰다.
-
-```tsx
-  const Layout = ({ children }) => (
-    <>
-      <Header />
-      <TopNav />
-      <ScrollToTop />
-      {children}
-      <Footer />
-    </>
-  );
-
-<Routes>
-	<Route path="/" element={<Layout><Home /></Layout>} />
-	<Route path="/products/category/:lowCategoryId" element={<Layout><Category /></Layout>} />
-	<Route path="/products/:productId" element={<Layout><Product /></Layout>} />
-</Routes>
-  );
-```
-
----
-
-### 2. useMemo()로 memoization 활용
-
-1. API fetch받은 products들을 재정리 하는 함수의 결과값을 memoization 한다.
-
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L23-L56
-
-option/price filter에서 product list를 호출할 때마다, 재정리를 요구하는데,
-이 함수를 useMemo()로 최적화 했다.
-
-
----
-...하지만 option들을 묶는 함수에 적용한 useMemo()는 이른 최적화 같다.
-
-2. option들을 optionId를 기준으로 묶는 함수
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L9-L21
-
-- Q. 왜 useMemo()를 여기에 쓰는게 좋은 선택이 아닌가?
-	1. 무거운 연산이 아니다.
-	2. 파라미터가 자주 바뀌는 편이라, 한번 연산해놓고 두고두고 쓰는 함수가 아니다.
-
-
-
-
-### 3. code splitting
-
-```tsx
-import React, { Suspense } from 'react';
-
-const Home: React.FC = () => {
-  const CarouselComponent = React.lazy(() => import ('./component/carousel/CarouselComponent'));
-
-  return (
-    <>
-	<MainElement /> //------------------- 1
-
-	<Suspense fallback={<div>Loading...</div>}>
-          <CarouselComponent /> //----------------- 2
-        </Suspense>
-    </>
-  );
-};
-
-export default Home;
-```
-1. 메인페이지 최상단 이미지 + 텍스트는 그대로 랜더링
-2. 화면 하단부 top 10 rated products fetch는 lazy하게 랜더링
-
-
-### 4. main page caching
-
-![top-ten-rated-products](documentation/images/top-ten-rated-products.gif)
-
-main page에서 요구하는 top 10 rated products를 redis cache에 매 시간 갱신하여 뿌려준다.
-
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L76-L79
-
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L143-L153
-
-
-
-### 5. .png -> .webp로 변경
-이미지 용량이 약 60%로 축소됨으로 인해, 페이지 로드 속도가 빨라졌다.
-
-
-## e. nextjs migration for different rendering patterns
-
-1. SSG: register, login 페이지
-	- register, login 페이지는 내용이 안바뀌는 static page라 빌드타임 때 만들고 뿌리는 SSG 사용한다.
-2. ISR: index 페이지
-	- index 페이지는 첫 페이지 로드 시간이 빠른게 중요하기 때문에 대부분 컴포넌트가 static인데,
-	- top 10 trending product 컴포넌트는 주기적으로 업데이트 되기 때문에 ISR로 렌더링한다.
-3. hybrid(SSR + CSR): product_list 페이지
-	- product_list 페이지는 ecommerce 특성상 검색엔진 봇에 키워드가 상품등록 직후에 바로 잡히는게 중요하기 때문에 SSR로 하되,
-	- 옵션별 필터를 했을 때, SSR로 처리하면 UX가 너무 안좋으니, 이 부분은 CSR로 처리한다. 즉, product_list는 nextjs14의 하이브리드 렌더링(SSR + CSR)을 한다.
-	- 만약 이 앱이 쿠팡같은 쇼핑몰이라 특정 카테고리에 상품이 만개 이상 걸리면, 이런식으로 처리하는게 구조적으로 비효율적이나, nike같은 세부 카테고리가 많고, 세부 카테고리에 걸리는 상품 종류가 300개 이하인 경우엔, SSR로 한번에 가져온 후, CSR로 처리하는게 부드럽기 때문에 UX적으로 더 나은 방법이라 생각한다.
-4. SSR: product 페이지
-	- product 페이지는 상품내용이 자주 업데이트 될 수 있음과 동시에 SEO에 잡히는게 중요하므로 SSR로 렌더링한다.
-
-
-## f. atomic design pattern with shadcn-ui
-
-
-### 1. 문제
-
-가끔 카카오앱이 구린 이유.txt를 보면, 카카오에 종속된 회사 앱들의 카카오의 메인 컬러: 노란색의 RGB값을 찍어보면 약간씩 다르다. 색상도 다르고 UI 스타일도 달라서, 다른 카카오 앱 쓸 때마다, 심지어 어떤 경우는 같은 앱의 다른 페이지를 볼 때 이질감을 느낄 때도 있다.
-
-이런 이질감을 없애기 위해 스타일, 색 조합, ui에 일관성이 있는 앱을 개발해야 한다.
-
-
-### 2. 해결책
-
-디자인 일관성에 맞게 앱을 개발 하는 방법은 해당 앱의 각 페이지에서 새로운 ui, 색상을 매번 새롭게 만드는게 아니라, 먼저 약속한 디자인 프로토콜에 맞게 제작된 공통된 컴포넌트를 import해서 재사용하는 식으로 개발해야 한다고 생각한다.
-
-이런 문제를 컴포넌트 디자인 + atomic design pattern으로 해결할 수 있다고 생각한다.
-
-1. 먼저 앱을 대표하는 primary, secondary, tertiary color 색조합과 ui 스타일을 정하고,
-2. 기본적인 버튼, input form, label 등의 컴포넌트 디자인을 한 이후,
-3. 이런 약속에 맞는 컴포넌트들을 조합하여 페이지를 만든다.
-
-### 3. 시행착오
-
-처음엔 컴포넌트 설계를 직접 하려고 했으나 [몇번의 시행착오](https://github.com/Doohwancho/javascript/tree/main/05.react/01.syntax/src/05.atomic-design)\
-끝에 점점 일이 커지는걸 깨닿고, best practice opensource library인 shadcn-ui을 썼다.
-
-
-
-# F. 기술적 도전 - Backend
+# E. 기술적 도전 - Backend
 
 ## a. spring security - authentication
 
@@ -760,7 +528,7 @@ https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be74
 https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L65-L178
 
 
-# G. 기술적 도전 - Database
+# F. 기술적 도전 - Database
 
 ## a. 정규화
 
@@ -857,10 +625,343 @@ join 성능은 데이터 사이즈가 커질수록 안좋아진다.
 
 
 
+## b. 반정규화
+
+### 1. 정규화 -> 반정규화
+before)
+![](documentation/images/erd.png)
+
+after)
+![](documentation/images/반정규화된_ERD.png)
+
+1. `option_json`, `discount_json`, `order_item_json`은 별도 테이블이 아닌 product table의 json field를 구체적으로 적은 것이다.
+2. FK도 성능향상 목적으로 모두 제거
+3. db에서는 최대한 index타서 최소량만 i/o 해오는 식으로 짠다(join X). 나머지 데이터 조립/가공은 서버에서 한다.
+
+```json
+[
+	{
+		"item_id": 1,
+		// ... 상품 정보 필드
+
+		"options": [
+			{"option_id": 1, "name": "Color", "value": "Red"},
+			{"option_id": 2, "name": "Size", "value": "Large"}
+		],
+		"discounts": [
+			{"discount_id": 1, "type": "PERCENTAGE", "value": 10, "start_date": "2023-01-01", "end_date": "2023-12-31"}
+		]
+	},
+	// 다른 Product
+]
+```
+
+원래 정규화된 ERD였다면 `PRODUCT, PRODUCT_ITEM, OPTION, DISCOUNT` 테이블 4개를 조인해서 가져왔었다면,
+
+비정규화된 ERD에서는 `OPTION`, `DISCOUNT`를 json타입으로 넣고, 통째고 가져와서 백엔드에서 파싱하는 식으로 처리한다.
+
+여러 테이블 join에서 오는 cost 줄여준다.\
+테이블 사이즈가 커질수록 효과적이다.
+
+
+### 2. 성능테스트 (100~800 RPS)
+
+#### 2-1. 실험 조건
+1. ec2, rds 둘다 2 core 4GiB RAM
+2. table size: user = 1000, product = 10000, order = 5000
+3. table rows ratio -> user:product:order = 1 : 10 : 5
+4. http request read:write ratio: 9:1
+
+
+#### 2-2. RDS CPU usage 메트릭 해석시 주의점
+
+PMM에서 제공하는 CPU usage 메트릭이 총 7개 이다.
+1. `{node_name="ecommerce-db-instance"}`: MySQL 인스턴스의 전체 CPU 사용률
+2. `nice`: 낮은 우선순위로 실행되는 프로세스의 CPU 사용률
+3. `system`: 시스템 프로세스의 CPU 사용률
+4. `wait`: I/O 대기 시간의 CPU 사용률
+5. `irq`: 하드웨어 인터럽트 처리에 사용된 CPU 시간
+6. `user`: 사용자 프로세스의 CPU 사용률
+7. `steal`: 가상화 환경에서 다른 VM에 의해 "훔쳐진" CPU 시간
+
+처음에 잘 모를 땐 'nice'라고 써진걸 기준으로 실험결과를 기록했는데,\
+나중에 알고보니 {node_name="ecommerce-db-instance"}가 전체 cpu usage를 종합한거라더라.
+
+그런데 막상 실험해보니 저 {node_name="ecommerce-db-instance"} 에 나머지 지표까지 모두 더한게 실제 cpu usage인 것으로 추측된다.\
+서버 터지는 구간이 저 모든 cpu usage 합산이 90% 넘어가는 지점이더라.
+
+
+## 100 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 10% | 7.1% |
+| Load Average | 0.2 | 0.1 |
+| Heap Used | 8.73% | N/A |
+| Non-Heap Used | 12.41% | N/A |
+| Last HTTP Latency | 88ms | 5ms |
+| Last Max Latency | N/A | 290ms |
+| Errors | None | None |
+| **RDS** |
+| CPU Usage | 4.2% | 3.1% (node: 5.78%, total: ~20%) |
+| Load Average | 0.3 | 0.39 |
+| Memory Availability | 71.35% | 67% |
+| QPS | 361 | 285 |
+| TPS | 280 | 163 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 20k ops/s | 10k ops/s |
+| read_next | 1-2k ops/s | 2.1 ops/s |
+| read_key | 1-2k ops/s | 115 ops/s |
+| write | 1-2k ops/s | 162 ops/s |
+| external_lock | N/A | 252 ops/s |
+| **Network Traffic** |
+| Inbound | 250 kb/s | 117 kb/s |
+| Outbound | 610 kb/s | 439 kb/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most queries < 20ms, longest 21ms |
+
+## 200 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 20% | 14.3% |
+| Load Average | 0.6 | 0.6 |
+| Heap Used | 13.21% | N/A |
+| Non-Heap Used | 12.43% | N/A |
+| Avg Latency | 8ms | 5ms |
+| Max Latency | 500ms | 292ms |
+| Errors | None | None |
+| **RDS** |
+| CPU Usage | 8.6% | 5.3% (node: 10.73%, total: ~25%) |
+| Load Average | 0.41 | 0.36 |
+| Memory Availability | 71.16% | 67% |
+| QPS | 704 | 576 |
+| TPS | 577 | 324 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 40k ops/s | 18.5k ops/s |
+| read_next | 3-6k ops/s | 4.5 ops/s |
+| read_key | 3-6k ops/s | 225 ops/s |
+| write | 3-6k ops/s | 172 ops/s |
+| external_lock | N/A | 534 ops/s |
+| **Network Traffic** |
+| Inbound | 596 kb/s | 234 kb/s |
+| Outbound | 1.5 MB/s | 1.03 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+## 300 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 30% | 23.4% |
+| Load Average | 0.8 | 0.8 |
+| Heap Used | 28.13% | N/A |
+| Non-Heap Used | 12.73% | N/A |
+| Last Avg Latency | 12.7ms | 6ms |
+| Last Max Latency | 1.14s | 276ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 14.6% | 7.73% (node: 12.05%, total: ~30%) |
+| Load Average | 1.77 | 0.57 |
+| Memory Availability | 70.80% | 67% |
+| QPS | 1080 | 836 |
+| TPS | 855 | 483 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 63.9k ops/s | 29.4k ops/s |
+| read_next | 5-13k ops/s | 7.6k ops/s |
+| read_key | 5-13k ops/s | 343 ops/s |
+| write | 5-13k ops/s | 182 ops/s |
+| external_lock | N/A | 748 ops/s |
+| **Network Traffic** |
+| Inbound | 888 kb/s | 345 kb/s |
+| Outbound | 2.94 MB/s | 1.76 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+## 400 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 51% | 33.4% |
+| Load Average | 2.3/2.0 | 1.0 |
+| Heap Used | 41.83% | N/A |
+| Non-Heap Used | 12.66% | N/A |
+| Last Avg Latency | 10.9ms | 5ms |
+| Last Max Latency | 664ms | 215ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 21.4% | 11.9% (node: 18.78%, total: ~43%) |
+| Load Average | 1.38 | 0.41 |
+| Memory Availability | 70.50% | 66% |
+| QPS | 1.47k | 1.16k |
+| TPS | 1.17k | 657 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 83.1k ops/s | 35.2k ops/s |
+| read_next | 18.7k ops/s | 12.9k ops/s |
+| read_key | 15.3k ops/s | 449 ops/s |
+| write | 500 ops/s | 269 ops/s |
+| external_lock | N/A | 954 ops/s |
+| **Network Traffic** |
+| Inbound | 1.18 MB/s | 465 kb/s |
+| Outbound | 5.71 MB/s | 3.01 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+## 500 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 73% | 43.0% |
+| Load Average | 4.3/2.0 | 1.4 |
+| Heap Used | 40.83% | N/A |
+| Non-Heap Used | 12.66% | N/A |
+| Last Avg Latency | 10.9ms | 6ms |
+| Last Max Latency | 664ms | 285ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 30.3% | 15.9% (node: 24.3%, total: ~50%) |
+| Load Average | 0.63 | 0.76 |
+| Memory Availability | 70.24% | 66% |
+| QPS | 1.78k | 1.44k |
+| TPS | 1.41k | 778 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 101.1k ops/s | 45.2k ops/s |
+| read_next | 48k ops/s | 19.4k ops/s |
+| read_key | 33k ops/s | 551 ops/s |
+| write | 640 ops/s | 201 ops/s |
+| external_lock | N/A | 1.21k ops/s |
+| **Network Traffic** |
+| Inbound | 1.48 MB/s | 577 kb/s |
+| Outbound | 9.24 MB/s | 4.65 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+## 600 RPS and above
+
+| Metric | Normalized Version (600+ RPS) | Denormalized Version (600 RPS) |
+|--------|------------------------------|--------------------------------|
+| **EC2** |
+| CPU Usage | 97% | 56.2% |
+| Load Average | 6.6/2.0 | 2.3 |
+| Heap Used | 40.83% | N/A |
+| Non-Heap Used | 12.66% | N/A |
+| Last Avg Latency | 10.9ms | 8s |
+| Last Max Latency | 664ms | 374ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 39.1% | 20.0% (node: 28%, total: ~70%) |
+| Load Average | 2.27 | 3.13 |
+| Memory Availability | 69% | 66% |
+| QPS | 2.04k | 1.75k |
+| TPS | 1.6k | 985 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 111.1k ops/s | 56.3k ops/s |
+| read_next | 65k ops/s | 27.4k ops/s |
+| read_key | 43k ops/s | 671 ops/s |
+| write | 712 ops/s | 211 ops/s |
+| external_lock | N/A | 1.45k ops/s |
+| **Network Traffic** |
+| Inbound | 1.71 MB/s | 682 kb/s |
+| Outbound | 12.56 MB/s | 6.93 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+
+## 700 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | N/A (> 97% at 600 RPS) | 70.9% |
+| Load Average | N/A (> 6.6 at 600 RPS) | 4.9 |
+| Heap Used | N/A | N/A |
+| Non-Heap Used | N/A | N/A |
+| Last Avg Latency | N/A | 10ms |
+| Last Max Latency | N/A | 2.23s |
+| Errors | N/A | None |
+| Actual RPS | N/A (< 568 at 600 RPS) | 680-690 |
+| **RDS** |
+| CPU Usage | N/A (> 39.1% at 600 RPS) | 25.3% (node: 32.55%, total: ~75%) |
+| Load Average | N/A (> 2.27 at 600 RPS) | 1.16 |
+| Memory Availability | N/A (< 69% at 600 RPS) | 65% |
+| QPS | N/A (> 2.04k at 600 RPS) | 1.97k |
+| TPS | N/A (> 1.6k at 600 RPS) | 1.095k |
+| **MySQL Handlers Metric** |
+| read_rnd_next | N/A (> 111.1k ops/s at 600 RPS) | 64.47k ops/s |
+| read_next | N/A (> 65k ops/s at 600 RPS) | 40.9k ops/s |
+| read_key | N/A (> 43k ops/s at 600 RPS) | 775 ops/s |
+| write | N/A (> 712 ops/s at 600 RPS) | 220 ops/s |
+| external_lock | N/A | 1.64k ops/s |
+| **Network Traffic** |
+| Inbound | N/A (> 1.71 MB/s at 600 RPS) | 796 kb/s |
+| Outbound | N/A (> 12.56 MB/s at 600 RPS) | 9.96 MB/s |
+| **Query Analysis** |
+| Query Duration | N/A (All queries < 70ms at 600 RPS) | Most < 3ms, longest 20ms |
+
+## 800 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | N/A (> 97% at 600 RPS) | 92.9% |
+| Load Average | N/A (> 6.6 at 600 RPS) | 9.6 |
+| Heap Used | N/A | N/A |
+| Non-Heap Used | N/A | N/A |
+| Last Avg Latency | N/A | 52.4ms |
+| Last Max Latency | N/A | 1.29s |
+| Errors | N/A | None |
+| Actual RPS | N/A (< 568 at 600 RPS) | 750-770 |
+| **RDS** |
+| CPU Usage | N/A (> 39.1% at 600 RPS) | 32.17% (node: 39.48%, total: ~95%) |
+| Load Average | N/A (> 2.27 at 600 RPS) | 1.99 |
+| Memory Availability | N/A (< 69% at 600 RPS) | 65% |
+| QPS | N/A (> 2.04k at 600 RPS) | 2.19k |
+| TPS | N/A (> 1.6k at 600 RPS) | 1.2k |
+| **MySQL Handlers Metric** |
+| read_rnd_next | N/A (> 111.1k ops/s at 600 RPS) | 67.5k ops/s |
+| read_next | N/A (> 65k ops/s at 600 RPS) | 52.6k ops/s |
+| read_key | N/A (> 43k ops/s at 600 RPS) | 848 ops/s |
+| write | N/A (> 712 ops/s at 600 RPS) | 240 ops/s |
+| external_lock | N/A | 1.82k ops/s |
+| **Network Traffic** |
+| Inbound | N/A (> 1.71 MB/s at 600 RPS) | 891 kb/s |
+| Outbound | N/A (> 12.56 MB/s at 600 RPS) | 13.5 MB/s |
+| **Query Analysis** |
+| Query Duration | N/A (All queries < 70ms at 600 RPS) | Most < 3ms, longest 20ms |
+
+
+## 반정규화 성능테스트 결과(monitoring app version)
+
+
+![](./documentation/images/3_반정규화_1000_ec2_ver2_after_orderby_index.png)
+
+![](./documentation/images/3_반정규화_1000_rds_ver2_after_orderby_index.png)
+
+
+### 3. 성능테스트 결과 비교
+
+같은 스펙의 ec2, rds에서, 같은 테이블 사이즈에 동일한 load test를 했을 때,\
+정규화 버전의 한계는 560 RPS, 비정규화 버전의 한계는 750 RPS 정도 된다.
+
+
+정규화 버전에 560RPS일 때, 2k QPS정도 나온다.\
+2k QPS는 비정규화 버전에서는 700 RPS에서 나오는 수치다.\
+join할 때 쿼리 한번할껄 여러번 쪼개서 하기 때문에 QPS도 많이 찍히고\
+join(nested loop join, hash join)할 때 드는 cpu cost가 더 많이 드는 듯 하다.
+
+실험한 테이블 사이즈가 user:product:order = 1000:10000:5000 인데,\
+테이블 사이즈가 10만, 100만 으로 커질 수록\
+join cost이 늘어나기 때문에 정규화, 비정규화 성능 격차는 더 커질 것으로 예상된다.
 
 
 
-## b. 통계 쿼리
+
+## c. 통계 쿼리
 
 ### 1. 요구사항
 1. 최근 N개월(최대 3개월) 사이에
@@ -957,7 +1058,7 @@ https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be74
 
 
 
-## c. sql tuning 1 - index 튜닝
+## d. sql tuning 1 - index 튜닝
 
 ### 1. 문제
 동일 조건에서 정규화 vs 반정규화의 성능차이가 얼마나 날까 실험중이었는데,
@@ -1023,7 +1124,7 @@ where절에 조건걸리는 필드에 인덱스를 걸어준다.
 4. filtered 100% -> 필터율 100%이니까 힘들게 io한걸 버리지 않는다는 뜻
 
 
-## d. sql tuning 2 - order by 튜닝
+## e. sql tuning 2 - order by 튜닝
 
 ### 1. 문제
 
@@ -1103,11 +1204,11 @@ PMM에 Mysql Sorts 메트릭에 잡혀서 망정이지 아니었으면...
 
 
 
-## e. sql tuning 3 - 통계 쿼리 튜닝
-[b. 통계 쿼리](#b-통계-쿼리)를 튜닝해보자.
+## f. sql tuning 3 - 통계 쿼리 튜닝
+[c. 통계 쿼리](#c-통계-쿼리)를 튜닝해보자.
 
 ### 1. before tuning
-[b. 통계 쿼리](#b-통계-쿼리)"는 크게 3덩이의 subquery로 나뉜다.
+[c. 통계 쿼리](#c-통계-쿼리)"는 크게 3덩이의 subquery로 나뉜다.
 1. tmp1
 2. a
 3. b
@@ -1300,7 +1401,7 @@ WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
 	2. 실제 실행계획 수치는 mysql console에서 commandline인 'explain analyze'을 쳐서 실측치를 봐야한다.
 
 #### 2-4. 검증
-[b. 통계 쿼리](#b-통계-쿼리)를 다시 돌리되,\
+[c. 통계 쿼리](#c-통계-쿼리)를 다시 돌리되,\
 데이터 사이즈를 키워서 index 타는 쿼리와 타지 않는 쿼리가 시간차가 얼마나 나는지 보자.
 
 ```
@@ -1323,7 +1424,7 @@ productOptionVariation: 30000 rows
 
 하나의 컬럼에 index를 태웠는지 여부가 약 455ms latency 차이를 보여준다.
 
-## f. bulk insert
+## g. bulk insert
 
 ### 1. 문제
 소규모 데이터 핸들링은, 어떤 DBMS를 사용하던, 어떻게 SQL을 짜던 큰 문제없이 처리 가능한데,\
@@ -2399,343 +2500,93 @@ disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o
 
 
 
-## g. 반정규화
 
-### 1. 정규화 -> 반정규화
-before)
-![](documentation/images/erd.png)
+# G. 기술적 도전 - Cloud
 
-after)
-![](documentation/images/반정규화된_ERD.png)
+## a. docker-compose로 개발환경 구성
 
-1. `option_json`, `discount_json`, `order_item_json`은 별도 테이블이 아닌 product table의 json field를 구체적으로 적은 것이다.
-2. FK도 성능향상 목적으로 모두 제거
-3. db에서는 최대한 index타서 최소량만 i/o 해오는 식으로 짠다(join X). 나머지 데이터 조립/가공은 서버에서 한다.
+### 1. 쓰는 이유
+1. 협업 할 때 개발자 머신마다 아키텍처 달라서(amd64/arm64/linux) 거기에 호환되는 버전 찾아 맞추는게 번거로운데, redis:latest 해놓으면 알아서 설치해준다.
+2. 도커 이미지 버전 명시해두면 .yml파일로 깃에 버전관리가 된다.
+3. jenkins같은 cicd 서버에서 세팅하고 테스트할 때, 기존 빌드 스크립트 방식은 아주 길고 번거롭다. (java, mysql, redis, prometheus, grafana 버전 맞춰서 세팅, 중간에 에러나면 재시도 스크립트 등...) 근데 이건 `docker-compose up` 한방이면 끝난다.
+4. 이 외에 모니터링 서버 배포시에도, k6로 부하테스트 할 때에도 docker container로 간편하게 처리했다.
 
-```json
-[
-	{
-		"item_id": 1,
-		// ... 상품 정보 필드
 
-		"options": [
-			{"option_id": 1, "name": "Color", "value": "Red"},
-			{"option_id": 2, "name": "Size", "value": "Large"}
-		],
-		"discounts": [
-			{"discount_id": 1, "type": "PERCENTAGE", "value": 10, "start_date": "2023-01-01", "end_date": "2023-12-31"}
-		]
-	},
-	// 다른 Product
-]
+### 2. 주의사항
+
+docker-compose.yml 작성하면서 제일 많이 시행착오 겪은게 **컨테이너간 통신**이다.\
+컨테이너간 통신만 알면 나머지는 그다지 막히는게 없을 것이다.
+
+
+### step1) 같은 network로 묶기
+```yml
+networks:
+  bridge_network: #frontend, backend, db 같은 네트워크로 묶는 것
+    driver: bridge
 ```
 
-원래 정규화된 ERD였다면 `PRODUCT, PRODUCT_ITEM, OPTION, DISCOUNT` 테이블 4개를 조인해서 가져왔었다면,
+도커 컨테이너끼리 통신할 네트워크를 구성한다.
 
-비정규화된 ERD에서는 `OPTION`, `DISCOUNT`를 json타입으로 넣고, 통째고 가져와서 백엔드에서 파싱하는 식으로 처리한다.
+```yml
+services:
+  redis:
+    container_name: 'redis'
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - bridge_network
 
-여러 테이블 join에서 오는 cost 줄여준다.\
-테이블 사이즈가 커질수록 효과적이다.
+  ecommerce-app1:
+    container_name: 'ecommerce-app1'
+    hostname: ecommerce-app1
+    build:
+      context: ./back/1.ecommerce
+      dockerfile: Dockerfile
+    ports: #backend server port는 외부 접속을 막아둔다. 다만, 개발시에는 편의를 위해 여는 경우도 있다.
+      - "8080:8080" #"HOST_PORT:CONTAINER_PORT"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - bridge_network
+    depends_on:
+      - redis
+      - mysql
+    restart: on-failure
+```
 
-
-### 2. 성능테스트 (100~800 RPS)
-
-#### 2-1. 실험 조건
-1. ec2, rds 둘다 2 core 4GiB RAM
-2. table size: user = 1000, product = 10000, order = 5000
-3. table rows ratio -> user:product:order = 1 : 10 : 5
-4. http request read:write ratio: 9:1
-
-
-#### 2-2. RDS CPU usage 메트릭 해석시 주의점
-
-PMM에서 제공하는 CPU usage 메트릭이 총 7개 이다.
-1. `{node_name="ecommerce-db-instance"}`: MySQL 인스턴스의 전체 CPU 사용률
-2. `nice`: 낮은 우선순위로 실행되는 프로세스의 CPU 사용률
-3. `system`: 시스템 프로세스의 CPU 사용률
-4. `wait`: I/O 대기 시간의 CPU 사용률
-5. `irq`: 하드웨어 인터럽트 처리에 사용된 CPU 시간
-6. `user`: 사용자 프로세스의 CPU 사용률
-7. `steal`: 가상화 환경에서 다른 VM에 의해 "훔쳐진" CPU 시간
-
-처음에 잘 모를 땐 'nice'라고 써진걸 기준으로 실험결과를 기록했는데,\
-나중에 알고보니 {node_name="ecommerce-db-instance"}가 전체 cpu usage를 종합한거라더라.
-
-그런데 막상 실험해보니 저 {node_name="ecommerce-db-instance"} 에 나머지 지표까지 모두 더한게 실제 cpu usage인 것으로 추측된다.\
-서버 터지는 구간이 저 모든 cpu usage 합산이 90% 넘어가는 지점이더라.
-
-
-## 100 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 10% | 7.1% |
-| Load Average | 0.2 | 0.1 |
-| Heap Used | 8.73% | N/A |
-| Non-Heap Used | 12.41% | N/A |
-| Last HTTP Latency | 88ms | 5ms |
-| Last Max Latency | N/A | 290ms |
-| Errors | None | None |
-| **RDS** |
-| CPU Usage | 4.2% | 3.1% (node: 5.78%, total: ~20%) |
-| Load Average | 0.3 | 0.39 |
-| Memory Availability | 71.35% | 67% |
-| QPS | 361 | 285 |
-| TPS | 280 | 163 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 20k ops/s | 10k ops/s |
-| read_next | 1-2k ops/s | 2.1 ops/s |
-| read_key | 1-2k ops/s | 115 ops/s |
-| write | 1-2k ops/s | 162 ops/s |
-| external_lock | N/A | 252 ops/s |
-| **Network Traffic** |
-| Inbound | 250 kb/s | 117 kb/s |
-| Outbound | 610 kb/s | 439 kb/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most queries < 20ms, longest 21ms |
-
-## 200 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 20% | 14.3% |
-| Load Average | 0.6 | 0.6 |
-| Heap Used | 13.21% | N/A |
-| Non-Heap Used | 12.43% | N/A |
-| Avg Latency | 8ms | 5ms |
-| Max Latency | 500ms | 292ms |
-| Errors | None | None |
-| **RDS** |
-| CPU Usage | 8.6% | 5.3% (node: 10.73%, total: ~25%) |
-| Load Average | 0.41 | 0.36 |
-| Memory Availability | 71.16% | 67% |
-| QPS | 704 | 576 |
-| TPS | 577 | 324 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 40k ops/s | 18.5k ops/s |
-| read_next | 3-6k ops/s | 4.5 ops/s |
-| read_key | 3-6k ops/s | 225 ops/s |
-| write | 3-6k ops/s | 172 ops/s |
-| external_lock | N/A | 534 ops/s |
-| **Network Traffic** |
-| Inbound | 596 kb/s | 234 kb/s |
-| Outbound | 1.5 MB/s | 1.03 MB/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
-
-## 300 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 30% | 23.4% |
-| Load Average | 0.8 | 0.8 |
-| Heap Used | 28.13% | N/A |
-| Non-Heap Used | 12.73% | N/A |
-| Last Avg Latency | 12.7ms | 6ms |
-| Last Max Latency | 1.14s | 276ms |
-| Errors | None reported | None |
-| **RDS** |
-| CPU Usage | 14.6% | 7.73% (node: 12.05%, total: ~30%) |
-| Load Average | 1.77 | 0.57 |
-| Memory Availability | 70.80% | 67% |
-| QPS | 1080 | 836 |
-| TPS | 855 | 483 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 63.9k ops/s | 29.4k ops/s |
-| read_next | 5-13k ops/s | 7.6k ops/s |
-| read_key | 5-13k ops/s | 343 ops/s |
-| write | 5-13k ops/s | 182 ops/s |
-| external_lock | N/A | 748 ops/s |
-| **Network Traffic** |
-| Inbound | 888 kb/s | 345 kb/s |
-| Outbound | 2.94 MB/s | 1.76 MB/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
-
-## 400 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 51% | 33.4% |
-| Load Average | 2.3/2.0 | 1.0 |
-| Heap Used | 41.83% | N/A |
-| Non-Heap Used | 12.66% | N/A |
-| Last Avg Latency | 10.9ms | 5ms |
-| Last Max Latency | 664ms | 215ms |
-| Errors | None reported | None |
-| **RDS** |
-| CPU Usage | 21.4% | 11.9% (node: 18.78%, total: ~43%) |
-| Load Average | 1.38 | 0.41 |
-| Memory Availability | 70.50% | 66% |
-| QPS | 1.47k | 1.16k |
-| TPS | 1.17k | 657 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 83.1k ops/s | 35.2k ops/s |
-| read_next | 18.7k ops/s | 12.9k ops/s |
-| read_key | 15.3k ops/s | 449 ops/s |
-| write | 500 ops/s | 269 ops/s |
-| external_lock | N/A | 954 ops/s |
-| **Network Traffic** |
-| Inbound | 1.18 MB/s | 465 kb/s |
-| Outbound | 5.71 MB/s | 3.01 MB/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
-
-## 500 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 73% | 43.0% |
-| Load Average | 4.3/2.0 | 1.4 |
-| Heap Used | 40.83% | N/A |
-| Non-Heap Used | 12.66% | N/A |
-| Last Avg Latency | 10.9ms | 6ms |
-| Last Max Latency | 664ms | 285ms |
-| Errors | None reported | None |
-| **RDS** |
-| CPU Usage | 30.3% | 15.9% (node: 24.3%, total: ~50%) |
-| Load Average | 0.63 | 0.76 |
-| Memory Availability | 70.24% | 66% |
-| QPS | 1.78k | 1.44k |
-| TPS | 1.41k | 778 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 101.1k ops/s | 45.2k ops/s |
-| read_next | 48k ops/s | 19.4k ops/s |
-| read_key | 33k ops/s | 551 ops/s |
-| write | 640 ops/s | 201 ops/s |
-| external_lock | N/A | 1.21k ops/s |
-| **Network Traffic** |
-| Inbound | 1.48 MB/s | 577 kb/s |
-| Outbound | 9.24 MB/s | 4.65 MB/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
-
-## 600 RPS and above
-
-| Metric | Normalized Version (600+ RPS) | Denormalized Version (600 RPS) |
-|--------|------------------------------|--------------------------------|
-| **EC2** |
-| CPU Usage | 97% | 56.2% |
-| Load Average | 6.6/2.0 | 2.3 |
-| Heap Used | 40.83% | N/A |
-| Non-Heap Used | 12.66% | N/A |
-| Last Avg Latency | 10.9ms | 8s |
-| Last Max Latency | 664ms | 374ms |
-| Errors | None reported | None |
-| **RDS** |
-| CPU Usage | 39.1% | 20.0% (node: 28%, total: ~70%) |
-| Load Average | 2.27 | 3.13 |
-| Memory Availability | 69% | 66% |
-| QPS | 2.04k | 1.75k |
-| TPS | 1.6k | 985 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 111.1k ops/s | 56.3k ops/s |
-| read_next | 65k ops/s | 27.4k ops/s |
-| read_key | 43k ops/s | 671 ops/s |
-| write | 712 ops/s | 211 ops/s |
-| external_lock | N/A | 1.45k ops/s |
-| **Network Traffic** |
-| Inbound | 1.71 MB/s | 682 kb/s |
-| Outbound | 12.56 MB/s | 6.93 MB/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+ecommerce-app1 컨테이너와 redis 컨테이너가 통신하려면, 반드시 같은 'bridge_network'에 묶여있어야 한다.
 
 
-## 700 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | N/A (> 97% at 600 RPS) | 70.9% |
-| Load Average | N/A (> 6.6 at 600 RPS) | 4.9 |
-| Heap Used | N/A | N/A |
-| Non-Heap Used | N/A | N/A |
-| Last Avg Latency | N/A | 10ms |
-| Last Max Latency | N/A | 2.23s |
-| Errors | N/A | None |
-| Actual RPS | N/A (< 568 at 600 RPS) | 680-690 |
-| **RDS** |
-| CPU Usage | N/A (> 39.1% at 600 RPS) | 25.3% (node: 32.55%, total: ~75%) |
-| Load Average | N/A (> 2.27 at 600 RPS) | 1.16 |
-| Memory Availability | N/A (< 69% at 600 RPS) | 65% |
-| QPS | N/A (> 2.04k at 600 RPS) | 1.97k |
-| TPS | N/A (> 1.6k at 600 RPS) | 1.095k |
-| **MySQL Handlers Metric** |
-| read_rnd_next | N/A (> 111.1k ops/s at 600 RPS) | 64.47k ops/s |
-| read_next | N/A (> 65k ops/s at 600 RPS) | 40.9k ops/s |
-| read_key | N/A (> 43k ops/s at 600 RPS) | 775 ops/s |
-| write | N/A (> 712 ops/s at 600 RPS) | 220 ops/s |
-| external_lock | N/A | 1.64k ops/s |
-| **Network Traffic** |
-| Inbound | N/A (> 1.71 MB/s at 600 RPS) | 796 kb/s |
-| Outbound | N/A (> 12.56 MB/s at 600 RPS) | 9.96 MB/s |
-| **Query Analysis** |
-| Query Duration | N/A (All queries < 70ms at 600 RPS) | Most < 3ms, longest 20ms |
-
-## 800 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | N/A (> 97% at 600 RPS) | 92.9% |
-| Load Average | N/A (> 6.6 at 600 RPS) | 9.6 |
-| Heap Used | N/A | N/A |
-| Non-Heap Used | N/A | N/A |
-| Last Avg Latency | N/A | 52.4ms |
-| Last Max Latency | N/A | 1.29s |
-| Errors | N/A | None |
-| Actual RPS | N/A (< 568 at 600 RPS) | 750-770 |
-| **RDS** |
-| CPU Usage | N/A (> 39.1% at 600 RPS) | 32.17% (node: 39.48%, total: ~95%) |
-| Load Average | N/A (> 2.27 at 600 RPS) | 1.99 |
-| Memory Availability | N/A (< 69% at 600 RPS) | 65% |
-| QPS | N/A (> 2.04k at 600 RPS) | 2.19k |
-| TPS | N/A (> 1.6k at 600 RPS) | 1.2k |
-| **MySQL Handlers Metric** |
-| read_rnd_next | N/A (> 111.1k ops/s at 600 RPS) | 67.5k ops/s |
-| read_next | N/A (> 65k ops/s at 600 RPS) | 52.6k ops/s |
-| read_key | N/A (> 43k ops/s at 600 RPS) | 848 ops/s |
-| write | N/A (> 712 ops/s at 600 RPS) | 240 ops/s |
-| external_lock | N/A | 1.82k ops/s |
-| **Network Traffic** |
-| Inbound | N/A (> 1.71 MB/s at 600 RPS) | 891 kb/s |
-| Outbound | N/A (> 12.56 MB/s at 600 RPS) | 13.5 MB/s |
-| **Query Analysis** |
-| Query Duration | N/A (All queries < 70ms at 600 RPS) | Most < 3ms, longest 20ms |
 
 
-## 반정규화 성능테스트 결과(monitoring app version)
+
+### step2) 다른 컨테이너의 ip주소는 그 컨테이너의 이름으로 대체해서 적는다.
+
+만약 nextjs container가 `fetch('ecommerce-app1', request);` 하고 싶다고 하자.
+
+그러면 docker-compose.yml에 적은 호스트이름 대로 `http://ecommerce-app1:8080` <-- 여기에 요청해야 한다.
+
+**컨테이너 이름이 해당 컨테이너의 ip주소를 가르킨다.**
+
+도커 컨테이너 특성상 자주 죽었다가 재시작하는걸 염두하고 만들어졌는데,\
+그 때마다 새로운 ip를 부여받고, 할당받은 새 ip가 저 이름으로 재매핑되는 원리이다.
 
 
-![](./documentation/images/3_반정규화_1000_ec2_ver2_after_orderby_index.png)
+### step3) localhost에 요청하는 경우, localhost가 아니라 host.docker.internal로 요청해야 한다.
 
-![](./documentation/images/3_반정규화_1000_rds_ver2_after_orderby_index.png)
-
-
-### 3. 성능테스트 결과 비교
-
-같은 스펙의 ec2, rds에서, 같은 테이블 사이즈에 동일한 load test를 했을 때,\
-정규화 버전의 한계는 560 RPS, 비정규화 버전의 한계는 750 RPS 정도 된다.
+도커 컨테이너가 생성되거나 재생성될 때 고유한 네트워크에 매번 새로운 ip를 달고 만들어진다.\
+따라서 도커 내부에 호스트에 접근할 땐, localhost가 아닌 호스트 머신을 가르키는 host.docker.internal 주소를 사용해야 한다.
 
 
-정규화 버전에 560RPS일 때, 2k QPS정도 나온다.\
-2k QPS는 비정규화 버전에서는 700 RPS에서 나오는 수치다.\
-join할 때 쿼리 한번할껄 여러번 쪼개서 하기 때문에 QPS도 많이 찍히고\
-join(nested loop join, hash join)할 때 드는 cpu cost가 더 많이 드는 듯 하다.
-
-실험한 테이블 사이즈가 user:product:order = 1000:10000:5000 인데,\
-테이블 사이즈가 10만, 100만 으로 커질 수록\
-join cost이 늘어나기 때문에 정규화, 비정규화 성능 격차는 더 커질 것으로 예상된다.
+ex. 프론트에서 스프링에 데이터 fetch 할 때,\
+`curl -X GET http://localhost:8080/products` 가 아닌,\
+`curl -X GET http://host.docker.internal:8080/products`로 해야한다.
 
 
-# H. 기술적 도전 - Cloud
 
-## a. provisioning with terraform and packer
+## b. provisioning with terraform and packer
 
 ### 1. 문제
 1. aws 서버 구성하고 한달동안 쓰지도 않았는데 10만원이 청부되었다.
@@ -2756,7 +2607,7 @@ join cost이 늘어나기 때문에 정규화, 비정규화 성능 격차는 더
 3. aws 학습 목적으로도 좋았다.
 	- 세세한 설정 하나만 빠지거나 잘못 입력해도 테라폼은 작동을 안하기 때문에 vpc, sg, rt, igw 등의 세부 설정을 왜 해야하는지 이해하는데 도움을 주었다.
 
-## b. prometheus and grafana + PMM
+## c. prometheus and grafana + PMM
 
 ### 1. 문제
 서버를 구축하면, 에러 예방/핸들링, 성능 튜닝을 위한 스트레스 테스트 메트릭을 뽑기 위해 모니터링 서버를 구축해야 한다.
@@ -2794,8 +2645,1084 @@ PMM도 같은 위와 같은 이유로 선택하게 되었다.
 ![](documentation/images/pmm-2.png)
 
 
+## d. 시행착오 - 배포서버에서 log는 error랑 warn만 키자
 
-## c. 300 RPS 부하 테스트
+
+### d-a. 사건의 발단
+
+대규모 트래픽을 견디는 아키텍처를 만들기 위해 먼저 aws에 간단한 3 tier architecture를 구상했다.
+
+가볍게 초당 10 http request를 보냈는데, 이상하게도, latency가 4초나 걸렸다.
+
+API 서버의 응답 latency는 500ms 이하여야 한다는 권장사항을 차치하더라도,
+
+4초면 너무 오래걸리는거 아닌가? 라는 생각에 문제의 원인을 찾아보게 되었다.
+
+
+
+#### 1. AWS 아키텍처
+
+1. application load balancer
+2. ec2
+	- t2.small
+		- vCPU = 1
+		- RAM = 2 GiB
+3. rds
+	- mysql 8.0.35
+	- db.t2.micro
+		- vCPU = 1
+		- RAM = 1 GiB
+		- storage = 10 GiB
+
+
+#### 2. load test 결과
+
+```
+ data_received..................: 83 MB  70 kB/s
+ data_sent......................: 259 kB 216 B/s
+ http_req_blocked...............: avg=139.45µs min=4.25µs   med=12.25µs max=53.52ms p(90)=26.77µs  p(95)=45.42µs
+ http_req_connecting............: avg=95.88µs  min=0s       med=0s      max=19.09ms p(90)=0s       p(95)=0s
+✗ http_req_duration..............: avg=4.24s    min=357.35ms med=4.49s   max=8.71s   p(90)=6.9s     p(95)=7.6s
+   { expected_response:true }...: avg=4.24s    min=357.35ms med=4.49s   max=8.71s   p(90)=6.9s     p(95)=7.6s
+ http_req_failed................: 0.00%  ✓ 0        ✗ 1748
+ http_req_receiving.............: avg=6.86ms   min=223.95µs med=3.06ms  max=96.91ms p(90)=20.11ms  p(95)=28.44ms
+ http_req_sending...............: avg=90.61µs  min=16µs     med=71.22µs max=3.43ms  p(90)=154.31µs p(95)=209.99µs
+ http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s      p(90)=0s       p(95)=0s
+ http_req_waiting...............: avg=4.23s    min=355.99ms med=4.49s   max=8.71s   p(90)=6.89s    p(95)=7.59s
+ http_reqs......................: 1748   1.456067/s
+ iteration_duration.............: avg=5.24s    min=1.35s    med=5.5s    max=9.71s   p(90)=7.91s    p(95)=8.6s
+ iterations.....................: 1748   1.456067/s
+ vus............................: 1      min=1      max=10
+ vus_max........................: 10     min=10     max=10
+```
+
+- latency(http_req_duration)가 약 4초로 매우 느린걸 확인할 수 있다.
+	- latency: 의 평균이 4.24s,이고 정규분포에 90%, 95% 구간에서는 약 7초나 걸렸다.
+	- minimum latency가 357ms인걸 보면, 초반 부하가 몰리지 않은 request는 빨리 처리되는데, 부하가 늘면서 병목현상이 생기는 듯 하다. 왜 일까?
+
+
+#### 3. 모니터링 분석
+
+##### 3-1. API server monitoring
+![](documentation/images/2024-01-25-20-59-43.png)
+
+1. jvm thread state를 보면 48개의 demon jvm thread들 중에 time-waiting state인 쓰레드의 숫자가 37개가 된다.
+	- TIME_WAIT 상태란 특정 조건(꺠우는 함수가 호출되거나, 특정 시간이 지나거나)을 요구하는 상태이다.
+		- ex1) I/O operation(ex. database의 요청)을 기다리고 있어서가 이유가 될 수 있다.
+		- ex2) synchronization lock을 기다려서 일 수도 있다.
+	- RDS에서 1초당 10개의 request를 처리를 못해서 처리가 밀렸기 때문에 TIME_WAITING 상태 쓰레드가 37개로 늘어나지 않았을까? 의심할 수 있다.
+	- (추후 RDS monitoring에서 확인될 내용인데, RDS의 database connections 수가 10개밖에 안된다.)
+2. cpu usage가 100%를 찍었다.
+	- CPU throttling이 high latency에 원인이 될 수 있다.
+
+
+---
+##### 3-2. RDS monitoring
+![](documentation/images/2024-01-25-21-33-39.png)
+
+1. read시 lock 문제는 아닌 듯 하다.
+	- mysql8의 InnoDB는 transaction isolation level에서 REPEATABLE READ가 기본 세팅이라, write/update/delete에는 락을 걸지만, read에는 lock을 걸지 않는다.
+	- 그런데 부하 테스트를 건 쿼리는 read query이기 때문에, lock 문제는 아닌 듯 하다.
+	- 만약에 lock 문제였다면, CPU usage가 5%보다 훨씬 더 많이 나왔을 것이라 추측된다.
+2. query를 잘못짜서 생기는 문제일 수도 있다.
+3. database connections의 갯수가 너무 적어서 생긴 문제일 수 있다.
+	- database connection 수가 10개밖에 안되는데, 저게 만약 jvm demon thread에 요청을 받아 처리하는 쓰레드 갯수라면, t2.micro ec2의 jvm demon thread의 수인 50개 대비, 1/5 밖에 되지 않는다.
+
+
+---
+#### 4. 결론
+high latency의 원인은 다음으로 유추할 수 있다.
+
+1. database의 문제
+	1. query가 느린 경우 -> sql tuning을 해야한다.
+	2. database connections 갯수가 부족한 경우 -> connections 수를 늘리거나, connections을 만들기 위한 RDS의 RAM을 늘려야 한다.
+	3. RDS network bandwidth이 너무 적어서 생긴 문제인지 확인한다.
+2. ec2의 문제
+	1. 코어 수 부족 -> vCPU를 늘린다. (가장 간단하나 돈이 든다)
+	2. HikariCP의 jdbc connections 설정에 이상 없나 확인한다.
+	2. 빈번한 GC가 일어나는지 확인 후 어플리케이션 코드 개선한다.
+3. load balancer
+	1. 현재 L7 load balancer로 구성되있는데, 어짜피 현 프로젝트에서는 http request을 열어서 ALB가 로깅한다거나 등 별도 처리를 안하니까, L7 load balancer로 변경한다.
+
+
+### d-b. 가설1 - RDS의 connections 수가 부족해서 latency가 높아졌다.
+
+
+#### 1. 문제 원인 예측
+
+##### 1-1. jvm threads 대비 database connection의 갯수가 현저히 적다.
+![](documentation/images/2024-01-25-20-59-43.png)
+ec2 성능 메트릭 중에, thread state를 보면, time-waiting 상태인 쓰레드가 37개나 있다.
+
+![](documentation/images/2024-01-25-21-33-39.png)
+반면 RDS의 database connections 갯수는 10개밖에 되지 않는다.
+
+RDS의 커넥션 갯수가 jvm 요청 쓰레드 수에 비해 훨씬 부족하기 때문에, 쓰레드가 기다리는 시간이 길어져 latency가 높아진게 아닐까?
+
+##### 1-2. min latency 와 평균 latency의 차이가 매우 크다.
+```
+http_req_duration..............: avg=4.24s    min=357.35ms med=4.49s   max=8.71s   p(90)=6.9s     p(95)=7.6s
+```
+가장 빠른 latency가 350ms인데, 평균값이 4.2초, 최대가 7.6초나 된다.
+
+첫 10 requests들은 jvm thread 10개가 database connections 10개에 병렬로 요청을 하고 빠르게 처리되니까 빠른데, 요청수가 쌓이게 되면서 RDS에서 동시요청 처리할 connections 갯수가 적어서 생긴 문제가 아닐까? 예측할 수 있다.
+
+추가적인 jvm threads 38개가 database connections 10개의 처리를 기다리게 되면서 latency가 올라간게 아닐까?
+
+
+
+EC2가 데이터베이스로 요청을 넣고 기다리는 쓰레드가 약 40개인데,
+
+RDS의 max_connections 숫자는 10개밖에 되지 않는게 high latency의 원인이 아닐까?
+
+
+#### 2. 해결방안
+
+#### 2-1. max_connections 숫자를 늘려보자.
+1. [aws RDS 공식문서에서 권장하는 공식](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections)에 따라 max database connections 수를 설정한다.
+	- max database connections 수는 동시요청 수에 비례해 맞추는게 좋다.
+	- ex) 현재 load test의 동시접속자 수는 10명이니까, 최소 10개 이상의 database connections 수를 설정하는게 좋다.
+	- ex) 만약 load test의 동시접속자 수가 100명으로 늘어나면, 최소 100개의 database connections을 지원할 수 있도록 RDS RAM의 스펙업을 해주어야 한다.
+2. RDS instance spec을 늘려도 해결 가능하나, max connections 수를 먼저 늘려서 테스트를 해보자. spec up을 월 이용요금이 늘어나기 때문이다.
+
+
+#### 2-2. RDS의 적정 max database connection 수 계산하는 방법
+1. [aws RDS 공식문서](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections)에 따르면, RDS 종류와 스펙마다 적정 maximum database connections size를 정하는 공식이 있다.
+2. mysql8 engine에서 max connections 수를 구하는 공식은 다음과 같다.
+	- DBInstanceClassMemory/12582880
+		- 예를들어, 8GiB RAM은 8,589,934,592 bytes 이고,
+		- 8,589,934,592 bytes / 12582880 = 683 max database connections 이라는 수가 나온다.
+		- 하지만 공식문서에서는 683개를 다 쓰진 않고, os와 rds자체를 메니징 하는 프로세스를 위해 50개정도 빼고 약 630개 정도로 설정하기를 권장한다.
+3. 주의사항) 주어진 RAM 대비 너무 많은 connections 갯수를 부여하는 것 역시, RAM 부족 현상이 생겨 'incompatible parameters' 상태라는 문제가 발생한다고 한다. ([incompatible paramters 문제의 해결책이 적힌 docs](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Troubleshooting.html#CHAP_Troubleshooting.incompatible-parameters-memory))
+
+#### 2-3. 1 GiB RAM에서 적정 max database connections 수 계산하기
+
+기존 db.t2.micro의 기본 커넥션 수가 10개밖에 되지 않지만,\
+1GiB RAM in bytes / 12572880 = 약 79개 정도로,\
+os & rds 관리용 50개를 빼고 약 30개 정도를 max connection size로 설정해 주어도 지금보다는 latency가 훨씬 빨라질 것으로 예측된다.
+
+#### 2-4. database 인스턴스 타입에 따른 default max_connections 수
+```
+1. RDS
+t2.micro: 66
+t2.small: 150
+m3.medium: 296
+t2.medium: 312
+M3.large: 609
+t2.large: 648
+M4.large: 648
+M3.xlarge: 1237
+R3.large: 1258
+M4.xlarge: 1320
+M2.xlarge: 1412
+M3.2xlarge: 2492
+R3.xlarge: 2540
+
+
+2. Autora
+db.t2.small:    45
+db.t2.medium:   90
+db.t3.small:    45
+db.t3.medium:   90
+db.t3.large:    135
+db.t4g.medium:  90
+db.t4g.xlarge:  135
+db.r3.large:    1000
+db.r3.xlarge:   2000
+db.r3.2xlarge:  3000
+db.r3.4xlarge:  4000
+db.r3.8xlarge:  5000
+db.r4.large:    1000
+db.r4.xlarge:   2000
+db.r4.2xlarge:  3000
+db.r4.4xlarge:  4000
+db.r4.8xlarge:  5000
+db.r4.16xlarge: 6000
+db.r5.large:    1000
+db.r5.xlarge:   2000
+db.r5.2xlarge:  3000
+db.r5.4xlarge:  4000
+db.r5.8xlarge:  5000
+db.r5.12xlarge: 6000
+db.r5.16xlarge: 6000
+db.r5.24xlarge: 7000
+db.r6g.large	1000
+db.r6g.xlarge	2000
+db.r6g.2xlarge	3000
+db.r6g.4xlarge	4000
+db.r6g.8xlarge	5000
+db.r6g.12xlarge	6000
+db.r6g.16xlarge	6000
+db.r6i.large	1000
+db.r6i.xlarge	2000
+db.r6i.2xlarge	3000
+db.r6i.4xlarge	4000
+db.r6i.8xlarge	5000
+db.r6i.12xlarge	6000
+db.r6i.16xlarge	6000
+db.r6i.24xlarge	7000
+db.r6i.32xlarge	7000
+db.x2g.large	2000
+db.x2g.xlarge	3000
+db.x2g.2xlarge	4000
+db.x2g.4xlarge	5000
+db.x2g.8xlarge	6000
+db.x2g.12xlarge	7000
+db.x2g.16xlarge	7000
+```
+
+connections 수에서 50~60개 정도는 os와 통신 용도, database 관리 목적으로 쓰여서, 실제로 API server와 통신하는 connections 수는 저 숫자에서 55정도를 빼야한다. (ex. t2.micro: 66 -> 10)
+
+max connection 수를 수동으로 올려줄 수 있지만, 성능 이상의 요청이 발생하면 DB 자체의 문제가 생길 우려가 있으므로 aws에서는 기본값을 사용 하시고 여유있게 설정하는 것을 권장한다고 한다.
+
+
+그런데 10RPS 정도라면 10개정도만 늘려도 충분할 것 같으니까, 수동으로 늘려보자.
+
+
+
+
+#### 2-5. connections 갯수를 구하는 쿼리
+max_connections을 구하는 query
+```sql
+mysql> SHOW GLOBAL VARIABLES LIKE 'max_connections';
++-----------------+-------+
+| Variable_name   | Value |
++-----------------+-------+
+| max_connections | 10    |
++-----------------+-------+
+1 row in set (0.09 sec)
+```
+
+
+현재 ACTIVE STATE한 스레드(connection)를 구하는 query
+
+```sql
+mysql> SHOW STATUS LIKE 'Threads_connected';
++-------------------+-------+
+| Variable_name     | Value |
++-------------------+-------+
+| Threads_connected | 2     |
++-------------------+-------+
+1 row in set (0.01 sec)
+```
+
+
+
+#### 3. 실험1 - 수동 설정으로 connections 숫자 늘리기
+
+##### 3-1. instance spec
+1. application load balancer
+2. ec2
+	- t2.small
+		- vCPU = 1
+		- RAM = 2 GiB
+3. rds
+	- mysql 8.0.35
+	- db.t2.micro
+		- vCPU = 1
+		- RAM = 1 GiB
+		- max connections = 75 (default = 60)
+
+
+
+##### 3-2. max connections 수 변경
+
+RDS에 접속하여 직접 max_connections 수를 올리려고 했지만,
+
+root user로 RDS 접속은 보안 문제상 AWS에서 막았기 때문에 권한 문제로 실패했다.
+
+AWS RDS terraform code에서 parameter group을 추가해 max_connections 값인 75을 넣는다.
+
+```terraform
+resource "aws_db_parameter_group" "my-rds-parameter-group" {
+  name        = "${var.namespace}-mysql-parameters"
+  family      = "mysql8.0"  # Ensure this matches your database engine version
+  description = "Custom parameter group for ${var.namespace}"
+
+  parameter {
+    name  = "max_connections"
+    value = 75
+  }
+}
+
+resource "aws_db_instance" "database" {
+  allocated_storage      = 10
+  engine                 = "mysql"
+  engine_version         = "8.0"
+  instance_class         = "db.t4g.micro"
+  identifier             = "${var.namespace}-db-instance"
+  /* name                   = "ecommerce" */ //deprecated field: "name"
+  db_name                = "ecommerce"
+  username               = "admin"
+  /* password               = random_password.password.result */
+  password               = "adminPassword"
+  db_subnet_group_name   = var.vpc.database_subnet_group #B
+  vpc_security_group_ids = [var.sg.db] #B
+  skip_final_snapshot    = true
+
+  # Associate the custom parameter group with the RDS instance
+  parameter_group_name = aws_db_parameter_group.my-rds-parameter-group.name
+}
+```
+
+`terraform apply`를 하면,
+
+
+![](documentation/images/2024-01-27-03-32-36.png)
+
+RDS 파라미터 그룹에 max_connections의 값이 75으로 modified 된걸 확인할 수 있다.
+
+(100개로도 설정해 보았는데, 1GiB에서 너무 많이 설정하면 에러나는지 실패했다. 적당히 15개정도만 늘리니까 성공!)
+
+![](documentation/images/2024-01-27-03-34-43.png)
+
+mysql에 직접 접속해서 max_connections 수가 75개 임을 확인했다.
+
+
+
+##### 3-3. 테스트 결과
+
+```k6
+ data_received..................: 86 MB  71 kB/s
+ data_sent......................: 178 kB 148 B/s
+ http_req_blocked...............: avg=161.72µs min=5µs      med=13.58µs max=41.72ms  p(90)=23.7µs   p(95)=37.5µs
+ http_req_connecting............: avg=114.87µs min=0s       med=0s      max=19.45ms  p(90)=0s       p(95)=0s
+✗ http_req_duration..............: avg=6.62s    min=592.05ms med=7.1s    max=15.47s   p(90)=10.06s   p(95)=10.74s
+   { expected_response:true }...: avg=6.62s    min=592.05ms med=7.1s    max=15.47s   p(90)=10.06s   p(95)=10.74s
+ http_req_failed................: 0.00%  ✓ 0        ✗ 1205
+ http_req_receiving.............: avg=12.81ms  min=376.29µs med=8.97ms  max=65.86ms  p(90)=28.79ms  p(95)=36.41ms
+ http_req_sending...............: avg=87.25µs  min=13.25µs  med=72.79µs max=665.12µs p(90)=142.99µs p(95)=200.89µs
+ http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s       p(90)=0s       p(95)=0s
+ http_req_waiting...............: avg=6.6s     min=590.56ms med=7.1s    max=15.46s   p(90)=10.05s   p(95)=10.73s
+ http_reqs......................: 1205   1.002686/s
+ iteration_duration.............: avg=7.62s    min=1.59s    med=8.1s    max=16.48s   p(90)=11.06s   p(95)=11.74s
+ iterations.....................: 1205   1.002686/s
+ vus............................: 1      min=1      max=10
+ vus_max........................: 10     min=10     max=10
+```
+
+평균 latency가 4초 -> 6초로 오히려 더 느려졌다(?!)
+
+임의로 rds의 max_connections 수를 바꾸지 말고. 동시요청 수 대비 default max_connection 수준에 맞게 스펙업 하라는 조언이 유효한 것 같다.
+
+
+
+#### 3-4. 모니터링 분석
+
+##### 3-4-1. RDS monitoring
+![](documentation/images/2024-01-27-04-06-25.png)
+
+database connection 수가 증가하지 않았다!
+
+
+#### 3-5. 결론
+
+db.t2.micro의 connections 수를 수동으로 60 -> 75로 늘렸는데도, 모니터링된 database connections의 수는 기존에 10~11개와 동일했다.
+
+이미 default connections 숫자가 최적화 되있는 듯 하다.
+
+max_connections 수를 임의로 조절하는 방법 보다는, 권장사항에 맞게 스펙업 해야할 듯 싶다.
+
+
+
+#### 4. 실험2 - RDS spec up을 해서 max_connections 수를 늘리자
+
+##### 4-1. RDS class별 max_connections 숫자
+```
+RDS의 class별 max_connections 수
+
+t2.micro: 66
+t2.small: 150
+m3.medium: 296
+t2.medium: 312
+M3.large: 609
+t2.large: 648
+M4.large: 648
+M3.xlarge: 1237
+R3.large: 1258
+M4.xlarge: 1320
+M2.xlarge: 1412
+M3.2xlarge: 2492
+R3.xlarge: 2540
+```
+
+t2.micro -> t2.small로 스케일업 하면, default max_connections 숫자가 늘어난다!
+
+
+##### 4-2. 테스트 환경
+1. application load balancer
+2. ec2
+	- t2.small
+		- vCPU = 1
+		- RAM = 2 GiB
+3. rds
+	- mysql 8.0.35
+	- db.t2.small
+		- vCPU = 2
+		- RAM = 2 GiB
+		- storage = 10 GiB
+		- max connections = 150 (default)
+
+
+##### 4-3. 테스트 결과
+```
+ data_received..................: 83 MB  69 kB/s
+ data_sent......................: 256 kB 213 B/s
+ http_req_blocked...............: avg=124.12µs min=4.33µs   med=14.2µs  max=54.13ms  p(90)=31.68µs  p(95)=51.44µs
+ http_req_connecting............: avg=71.02µs  min=0s       med=0s      max=14.53ms  p(90)=0s       p(95)=0s
+✗ http_req_duration..............: avg=4.25s    min=368.82ms med=4.5s    max=10.05s   p(90)=6.57s    p(95)=7.22s
+   { expected_response:true }...: avg=4.25s    min=368.82ms med=4.5s    max=10.05s   p(90)=6.57s    p(95)=7.22s
+ http_req_failed................: 0.00%  ✓ 0        ✗ 1744
+ http_req_receiving.............: avg=7.76ms   min=168.58µs med=3.53ms  max=226.55ms p(90)=21.28ms  p(95)=28.26ms
+ http_req_sending...............: avg=99.91µs  min=15.54µs  med=81.81µs max=2.34ms   p(90)=165.26µs p(95)=219.65µs
+ http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s       p(90)=0s       p(95)=0s
+ http_req_waiting...............: avg=4.24s    min=366.98ms med=4.49s   max=10.03s   p(90)=6.56s    p(95)=7.2s
+ http_reqs......................: 1744   1.451946/s
+ iteration_duration.............: avg=5.25s    min=1.37s    med=5.5s    max=11.05s   p(90)=7.57s    p(95)=8.22s
+ iterations.....................: 1744   1.451946/s
+ vus............................: 1      min=1      max=10
+ vus_max........................: 10     min=10     max=10
+```
+db.t2.micro와 성능차이가 없다?!
+
+1. fail율 0%
+2. average latency 약 4초
+
+
+##### 4-4. 모니터링 분석
+
+##### 4-4-1. EC2 모니터링
+![](documentation/images/2024-01-27-17-29-46.png)
+
+micro와 비교했을 때 변한게 없다.
+
+##### 4-4-2. RDS 모니터링
+![](documentation/images/2024-01-27-17-30-08.png)
+
+database connections 수가 여전히 10개이다?!
+
+![](documentation/images/2024-01-27-17-31-26.png)
+
+db.t2.small의 RAM이 2GiB이다. (micro는 1GiB)
+
+
+![](documentation/images/2024-01-27-17-34-48.png)
+
+그런데 RDS에 접속해서 max connections 수를 봤는데 137개이다.
+
+
+![](documentation/images/2024-01-27-17-41-13.png)
+
+그런데 RDS monitoring에서 관측된 로드 테스트 때 사용된 최대 connections 수는 13개밖에 쓰이지 않았다.
+
+```mysql
+mysql> show variables like 'max_connections';
++-----------------+-------+
+| Variable_name   | Value |
++-----------------+-------+
+| max_connections | 137   |
++-----------------+-------+
+1 row in set (0.01 sec)
+```
+
+```
+mysql> show global status like '%connections%';
++-----------------------------------+---------------------+
+| Variable_name                     | Value               |
++-----------------------------------+---------------------+
+| Connection_errors_max_connections | 0                   |
+| Connections                       | 81                  |
+| Max_used_connections              | 13                  |
+| Max_used_connections_time         | 2024-01-27 08:35:38 |
++-----------------------------------+---------------------+
+4 rows in set (0.00 sec)
+```
+
+
+##### 4-5. 결론
+max_connections가 138개 까지 늘어나도, 10 RPS에서는 connections를 어짜피 최대 13개밖에 사용하지 않았다.
+
+RDS connections의 문제는 아닌 듯 하다.
+
+
+
+
+
+### d-c. 가설2 - query가 느려서 latency가 높아졌다.
+
+
+#### 1. 성능 모니터링할 쿼리
+
+```sql
+SELECT
+	p.product_id,
+	p.name,
+	p.description,
+	p.rating,
+	p.rating_count,
+	c.category_id,
+	c.name,
+	o.option_id,
+	o.value,
+	ov.value,
+	pi.quantity,
+	pi.price
+FROM product as p
+JOIN category as c ON p.category_id = c.category_id
+JOIN product_item as pi ON p.product_id = pi.product_id
+JOIN product_option_variation as pov ON pi.product_item_id = pov.product_item_id
+JOIN option_variation as ov ON ov.option_variation_id = pov.option_variation_id
+JOIN `option` as o ON o.option_id = ov.option_id
+WHERE c.category_id = 50;
+```
+
+#### 2. 실행계획
+`EXPLAIN ANALYZE`로 mysql 실행계획을 들여다보자.
+
+![](documentation/images/2024-01-26-05-31-57.png)
+
+PK와 인덱스를 잘 타는걸 확인할 수 있다.
+
+![](documentation/images/2024-01-26-05-32-17.png)
+
+```
+- Nested loop inner join (cost=2276, rows=2099) (actual time=6.82..9.34, rows=190, loops=1)
+  - Nested loop inner join (cost=1541, rows=2099) (actual time=6.81..8.78, rows=190, loops=1)
+    - Nested loop inner join (cost=807, rows=2099) (actual time=6.76..8.04, rows=190, loops=1)
+      - Nested loop inner join (cost=72.1, rows=189) (actual time=5.79..6.48, rows=190, loops=1)
+        - Index lookup on table 'p' using index 'FK1mtsbur82frn64de7balymq9s' (category_id=50) (cost=5.95, rows=17) (actual time=5.56..5.83, rows=19, loops=1)
+        - Index lookup on table 'pi' using index 'FKa9mjpi98ark8eovbtnnreygbb' (product_id=p.product_id) (cost=2.84, rows=11.1) (actual time=0.0189..0.0329, rows=10, loops=19)
+      - Index lookup on table 'pov' using index 'FK441a1kvfh3q2cs7n8oe7a7gvv' (product_item_id=pi.product_item_id) (cost=2.78, rows=11.1) (actual time=0.00765..0.00798, rows=1, loops=190)
+    - Single-row index lookup on table 'ov' using PRIMARY index (option_variation_id=pov.option_variation_id) (cost=0.25, rows=1) (actual time=0.00365..0.00369, rows=1, loops=190)
+  - Single-row index lookup on table 'o' using PRIMARY index (option_id=ov.option_id) (cost=0.25, rows=1) (actual time=0.00271..0.00274, rows=1, loops=190)
+```
+
+
+Q. total time spent for this query: 10ms 도 안걸린다.
+
+빠르다. 쿼리는 문제 없다.
+
+(actual_time의 단위가 [mysql 공식문서](https://dev.mysql.com/blog-archive/mysql-explain-analyze/)에 따르면 ms 단위이니까, 수천 ms가 걸리는게 아닌걸 볼 수 있다.)
+
+
+---
+#### 3. query profiling
+
+이미 EXPLAIN ANALZE로 쿼리 latency를 어느정도 파악할 수 있지만,\
+query profiling로 좀 더 정확한 latency를 구해보자.
+
+
+```sql
+Q. how to profile query in mysql8?
+
+1. SET PROFILE = 1; //enable profiling
+2. run query I want to profile
+3. SHOW PROFILES;
+4. SHOW PROFILE FOR QUERY 1;
+5. SET profiling = 0; //disable profiling
+```
+
+![](documentation/images/2024-01-26-06-38-10.png)
+
+duration: 0.0056 = 5.6ms
+
+![](documentation/images/2024-01-26-06-14-54.png)
+
+
+#### 4. 결론
+쿼리 실행 속도는 약 5ms로 쿼리의 문제는 아니다.
+
+
+
+
+### d-d(puff diddy 아님). 가설3 - RDS의 네트워크 문제인가?
+
+#### 1. 문제 원인 예측
+[rds instance spec 비교 사이트](https://www.cloudzero.com/blog/rds-instance-types/)에 따르면, db.t2.micro의 네트워크 퍼포먼스는 'low to moderate'라고 한다.
+
+t2.micro class는 aws 초창기 때 테스트 목적으로 만든 인스턴스라 네트워크 통신 성능이 매우 낮아서 latency가 느려진게 아닐까?
+
+
+#### 2. 해결방안
+최신 버전인 db.t4g.micro의 네트워크 퍼포먼스를 보면 Up to 5Gbps 라고 하니까, 업그레이드 하면 latency가 개선되지 않을까?
+
+
+#### 3. 실험 결과
+
+```
+ data_received..................: 85 MB  71 kB/s
+ data_sent......................: 263 kB 219 B/s
+ http_req_blocked...............: avg=123.85µs min=3.75µs   med=13.29µs max=56.36ms  p(90)=24.68µs  p(95)=41.21µs
+ http_req_connecting............: avg=75.7µs   min=0s       med=0s      max=16.5ms   p(90)=0s       p(95)=0s
+✗ http_req_duration..............: avg=4.14s    min=374.88ms med=4.16s   max=9.77s    p(90)=6.68s    p(95)=7.31s
+   { expected_response:true }...: avg=4.14s    min=374.88ms med=4.16s   max=9.77s    p(90)=6.68s    p(95)=7.31s
+ http_req_failed................: 0.00%  ✓ 0        ✗ 1780
+ http_req_receiving.............: avg=9.8ms    min=255.2µs  med=6.03ms  max=265.49ms p(90)=23.26ms  p(95)=30.52ms
+ http_req_sending...............: avg=99.01µs  min=13.5µs   med=79.79µs max=3.54ms   p(90)=155.65µs p(95)=221.3µs
+ http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s       p(90)=0s       p(95)=0s
+ http_req_waiting...............: avg=4.13s    min=373.57ms med=4.14s   max=9.76s    p(90)=6.67s    p(95)=7.29s
+ http_reqs......................: 1780   1.482386/s
+ iteration_duration.............: avg=5.15s    min=1.37s    med=5.17s   max=10.77s   p(90)=7.68s    p(95)=8.31s
+ iterations.....................: 1780   1.482386/s
+ vus............................: 1      min=1      max=10
+ vus_max........................: 10     min=10     max=10
+```
+
+다른 조건 동일, db.t4g.micro로 테스트를 한 결과, db.t2.micro과 성능적 차이는 없었다.
+
+
+#### 4. 결론
+RDS의 네트워크 문제가 high latency의 문제는 아니었다.
+
+
+
+### d-e. 가설4 - ec2 spec을 올려보자
+
+Q. ec2 instance의 class를 small 에서 medium 으로 업그레이드 하면 latency가 빨라지지 않을까?
+
+
+#### 1. ec2 instance 선택 과정
+1. 최신 세대인 7세대를 쓴다.
+	- 최신 세대일 수록 성능 개선도 있고, 에너지 소비 효율이 좋아 가격도 더 저렴하기 때문이다.
+2. 범용 목적인 m class와 cpu 특화 목적인 c class가 있다.
+	- 범용 목적 (공통적으로 1 vCPU에 4GiB RAM 제공)
+		- m7g.medium: $0.0408 hourly (on-demand)
+		- m7a.medium: $0.0580 hourly (on-demand)
+	- CPU intensive 목적 (공통적으로 1 vCPU에 2GiB RAM 제공)
+		- c7a.medium: $0.0513 hourly (on-demand)
+		- c7gn.medium: $0.0624 hourly (on-demand)
+		- c7g.medium: $0.0363 hourly (on-demand)
+3. 일단 현 실험 문제원인은 ec2의 RAM문제는 아니고, CPU usage문제니까, CPU 작업에 특화된 c class를 선택한다.
+4. c class 중에서, 가장 저렴한 c7g.medium 을 선택한다.
+
+
+#### 2. 테스트 환경
+
+1. application load balancer
+2. ec2
+	- c7g.medium
+		- vCPU = 1
+		- RAM = 2 GiB
+		- 네트워크 대역폭 = 최대 12.5 Gbps
+		- EBS 대역폭 = 최대 10 Gbps
+3. rds
+	- mysql 8.0.35
+	- db.t4g.medium
+		- vCPU = 2
+		- RAM = 4 GiB
+		- max connections = 150 (default)
+
+
+
+#### 3. 테스트 결과
+```
+ data_received..................: 69 MB  57 kB/s
+ data_sent......................: 210 kB 175 B/s
+ http_req_blocked...............: avg=189.98µs min=4.7µs    med=11.29µs max=55.02ms p(90)=40µs     p(95)=65.68µs
+ http_req_connecting............: avg=132.73µs min=0s       med=0s      max=24.55ms p(90)=0s       p(95)=0s
+✗ http_req_duration..............: avg=5.4s     min=511.8ms  med=5.73s   max=11.5s   p(90)=8.43s    p(95)=9.4s
+   { expected_response:true }...: avg=5.4s     min=511.8ms  med=5.73s   max=11.5s   p(90)=8.43s    p(95)=9.4s
+ http_req_failed................: 0.00%  ✓ 0       ✗ 1431
+ http_req_receiving.............: avg=8.29ms   min=266.25µs med=7ms     max=39.06ms p(90)=16.49ms  p(95)=18.99ms
+ http_req_sending...............: avg=113.01µs min=19.2µs   med=83.08µs max=3.84ms  p(90)=187.08µs p(95)=251.77µs
+ http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s      p(90)=0s       p(95)=0s
+ http_req_waiting...............: avg=5.39s    min=509.92ms med=5.72s   max=11.5s   p(90)=8.41s    p(95)=9.4s
+ http_reqs......................: 1431   1.19162/s
+ iteration_duration.............: avg=6.4s     min=1.51s    med=6.73s   max=12.51s  p(90)=9.43s    p(95)=10.41s
+ iterations.....................: 1431   1.19162/s
+ vus............................: 1      min=1     max=10
+ vus_max........................: 10     min=10    max=10
+```
+
+avg latency: 5.4second
+
+
+ec2 스펙을 올렸는데 레이턴시가 오히려 느려졌다?
+
+
+
+#### 4. 모니터링 분석
+
+##### 4-1. EC2 모니터링
+1. before: t2.small
+	- ![](documentation/images/2024-01-27-17-29-46.png)
+2. after: c7g.medium
+	- ![](documentation/images/2024-01-29-17-45-29.png)
+
+- 달라진 지표
+	1. CPU usage에 process가 점유하는게 100% 에서 80%로 떨어졌다.
+	2. CPU load의 max치가 7.5에서 6대로 떨어졌다.
+
+이 외 나머지 지표는 전과 동일하다.
+
+
+#### 5. 결론
+
+1. 아무 생각 없이 EC2 스펙 올린다고 문제가 해결되지는 않는다.
+	- process의 CPU 점유율이 100% -> 80%로 떨어진건 좋은 신호이긴 하지만, 결과적으로 latency가 늘어난걸 보면, 별 생각없이 EC2 CPU 업그레이드하면 해결되겠지? 는 해결책이 아닌 듯 하다.
+2. CPU 점유율이 떨어졌지만 latency가 늘어난 이유는 아마 CPU throttling이 걸려서 그런 듯 하다.
+	- CPU 스로틀링이란, CPU 점유율이 100% 가까이 되면, 과열에 의한 부품손상을 막기 위해 스로틀링이 걸리는데, 이는 클럭과 전압을 강제적으로 낮춰서 성능이 떨어진다.
+	- 그래서 latency도 그에 따라 평균 4.2s -> 5.4s 로 늘어난 듯 하다.
+3. 컴퓨팅 최적화 인스턴스라지만, 소규모 앱은 코어수 많고 RAM이 더 많은 인스턴스가 훨씬 효과가 좋다.
+	- t2.small -> c7g.medium 이 물론 최신 하드웨어를 쓴다고는 하지만, vCPU = 1개, RAM = 2GiB인건 똑같았기 때문에 latency 개선된게 아닌 듯 하다.
+	- AWS에서 주장하는 이 EC2는 CPU가 최적화 되있어요~ 메모리가 최적화 되있어요~ 는, 대규모 트래픽처리를 요구하는 CPU | Memory Intensive app에서만 유효한 듯 하다.
+
+
+
+### d-f. 가설5 - core 수를 늘려보자
+
+CPU core 수가 부족해서 스로틀링이 걸린게 아닐까?
+
+여태껏 ec2의 vCPU는 1이었는데, 2개 이상인 ec2 instance를 써보자.
+
+
+
+#### 1. ec2 instance 선택 과정
+- m class (범용 클래스)
+	- m7g.large (2 vCPU, 8 GiB RAM) : $0.0816 hourly
+	- m7i.large (2 vCPU, 8 GiB RAM) : $0.1008 hourly
+	- m7i-flex.large (2 vCPU, 8 GiB RAM) : $0.0958 hourly
+	- m7a.large (2 vCPU, 8 GiB RAM) : $0.1159 hourly
+- c class (컴퓨팅 최적화)
+	- c7g.large (2 vCPU, 4 GiB RAM) : $0.0816 hourly
+	- c7gn.large (2 vCPU, 4 GiB RAM) : unavailable
+	- c7i.large (2 vCPU, 4 GiB RAM) : $0.0892 hourly
+	- c7a.large (2 vCPU, 4 GiB RAM) : $0.1026 hourly
+
+---
+1. 2 vCPU 중 가장 저렴한게 m7g.large, c7g.large 이다.
+2. m7g.large vs c7g.large
+	- 가설4에서 깨달았듯이, CPU intensive한 앱이 아니기 때문에 범용 목적이더라도 4GiB RAM을 더 주는 m7g.large를 선택한다.
+
+
+#### 2. 테스트 환경
+
+1. application load balancer
+2. ec2
+	- m7g.large
+		- vCPU = 2
+		- RAM = 8 GiB
+		- 네트워크 대역폭 = 최대 12.5 Gbps
+3. rds
+	- mysql 8.0.35
+	- db.t4g.medium
+		- vCPU = 2
+		- RAM = 4 GiB
+		- max connections = 150 (default)
+
+#### 3. 테스트 결과
+
+```
+ data_received..................: 158 MB 132 kB/s
+ data_sent......................: 490 kB 408 B/s
+ http_req_blocked...............: avg=91.82µs min=3.91µs   med=12.45µs max=64.96ms p(90)=23.9µs   p(95)=39.33µs
+ http_req_connecting............: avg=57.49µs min=0s       med=0s      max=22.54ms p(90)=0s       p(95)=0s
+✗ http_req_duration..............: avg=1.74s   min=230.35ms med=1.84s   max=3.9s    p(90)=2.77s    p(95)=2.95s
+   { expected_response:true }...: avg=1.74s   min=230.35ms med=1.84s   max=3.9s    p(90)=2.77s    p(95)=2.95s
+ http_req_failed................: 0.00%  ✓ 0        ✗ 3335
+ http_req_receiving.............: avg=3.41ms  min=188µs    med=2.58ms  max=39.45ms p(90)=6.6ms    p(95)=8.62ms
+ http_req_sending...............: avg=95.9µs  min=13µs     med=72.37µs max=4.51ms  p(90)=146.31µs p(95)=212.64µs
+ http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s      p(90)=0s       p(95)=0s
+ http_req_waiting...............: avg=1.74s   min=228.9ms  med=1.84s   max=3.89s   p(90)=2.76s    p(95)=2.95s
+ http_reqs......................: 3335   2.777399/s
+ iteration_duration.............: avg=2.74s   min=1.23s    med=2.84s   max=4.9s    p(90)=3.77s    p(95)=3.96s
+ iterations.....................: 3335   2.777399/s
+ vus............................: 1      min=1      max=10
+ vus_max........................: 10     min=10     max=10
+```
+
+1.74s latency (이전: 4.24s)
+
+min은 230ms로 별 차이 안나는데,
+median, max가 큰 폭으로 줄었다!
+
+
+#### 4. 모니터링 분석
+
+##### 4-1. EC2 모니터링
+![](documentation/images/2024-01-29-21-24-35.png)
+
+1. CPU usage Peaked at 83.96%
+2. CPU load
+	- 코어수가 1->2개로 늘어나니, load metric에 cpus가 1->2로 증가한걸 확인할 수 있다.
+	- 그런데 여전히 max cpu load치는 6개인걸 보면, ec2 스펙업을 해도 근본원인을 제거하지 않으면, 안된다라는 생각이 든다.
+
+
+#### 5. 결론
+
+
+CPU core 수를 올리니까 latency가 빨라졌긴 했지만,
+
+여전히 500ms보다 훨씬 느리다.
+
+CPU나 메모리 등, 리소스 부족 현상이 일어날 경우, 단순히 스펙업을 통해 해결하는건,\
+문제의 근본원인 제거할 때 까지인 듯 하다.
+
+
+### d-g. 문제의 원인
+
+#### 1. 고민
+
+spring app에 HikariCP datasource 설정을 잡아줘야 하나?
+
+connection pool에 minimum connection 설정을 RDS의 database connections 갯수만큼 올려줘서 요청오면 바로 쓸 수 있도록 해야하나?
+
+load balancer가 L7이라 느린건가? L4로 바꿔줘야하나?
+
+이런 저런 고민을 하던 중,
+
+성능 튜닝관련 책을 찾다가 '자바 성능 튜닝 이야기'라는 책을 보게 되었다.
+
+책 목차에 불필요한 로그 찍지 말라고 적혀있길래
+
+어? 설마?
+
+
+
+
+
+
+#### 2. 문제 원인
+
+##### 2-1. 불필요한 로그의 콘솔 출력 및 파일 저장
+```xml
+<springProfile name="prod">
+<include resource="log/console-appender.xml"/> <!-- info | debug | trace 레벨의 로그를 터미널에 출력 -->
+<include resource="log/file-info-appender.xml"/>
+<include resource="log/file-warn-appender.xml"/>
+<include resource="log/file-error-appender.xml"/>
+
+<root level="INFO"> <!-- production 환경에서는 콘솔에서 info | debug | trace 레벨 이상 로그 출력 -->
+  <appender-ref ref="CONSOLE"/>
+
+  <appender-ref ref="FILE-INFO"/>
+  <appender-ref ref="FILE-WARN"/>
+  <appender-ref ref="FILE-ERROR"/> <!-- file-error-appender.xml에 FILE-ERROR이라고 이름 설정해둠 -->
+</root>
+</springProfile>
+```
+
+기존 production 환경 로그 설정 파일이다.
+
+INFO, WARN, ERROR 레벨 로그를 콘솔에 프린트 하고, 파일로 저장까지 하도록 되어있다.
+
+너무 많은 양의 로그 출력과 파일 I/O는 빈번한 GC를 일으키게 되어 CPU throttling이 걸리고, GC의 stop-the-world 시간 때문에 latency가 늘어날 수 있다고 한다.
+
+##### 2-2. log와 GC의 상관관계
+
+![](documentation/images/2024-02-03-19-11-49.png)
+
+1. INFO, DEBUG 레벨 로그까지 콘솔 프린트 하면, new StringBuffer()로 객체를 생성한다.
+2. 객체를 생성하면 JVM Runtime Data Area에 Heap 영역에 저장되게 된다.
+3. 맨 처음엔 Eden에 저장되지만, INFO, DEBUG 레벨 로그가 너무 많으면 Eden -> survivor로, survivor space -> old space로 메모리를 이전하는데,
+4. 옮길 공간이 꽉차있으면 먼저 메모리 해제부터 하고 메모리 공간 마련한 다음 옮겨야 한다.
+5. 이 때, Eden -> Survivor이나, Survivor -> Survivor 옮길 때 메모리 공간 비우는건 minor GC, survivor -> old space로 옮길 때 메모리 공간 비우는걸 major gc라고 한다.
+
+
+
+#### 3. 해결방안
+
+1. 서버 로그 콘솔 출력을 없앤다.
+2. warn & error level log만 파일로 저장하자.
+
+
+### d-h. 실험
+
+문제 원인을 알았으니, 실험해보자.
+
+#### 1. 부하테스트 이전 EC2
+
+로드 테스트를 준비하기 위해, 약 15000 rows의 fake data를 database에 insert한 직후의 메트릭이다.
+
+---
+![](documentation/images/2024-02-03-02-26-28.png)
+
+- 아무래도 15000개의 객체를 생성하다보니, JVM Heap 메모리에서 used가 요동치는걸 확인할 수 있다.
+- 특정 메모리 한도(135MB)가 되면, minor gc가 되어 다시 낮아지는 듯 하다.
+
+![](documentation/images/2024-02-03-02-26-43.png)
+
+- eden space와 survivor space에서 메모리가 요동치는걸 보면, minor gc가 여러번 일어난걸 확인할 수 있다.
+
+![](documentation/images/2024-02-03-02-26-54.png)
+
+- Garbage Collection 메트릭을 보면 heap area에 young space에 어느정도 메모리가 꽉 찼을 경우 GC가 일어났다는 것을 확인할 수 있다.
+
+#### 2. 부하테스트 후 EC2
+
+##### 2-1. jvm gc metric
+
+before
+
+| S0C    | S1C    | S0U   | S1U    | EC     | EU      | OC       | OU       | MC      | MU      | CCSC  | CCSU  | YGC | YGCT  | FGC | FGCT  | GCT   |
+|--------|--------|-------|--------|--------|---------|----------|----------|---------|---------|-------|-------|-----|-------|-----|-------|-------|
+| 5504.0 | 5504.0 | 0.0   | 2171.2 | 44224.0| 25067.7 | 110288.0 | 92206.6  | 107776.0| 101331.1| 14336.0| 13285.5| 415 | 2.816 | 5   | 0.716 | 3.532 |
+
+
+after
+
+| S0C   | S1C   | S0U  | S1U | EC     | EU      | OC      | OU      | MC     | MU     | CCSC  | CCSU  | YGC  | YGCT  | FGC | FGCT  | GCT   |
+|-------|-------|------|-----|--------|---------|---------|---------|--------|--------|-------|-------|------|-------|-----|-------|-------|
+| 5504.0| 5504.0| 19.9 | 0.0 | 44224.0| 19759.1 | 110288.0| 100899.4| 109696.0| 103037.0| 14464.0| 13361.9| 1712 | 10.520| 5   | 0.716 | 11.237|
+
+
+
+1. 총 GC로 소요된 시간은 7.7s(11.2s - 3.5s) 이다.
+2. minor GC에 걸린 시간은 7.7s이다.
+	- 10.52s - 2.816s
+	- major gc가 load test할 때 동안 안일어났다.
+3. major GC(FGC)는 5번으로 동일한데, minor GC(YGC)는 415번 -> 1712번으로 늘었다.
+4. 1 minor GC당 소요시간은 평균 5.94 ms이다. (7700 / (1712 - 415))
+5. minor gc가 많이 발생한 이유는, 수많은 로그를 콘솔에 프린트할 때, heap area에서 Eden -> survivor, survivor1 -> survivor2 영역으로 옮길 자리가 부족해서이고,
+6. major gc가 발생하지 않은 이유는, 로그 출력을 위해 생성한 StringBuffer 객체가 오래 여러번 참조되어 쓰이지 않았기 때문에, young 영역에서만 살아있다가 메모리가 다 차면 minor GC 당한것으로 추측된다.
+
+##### 2-2. prometheus monitoring
+
+![](documentation/images/2024-02-03-02-57-32.png)
+
+JVM memory에서 Heap area부분의 used 그래프가 요동치는걸 확인할 수 있다.
+
+![](documentation/images/2024-02-03-02-57-46.png)
+
+- Log Events metric을 보면, 초당 15만개의 로그가 발생한다는걸 확인할 수 있다.
+- Jvm Memory Pool(Heap)에서 Eden 영역이 오르다 minor GC 당할 때마다 다시 0 byte로 내려가는것이 확인된다.
+- survivor 영역도 minor gc 이후에 내려가는것을 볼 수 있다.
+
+![](documentation/images/2024-02-03-02-57-57.png)
+
+- Garbage Collection metric을 보면 major GC는 안일어났는데 minor gc가 많이 일어난걸 확인할 수 있다.
+- Pause Duration metric을 보면, minor gc는 평균 5ms 정도로 minor GC 단일 원인만으로는 매우 느린 latency을 설명하기엔 부족해 보인다.
+- Allocated/Promoted metric을 보면, 초당 50MB 씩이나 메모리가 할당된다는걸 확인할 수 있다.
+
+
+
+
+#### 3. 로그 제거 후 부하테스트
+
+
+##### 3-1. 테스트 결과
+
+```
+ data_received..................: 601 MB 500 kB/s
+ data_sent......................: 1.3 MB 1.1 kB/s
+ http_req_blocked...............: avg=42.77µs min=1.58µs   med=10.12µs max=55.91ms  p(90)=19.32µs  p(95)=28.36µs
+ http_req_connecting............: avg=15.34µs min=0s       med=0s      max=17.36ms  p(90)=0s       p(95)=0s
+✗ http_req_duration..............: avg=68.39ms min=25.31ms  med=53.76ms max=30.45s   p(90)=94.02ms  p(95)=116.01ms
+   { expected_response:true }...: avg=68.39ms min=25.31ms  med=53.76ms max=30.45s   p(90)=94.02ms  p(95)=116.01ms
+ http_req_failed................: 0.00%  ✓ 0        ✗ 8554
+ http_req_receiving.............: avg=8.97ms  min=201.75µs med=6.23ms  max=109.69ms p(90)=18.15ms  p(95)=25.36ms
+ http_req_sending...............: avg=3.63ms  min=5.2µs    med=55.39µs max=30.37s   p(90)=128.52µs p(95)=197.88µs
+ http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s       p(90)=0s       p(95)=0s
+ http_req_waiting...............: avg=55.78ms min=23.66ms  med=45.11ms max=1.3s     p(90)=79.97ms  p(95)=99.59ms
+ http_reqs......................: 8554   7.118939/s
+ iteration_duration.............: avg=1.07s   min=1.02s    med=1.05s   max=31.46s   p(90)=1.09s    p(95)=1.11s
+ iterations.....................: 8554   7.118939/s
+ vus............................: 1      min=1      max=10
+ vus_max........................: 10     min=10     max=10
+```
+
+latency가 평균 4초에서 68ms로 줄었다
+
+
+
+##### 3-2. jvm gc metric
+before load test
+
+|   S0C   |   S1C   |   S0U   |  S1U |    EC    |     EU    |     OC     |     OU     |     MC     |     MU    |  CCSC  |  CCSU  | YGC | YGCT | FGC | FGCT |  GCT  |
+|:-------:|:-------:|:-------:|:----:|:--------:|:---------:|:----------:|:----------:|:----------:|:---------:|:------:|:------:|:---:|:----:|:---:|:----:|:-----:|
+|  6720.0 |  6720.0 |  2852.1 | 0.0  |  54080.0 |  20803.4  |  134860.0  |  80913.8   |  104320.0  |  98110.1  | 14208.0| 13136.4| 316 | 2.304|  6  | 0.979| 3.284 |
+
+
+after load test
+
+| S0C    | S1C    | S0U  | S1U   | EC     | EU      | OC      | OU      | MC      | MU      | CCSC  | CCSU  | YGC | YGCT  | FGC | FGCT  | GCT   |
+|--------|--------|------|-------|--------|---------|---------|---------|---------|---------|-------|-------|-----|-------|-----|-------|-------|
+| 6720.0 | 6720.0 | 0.0  | 546.1 | 54080.0| 33326.9 | 134860.0| 89592.1 | 108288.0| 101979.4| 14336.0| 13256.1| 2231 | 11.332| 6   | 0.979 | 12.311|
+
+
+major GC는 6회로 동일한데,\
+minor GC는 316 -> 2231로 증가했다.\
+총 GC에 걸린 시간은 9.1s (12.3s - 3.2s)
+
+신기하게도,\
+로그를 콘솔 출력할 때 minor GC(YGC)는 1297(415번 -> 1712번)에 소요시간은 7.7s이고,\
+로그 제거 후는 minor GC가 1915번에 소요시간은 9.1s이다.
+
+이걸 보면, 수 많은 로깅이 latency를 늘린건 맞으나,\
+그 이유 중 주된 원인이 minor gc 때문은 아니라는게 확인되었다.
+
+아마 CPU throttling 같은 다른 이유가 high latency의 주 원인인 듯 하다.
+
+
+
+##### 3-3. prometheus monitoring
+
+![](documentation/images/2024-02-03-03-33-38.png)
+
+1. cpu usage가 90% -> 18%까지 줄었다.
+2. cpu 요구 갯수도 1개 이하에서 발생하는걸 볼 수 있다.
+3. duration(latency)가 500ms 이하로 매우 많이 개선된걸 확인할 수 있다.
+
+
+![](documentation/images/2024-02-03-03-33-59.png)
+- 로그 콘솔 출력 및 파일 저장 설정을 안했는데도, Log Events 메트릭은 여전히 높다.
+- Log Events 메트릭은 로그를 콘솔에 출력하거나 파일저장하는 것과 무관하게 총 로그 발생수를 나타내는 것으로 보인다.
+
+
+
+
+### d-i. 결과 및 배운 점
+
+#### 1. logging protocol을 정하고 지키자
+
+1. System.out.println을 사용한 로깅 금지
+2. 디버깅시 Logger 쓰지 말고 디버거 쓰기
+3. Exception 처리에서 warn, error 레벨 부분 제외하고 로그 사용 금지
+
+
+#### 2. CPU usage 100%는 latency에 매우 큰 영향을 준다.
+
+CPU usage가 90%에서 18%로 줄자마자, 평균 latency가 4240ms -> 68ms 로, 6235% 성능 향상했다.
+
+CPU가 http 요청을 처리하는 것도 바쁜데,
+
+1. 로그 생성을 위해 수십, 수만개의 StringBuffer 객체를 생성하고
+2. 수십, 수만개의 StringBuffer객체를 console에 print 하고
+3. 수십, 수만개의 객체가 힙영역에 Eden, Survivor 공간을 다 채울 때마다 안쓰는 수십, 수만개의 StringBuffer 객체를 minor GC도 메모리 해제하는걸 천번 이상 수행해야 하고,
+4. 위에 서술한 매우 많은 불필요한 과정이 CPU scheduling을 통해 queue에 쌓이게 되어 정작 중요한 일은 못하고
+5. 멀티 쓰레드 환경에서 여러 요청을 교차하며 동시에 수행하다보니 context switching overhead도 있고,
+6. CPU 점유율이 100% 가까이 되면, 과열에 의한 부품손상을 막기 위해 스로틀링이 걸리는데, 이는 클럭과 전압을 강제적으로 낮춰서 성능이 떨어진다.
+
+.. 등의 이유로 왜 CPU 점유율을 모니터링하는지, 왜 JVM heap 영역과 GC를 강조하는지, java에서 왜 String을 쓰지 말라는지의 중요성을 피부로 느끼게 되었다.
+
+
+
+#### 3. JVM Heap area, memory에 대해 더 잘 이해하게 되었다.
+
+JVM 메모리 구조, heap 영역, Garbage Collection에 대해 이론적으로만 배웠고,
+
+GC가 지원되는 언어를 쓰다보니, 메모리 처리는 JVM이 알아서 해주니까 크게 신경 안써도 되겠지? 라는 안일한 생각이 있었는데,
+
+왜 로우레벨 개발자들이 메모리 할당 & 해제 중요성에 대해 이야기를 하고,
+
+메모리 관리를 잘 못하면 GC가 자주 일어나 CPU 점유율과 latency 까지 영향을 미칠 수 있다는걸 배웠다.
+
+
+
+#### 4. monitoring metric을 해석하는 방법에 대해 배우게 되었다.
+
+처음엔 단순히 CPU usage, Memory usage, jvm thread state 이정도만 보고, 나머지 메트릭은 무시했는데,
+Heap 영역 메모리와 GC가 얼마나 일어나나 확인하기 위해 관련 메트릭도 찾아보게 되었다.
+
+이 외에, 모니터링 메트릭을 해석하는 방법론이 3가지가 있고, 시간이 지남에 따라 중요하게 여겨지는 점이 바뀌게 되면서, 중점적으로 봐야하는 메트릭도 달라진 것 같다.
+
+1. 처음엔 CPU, disk, network에 병목이 걸리는지 위주로 보다가(USE method),
+2. 웹서비스 관점으로 재해석해 트래픽 패턴과 latency를 강조한 RED method,
+3. 위 두 방법론을 섞어 SRE 관점으로 해석한 4 golden signals
+
+
+
+## e. 300 RPS 부하 테스트
 
 ### 0. RPS 별 DAU 예측
 
@@ -3037,7 +3964,7 @@ major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하�
 		- 13.3Mb/s -> 47.88 Gb/h
 
 
-## d. 1000 RPS 부하 테스트
+## g. 1000 RPS 부하 테스트
 
 
 ### 1. EC2 스펙 정하기
@@ -3411,7 +4338,7 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 
 
-## e. 비용을 고려한 scale out 전략
+## g. 비용을 고려한 scale out 전략
 
 1. 성능테스트를 할 수록 느끼는건 쿼리만 신경써서 짜도 서버 스펙에 들어가는 돈을 많이 아낄 수 있다는 것이다.
 2. [반정규화](#g-반정규화) 실험에서 느낀건, 반정규화만 해놔도 서버 비용을 많이 아낄 수 있다.
@@ -3429,1078 +4356,229 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 
 
-# I. Trouble Shooting
 
-## a. 사건의 발단
+# H. 기술적 도전 - Frontend
 
-대규모 트래픽을 견디는 아키텍처를 만들기 위해 먼저 aws에 간단한 3 tier architecture를 구상했다.
+## a. wireframe
 
-가볍게 초당 10 http request를 보냈는데, 이상하게도, latency가 4초나 걸렸다.
+![](./documentation/images/wireframe.svg)
 
-API 서버의 응답 latency는 500ms 이하여야 한다는 권장사항을 차치하더라도,
+### a-1. wireframe -> home
 
-4초면 너무 오래걸리는거 아닌가? 라는 생각에 문제의 원인을 찾아보게 되었다.
+![](./documentation/images/ecommerce_index_page.png)
 
-
-
-### 1. AWS 아키텍처
-
-1. application load balancer
-2. ec2
-	- t2.small
-		- vCPU = 1
-		- RAM = 2 GiB
-3. rds
-	- mysql 8.0.35
-	- db.t2.micro
-		- vCPU = 1
-		- RAM = 1 GiB
-		- storage = 10 GiB
+### a-2. wireframe -> category
+![](./documentation/images/ecommerce_product_list_page.png)
 
 
-### 2. load test 결과
+### a-3. wireframe -> product
+![](./documentation/images/ecommerce_product_page.png)
+
+
+### a-4. wireframe -> register
+![](./documentation/images/ecommerce_register_login_page.png)
+
+
+### a-5. wireframe -> login
+![](./documentation/images/ecommerce_register_login_page.png)
+
+
+## b. state managment
+프론트는 같은걸 2가지 버전(reactjs, nextjs)으로 만들었다.\
+React.js 버전에서 상태관리한 방법을 기술한다.
+
+---
+1. react query
+	- server state를 관리한다.
+	- custom hooks에 react query의 fetch 함수와 더불어, 각 페이지에 맞게 가공하여 전달하는 함수까지 포함한다.
+2. recoil
+	- client state를 관리한다.
+	- global state에 담아 관리해야할 것을(ex. user authentication status) recoil로 관리한다.
+3. props
+	- 가능한 depth 1 정도만 props를 내려준다. 그 이상 depth는 recoil 사용을 고려한다. (props drilling problem)
+	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우
+
+
+## c. API first design
+
+### 1. 문제
+1. 기존 프론트/백 협업 방식은 프론트 개발자와 백엔드 개발자 사이의 결합도가 높아진다는 문제점이 있다.
+	- 기존에 frontend, backend 협업 시, 코드를 각자 짜면서 슬랙으로 프론트가 백 한테 필요 데이터를 매번 요청하는 식으로 일했다.
+	- 프론트 개발자의 요구사항이 수시로 바뀌는 경우, 백엔드 개발자도 그에 맞춰서 엔드포인트를 계속 수정해야 하는데, 이는 일의 효율을 저해한다.
+2. API endpoint 변경시, 누가 언제 어느 목적으로 추가/변경/삭제했는지 버전관리 하기 힘들다.
+3. API endpoint를 정의하는 사내 프로토콜의 부재
+
+### 2. 문제의 원인
+- API 공통 프로토콜의 부재
+
+
+### 3. 해결책
+1. API 공통 프로토콜인 openapi을 사용한다.
+2. API first approach을 사용해 프론트/백이 코드 작성 전에, 서버에 요청되는 request/response를 미리 합의해 정해두고, openapi 문서를 작성한다.
+3. openapi spec에 맞추어 작성된 문서를 코드로 변환해주는 SDK(openapi-codegen)을 사용하여 프론트는 request, response에 필요한 모델을, 백엔드는 컨트롤러 코드를 자동으로 생성해 사용한다.
+4. API를 읽는 문서는 redoc이라는 오픈소스 툴을 사용한다.
+
+
+
+
+#### 3-1. openapi codegen
+
+![](documentation/images/swagger.png)
+
+openapi3 spec으로 작성된 코드를 swagger로 변환해준 모습
+
+- Q. how to see oepnapi docs online?
+    1. https://editor.swagger.io/
+    2. [openapi-docs code](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/resources/api/openapi.yaml) 붙여넣기
+
+
+#### 3-2. redoc
+![](documentation/images/redoc.png)
 
 ```
- data_received..................: 83 MB  70 kB/s
- data_sent......................: 259 kB 216 B/s
- http_req_blocked...............: avg=139.45µs min=4.25µs   med=12.25µs max=53.52ms p(90)=26.77µs  p(95)=45.42µs
- http_req_connecting............: avg=95.88µs  min=0s       med=0s      max=19.09ms p(90)=0s       p(95)=0s
-✗ http_req_duration..............: avg=4.24s    min=357.35ms med=4.49s   max=8.71s   p(90)=6.9s     p(95)=7.6s
-   { expected_response:true }...: avg=4.24s    min=357.35ms med=4.49s   max=8.71s   p(90)=6.9s     p(95)=7.6s
- http_req_failed................: 0.00%  ✓ 0        ✗ 1748
- http_req_receiving.............: avg=6.86ms   min=223.95µs med=3.06ms  max=96.91ms p(90)=20.11ms  p(95)=28.44ms
- http_req_sending...............: avg=90.61µs  min=16µs     med=71.22µs max=3.43ms  p(90)=154.31µs p(95)=209.99µs
- http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s      p(90)=0s       p(95)=0s
- http_req_waiting...............: avg=4.23s    min=355.99ms med=4.49s   max=8.71s   p(90)=6.89s    p(95)=7.59s
- http_reqs......................: 1748   1.456067/s
- iteration_duration.............: avg=5.24s    min=1.35s    med=5.5s    max=9.71s   p(90)=7.91s    p(95)=8.6s
- iterations.....................: 1748   1.456067/s
- vus............................: 1      min=1      max=10
- vus_max........................: 10     min=10     max=10
+Q. how to install redoc and run?
+
+npm i -g @redocly/cli
+git clone https://github.com/Doohwancho/ecommerce
+cd ecommerce
+redocly preview-docs back/1.ecommerce/src/main/resources/api/openapi.yaml
 ```
 
-- latency(http_req_duration)가 약 4초로 매우 느린걸 확인할 수 있다.
-	- latency: 의 평균이 4.24s,이고 정규분포에 90%, 95% 구간에서는 약 7초나 걸렸다.
-	- minimum latency가 357ms인걸 보면, 초반 부하가 몰리지 않은 request는 빨리 처리되는데, 부하가 늘면서 병목현상이 생기는 듯 하다. 왜 일까?
 
 
-### 3. 모니터링 분석
 
-#### 3-1. API server monitoring
-![](documentation/images/2024-01-25-20-59-43.png)
+## d. latency 개선
 
-1. jvm thread state를 보면 48개의 demon jvm thread들 중에 time-waiting state인 쓰레드의 숫자가 37개가 된다.
-	- TIME_WAIT 상태란 특정 조건(꺠우는 함수가 호출되거나, 특정 시간이 지나거나)을 요구하는 상태이다.
-		- ex1) I/O operation(ex. database의 요청)을 기다리고 있어서가 이유가 될 수 있다.
-		- ex2) synchronization lock을 기다려서 일 수도 있다.
-	- RDS에서 1초당 10개의 request를 처리를 못해서 처리가 밀렸기 때문에 TIME_WAITING 상태 쓰레드가 37개로 늘어나지 않았을까? 의심할 수 있다.
-	- (추후 RDS monitoring에서 확인될 내용인데, RDS의 database connections 수가 10개밖에 안된다.)
-2. cpu usage가 100%를 찍었다.
-	- CPU throttling이 high latency에 원인이 될 수 있다.
+### 1. 불필요한 랜더링을 React.memo() 으로 최적화
+
+- 문제
+	- 페이지 이동할 때 마다 `<Header />, <Footer />, < TopNav />`가 불필요하게 다시 랜더링 되던 문제가 있었다.
+- 해결책
+	1. React.memo()로 감싸서 props가 바뀌지 않는한, 다시 랜더링 되지 않도록 하고,
+	2. Router에서 템플릿화 시켰다.
+
+```tsx
+  const Layout = ({ children }) => (
+    <>
+      <Header />
+      <TopNav />
+      <ScrollToTop />
+      {children}
+      <Footer />
+    </>
+  );
+
+<Routes>
+	<Route path="/" element={<Layout><Home /></Layout>} />
+	<Route path="/products/category/:lowCategoryId" element={<Layout><Category /></Layout>} />
+	<Route path="/products/:productId" element={<Layout><Product /></Layout>} />
+</Routes>
+  );
+```
+
+---
+
+### 2. useMemo()로 memoization 활용
+
+1. API fetch받은 products들을 재정리 하는 함수의 결과값을 memoization 한다.
+
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L23-L56
+
+option/price filter에서 product list를 호출할 때마다, 재정리를 요구하는데,
+이 함수를 useMemo()로 최적화 했다.
 
 
 ---
-#### 3-2. RDS monitoring
-![](documentation/images/2024-01-25-21-33-39.png)
+...하지만 option들을 묶는 함수에 적용한 useMemo()는 이른 최적화 같다.
 
-1. read시 lock 문제는 아닌 듯 하다.
-	- mysql8의 InnoDB는 transaction isolation level에서 REPEATABLE READ가 기본 세팅이라, write/update/delete에는 락을 걸지만, read에는 lock을 걸지 않는다.
-	- 그런데 부하 테스트를 건 쿼리는 read query이기 때문에, lock 문제는 아닌 듯 하다.
-	- 만약에 lock 문제였다면, CPU usage가 5%보다 훨씬 더 많이 나왔을 것이라 추측된다.
-2. query를 잘못짜서 생기는 문제일 수도 있다.
-3. database connections의 갯수가 너무 적어서 생긴 문제일 수 있다.
-	- database connection 수가 10개밖에 안되는데, 저게 만약 jvm demon thread에 요청을 받아 처리하는 쓰레드 갯수라면, t2.micro ec2의 jvm demon thread의 수인 50개 대비, 1/5 밖에 되지 않는다.
+2. option들을 optionId를 기준으로 묶는 함수
+https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L9-L21
+
+- Q. 왜 useMemo()를 여기에 쓰는게 좋은 선택이 아닌가?
+	1. 무거운 연산이 아니다.
+	2. 파라미터가 자주 바뀌는 편이라, 한번 연산해놓고 두고두고 쓰는 함수가 아니다.
 
 
----
-### 4. 결론
-high latency의 원인은 다음으로 유추할 수 있다.
-
-1. database의 문제
-	1. query가 느린 경우 -> sql tuning을 해야한다.
-	2. database connections 갯수가 부족한 경우 -> connections 수를 늘리거나, connections을 만들기 위한 RDS의 RAM을 늘려야 한다.
-	3. RDS network bandwidth이 너무 적어서 생긴 문제인지 확인한다.
-2. ec2의 문제
-	1. 코어 수 부족 -> vCPU를 늘린다. (가장 간단하나 돈이 든다)
-	2. HikariCP의 jdbc connections 설정에 이상 없나 확인한다.
-	2. 빈번한 GC가 일어나는지 확인 후 어플리케이션 코드 개선한다.
-3. load balancer
-	1. 현재 L7 load balancer로 구성되있는데, 어짜피 현 프로젝트에서는 http request을 열어서 ALB가 로깅한다거나 등 별도 처리를 안하니까, L7 load balancer로 변경한다.
 
 
-## b. 가설1 - RDS의 connections 수가 부족해서 latency가 높아졌다.
+### 3. code splitting
 
+```tsx
+import React, { Suspense } from 'react';
 
-### 1. 문제 원인 예측
+const Home: React.FC = () => {
+  const CarouselComponent = React.lazy(() => import ('./component/carousel/CarouselComponent'));
 
-#### 1-1. jvm threads 대비 database connection의 갯수가 현저히 적다.
-![](documentation/images/2024-01-25-20-59-43.png)
-ec2 성능 메트릭 중에, thread state를 보면, time-waiting 상태인 쓰레드가 37개나 있다.
+  return (
+    <>
+	<MainElement /> //------------------- 1
 
-![](documentation/images/2024-01-25-21-33-39.png)
-반면 RDS의 database connections 갯수는 10개밖에 되지 않는다.
+	<Suspense fallback={<div>Loading...</div>}>
+          <CarouselComponent /> //----------------- 2
+        </Suspense>
+    </>
+  );
+};
 
-RDS의 커넥션 갯수가 jvm 요청 쓰레드 수에 비해 훨씬 부족하기 때문에, 쓰레드가 기다리는 시간이 길어져 latency가 높아진게 아닐까?
-
-#### 1-2. min latency 와 평균 latency의 차이가 매우 크다.
+export default Home;
 ```
-http_req_duration..............: avg=4.24s    min=357.35ms med=4.49s   max=8.71s   p(90)=6.9s     p(95)=7.6s
-```
-가장 빠른 latency가 350ms인데, 평균값이 4.2초, 최대가 7.6초나 된다.
+1. 메인페이지 최상단 이미지 + 텍스트는 그대로 랜더링
+2. 화면 하단부 top 10 rated products fetch는 lazy하게 랜더링
 
-첫 10 requests들은 jvm thread 10개가 database connections 10개에 병렬로 요청을 하고 빠르게 처리되니까 빠른데, 요청수가 쌓이게 되면서 RDS에서 동시요청 처리할 connections 갯수가 적어서 생긴 문제가 아닐까? 예측할 수 있다.
 
-추가적인 jvm threads 38개가 database connections 10개의 처리를 기다리게 되면서 latency가 올라간게 아닐까?
+### 4. main page caching
 
+![top-ten-rated-products](documentation/images/top-ten-rated-products.gif)
 
+main page에서 요구하는 top 10 rated products를 redis cache에 매 시간 갱신하여 뿌려준다.
 
-EC2가 데이터베이스로 요청을 넣고 기다리는 쓰레드가 약 40개인데,
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L76-L79
 
-RDS의 max_connections 숫자는 10개밖에 되지 않는게 high latency의 원인이 아닐까?
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L143-L153
 
 
-### 2. 해결방안
 
-### 2-1. max_connections 숫자를 늘려보자.
-1. [aws RDS 공식문서에서 권장하는 공식](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections)에 따라 max database connections 수를 설정한다.
-	- max database connections 수는 동시요청 수에 비례해 맞추는게 좋다.
-	- ex) 현재 load test의 동시접속자 수는 10명이니까, 최소 10개 이상의 database connections 수를 설정하는게 좋다.
-	- ex) 만약 load test의 동시접속자 수가 100명으로 늘어나면, 최소 100개의 database connections을 지원할 수 있도록 RDS RAM의 스펙업을 해주어야 한다.
-2. RDS instance spec을 늘려도 해결 가능하나, max connections 수를 먼저 늘려서 테스트를 해보자. spec up을 월 이용요금이 늘어나기 때문이다.
+### 5. .png -> .webp로 변경
+이미지 용량이 약 60%로 축소됨으로 인해, 페이지 로드 속도가 빨라졌다.
 
 
-### 2-2. RDS의 적정 max database connection 수 계산하는 방법
-1. [aws RDS 공식문서](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections)에 따르면, RDS 종류와 스펙마다 적정 maximum database connections size를 정하는 공식이 있다.
-2. mysql8 engine에서 max connections 수를 구하는 공식은 다음과 같다.
-	- DBInstanceClassMemory/12582880
-		- 예를들어, 8GiB RAM은 8,589,934,592 bytes 이고,
-		- 8,589,934,592 bytes / 12582880 = 683 max database connections 이라는 수가 나온다.
-		- 하지만 공식문서에서는 683개를 다 쓰진 않고, os와 rds자체를 메니징 하는 프로세스를 위해 50개정도 빼고 약 630개 정도로 설정하기를 권장한다.
-3. 주의사항) 주어진 RAM 대비 너무 많은 connections 갯수를 부여하는 것 역시, RAM 부족 현상이 생겨 'incompatible parameters' 상태라는 문제가 발생한다고 한다. ([incompatible paramters 문제의 해결책이 적힌 docs](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Troubleshooting.html#CHAP_Troubleshooting.incompatible-parameters-memory))
+## e. nextjs migration for different rendering patterns
 
-### 2-3. 1 GiB RAM에서 적정 max database connections 수 계산하기
+1. SSG: register, login 페이지
+	- register, login 페이지는 내용이 안바뀌는 static page라 빌드타임 때 만들고 뿌리는 SSG 사용한다.
+2. ISR: index 페이지
+	- index 페이지는 첫 페이지 로드 시간이 빠른게 중요하기 때문에 대부분 컴포넌트가 static인데,
+	- top 10 trending product 컴포넌트는 주기적으로 업데이트 되기 때문에 ISR로 렌더링한다.
+3. hybrid(SSR + CSR): product_list 페이지
+	- product_list 페이지는 ecommerce 특성상 검색엔진 봇에 키워드가 상품등록 직후에 바로 잡히는게 중요하기 때문에 SSR로 하되,
+	- 옵션별 필터를 했을 때, SSR로 처리하면 UX가 너무 안좋으니, 이 부분은 CSR로 처리한다. 즉, product_list는 nextjs14의 하이브리드 렌더링(SSR + CSR)을 한다.
+	- 만약 이 앱이 쿠팡같은 쇼핑몰이라 특정 카테고리에 상품이 만개 이상 걸리면, 이런식으로 처리하는게 구조적으로 비효율적이나, nike같은 세부 카테고리가 많고, 세부 카테고리에 걸리는 상품 종류가 300개 이하인 경우엔, SSR로 한번에 가져온 후, CSR로 처리하는게 부드럽기 때문에 UX적으로 더 나은 방법이라 생각한다.
+4. SSR: product 페이지
+	- product 페이지는 상품내용이 자주 업데이트 될 수 있음과 동시에 SEO에 잡히는게 중요하므로 SSR로 렌더링한다.
 
-기존 db.t2.micro의 기본 커넥션 수가 10개밖에 되지 않지만,\
-1GiB RAM in bytes / 12572880 = 약 79개 정도로,\
-os & rds 관리용 50개를 빼고 약 30개 정도를 max connection size로 설정해 주어도 지금보다는 latency가 훨씬 빨라질 것으로 예측된다.
 
-### 2-4. database 인스턴스 타입에 따른 default max_connections 수
-```
-1. RDS
-t2.micro: 66
-t2.small: 150
-m3.medium: 296
-t2.medium: 312
-M3.large: 609
-t2.large: 648
-M4.large: 648
-M3.xlarge: 1237
-R3.large: 1258
-M4.xlarge: 1320
-M2.xlarge: 1412
-M3.2xlarge: 2492
-R3.xlarge: 2540
+## f. atomic design pattern with shadcn-ui
 
 
-2. Autora
-db.t2.small:    45
-db.t2.medium:   90
-db.t3.small:    45
-db.t3.medium:   90
-db.t3.large:    135
-db.t4g.medium:  90
-db.t4g.xlarge:  135
-db.r3.large:    1000
-db.r3.xlarge:   2000
-db.r3.2xlarge:  3000
-db.r3.4xlarge:  4000
-db.r3.8xlarge:  5000
-db.r4.large:    1000
-db.r4.xlarge:   2000
-db.r4.2xlarge:  3000
-db.r4.4xlarge:  4000
-db.r4.8xlarge:  5000
-db.r4.16xlarge: 6000
-db.r5.large:    1000
-db.r5.xlarge:   2000
-db.r5.2xlarge:  3000
-db.r5.4xlarge:  4000
-db.r5.8xlarge:  5000
-db.r5.12xlarge: 6000
-db.r5.16xlarge: 6000
-db.r5.24xlarge: 7000
-db.r6g.large	1000
-db.r6g.xlarge	2000
-db.r6g.2xlarge	3000
-db.r6g.4xlarge	4000
-db.r6g.8xlarge	5000
-db.r6g.12xlarge	6000
-db.r6g.16xlarge	6000
-db.r6i.large	1000
-db.r6i.xlarge	2000
-db.r6i.2xlarge	3000
-db.r6i.4xlarge	4000
-db.r6i.8xlarge	5000
-db.r6i.12xlarge	6000
-db.r6i.16xlarge	6000
-db.r6i.24xlarge	7000
-db.r6i.32xlarge	7000
-db.x2g.large	2000
-db.x2g.xlarge	3000
-db.x2g.2xlarge	4000
-db.x2g.4xlarge	5000
-db.x2g.8xlarge	6000
-db.x2g.12xlarge	7000
-db.x2g.16xlarge	7000
-```
+### 1. 문제
 
-connections 수에서 50~60개 정도는 os와 통신 용도, database 관리 목적으로 쓰여서, 실제로 API server와 통신하는 connections 수는 저 숫자에서 55정도를 빼야한다. (ex. t2.micro: 66 -> 10)
+가끔 카카오앱이 구린 이유.txt를 보면, 카카오에 종속된 회사 앱들의 카카오의 메인 컬러: 노란색의 RGB값을 찍어보면 약간씩 다르다. 색상도 다르고 UI 스타일도 달라서, 다른 카카오 앱 쓸 때마다, 심지어 어떤 경우는 같은 앱의 다른 페이지를 볼 때 이질감을 느낄 때도 있다.
 
-max connection 수를 수동으로 올려줄 수 있지만, 성능 이상의 요청이 발생하면 DB 자체의 문제가 생길 우려가 있으므로 aws에서는 기본값을 사용 하시고 여유있게 설정하는 것을 권장한다고 한다.
+이런 이질감을 없애기 위해 스타일, 색 조합, ui에 일관성이 있는 앱을 개발해야 한다.
 
 
-그런데 10RPS 정도라면 10개정도만 늘려도 충분할 것 같으니까, 수동으로 늘려보자.
+### 2. 해결책
 
+디자인 일관성에 맞게 앱을 개발 하는 방법은 해당 앱의 각 페이지에서 새로운 ui, 색상을 매번 새롭게 만드는게 아니라, 먼저 약속한 디자인 프로토콜에 맞게 제작된 공통된 컴포넌트를 import해서 재사용하는 식으로 개발해야 한다고 생각한다.
 
+이런 문제를 컴포넌트 디자인 + atomic design pattern으로 해결할 수 있다고 생각한다.
 
+1. 먼저 앱을 대표하는 primary, secondary, tertiary color 색조합과 ui 스타일을 정하고,
+2. 기본적인 버튼, input form, label 등의 컴포넌트 디자인을 한 이후,
+3. 이런 약속에 맞는 컴포넌트들을 조합하여 페이지를 만든다.
 
-### 2-5. connections 갯수를 구하는 쿼리
-max_connections을 구하는 query
-```sql
-mysql> SHOW GLOBAL VARIABLES LIKE 'max_connections';
-+-----------------+-------+
-| Variable_name   | Value |
-+-----------------+-------+
-| max_connections | 10    |
-+-----------------+-------+
-1 row in set (0.09 sec)
-```
+### 3. 시행착오
 
-
-현재 ACTIVE STATE한 스레드(connection)를 구하는 query
-
-```sql
-mysql> SHOW STATUS LIKE 'Threads_connected';
-+-------------------+-------+
-| Variable_name     | Value |
-+-------------------+-------+
-| Threads_connected | 2     |
-+-------------------+-------+
-1 row in set (0.01 sec)
-```
-
-
-
-### 3. 실험1 - 수동 설정으로 connections 숫자 늘리기
-
-#### 3-1. instance spec
-1. application load balancer
-2. ec2
-	- t2.small
-		- vCPU = 1
-		- RAM = 2 GiB
-3. rds
-	- mysql 8.0.35
-	- db.t2.micro
-		- vCPU = 1
-		- RAM = 1 GiB
-		- max connections = 75 (default = 60)
-
-
-
-#### 3-2. max connections 수 변경
-
-RDS에 접속하여 직접 max_connections 수를 올리려고 했지만,
-
-root user로 RDS 접속은 보안 문제상 AWS에서 막았기 때문에 권한 문제로 실패했다.
-
-AWS RDS terraform code에서 parameter group을 추가해 max_connections 값인 75을 넣는다.
-
-```terraform
-resource "aws_db_parameter_group" "my-rds-parameter-group" {
-  name        = "${var.namespace}-mysql-parameters"
-  family      = "mysql8.0"  # Ensure this matches your database engine version
-  description = "Custom parameter group for ${var.namespace}"
-
-  parameter {
-    name  = "max_connections"
-    value = 75
-  }
-}
-
-resource "aws_db_instance" "database" {
-  allocated_storage      = 10
-  engine                 = "mysql"
-  engine_version         = "8.0"
-  instance_class         = "db.t4g.micro"
-  identifier             = "${var.namespace}-db-instance"
-  /* name                   = "ecommerce" */ //deprecated field: "name"
-  db_name                = "ecommerce"
-  username               = "admin"
-  /* password               = random_password.password.result */
-  password               = "adminPassword"
-  db_subnet_group_name   = var.vpc.database_subnet_group #B
-  vpc_security_group_ids = [var.sg.db] #B
-  skip_final_snapshot    = true
-
-  # Associate the custom parameter group with the RDS instance
-  parameter_group_name = aws_db_parameter_group.my-rds-parameter-group.name
-}
-```
-
-`terraform apply`를 하면,
-
-
-![](documentation/images/2024-01-27-03-32-36.png)
-
-RDS 파라미터 그룹에 max_connections의 값이 75으로 modified 된걸 확인할 수 있다.
-
-(100개로도 설정해 보았는데, 1GiB에서 너무 많이 설정하면 에러나는지 실패했다. 적당히 15개정도만 늘리니까 성공!)
-
-![](documentation/images/2024-01-27-03-34-43.png)
-
-mysql에 직접 접속해서 max_connections 수가 75개 임을 확인했다.
-
-
-
-#### 3-3. 테스트 결과
-
-```k6
- data_received..................: 86 MB  71 kB/s
- data_sent......................: 178 kB 148 B/s
- http_req_blocked...............: avg=161.72µs min=5µs      med=13.58µs max=41.72ms  p(90)=23.7µs   p(95)=37.5µs
- http_req_connecting............: avg=114.87µs min=0s       med=0s      max=19.45ms  p(90)=0s       p(95)=0s
-✗ http_req_duration..............: avg=6.62s    min=592.05ms med=7.1s    max=15.47s   p(90)=10.06s   p(95)=10.74s
-   { expected_response:true }...: avg=6.62s    min=592.05ms med=7.1s    max=15.47s   p(90)=10.06s   p(95)=10.74s
- http_req_failed................: 0.00%  ✓ 0        ✗ 1205
- http_req_receiving.............: avg=12.81ms  min=376.29µs med=8.97ms  max=65.86ms  p(90)=28.79ms  p(95)=36.41ms
- http_req_sending...............: avg=87.25µs  min=13.25µs  med=72.79µs max=665.12µs p(90)=142.99µs p(95)=200.89µs
- http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s       p(90)=0s       p(95)=0s
- http_req_waiting...............: avg=6.6s     min=590.56ms med=7.1s    max=15.46s   p(90)=10.05s   p(95)=10.73s
- http_reqs......................: 1205   1.002686/s
- iteration_duration.............: avg=7.62s    min=1.59s    med=8.1s    max=16.48s   p(90)=11.06s   p(95)=11.74s
- iterations.....................: 1205   1.002686/s
- vus............................: 1      min=1      max=10
- vus_max........................: 10     min=10     max=10
-```
-
-평균 latency가 4초 -> 6초로 오히려 더 느려졌다(?!)
-
-임의로 rds의 max_connections 수를 바꾸지 말고. 동시요청 수 대비 default max_connection 수준에 맞게 스펙업 하라는 조언이 유효한 것 같다.
-
-
-
-### 3-4. 모니터링 분석
-
-#### 3-4-1. RDS monitoring
-![](documentation/images/2024-01-27-04-06-25.png)
-
-database connection 수가 증가하지 않았다!
-
-
-### 3-5. 결론
-
-db.t2.micro의 connections 수를 수동으로 60 -> 75로 늘렸는데도, 모니터링된 database connections의 수는 기존에 10~11개와 동일했다.
-
-이미 default connections 숫자가 최적화 되있는 듯 하다.
-
-max_connections 수를 임의로 조절하는 방법 보다는, 권장사항에 맞게 스펙업 해야할 듯 싶다.
-
-
-
-### 4. 실험2 - RDS spec up을 해서 max_connections 수를 늘리자
-
-#### 4-1. RDS class별 max_connections 숫자
-```
-RDS의 class별 max_connections 수
-
-t2.micro: 66
-t2.small: 150
-m3.medium: 296
-t2.medium: 312
-M3.large: 609
-t2.large: 648
-M4.large: 648
-M3.xlarge: 1237
-R3.large: 1258
-M4.xlarge: 1320
-M2.xlarge: 1412
-M3.2xlarge: 2492
-R3.xlarge: 2540
-```
-
-t2.micro -> t2.small로 스케일업 하면, default max_connections 숫자가 늘어난다!
-
-
-#### 4-2. 테스트 환경
-1. application load balancer
-2. ec2
-	- t2.small
-		- vCPU = 1
-		- RAM = 2 GiB
-3. rds
-	- mysql 8.0.35
-	- db.t2.small
-		- vCPU = 2
-		- RAM = 2 GiB
-		- storage = 10 GiB
-		- max connections = 150 (default)
-
-
-#### 4-3. 테스트 결과
-```
- data_received..................: 83 MB  69 kB/s
- data_sent......................: 256 kB 213 B/s
- http_req_blocked...............: avg=124.12µs min=4.33µs   med=14.2µs  max=54.13ms  p(90)=31.68µs  p(95)=51.44µs
- http_req_connecting............: avg=71.02µs  min=0s       med=0s      max=14.53ms  p(90)=0s       p(95)=0s
-✗ http_req_duration..............: avg=4.25s    min=368.82ms med=4.5s    max=10.05s   p(90)=6.57s    p(95)=7.22s
-   { expected_response:true }...: avg=4.25s    min=368.82ms med=4.5s    max=10.05s   p(90)=6.57s    p(95)=7.22s
- http_req_failed................: 0.00%  ✓ 0        ✗ 1744
- http_req_receiving.............: avg=7.76ms   min=168.58µs med=3.53ms  max=226.55ms p(90)=21.28ms  p(95)=28.26ms
- http_req_sending...............: avg=99.91µs  min=15.54µs  med=81.81µs max=2.34ms   p(90)=165.26µs p(95)=219.65µs
- http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s       p(90)=0s       p(95)=0s
- http_req_waiting...............: avg=4.24s    min=366.98ms med=4.49s   max=10.03s   p(90)=6.56s    p(95)=7.2s
- http_reqs......................: 1744   1.451946/s
- iteration_duration.............: avg=5.25s    min=1.37s    med=5.5s    max=11.05s   p(90)=7.57s    p(95)=8.22s
- iterations.....................: 1744   1.451946/s
- vus............................: 1      min=1      max=10
- vus_max........................: 10     min=10     max=10
-```
-db.t2.micro와 성능차이가 없다?!
-
-1. fail율 0%
-2. average latency 약 4초
-
-
-#### 4-4. 모니터링 분석
-
-#### 4-4-1. EC2 모니터링
-![](documentation/images/2024-01-27-17-29-46.png)
-
-micro와 비교했을 때 변한게 없다.
-
-#### 4-4-2. RDS 모니터링
-![](documentation/images/2024-01-27-17-30-08.png)
-
-database connections 수가 여전히 10개이다?!
-
-![](documentation/images/2024-01-27-17-31-26.png)
-
-db.t2.small의 RAM이 2GiB이다. (micro는 1GiB)
-
-
-![](documentation/images/2024-01-27-17-34-48.png)
-
-그런데 RDS에 접속해서 max connections 수를 봤는데 137개이다.
-
-
-![](documentation/images/2024-01-27-17-41-13.png)
-
-그런데 RDS monitoring에서 관측된 로드 테스트 때 사용된 최대 connections 수는 13개밖에 쓰이지 않았다.
-
-```mysql
-mysql> show variables like 'max_connections';
-+-----------------+-------+
-| Variable_name   | Value |
-+-----------------+-------+
-| max_connections | 137   |
-+-----------------+-------+
-1 row in set (0.01 sec)
-```
-
-```
-mysql> show global status like '%connections%';
-+-----------------------------------+---------------------+
-| Variable_name                     | Value               |
-+-----------------------------------+---------------------+
-| Connection_errors_max_connections | 0                   |
-| Connections                       | 81                  |
-| Max_used_connections              | 13                  |
-| Max_used_connections_time         | 2024-01-27 08:35:38 |
-+-----------------------------------+---------------------+
-4 rows in set (0.00 sec)
-```
-
-
-#### 4-5. 결론
-max_connections가 138개 까지 늘어나도, 10 RPS에서는 connections를 어짜피 최대 13개밖에 사용하지 않았다.
-
-RDS connections의 문제는 아닌 듯 하다.
-
-
-
-
-
-## c. 가설2 - query가 느려서 latency가 높아졌다.
-
-
-### 1. 성능 모니터링할 쿼리
-
-```sql
-SELECT
-	p.product_id,
-	p.name,
-	p.description,
-	p.rating,
-	p.rating_count,
-	c.category_id,
-	c.name,
-	o.option_id,
-	o.value,
-	ov.value,
-	pi.quantity,
-	pi.price
-FROM product as p
-JOIN category as c ON p.category_id = c.category_id
-JOIN product_item as pi ON p.product_id = pi.product_id
-JOIN product_option_variation as pov ON pi.product_item_id = pov.product_item_id
-JOIN option_variation as ov ON ov.option_variation_id = pov.option_variation_id
-JOIN `option` as o ON o.option_id = ov.option_id
-WHERE c.category_id = 50;
-```
-
-### 2. 실행계획
-`EXPLAIN ANALYZE`로 mysql 실행계획을 들여다보자.
-
-![](documentation/images/2024-01-26-05-31-57.png)
-
-PK와 인덱스를 잘 타는걸 확인할 수 있다.
-
-![](documentation/images/2024-01-26-05-32-17.png)
-
-```
-- Nested loop inner join (cost=2276, rows=2099) (actual time=6.82..9.34, rows=190, loops=1)
-  - Nested loop inner join (cost=1541, rows=2099) (actual time=6.81..8.78, rows=190, loops=1)
-    - Nested loop inner join (cost=807, rows=2099) (actual time=6.76..8.04, rows=190, loops=1)
-      - Nested loop inner join (cost=72.1, rows=189) (actual time=5.79..6.48, rows=190, loops=1)
-        - Index lookup on table 'p' using index 'FK1mtsbur82frn64de7balymq9s' (category_id=50) (cost=5.95, rows=17) (actual time=5.56..5.83, rows=19, loops=1)
-        - Index lookup on table 'pi' using index 'FKa9mjpi98ark8eovbtnnreygbb' (product_id=p.product_id) (cost=2.84, rows=11.1) (actual time=0.0189..0.0329, rows=10, loops=19)
-      - Index lookup on table 'pov' using index 'FK441a1kvfh3q2cs7n8oe7a7gvv' (product_item_id=pi.product_item_id) (cost=2.78, rows=11.1) (actual time=0.00765..0.00798, rows=1, loops=190)
-    - Single-row index lookup on table 'ov' using PRIMARY index (option_variation_id=pov.option_variation_id) (cost=0.25, rows=1) (actual time=0.00365..0.00369, rows=1, loops=190)
-  - Single-row index lookup on table 'o' using PRIMARY index (option_id=ov.option_id) (cost=0.25, rows=1) (actual time=0.00271..0.00274, rows=1, loops=190)
-```
-
-
-Q. total time spent for this query: 10ms 도 안걸린다.
-
-빠르다. 쿼리는 문제 없다.
-
-(actual_time의 단위가 [mysql 공식문서](https://dev.mysql.com/blog-archive/mysql-explain-analyze/)에 따르면 ms 단위이니까, 수천 ms가 걸리는게 아닌걸 볼 수 있다.)
-
-
----
-### 3. query profiling
-
-이미 EXPLAIN ANALZE로 쿼리 latency를 어느정도 파악할 수 있지만,\
-query profiling로 좀 더 정확한 latency를 구해보자.
-
-
-```sql
-Q. how to profile query in mysql8?
-
-1. SET PROFILE = 1; //enable profiling
-2. run query I want to profile
-3. SHOW PROFILES;
-4. SHOW PROFILE FOR QUERY 1;
-5. SET profiling = 0; //disable profiling
-```
-
-![](documentation/images/2024-01-26-06-38-10.png)
-
-duration: 0.0056 = 5.6ms
-
-![](documentation/images/2024-01-26-06-14-54.png)
-
-
-### 4. 결론
-쿼리 실행 속도는 약 5ms로 쿼리의 문제는 아니다.
-
-
-
-
-## d. 가설3 - RDS의 네트워크 문제인가?
-
-### 1. 문제 원인 예측
-[rds instance spec 비교 사이트](https://www.cloudzero.com/blog/rds-instance-types/)에 따르면, db.t2.micro의 네트워크 퍼포먼스는 'low to moderate'라고 한다.
-
-t2.micro class는 aws 초창기 때 테스트 목적으로 만든 인스턴스라 네트워크 통신 성능이 매우 낮아서 latency가 느려진게 아닐까?
-
-
-### 2. 해결방안
-최신 버전인 db.t4g.micro의 네트워크 퍼포먼스를 보면 Up to 5Gbps 라고 하니까, 업그레이드 하면 latency가 개선되지 않을까?
-
-
-### 3. 실험 결과
-
-```
- data_received..................: 85 MB  71 kB/s
- data_sent......................: 263 kB 219 B/s
- http_req_blocked...............: avg=123.85µs min=3.75µs   med=13.29µs max=56.36ms  p(90)=24.68µs  p(95)=41.21µs
- http_req_connecting............: avg=75.7µs   min=0s       med=0s      max=16.5ms   p(90)=0s       p(95)=0s
-✗ http_req_duration..............: avg=4.14s    min=374.88ms med=4.16s   max=9.77s    p(90)=6.68s    p(95)=7.31s
-   { expected_response:true }...: avg=4.14s    min=374.88ms med=4.16s   max=9.77s    p(90)=6.68s    p(95)=7.31s
- http_req_failed................: 0.00%  ✓ 0        ✗ 1780
- http_req_receiving.............: avg=9.8ms    min=255.2µs  med=6.03ms  max=265.49ms p(90)=23.26ms  p(95)=30.52ms
- http_req_sending...............: avg=99.01µs  min=13.5µs   med=79.79µs max=3.54ms   p(90)=155.65µs p(95)=221.3µs
- http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s       p(90)=0s       p(95)=0s
- http_req_waiting...............: avg=4.13s    min=373.57ms med=4.14s   max=9.76s    p(90)=6.67s    p(95)=7.29s
- http_reqs......................: 1780   1.482386/s
- iteration_duration.............: avg=5.15s    min=1.37s    med=5.17s   max=10.77s   p(90)=7.68s    p(95)=8.31s
- iterations.....................: 1780   1.482386/s
- vus............................: 1      min=1      max=10
- vus_max........................: 10     min=10     max=10
-```
-
-다른 조건 동일, db.t4g.micro로 테스트를 한 결과, db.t2.micro과 성능적 차이는 없었다.
-
-
-### 4. 결론
-RDS의 네트워크 문제가 high latency의 문제는 아니었다.
-
-
-
-## e. 가설4 - ec2 spec을 올려보자
-
-Q. ec2 instance의 class를 small 에서 medium 으로 업그레이드 하면 latency가 빨라지지 않을까?
-
-
-### 1. ec2 instance 선택 과정
-1. 최신 세대인 7세대를 쓴다.
-	- 최신 세대일 수록 성능 개선도 있고, 에너지 소비 효율이 좋아 가격도 더 저렴하기 때문이다.
-2. 범용 목적인 m class와 cpu 특화 목적인 c class가 있다.
-	- 범용 목적 (공통적으로 1 vCPU에 4GiB RAM 제공)
-		- m7g.medium: $0.0408 hourly (on-demand)
-		- m7a.medium: $0.0580 hourly (on-demand)
-	- CPU intensive 목적 (공통적으로 1 vCPU에 2GiB RAM 제공)
-		- c7a.medium: $0.0513 hourly (on-demand)
-		- c7gn.medium: $0.0624 hourly (on-demand)
-		- c7g.medium: $0.0363 hourly (on-demand)
-3. 일단 현 실험 문제원인은 ec2의 RAM문제는 아니고, CPU usage문제니까, CPU 작업에 특화된 c class를 선택한다.
-4. c class 중에서, 가장 저렴한 c7g.medium 을 선택한다.
-
-
-### 2. 테스트 환경
-
-1. application load balancer
-2. ec2
-	- c7g.medium
-		- vCPU = 1
-		- RAM = 2 GiB
-		- 네트워크 대역폭 = 최대 12.5 Gbps
-		- EBS 대역폭 = 최대 10 Gbps
-3. rds
-	- mysql 8.0.35
-	- db.t4g.medium
-		- vCPU = 2
-		- RAM = 4 GiB
-		- max connections = 150 (default)
-
-
-
-### 3. 테스트 결과
-```
- data_received..................: 69 MB  57 kB/s
- data_sent......................: 210 kB 175 B/s
- http_req_blocked...............: avg=189.98µs min=4.7µs    med=11.29µs max=55.02ms p(90)=40µs     p(95)=65.68µs
- http_req_connecting............: avg=132.73µs min=0s       med=0s      max=24.55ms p(90)=0s       p(95)=0s
-✗ http_req_duration..............: avg=5.4s     min=511.8ms  med=5.73s   max=11.5s   p(90)=8.43s    p(95)=9.4s
-   { expected_response:true }...: avg=5.4s     min=511.8ms  med=5.73s   max=11.5s   p(90)=8.43s    p(95)=9.4s
- http_req_failed................: 0.00%  ✓ 0       ✗ 1431
- http_req_receiving.............: avg=8.29ms   min=266.25µs med=7ms     max=39.06ms p(90)=16.49ms  p(95)=18.99ms
- http_req_sending...............: avg=113.01µs min=19.2µs   med=83.08µs max=3.84ms  p(90)=187.08µs p(95)=251.77µs
- http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s      p(90)=0s       p(95)=0s
- http_req_waiting...............: avg=5.39s    min=509.92ms med=5.72s   max=11.5s   p(90)=8.41s    p(95)=9.4s
- http_reqs......................: 1431   1.19162/s
- iteration_duration.............: avg=6.4s     min=1.51s    med=6.73s   max=12.51s  p(90)=9.43s    p(95)=10.41s
- iterations.....................: 1431   1.19162/s
- vus............................: 1      min=1     max=10
- vus_max........................: 10     min=10    max=10
-```
-
-avg latency: 5.4second
-
-
-ec2 스펙을 올렸는데 레이턴시가 오히려 느려졌다?
-
-
-
-### 4. 모니터링 분석
-
-#### 4-1. EC2 모니터링
-1. before: t2.small
-	- ![](documentation/images/2024-01-27-17-29-46.png)
-2. after: c7g.medium
-	- ![](documentation/images/2024-01-29-17-45-29.png)
-
-- 달라진 지표
-	1. CPU usage에 process가 점유하는게 100% 에서 80%로 떨어졌다.
-	2. CPU load의 max치가 7.5에서 6대로 떨어졌다.
-
-이 외 나머지 지표는 전과 동일하다.
-
-
-### 5. 결론
-
-1. 아무 생각 없이 EC2 스펙 올린다고 문제가 해결되지는 않는다.
-	- process의 CPU 점유율이 100% -> 80%로 떨어진건 좋은 신호이긴 하지만, 결과적으로 latency가 늘어난걸 보면, 별 생각없이 EC2 CPU 업그레이드하면 해결되겠지? 는 해결책이 아닌 듯 하다.
-2. CPU 점유율이 떨어졌지만 latency가 늘어난 이유는 아마 CPU throttling이 걸려서 그런 듯 하다.
-	- CPU 스로틀링이란, CPU 점유율이 100% 가까이 되면, 과열에 의한 부품손상을 막기 위해 스로틀링이 걸리는데, 이는 클럭과 전압을 강제적으로 낮춰서 성능이 떨어진다.
-	- 그래서 latency도 그에 따라 평균 4.2s -> 5.4s 로 늘어난 듯 하다.
-3. 컴퓨팅 최적화 인스턴스라지만, 소규모 앱은 코어수 많고 RAM이 더 많은 인스턴스가 훨씬 효과가 좋다.
-	- t2.small -> c7g.medium 이 물론 최신 하드웨어를 쓴다고는 하지만, vCPU = 1개, RAM = 2GiB인건 똑같았기 때문에 latency 개선된게 아닌 듯 하다.
-	- AWS에서 주장하는 이 EC2는 CPU가 최적화 되있어요~ 메모리가 최적화 되있어요~ 는, 대규모 트래픽처리를 요구하는 CPU | Memory Intensive app에서만 유효한 듯 하다.
-
-
-
-## f. 가설5 - core 수를 늘려보자
-
-CPU core 수가 부족해서 스로틀링이 걸린게 아닐까?
-
-여태껏 ec2의 vCPU는 1이었는데, 2개 이상인 ec2 instance를 써보자.
-
-
-
-### 1. ec2 instance 선택 과정
-- m class (범용 클래스)
-	- m7g.large (2 vCPU, 8 GiB RAM) : $0.0816 hourly
-	- m7i.large (2 vCPU, 8 GiB RAM) : $0.1008 hourly
-	- m7i-flex.large (2 vCPU, 8 GiB RAM) : $0.0958 hourly
-	- m7a.large (2 vCPU, 8 GiB RAM) : $0.1159 hourly
-- c class (컴퓨팅 최적화)
-	- c7g.large (2 vCPU, 4 GiB RAM) : $0.0816 hourly
-	- c7gn.large (2 vCPU, 4 GiB RAM) : unavailable
-	- c7i.large (2 vCPU, 4 GiB RAM) : $0.0892 hourly
-	- c7a.large (2 vCPU, 4 GiB RAM) : $0.1026 hourly
-
----
-1. 2 vCPU 중 가장 저렴한게 m7g.large, c7g.large 이다.
-2. m7g.large vs c7g.large
-	- 가설4에서 깨달았듯이, CPU intensive한 앱이 아니기 때문에 범용 목적이더라도 4GiB RAM을 더 주는 m7g.large를 선택한다.
-
-
-### 2. 테스트 환경
-
-1. application load balancer
-2. ec2
-	- m7g.large
-		- vCPU = 2
-		- RAM = 8 GiB
-		- 네트워크 대역폭 = 최대 12.5 Gbps
-3. rds
-	- mysql 8.0.35
-	- db.t4g.medium
-		- vCPU = 2
-		- RAM = 4 GiB
-		- max connections = 150 (default)
-
-### 3. 테스트 결과
-
-```
- data_received..................: 158 MB 132 kB/s
- data_sent......................: 490 kB 408 B/s
- http_req_blocked...............: avg=91.82µs min=3.91µs   med=12.45µs max=64.96ms p(90)=23.9µs   p(95)=39.33µs
- http_req_connecting............: avg=57.49µs min=0s       med=0s      max=22.54ms p(90)=0s       p(95)=0s
-✗ http_req_duration..............: avg=1.74s   min=230.35ms med=1.84s   max=3.9s    p(90)=2.77s    p(95)=2.95s
-   { expected_response:true }...: avg=1.74s   min=230.35ms med=1.84s   max=3.9s    p(90)=2.77s    p(95)=2.95s
- http_req_failed................: 0.00%  ✓ 0        ✗ 3335
- http_req_receiving.............: avg=3.41ms  min=188µs    med=2.58ms  max=39.45ms p(90)=6.6ms    p(95)=8.62ms
- http_req_sending...............: avg=95.9µs  min=13µs     med=72.37µs max=4.51ms  p(90)=146.31µs p(95)=212.64µs
- http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s      p(90)=0s       p(95)=0s
- http_req_waiting...............: avg=1.74s   min=228.9ms  med=1.84s   max=3.89s   p(90)=2.76s    p(95)=2.95s
- http_reqs......................: 3335   2.777399/s
- iteration_duration.............: avg=2.74s   min=1.23s    med=2.84s   max=4.9s    p(90)=3.77s    p(95)=3.96s
- iterations.....................: 3335   2.777399/s
- vus............................: 1      min=1      max=10
- vus_max........................: 10     min=10     max=10
-```
-
-1.74s latency (이전: 4.24s)
-
-min은 230ms로 별 차이 안나는데,
-median, max가 큰 폭으로 줄었다!
-
-
-### 4. 모니터링 분석
-
-#### 4-1. EC2 모니터링
-![](documentation/images/2024-01-29-21-24-35.png)
-
-1. CPU usage Peaked at 83.96%
-2. CPU load
-	- 코어수가 1->2개로 늘어나니, load metric에 cpus가 1->2로 증가한걸 확인할 수 있다.
-	- 그런데 여전히 max cpu load치는 6개인걸 보면, ec2 스펙업을 해도 근본원인을 제거하지 않으면, 안된다라는 생각이 든다.
-
-
-### 5. 결론
-
-
-CPU core 수를 올리니까 latency가 빨라졌긴 했지만,
-
-여전히 500ms보다 훨씬 느리다.
-
-CPU나 메모리 등, 리소스 부족 현상이 일어날 경우, 단순히 스펙업을 통해 해결하는건,\
-문제의 근본원인 제거할 때 까지인 듯 하다.
-
-
-## g. 문제의 원인
-
-### 1. 고민
-
-spring app에 HikariCP datasource 설정을 잡아줘야 하나?
-
-connection pool에 minimum connection 설정을 RDS의 database connections 갯수만큼 올려줘서 요청오면 바로 쓸 수 있도록 해야하나?
-
-load balancer가 L7이라 느린건가? L4로 바꿔줘야하나?
-
-이런 저런 고민을 하던 중,
-
-성능 튜닝관련 책을 찾다가 '자바 성능 튜닝 이야기'라는 책을 보게 되었다.
-
-책 목차에 불필요한 로그 찍지 말라고 적혀있길래
-
-어? 설마?
-
-
-
-
-
-
-### 2. 문제 원인
-
-#### 2-1. 불필요한 로그의 콘솔 출력 및 파일 저장
-```xml
-<springProfile name="prod">
-<include resource="log/console-appender.xml"/> <!-- info | debug | trace 레벨의 로그를 터미널에 출력 -->
-<include resource="log/file-info-appender.xml"/>
-<include resource="log/file-warn-appender.xml"/>
-<include resource="log/file-error-appender.xml"/>
-
-<root level="INFO"> <!-- production 환경에서는 콘솔에서 info | debug | trace 레벨 이상 로그 출력 -->
-  <appender-ref ref="CONSOLE"/>
-
-  <appender-ref ref="FILE-INFO"/>
-  <appender-ref ref="FILE-WARN"/>
-  <appender-ref ref="FILE-ERROR"/> <!-- file-error-appender.xml에 FILE-ERROR이라고 이름 설정해둠 -->
-</root>
-</springProfile>
-```
-
-기존 production 환경 로그 설정 파일이다.
-
-INFO, WARN, ERROR 레벨 로그를 콘솔에 프린트 하고, 파일로 저장까지 하도록 되어있다.
-
-너무 많은 양의 로그 출력과 파일 I/O는 빈번한 GC를 일으키게 되어 CPU throttling이 걸리고, GC의 stop-the-world 시간 때문에 latency가 늘어날 수 있다고 한다.
-
-#### 2-2. log와 GC의 상관관계
-
-![](documentation/images/2024-02-03-19-11-49.png)
-
-1. INFO, DEBUG 레벨 로그까지 콘솔 프린트 하면, new StringBuffer()로 객체를 생성한다.
-2. 객체를 생성하면 JVM Runtime Data Area에 Heap 영역에 저장되게 된다.
-3. 맨 처음엔 Eden에 저장되지만, INFO, DEBUG 레벨 로그가 너무 많으면 Eden -> survivor로, survivor space -> old space로 메모리를 이전하는데,
-4. 옮길 공간이 꽉차있으면 먼저 메모리 해제부터 하고 메모리 공간 마련한 다음 옮겨야 한다.
-5. 이 때, Eden -> Survivor이나, Survivor -> Survivor 옮길 때 메모리 공간 비우는건 minor GC, survivor -> old space로 옮길 때 메모리 공간 비우는걸 major gc라고 한다.
-
-
-
-### 3. 해결방안
-
-1. 서버 로그 콘솔 출력을 없앤다.
-2. warn & error level log만 파일로 저장하자.
-
-
-## h. 실험
-
-문제 원인을 알았으니, 실험해보자.
-
-### 1. 부하테스트 이전 EC2
-
-로드 테스트를 준비하기 위해, 약 15000 rows의 fake data를 database에 insert한 직후의 메트릭이다.
-
----
-![](documentation/images/2024-02-03-02-26-28.png)
-
-- 아무래도 15000개의 객체를 생성하다보니, JVM Heap 메모리에서 used가 요동치는걸 확인할 수 있다.
-- 특정 메모리 한도(135MB)가 되면, minor gc가 되어 다시 낮아지는 듯 하다.
-
-![](documentation/images/2024-02-03-02-26-43.png)
-
-- eden space와 survivor space에서 메모리가 요동치는걸 보면, minor gc가 여러번 일어난걸 확인할 수 있다.
-
-![](documentation/images/2024-02-03-02-26-54.png)
-
-- Garbage Collection 메트릭을 보면 heap area에 young space에 어느정도 메모리가 꽉 찼을 경우 GC가 일어났다는 것을 확인할 수 있다.
-
-### 2. 부하테스트 후 EC2
-
-#### 2-1. jvm gc metric
-
-before
-
-| S0C    | S1C    | S0U   | S1U    | EC     | EU      | OC       | OU       | MC      | MU      | CCSC  | CCSU  | YGC | YGCT  | FGC | FGCT  | GCT   |
-|--------|--------|-------|--------|--------|---------|----------|----------|---------|---------|-------|-------|-----|-------|-----|-------|-------|
-| 5504.0 | 5504.0 | 0.0   | 2171.2 | 44224.0| 25067.7 | 110288.0 | 92206.6  | 107776.0| 101331.1| 14336.0| 13285.5| 415 | 2.816 | 5   | 0.716 | 3.532 |
-
-
-after
-
-| S0C   | S1C   | S0U  | S1U | EC     | EU      | OC      | OU      | MC     | MU     | CCSC  | CCSU  | YGC  | YGCT  | FGC | FGCT  | GCT   |
-|-------|-------|------|-----|--------|---------|---------|---------|--------|--------|-------|-------|------|-------|-----|-------|-------|
-| 5504.0| 5504.0| 19.9 | 0.0 | 44224.0| 19759.1 | 110288.0| 100899.4| 109696.0| 103037.0| 14464.0| 13361.9| 1712 | 10.520| 5   | 0.716 | 11.237|
-
-
-
-1. 총 GC로 소요된 시간은 7.7s(11.2s - 3.5s) 이다.
-2. minor GC에 걸린 시간은 7.7s이다.
-	- 10.52s - 2.816s
-	- major gc가 load test할 때 동안 안일어났다.
-3. major GC(FGC)는 5번으로 동일한데, minor GC(YGC)는 415번 -> 1712번으로 늘었다.
-4. 1 minor GC당 소요시간은 평균 5.94 ms이다. (7700 / (1712 - 415))
-5. minor gc가 많이 발생한 이유는, 수많은 로그를 콘솔에 프린트할 때, heap area에서 Eden -> survivor, survivor1 -> survivor2 영역으로 옮길 자리가 부족해서이고,
-6. major gc가 발생하지 않은 이유는, 로그 출력을 위해 생성한 StringBuffer 객체가 오래 여러번 참조되어 쓰이지 않았기 때문에, young 영역에서만 살아있다가 메모리가 다 차면 minor GC 당한것으로 추측된다.
-
-#### 2-2. prometheus monitoring
-
-![](documentation/images/2024-02-03-02-57-32.png)
-
-JVM memory에서 Heap area부분의 used 그래프가 요동치는걸 확인할 수 있다.
-
-![](documentation/images/2024-02-03-02-57-46.png)
-
-- Log Events metric을 보면, 초당 15만개의 로그가 발생한다는걸 확인할 수 있다.
-- Jvm Memory Pool(Heap)에서 Eden 영역이 오르다 minor GC 당할 때마다 다시 0 byte로 내려가는것이 확인된다.
-- survivor 영역도 minor gc 이후에 내려가는것을 볼 수 있다.
-
-![](documentation/images/2024-02-03-02-57-57.png)
-
-- Garbage Collection metric을 보면 major GC는 안일어났는데 minor gc가 많이 일어난걸 확인할 수 있다.
-- Pause Duration metric을 보면, minor gc는 평균 5ms 정도로 minor GC 단일 원인만으로는 매우 느린 latency을 설명하기엔 부족해 보인다.
-- Allocated/Promoted metric을 보면, 초당 50MB 씩이나 메모리가 할당된다는걸 확인할 수 있다.
-
-
-
-
-### 3. 로그 제거 후 부하테스트
-
-
-#### 3-1. 테스트 결과
-
-```
- data_received..................: 601 MB 500 kB/s
- data_sent......................: 1.3 MB 1.1 kB/s
- http_req_blocked...............: avg=42.77µs min=1.58µs   med=10.12µs max=55.91ms  p(90)=19.32µs  p(95)=28.36µs
- http_req_connecting............: avg=15.34µs min=0s       med=0s      max=17.36ms  p(90)=0s       p(95)=0s
-✗ http_req_duration..............: avg=68.39ms min=25.31ms  med=53.76ms max=30.45s   p(90)=94.02ms  p(95)=116.01ms
-   { expected_response:true }...: avg=68.39ms min=25.31ms  med=53.76ms max=30.45s   p(90)=94.02ms  p(95)=116.01ms
- http_req_failed................: 0.00%  ✓ 0        ✗ 8554
- http_req_receiving.............: avg=8.97ms  min=201.75µs med=6.23ms  max=109.69ms p(90)=18.15ms  p(95)=25.36ms
- http_req_sending...............: avg=3.63ms  min=5.2µs    med=55.39µs max=30.37s   p(90)=128.52µs p(95)=197.88µs
- http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s       p(90)=0s       p(95)=0s
- http_req_waiting...............: avg=55.78ms min=23.66ms  med=45.11ms max=1.3s     p(90)=79.97ms  p(95)=99.59ms
- http_reqs......................: 8554   7.118939/s
- iteration_duration.............: avg=1.07s   min=1.02s    med=1.05s   max=31.46s   p(90)=1.09s    p(95)=1.11s
- iterations.....................: 8554   7.118939/s
- vus............................: 1      min=1      max=10
- vus_max........................: 10     min=10     max=10
-```
-
-latency가 평균 4초에서 68ms로 줄었다
-
-
-
-#### 3-2. jvm gc metric
-before load test
-
-|   S0C   |   S1C   |   S0U   |  S1U |    EC    |     EU    |     OC     |     OU     |     MC     |     MU    |  CCSC  |  CCSU  | YGC | YGCT | FGC | FGCT |  GCT  |
-|:-------:|:-------:|:-------:|:----:|:--------:|:---------:|:----------:|:----------:|:----------:|:---------:|:------:|:------:|:---:|:----:|:---:|:----:|:-----:|
-|  6720.0 |  6720.0 |  2852.1 | 0.0  |  54080.0 |  20803.4  |  134860.0  |  80913.8   |  104320.0  |  98110.1  | 14208.0| 13136.4| 316 | 2.304|  6  | 0.979| 3.284 |
-
-
-after load test
-
-| S0C    | S1C    | S0U  | S1U   | EC     | EU      | OC      | OU      | MC      | MU      | CCSC  | CCSU  | YGC | YGCT  | FGC | FGCT  | GCT   |
-|--------|--------|------|-------|--------|---------|---------|---------|---------|---------|-------|-------|-----|-------|-----|-------|-------|
-| 6720.0 | 6720.0 | 0.0  | 546.1 | 54080.0| 33326.9 | 134860.0| 89592.1 | 108288.0| 101979.4| 14336.0| 13256.1| 2231 | 11.332| 6   | 0.979 | 12.311|
-
-
-major GC는 6회로 동일한데,\
-minor GC는 316 -> 2231로 증가했다.\
-총 GC에 걸린 시간은 9.1s (12.3s - 3.2s)
-
-신기하게도,\
-로그를 콘솔 출력할 때 minor GC(YGC)는 1297(415번 -> 1712번)에 소요시간은 7.7s이고,\
-로그 제거 후는 minor GC가 1915번에 소요시간은 9.1s이다.
-
-이걸 보면, 수 많은 로깅이 latency를 늘린건 맞으나,\
-그 이유 중 주된 원인이 minor gc 때문은 아니라는게 확인되었다.
-
-아마 CPU throttling 같은 다른 이유가 high latency의 주 원인인 듯 하다.
-
-
-
-#### 3-3. prometheus monitoring
-
-![](documentation/images/2024-02-03-03-33-38.png)
-
-1. cpu usage가 90% -> 18%까지 줄었다.
-2. cpu 요구 갯수도 1개 이하에서 발생하는걸 볼 수 있다.
-3. duration(latency)가 500ms 이하로 매우 많이 개선된걸 확인할 수 있다.
-
-
-![](documentation/images/2024-02-03-03-33-59.png)
-- 로그 콘솔 출력 및 파일 저장 설정을 안했는데도, Log Events 메트릭은 여전히 높다.
-- Log Events 메트릭은 로그를 콘솔에 출력하거나 파일저장하는 것과 무관하게 총 로그 발생수를 나타내는 것으로 보인다.
-
-
-
-
-## i. 결과 및 배운 점
-
-### 1. logging protocol을 정하고 지키자
-
-1. System.out.println을 사용한 로깅 금지
-2. 디버깅시 Logger 쓰지 말고 디버거 쓰기
-3. Exception 처리에서 warn, error 레벨 부분 제외하고 로그 사용 금지
-
-
-### 2. CPU usage 100%는 latency에 매우 큰 영향을 준다.
-
-CPU usage가 90%에서 18%로 줄자마자, 평균 latency가 4240ms -> 68ms 로, 6235% 성능 향상했다.
-
-CPU가 http 요청을 처리하는 것도 바쁜데,
-
-1. 로그 생성을 위해 수십, 수만개의 StringBuffer 객체를 생성하고
-2. 수십, 수만개의 StringBuffer객체를 console에 print 하고
-3. 수십, 수만개의 객체가 힙영역에 Eden, Survivor 공간을 다 채울 때마다 안쓰는 수십, 수만개의 StringBuffer 객체를 minor GC도 메모리 해제하는걸 천번 이상 수행해야 하고,
-4. 위에 서술한 매우 많은 불필요한 과정이 CPU scheduling을 통해 queue에 쌓이게 되어 정작 중요한 일은 못하고
-5. 멀티 쓰레드 환경에서 여러 요청을 교차하며 동시에 수행하다보니 context switching overhead도 있고,
-6. CPU 점유율이 100% 가까이 되면, 과열에 의한 부품손상을 막기 위해 스로틀링이 걸리는데, 이는 클럭과 전압을 강제적으로 낮춰서 성능이 떨어진다.
-
-.. 등의 이유로 왜 CPU 점유율을 모니터링하는지, 왜 JVM heap 영역과 GC를 강조하는지, java에서 왜 String을 쓰지 말라는지의 중요성을 피부로 느끼게 되었다.
-
-
-
-### 3. JVM Heap area, memory에 대해 더 잘 이해하게 되었다.
-
-JVM 메모리 구조, heap 영역, Garbage Collection에 대해 이론적으로만 배웠고,
-
-GC가 지원되는 언어를 쓰다보니, 메모리 처리는 JVM이 알아서 해주니까 크게 신경 안써도 되겠지? 라는 안일한 생각이 있었는데,
-
-왜 로우레벨 개발자들이 메모리 할당 & 해제 중요성에 대해 이야기를 하고,
-
-메모리 관리를 잘 못하면 GC가 자주 일어나 CPU 점유율과 latency 까지 영향을 미칠 수 있다는걸 배웠다.
-
-
-
-### 4. monitoring metric을 해석하는 방법에 대해 배우게 되었다.
-
-처음엔 단순히 CPU usage, Memory usage, jvm thread state 이정도만 보고, 나머지 메트릭은 무시했는데,
-Heap 영역 메모리와 GC가 얼마나 일어나나 확인하기 위해 관련 메트릭도 찾아보게 되었다.
-
-이 외에, 모니터링 메트릭을 해석하는 방법론이 3가지가 있고, 시간이 지남에 따라 중요하게 여겨지는 점이 바뀌게 되면서, 중점적으로 봐야하는 메트릭도 달라진 것 같다.
-
-1. 처음엔 CPU, disk, network에 병목이 걸리는지 위주로 보다가(USE method),
-2. 웹서비스 관점으로 재해석해 트래픽 패턴과 latency를 강조한 RED method,
-3. 위 두 방법론을 섞어 SRE 관점으로 해석한 4 golden signals
-
+처음엔 컴포넌트 설계를 직접 하려고 했으나 [몇번의 시행착오](https://github.com/Doohwancho/javascript/tree/main/05.react/01.syntax/src/05.atomic-design)\
+끝에 점점 일이 커지는걸 깨닿고, best practice opensource library인 shadcn-ui을 썼다.
 
