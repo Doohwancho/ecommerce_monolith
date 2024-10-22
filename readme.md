@@ -22,7 +22,7 @@
     - f. [sql tuning 3 - 통계 쿼리 튜닝](#f-sql-tuning-3---통계-쿼리-튜닝)
 	- g. [bulk insert](#g-bulk-insert)
 - G. [기술적 도전 - Cloud](#g-기술적-도전---cloud)
-	- a. [docker-compose로 개발환경 구성](#a-docker---compose로-개발환경-구성)
+	- a. [docker-compose로 개발환경 구성](#a-docker-compose로-개발환경-구성)
 	- b. [provisioning with terraform & packer](#b-provisioning-with-terraform-and-packer)
 	- c. [prometheus and grafana + PMM](#c-prometheus-and-grafana--pmm)
 	- d. [시행착오: 배포서버에서 log는 error랑 warn만 키자](#d-시행착오---배포서버에서-log는-error랑-warn만-키자)
