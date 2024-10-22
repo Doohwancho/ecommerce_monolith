@@ -37,6 +37,7 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
+        //serializer 세팅 안하면 레디스에서 데이터 까볼 때 다른 읽을 수 없는 format으로 변형되어있다.
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericToStringSerializer<>(Object.class));
         return template;
@@ -75,6 +76,7 @@ public class RedisConfig {
     // @Scheduled(cron = "0 0 0 * * ?") // OR using a cron expression, for example, every day at midnight
     @Scheduled(fixedRate = 3600000) // 3600000 milliseconds = 1 hour (Run every hour)
     public void clearTopTenRatedProductsCache() {
-        cacheManager.getCache("topTenRatedProductsCached").clear(); //main page에 top 10 rated products를 매 시간마다 캐시에 새로 갱신
+        cacheManager.getCache("topTenRatedProductsCached")
+            .clear(); //main page에 top 10 rated products를 매 시간마다 캐시에 새로 갱신
     }
 }

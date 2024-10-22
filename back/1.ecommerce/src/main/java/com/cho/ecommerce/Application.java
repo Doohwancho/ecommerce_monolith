@@ -1,11 +1,14 @@
 package com.cho.ecommerce;
 
+import com.cho.ecommerce.global.config.bulk_insert.fakedata.BulkInsertController;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 
 @Slf4j
 @EnableBatchProcessing
@@ -21,8 +24,18 @@ public class Application {
 //    private final JobLauncher jobLauncher;
 //    private final Job dataInitializationJob; // SimpleBatch에 firstJob 메서드 명과 이름이 일치해야 한다.
     
+    private final BulkInsertController bulkInsertController;
+    
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+    }
+    
+    @Bean
+    public CommandLineRunner commandLineRunner() {
+        int bulkInsertAmount = 1000;
+        return args -> {
+            bulkInsertController.bulkInsert(String.valueOf(bulkInsertAmount));
+        };
     }
     
     /**
