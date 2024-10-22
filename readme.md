@@ -54,34 +54,55 @@ Ecommerce MVP
 
 ## a. how to start project?
 
-### 1. nextjs + spring boot server를 로컬 환경으로 직접 실행하는 방법
+### 1. nextjs + spring-server을 docker-compose로 실행
 
-``1. git clone https://github.com/Doohwancho/ecommerce
+```
+1. git clone https://github.com/Doohwancho/ecommerce
 2. cd ecommerce
-3. back/ecommerce/에 있는 스프링 프로젝트 실행 (이 때 dummy data insert하는 시간 약 3분 이하 소요)
-4. cd front/02.nextjs_migration
-5. npm i
-6. npm run dev
+3. docker compose -f ./docker-compose-nextjs-ver.yml up --build
+4. http://localhost:80
 ```
 
 
 
-### 2. reactjs + spring boot server를 docker compose로 실행하는 방법
+### 2. reactjs + spring-server를 docker compose로 실행
+
 ```
 1. git clone https://github.com/Doohwancho/ecommerce
 2. cd ecommerce
 3. docker compose -f ./docker-compose-reactjs-ver.yml up --build
-	- 만약 ecommerce-app1이 mysql connection error 날 경우, 'ecommerce' 이름의 database를 mysql container에 접속해서 만들어 줘야 한다.
-	- docker exec -it mysql bash
-	- mysql -u root -p
-	- admin123
-	- create database ecommerce;
-	- 다시 docker compose up --build
-4. dummy data insert (이걸 해야 카테고리가 보인다)
-	-  `curl -X GET http://localhost:8080/bulkinsert/1000`
-	-  `curl -X GET http://localhost:8080/products`
-5. http://localhost:80  or  http://127.0.0.1:80 로 접속
+4. http://localhost:80
 ```
+
+#### Q. docker build시 에러: arm64 아키텍쳐가 아닙니다!
+
+문제 원인: docker-image가 arm64 아키텍처 용이라 컴퓨터 아키텍처가 안맞아서 발생하는 문제.
+
+해결책: linux/amd64나 다른 아키텍처의 경우, [도커 허브](https://hub.docker.com/_/mysql/tags?page=2&name=8.0)에 가서 본인 pc의 아키텍처용 버전을 찾아 수정하면 된다.
+
+
+
+#### Q. docker build시 에러: mysql connection error일 경우
+
+만약 ecommerce-app1이 mysql connection error 날 경우, 'ecommerce' 이름의 database를 mysql container에 접속해서 만들어 줘야 한다.
+
+1. `docker exec -it mysql bash`
+2. `mysql -u root -p`
+3. `admin123`
+4. `create database ecommerce;`
+5. 다시 `docker compose up --build`
+
+
+#### Q. 로컬환경에서 react, nextjs 프로젝트를 실행하고 싶다면?
+
+1. react -> front/01.reactjs/.env
+2. nextjs -> front/02.nextjs_migration/.env.local
+
+파일에서
+
+1. base_url을 http://127.0.0.1:8080 로 수정
+2. `npm i`
+3. `npm start` or `npm run dev`
 
 
 

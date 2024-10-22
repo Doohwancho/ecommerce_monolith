@@ -34,8 +34,8 @@ services:
     build:
       context: ./back/1.ecommerce
       dockerfile: Dockerfile
-    # ports: #backend server port는 외부 접속을 막아둔다. 다만, 개발시에는 편의를 위해 여는 경우도 있다.
-      # - "8080:8080" #"HOST_PORT:CONTAINER_PORT"
+    ports: #backend server port는 외부 접속을 막아둔다. 다만, 개발시에는 편의를 위해 여는 경우도 있다.
+      - "8080:8080" #"HOST_PORT:CONTAINER_PORT"
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=docker
@@ -73,7 +73,7 @@ services:
     container_name: 'nginx'
     restart: always
     build:
-      context: ./web-server
+      context: ./web-server/02.nextjs_migration
       dockerfile: Dockerfile
     ports:
       - "80:80"
@@ -92,13 +92,17 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    # environment:
+    env_file:
+      - ./front/02.nextjs_migration/.env.local
+    environment:
+      # - NEXT_PUBLIC_API_URL=http://localhost/api
       # - NEXT_PUBLIC_API_URL=http://nginx/api
+      - NEXT_PUBLIC_API_URL=http://ecommerce-app1:8080
     networks:
       - bridge_network
     depends_on:
       - nginx
-      # - ecommerce-app1
+      - ecommerce-app1
 
   prometheus:
     image: prom/prometheus
