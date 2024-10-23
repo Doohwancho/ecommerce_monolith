@@ -1,5 +1,13 @@
 # index
 
+<!--
+.md jump-to-secion naming rules
+
+1. Make all lowercase
+2. Remove anything that is not a letter, number, space or hyphen, like :, ', etc
+3. Change any space to a hyphen.
+-->
+
 - A. [프로젝트 소개](#a-프로젝트-소개)
 - B. [사용 기술](#b-사용-기술)
 - C. [AWS architecture](#c-aws-architecture)
@@ -29,7 +37,7 @@
 	- f. [1000 RPS 부하 테스트](#f-1000-rps-부하-테스트)
 	- g. [비용 고려한 scale out 전략](#g-비용을-고려한-scale-out-전략)
 - H. [기술적 도전 - Frontend](#h-기술적-도전---frontend)
-	- a. [사용자경험(UX)을 반영한 맞춤형 앱 설](#a-사용자경험-ux-를-반영한-맞춤형-앱-설계)
+	- a. [사용자경험(UX)을 반영한 맞춤형 앱 설계](#a-사용자경험ux을-반영한-맞춤형-앱-설계)
 	- b. [wireframe](#b-wireframe)
 	- c. [state management](#c-state-managment)
     - d. [API first design](#d-api-first-design)
