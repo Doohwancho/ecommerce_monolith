@@ -64,11 +64,12 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({ options, onFilterChange
   return (
       <div className="space-y-6">
         {/* Option Filters */}
-        {options?.map(option => (
+        {options?.map((option, index) => (
           <Accordion key={option.optionId} collapsible type="single">
             <AccordionItem value={`option-${option.optionId}`}>
               <AccordionTrigger className="text-base font-medium">
-                {option.optionValue}
+                {`option ${index + 1}`}
+                {/* {option.optionValue} */}
               </AccordionTrigger>
               <AccordionContent>
                 <div className="grid gap-2">
