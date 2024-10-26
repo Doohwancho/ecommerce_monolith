@@ -76,7 +76,7 @@ const config = {
           from:  {transform: "translateY(16px);" },
           to:   {transform: "translateY(80%);" },
         },
-        slideRight: {
+        "slideRight": {
           from: { left: '0px' },
           to: { left: '10px' },
         },

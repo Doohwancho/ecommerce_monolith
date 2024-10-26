@@ -104,7 +104,7 @@ const CategoryClientSideComponent: React.FC<CategoryClientSideComponentProps> = 
 
     return (
         <div className="max-w-screen-lg mx-auto">
-            <TopNavBar />
+            {/* <TopNavBar /> */}
             <CategoryBar />
 
             <section className="bg-white dark:bg-gray-950 py-12">

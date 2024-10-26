@@ -1,11 +1,13 @@
 'use client'
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, useRef, } from 'react';
 import { AllCategoriesByDepthResponseDTO } from '../../../models';
+import { throttle } from "lodash";
 
 import Link from 'next/link';
 import { SiNike } from 'react-icons/si';
 
 import Modal from '../molecule/modal';
+import TopNavBar from './topNavBar';
 
 
 const categories = {
@@ -310,51 +312,113 @@ const getCategoryData = (categoryName: string): AllCategoriesByDepthResponseDTO[
   };
 
 const CategoryBar: React.FC = () => {
-  const [selectedCategories, setSelectedCategories] = useState<AllCategoriesByDepthResponseDTO[]>([]);
-  const [modalOn, setModalOn] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    const [selectedCategories, setSelectedCategories] = useState<AllCategoriesByDepthResponseDTO[]>([]);
+    const [scrollState, setScrollState] = useState({
+      showCategorybar: true,
+      isScrollingUp: false
+    });
+    const [modalOn, setModalOn] = useState(false);
+    
+    const SCROLL_OFFSET = 30;
+    const lastScrollPosition = useRef(0);  // useState 대신 useRef 사용
+  
+    useEffect(() => {
+      // 스크롤 핸들러를 throttle로 감싸서 성능 최적화
+      const handleScroll = throttle(() => {
+        const currentScroll = window.scrollY;
+        const isScrollingUp = currentScroll < lastScrollPosition.current && currentScroll > SCROLL_OFFSET;
+        
+        setScrollState({
+          showCategorybar: currentScroll < SCROLL_OFFSET || isScrollingUp,
+          isScrollingUp
+        });
+        
+        lastScrollPosition.current = currentScroll;
+      }, 100);  // 100ms마다만 실행
+  
+      window.addEventListener('scroll', handleScroll);
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        handleScroll.cancel();
+      };
+    }, []); // 의존성 배열이 비어있어 마운트 시에만 실행
+  
+    const handleCategoryHover = (categoryName: string) => {
+        setModalOn(true);
+        setSelectedCategories(getCategoryData(categoryName));
     };
+  
+    return (
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    <>
+        <nav className="relative h-32">
+            <div className={`
+                block
+                max-w-screen-lg w-full mx-auto 
+                z-50 bg-white
+                duration-150 ease-out
+                ${scrollState.showCategorybar 
+                    ? scrollState.isScrollingUp 
+                        ? 'fixed top-0'
+                        : 'fixed top-0 [transform:translate3d(0,0,0)]'
+                        // : 'sticky top-0 [transform:translate3d(0,0,0)]'
+                    : 'fixed top-0 left-0 right-0 [transform:translate3d(0,-120px,0)]'
+                    // : 'fixed top-0 left-0 right-0 [transform:translate3d(0,-90px,0)]'
+                }
+                `}>
 
-  const handleCategoryHover = (categoryName: string) => {
-    setModalOn(true);
-    setSelectedCategories(getCategoryData(categoryName));
+                <TopNavBar />
+
+                <div className="box-border flex justify-start items-center px-[3vw] h-20 w-full">
+                    <div className="absolute text-6xl">
+                        <Link href="/" className="text-black hover:text-gray-500">
+                        <SiNike />
+                        </Link>
+                    </div>
+                    <div className="justify-center mx-auto box-border font-[${props => props.theme.fontContent}] hidden sm:block">
+                        <div className="flex">
+                        {Object.keys(categories).map((categoryName) => (
+                            <div 
+                            key={categoryName}
+                            className="mx-5 cursor-pointer"
+                            onMouseEnter={() => handleCategoryHover(categoryName)}
+                            >
+                            {categoryName}
+                            </div>
+                        ))}
+                        </div>
+                    </div>
+                </div>
+
+                <Modal 
+                    isVisible={modalOn}
+                    showCategorybar={scrollState.showCategorybar}
+                    setMenModalOn={setModalOn} 
+                    categories={selectedCategories} 
+                />
+            </div>
+        </nav>
+
+        <div className={` 
+                fixed
+                top-0 bottom-0 
+                w-[1024px]
+
+                max-h-full
+                overflow-y-auto 
+                z-10 
+                
+                bg-black bg-opacity-40
+                ${modalOn 
+                    ? 'opacity-100 visible pointer-events-auto'
+                    : 'opacity-0 invisible pointer-events-none'
+                }
+            `}
+            style={{ transitionProperty: 'opacity', transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1);', transitionDuration: '800ms'}} //transition-all duration-800 ease-in-out 입력에서 duration이 800ms로 적용 안되서 이 방식으로 대신 입력함 
+        >
+        </div>
+    </>
+    );
   };
 
-  return (
-    <>
-      {modalOn && <Modal setMenModalOn={setModalOn} categories={selectedCategories} scrollY={scrollY} />}
-      <div className="relative w-full">
-        <div className="box-border flex justify-start items-center px-[3vw] h-20 w-full">
-          <div className="absolute text-6xl">
-            <Link href="/" className="text-black hover:text-gray-500">
-              <SiNike />
-            </Link>
-          </div>
-          <div className="justify-center mx-auto box-border font-[${props => props.theme.fontContent}] hidden sm:block">
-            <div className="flex">
-              {Object.keys(categories).map((categoryName) => (
-                <div 
-                  key={categoryName}
-                  className="mx-5 cursor-pointer"
-                  onMouseEnter={() => handleCategoryHover(categoryName)}
-                >
-                  {categoryName}
-                </div>
-               ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-export default memo(CategoryBar);
+export default CategoryBar;

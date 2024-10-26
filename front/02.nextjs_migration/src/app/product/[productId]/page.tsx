@@ -54,7 +54,7 @@ const ProductPage = async ({ params }: ProductPageProps) => {
     
   return (
     <div className="max-w-screen-lg mx-auto">
-      <TopNavBar />
+      {/* <TopNavBar /> */}
       <CategoryBar />
 
       {/* body */}
