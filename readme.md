@@ -37,13 +37,14 @@
 	- f. [1000 RPS 부하 테스트](#f-1000-rps-부하-테스트)
 	- g. [비용 고려한 scale out 전략](#g-비용을-고려한-scale-out-전략)
 - H. [기술적 도전 - Frontend](#h-기술적-도전---frontend)
-	- a. [사용자경험(UX)을 반영한 맞춤형 앱 설계](#a-사용자경험ux을-반영한-맞춤형-앱-설계)
-	- b. [wireframe](#b-wireframe)
-	- c. [state management](#c-state-managment)
-    - d. [API first design](#d-api-first-design)
-	- e. [latency 개선](#e-latency-개선)
-	- f. [nextjs 마이그레이션, 페이지마다 최적화된 렌더링 패턴 적용](#f-nextjs-migration-for-different-rendering-patterns)
-	- g. [atomic design pattern with shadcn-ui](#g-atomic-design-pattern-with-shadcn-ui)
+	- a. [UX 개선을 위한 카테고리바 개선](#a-ux-개선을-위한-카테고리바-개선)
+	- b. [사용자경험(UX)을 반영한 맞춤형 앱 설계](#b-사용자경험ux을-반영한-맞춤형-앱-설계)
+	- c. [wireframe](#c-wireframe)
+	- d. [state management](#d-state-managment)
+    - e. [API first design](#e-api-first-design)
+	- f. [latency 개선](#f-latency-개선)
+	- g. [nextjs 마이그레이션, 페이지마다 최적화된 렌더링 패턴 적용](#g-nextjs-migration-for-different-rendering-patterns)
+	- h. [atomic design pattern with shadcn-ui](#h-atomic-design-pattern-with-shadcn-ui)
 
 
 
@@ -4316,7 +4317,472 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 # H. 기술적 도전 - Frontend
 
-## a. 사용자경험(UX)을 반영한 맞춤형 앱 설계
+## a. UX 개선을 위한 카테고리바 개선
+
+### 감성은 디테일에서 온다. 샥! 넘기는 효과 구현하기
+
+애플과 삼성폰의 인식의 차이는 디테일에서 오는 감탄의 차이인 듯 하다.
+
+
+![nike_category_bar](./documentation/images/UX_categorybar_1.gif)
+
+나이키의 카테고리 바는 샥! 넘기는 디테일이있다.
+
+
+
+![my_category_bar](./documentation/images/UX_categorybar_2.gif)
+
+내 카테고리바는 그 맛, 그 감성이 없다. 그저 무던하다.
+
+
+흠... 어떻게 하지?
+
+[codepen.io](https://codepen.io/tahazsh/pen/wNOvyK)에 검색해보니 얼추 원리가
+
+1. 쇽! 올라가는 효과의 `offset`(기준)을 정한다.
+2. 스크롤을 일정수준 이상 내려 offset의 기준이 충족되면 `showNavbar` 변수를 `false`로 바꾼다.
+3. `false`면 숨기는거니까, `transform: translateY(-100%)`로 화면 밖 위로 올리고,
+4. `transition`으로 위로 올리는 속도와 가속도를 정한다.
+
+tailwind에서는 대략 이런 코드다.
+
+```typescript
+<div className={`
+  relative w-full z-50 bg-white
+  transform transition-transform duration-200 ease-out
+  ${showNavbar
+	? '[transform:translate3d(0,0,0)]'
+	: '[transform:translate3d(0,-100%,0)] shadow-none'}
+`}>
+```
+
+<br />
+
+#### 1. 중간결과1 - 쇽! 숨겨진다. 근데..
+![my_category_bar](./documentation/images/UX_categorybar_3.gif)
+
+쇽! 숨겨진다!
+
+근데 모달이 카테고리바랑 따로논다...
+
+왜냐면 모달의 위치를 정하는걸
+
+1. y축으로 스크롤한 정도를 `useEffect()`로 트래킹해서 modal에 넘겨주면
+```javascript
+useEffect(() => {
+	const handleScroll = () => {
+	  setScrollY(window.scrollY);
+	};
+
+	window.addEventListener('scroll', handleScroll);
+	return () => window.removeEventListener('scroll', handleScroll);
+}, []);
+```
+2. top: scrollY의 위치로 잡았는데..
+
+```javasript
+const modalTop = Math.max(80 - scrollY, 0);
+
+<div style={{top:`${modalTop}px`}}>
+```
+
+`useEffect()`로 스크롤값 파악하는 방식은 아무리 re-랜더링 빨리 한다지만,\
+중간에 미세한 딜레이가 생겨 모달 움직이는게 좀 부자연스러워 보인다.\
+categoryBar에 딱 붙여야 할듯 하다.
+
+
+그래서 `<Modal>`의 포지션이 원래 `position:fixed` + 카테고리 밖에 위치했기 때문에,\
+페이지 전체를 커버하면서 특정 위치에서 생성되는 원리였는데,\
+`position:relative`로 바꾸고 `<CategoryBar>` 안으로 편입시켜서\
+`<CategoryBar>`의 포지션을 기준점으로 위치잡도록 했다.
+
+
+
+
+#### 2. 중간결과2 - 같이논다! 근데...
+![my_category_bar](./documentation/images/UX_categorybar_4.gif)
+
+이제 카테고리바랑 모달이랑 같이논다!
+
+근데 모달을 펼쳤을 때 배경이 어두워지는 기능이 안된다?!
+
+
+
+---
+##### 원인
+왜냐면 `<Modal>`이 `<CategoryBar>` 바깥쪽에 있을 땐, 페이지 전체를 커버하니까, `background-color:black` 했을때 적용됬던건데,\
+`<CategoryBar>` 내부로 편입시킨 후에 공간할당을 결국 `<CategoryBar>`의 `<div>` 안에서밖에 못받으니까 백그라운드 fade-out effect가 적용이 안됬던 것이다.
+
+
+css 선택자에 `:before`, `:after`도 시도해봤지만 결국 `<CategoryBar>`의 `<div>` 내부 공간밖에 못쓰기 때문에 실패했다.
+
+
+##### 해결책
+따라서 `<CategoryBar>` 바깥에 fade-out 효과만을 위한 `<div>`를 추가했다.
+
+
+##### 그 외 시행착오
+tailwind에서 opacity, fadeout, animation 관련 코드를 넣었는데 적용이 안되길래,\
+개발자도구에서 해당 `<div>`의 스타일 태그를 확인해보니 적용이 안되있는 에러가 있었고,\
+`style={{ transitionProperty: 'opacity', transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1);', transitionDuration: '800ms'}}`\
+이런식으로 직접 입력하니까 적용 됬다.
+
+또한 `modalOn` 변수의 `true/false`에 따라 fade-out `<div>`를 `hidden`이었다가 보여줬다가 이런 식으로 했었을 땐 bg-black은 적용됬으나, fadeout-animation은 적용이 안됬었는데,\
+`hidden`방식을 버리고 opacity를 0->100으로 바꾸는 방식과 fadeout-animation을 썼더니 잘 작동하였다.
+
+
+
+#### 3. 중간결과3 - fadeout 작동한다! 근데...
+
+![my_category_bar](./documentation/images/UX_categorybar_5.gif)
+
+스크롤 내렸을 때, 나이키처럼 모달이 화면 상단에 탁! 걸리는 효과가 없다.
+
+![nike_category_bar](./documentation/images/UX_categorybar_1.gif)
+
+
+---
+##### 문제 원인
+현재 모달은 `position: relative`에 `<CategoryBar>`이랑 붙어있어서,\
+`<CategoryBar>`이 `translateY(-100%)`로 위로 올라가 버리면,\
+`<Modal>`도 `<CategoryBar>`을 따라 사라지는 것 처럼 보인다.
+
+근데 화면 위로 고정시키는건 `position: fixed`에 `top-0` 하면 되긴 하는데,\
+문제는 `position: fixed`은 html tag랑 같이 작용하는게 아니라, 스크린에 특정 위치에 고정시키는 방식이라,\
+`<CategoryBar>`와 따로노는 문제가 다시 발생한다(중간결과1에서 생겼던 문제)
+
+
+
+----
+##### 중간정리
+그러니까 정리하면,\
+현재 구조가
+
+```html
+<App>
+	<TopNavBar>
+	<CategoryBar> - when disappears, transform:translate3d(0,-100%,0)]
+		<Modal> - position:relative, top: 100%
+	<Fadeout>
+	<Body>
+<App/>
+```
+
+이런 구조인데,
+
+`<CategoryBar>`이 `translate3d(0,-100%,0)`로 위로 사라지면 붙어있던 `<Modal>`도 같이 사라지는 문제가 있다.
+
+스크롤 내리면 `<Modal>`은 화면 최상단에 `position:fixed, top:0` 고정시키고 싶다.
+
+```html
+<App>
+	<TopNavBar>
+	<CategoryBar>
+	<Modal> - position:fixed, top: 0
+	<Fadeout>
+	<Body>
+<App/>
+```
+
+이렇게 바꾸면 `<Modal>`이 화면 상단에 고정은 되는데, `<CategoryBar>`랑 따로놀게된다.
+
+
+---
+#### 궁금증과 해결책
+Q. 어떻게 하면
+1. `categoryBar`을 hover시 모달이 `<CategoryBar>`에 꼭 붙어서 펼쳐지면서,
+2. 동시에 스크롤 내려서 `<CategoryBar>`가 사라지면 화면 위에 `position: fixed, top:0`으로 붙일 수 있지?
+
+
+A. 이런 구조로 바꾸니까 되더라.
+```html
+<App>
+	<TopNavBar>
+	<nav> - position: relative
+		<CategoryBar>
+			1. case1 - 평상시 상태) position: relative,
+			2. case2 - 위로 올라간 상태) position: relative, translateY(-100%)
+		<Modal>
+			1. case1 - 평상시 상태) position:relative, top: 100%
+			2. case2 - 위로 올라간 상태) position: fixed, top:0,
+	<nav/>
+	<Fadeout>
+	<Body>
+<App/>
+```
+
+수정점1) `<CategoryBar>`가 화면 위로 사라졌을 때, `<Modal>`의 포지션을 `relative`에서 `fixed top:0`로 수정하였다.
+
+이런 구조면 `fixed top-0`는 다른 html tag에 영향을 안받으니까, 화면 위에 붙일 수 있다.
+
+수정점2) `<CategoryBar>`가 없어졌을 때 `<Modal>`의 `position:relative`가 위치 기준점을 잡아야 하기에 `<CategoryBar>`와 `<Modal>`을 `<nav>`로 감싸주었다.
+
+이런식으로 수정했더니 스크롤을 내려도 모달이 상단고정 되었다.
+
+
+#### 4. 중간결과4 - 모달이 상단고정은 된다. 그런데...
+
+![nike_category_bar](./documentation/images/UX_categorybar_6.gif)
+
+디테일의 영역이긴 한데, 두가지 좀 이상한 부분이 있다.
+
+1. 문제1) `<CategoryBar>`가 화면상단으로 사라질 때, 너무 빨리 사라진다는 느낌을 준다.
+	- `<CategoryBar`+`<Modal>`이 같이 샥! 올라가야 하는데,
+	- `<CategoryBar>`은 올라가면서 `<Modal>`이 갑자기 위에서 생성되는 듯한 느낌을 준다.
+2. 문제2) 스크롤을 위로 땡길 때, `<CategoryBar>`랑 `<Modal>`사이에 갭이 보인다.
+
+
+---
+현재 이런 구조인데,
+```html
+<App>
+	<TopNavBar>
+	<nav> - position: relative
+		<CategoryBar>
+			1. case1 - 평상시 상태) position: relative,
+			2. case2 - 위로 올라간 상태) position: relative, translateY(-100%)
+		<Modal>
+			1. case1 - 평상시 상태) position:relative, top: 100%
+			2. case2 - 위로 올라간 상태) position: fixed, top:0,
+	<nav/>
+	<Fadeout>
+	<Body>
+<App/>
+```
+이 구조에서, "위로 올라간 상태"를 보면,
+1. `<CategoryBar>`는 `translateY()`로 올라가고,
+2. `<Modal>`은 `position:fixed top-0`으로 짠! 생성되기 때문에,
+
+둘이 따로 놀고, 올라가는 모션이 매끄럽지 않은 것이다.
+
+
+---
+고민해도 답이 안나오길래,
+
+
+나이키가 어떻게 만들었는지 뜯어봤다.
+
+```html
+<App>
+	<TopNavBar>
+	<nav> - position: relative
+		<CategoryBar>
+			1. case1 - 평상시 상태) position: relative,
+			2. case2 - 위로 올라간 상태) position: fixed, top:0, translateY(-100%)
+		<Modal>
+			1. case1 - 평상시 상태) position:fixed, top: 0
+			2. case2 - 위로 올라간 상태) position: fixed, top:0,
+	<nav/>
+	<Fadeout>
+	<Body>
+<App/>
+```
+
+신기한 점은 `<Modal>`의 포지션이 `relative`가 아니라 `fixed`인 점이다.\
+`fixed`면, `<CategoryBar>`과 따로 놀텐데????
+![nike_category_bar](./documentation/images/UX_categorybar_1.gif)
+근데 왜 보이기엔 `relative` 처럼 보이지?
+
+`fixed` 인데 어떻게 특정 html tag에만 붙게 만들었지?
+
+[검색](https://stackoverflow.com/questions/6794000/fixed-position-but-relative-to-container)해보니, `position:sticky`가 해결책인 듯 하다.
+
+parent element에 붙어서 작동하면서, 동시에 `fixed`의 성질을 가지고 있는 `sticky`를 써보자.
+
+
+
+#### 5. 중간결과5 - 성공! 근데...
+
+![](./documentation/images/UX_categorybar_7.gif)
+
+된다!
+
+1. `<CategoryBar>`와 `<Modal>`이 따로 놀지 않으면서,
+2. 스크롤 내렸을 때, `<Modal>`이 화면 상단에 고정된다.
+
+
+이제야 알게된 사실인데, `position:sticky` 써서 만든 html page를 개발자 도구로 까봤더니, `position:fixed`로 나왔다.
+
+아마 나이키 페이지도 `sticky`로 구현됬는데, 전에 까봤을 때 봤던 `fixed`는 컴파일 과정에서 다른 property와 조합되서 변형된 듯 하다. 괜히 해깔렸다.
+
+#### 해결책
+
+```html
+<App>
+	<TopNavBar>
+	<CategoryBar>
+		1. case1 - 평상시 상태) position: relative,
+		2. case2 - 위로 올라간 상태) position: fixed, top:0, translateY(-100%)
+		<Modal> - placed inside <CategoryBar>!
+			1. case1 - 평상시 상태) position:sticky, top: 0
+			2. case2 - 위로 올라간 상태) position: sticky, top:0,
+	<CategoryBar/>
+	<Fadeout>
+	<Body>
+<App/>
+```
+
+---
+##### 다른 아쉬운 점) 모달창 나타날 때 animation 효과가 없다
+
+![](./documentation/images/UX_categorybar_7.gif)
+
+내가 만든건 자세히 보면, 모달창을 열 때, 그냥 짠! 하고 나타난다.
+
+
+![](./documentation/images/UX_categorybar_1.gif)
+
+나이키 사이트는
+
+1. 쇽! 하고 내려오고
+2. 모달 안 글자가 바로 보이는게 아니라, transition으로 서서히 나타난다.
+
+이 효과를 구현해보자.
+
+#### 6. 중간결과6 - modal css-animation 성공! 근데...
+
+![](./documentation/images/UX_categorybar_8.gif)
+
+이제 모달이 내려오고, 모달 안 text가 서서히 나타나서 처음보다 UX 측면에서 더 낫다.
+
+이제 스크롤 내리는 도중, 살짝 올리면, 카테고리바가 나타나는 기능을 추가해보자.
+
+
+#### 7. 중간결과7 - 스크롤 내리다 올렸을 때 카테고리바가 빼꼼 나오는 기능
+
+![](./documentation/images/UX_categorybar_9.gif)
+
+1. scroll한 정도의 위치를 파악해 scrollUp을 감지 후,
+2. 했다면 `<CategoryBar>`을 `translateY(0)`으로 나타나게 했다.
+
+대략 로직은 이렇다.
+
+```jsx
+useEffect(() => {
+    const handleScroll = () => {
+        const currentScroll = window.scrollY;
+
+        // Determine scroll direction and update state
+        if (currentScroll < lastScrollPosition && currentScroll > SCROLL_OFFSET) {
+            setIsScrollingUp(true);
+        } else {
+            setIsScrollingUp(false);
+        }
+
+        // Show the bar if:
+        // 1. We're at the top of the page (within SCROLL_OFFSET)
+        // 2. OR we're scrolling up
+        setShowCategorybar(currentScroll < SCROLL_OFFSET || isScrollingUp);
+        setLastScrollPosition(currentScroll);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollPosition, isScrollingUp]);
+```
+
+```css
+${showCategorybar
+	? isScrollingUp
+		? 'fixed top-0' //스크롤 내린 후, 다시 올릴 때 보여줌
+		: 'sticky [transform:translate3d(0,0,0)]'  // 평상시
+	: 'fixed top-0 left-0 right-0 [transform:translate3d(0,-80px,0)]' //스크롤 내릴 때, 숨김
+}
+```
+
+`sticky`를 썼는데, `sticky`는 `fixed`와는 다르게 공간을 차지해서,\
+다른 `html_tag`가 `relative`면 나왔다 사라질 때 영향을 주는 문제가 있었다.
+
+```html
+<nav className="relative h-32">
+	<CategoryBar>
+		<Modal />
+	<CategoryBar/>
+<nav/>
+```
+그래서 절대 height 공간을 차지하는 `position:relative`인 `<nav>`태그로 감싸주었다.
+
+
+##### 또 다른 문제) 카테고리가 깜박인다?!
+![](./documentation/images/UX_categorybar_10.gif)
+
+근데 또 다른 문제가 생겼는데,\
+자세히 보면, 위 아래로 스크롤을 올렸다 내렸다 할 때,\
+**카테고리바가 깜박이는 문제**가 있다.
+
+`useEffect`에 `isScrollingUp`조건을 추가했더니, 컴포넌트가 re-rendering 되는게 원인인 듯 하다.\
+스크롤이 아무래도 매우 빈번하게 일어나는 것이다 보니, 그런 듯 하다.
+
+
+
+#### 8. 최종(?)결과8 - 불필요한 re-rendering 최소화
+
+이제 더 이상 스크롤 업 & 다운 반복할 떄 깜박이지 않는다!
+
+##### before)
+![](./documentation/images/UX_categorybar_10.gif)
+
+1. 원래는 스크롤 할 때마다 `scrollY`의 변수를 계속 트래킹 하면서 바뀔 때 마다 계속 re-rendering 했다.
+2. 상태관리하는 `useState` 변수도 3개씩 썼었고,
+3. `useEffect(a, [b]);`에서 `[b]`에 트래킹 되는 변수가 2개가 있었다.
+
+그래서 re-rendering이 잦았고, 불필요한 자원을 많이 썼었다.
+
+##### after)
+![](./documentation/images/UX_categorybar_11.gif)
+1. 이젠 이벤트리스너가 스크롤 시 `scrollY`를 트래킹하긴 하지만, 그 값 자체를 트래킹하지 않고, 단순하게 카테고리바 보일지 여부 & 스크롤업 여부를 useState 변수 하나로 관리한다.
+2. lastScrollPosition은 `useState`에서 `useRef`로 바꿨는데, `useRef`는 값이 변경되어도 re-rendering이 일어나지 않기 때문이다.
+3. 스크롤 할 때마다 트래킹 하는게 아니라, `lodash/throttle`로 100ms 간격으로 체크하게 하여 불필요한 자원낭비를 줄였다.
+4. `useEffect`의 의존성도 `[]`로 비워놨기 때문에, 마운트 시에만 실행된다. (스크롤 이벤트 때마다 불필요하게 re-rendering 하지 않음)
+
+
+#### 9. 최종결과9 - UX를 고려한 카테고리바 완성
+![](./documentation/images/UX_categorybar_12.gif)
+완성한 줄 알았는데, 스크롤바를 급격히 빠르게 내리면 끊김현상이 있었다.
+
+자세히 보면, 스크롤을 내릴 때 카테고리바가 올라가는데, 또 한번 원위치 했다가 다시 올라간다.
+
+##### 문제의 원인
+문제의 명확한 원인 아마 `position:sticky, relative`같은 다른 `html_element`포지션에 연관된걸 사용하다가,\
+갑자기 다른DOM에 영향 안받는 `position:fixed`를 써버리는것 + `css:animation`과 같이 쓰면 내부적으로 뭔가 꼬이는 듯 하다.
+
+
+##### 해결책
+1. `<CategoryBar>`의 위치가 바로 위에있는 `<TopNavBar>`에 영향을 받은 것 같으니, 이 둘을 같은 `<nav>`로 묶고,
+2. `<CategoryBar>`에 `position`전환을 `sticky`->`fixed`로 전환이 아닌, 항상 `fixed`를 쓰게 했더니 해결됬다.
+
+##### 결과
+
+![](./documentation/images/UX_categorybar_13.gif)
+
+
+빠르게 스크롤 할 때에도 부드럽다!
+
+
+#### 10. 개선 전 vs 후 비교
+
+##### before)
+![](./documentation/images/UX_categorybar_2.gif)
+
+##### after)
+![](./documentation/images/UX_categorybar_14.gif)
+
+
+
+#### 11. 느낀점
+
+Q. 삼성이랑 애플이랑 기능이 같은데 왜 비싼 돈 주고 애플사나요?
+
+A. 그야, **감성**있으니까...
+
+괜히 감성 찾는게 아니더라...\
+감성 살리려면 디테일에 신경 엄청 써야한다..\
+그리고 **디테일**을 챙기려면 생각 이상의 **예민함**과 **에너지**와 **기술**이 들어가더라...
+
+
+
+## b. 사용자경험(UX)을 반영한 맞춤형 앱 설계
 
 ### 1. 필터 적용시 refresh page 여부
 #### case1) nike: 필터 적용 ->  page refresh가 일어나서 끊김
@@ -4456,31 +4922,31 @@ SSR로 몸비틀기 한지 알게됬다.
 
 
 
-## b. wireframe
+## c. wireframe
 
 ![](./documentation/images/wireframe.svg)
 
-### b-1. wireframe -> home
+### c-1. wireframe -> home
 
 ![](./documentation/images/ecommerce_index_page.png)
 
-### b-2. wireframe -> category
+### c-2. wireframe -> category
 ![](./documentation/images/ecommerce_product_list_page.png)
 
 
-### b-3. wireframe -> product
+### c-3. wireframe -> product
 ![](./documentation/images/ecommerce_product_page.png)
 
 
-### b-4. wireframe -> register
+### c-4. wireframe -> register
 ![](./documentation/images/ecommerce_register_login_page.png)
 
 
-### b-5. wireframe -> login
+### c-5. wireframe -> login
 ![](./documentation/images/ecommerce_register_login_page.png)
 
 
-## c. state managment
+## d. state managment
 프론트는 같은걸 2가지 버전(reactjs, nextjs)으로 만들었다.\
 React.js 버전에서 상태관리한 방법을 기술한다.
 
@@ -4496,7 +4962,7 @@ React.js 버전에서 상태관리한 방법을 기술한다.
 	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우
 
 
-## d. API first design
+## e. API first design
 
 ### 1. 문제
 1. 기존 프론트/백 협업 방식은 프론트 개발자와 백엔드 개발자 사이의 결합도가 높아진다는 문제점이 있다.
@@ -4544,7 +5010,7 @@ redocly preview-docs back/1.ecommerce/src/main/resources/api/openapi.yaml
 
 
 
-## e. latency 개선
+## f. latency 개선
 
 ### 1. 불필요한 랜더링을 React.memo() 으로 최적화
 
@@ -4639,7 +5105,7 @@ https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be74
 이미지 용량이 약 60%로 축소됨으로 인해, 페이지 로드 속도가 빨라졌다.
 
 
-## f. nextjs migration for different rendering patterns
+## g. nextjs migration for different rendering patterns
 
 1. SSG: register, login 페이지
 	- register, login 페이지는 내용이 안바뀌는 static page라 빌드타임 때 만들고 뿌리는 SSG 사용한다.
@@ -4654,7 +5120,7 @@ https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be74
 	- product 페이지는 상품내용이 자주 업데이트 될 수 있음과 동시에 SEO에 잡히는게 중요하므로 SSR로 렌더링한다.
 
 
-## g. atomic design pattern with shadcn-ui
+## h. atomic design pattern with shadcn-ui
 
 
 ### 1. 문제
