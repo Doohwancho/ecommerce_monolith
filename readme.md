@@ -4322,10 +4322,10 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 #### 개선 전 vs 후 비교
 
 ##### before)
-![](./documentation/images/UX_categorybar_before.gif)
+![개선전 categorybar](./documentation/images/UX_categorybar_before.gif)
 
 ##### after)
-![](./documentation/images/UX_categorybar_14.gif)
+![개선 후 카테고리바](./documentation/images/UX_categorybar_after.gif)
 
 
 ### 감성은 디테일에서 온다. 샥! 넘기는 효과 구현하기
