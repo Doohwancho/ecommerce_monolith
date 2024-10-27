@@ -4319,6 +4319,15 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 ## a. UX 개선을 위한 카테고리바 개선
 
+#### 개선 전 vs 후 비교
+
+##### before)
+![](./documentation/images/UX_categorybar_before.gif)
+
+##### after)
+![](./documentation/images/UX_categorybar_14.gif)
+
+
 ### 감성은 디테일에서 온다. 샥! 넘기는 효과 구현하기
 
 애플과 삼성폰의 인식의 차이는 디테일에서 오는 감탄의 차이인 듯 하다.
@@ -4760,17 +4769,8 @@ ${showCategorybar
 빠르게 스크롤 할 때에도 부드럽다!
 
 
-#### 10. 개선 전 vs 후 비교
 
-##### before)
-![](./documentation/images/UX_categorybar_2.gif)
-
-##### after)
-![](./documentation/images/UX_categorybar_14.gif)
-
-
-
-#### 11. 느낀점
+#### 10. 느낀점
 
 Q. 삼성이랑 애플이랑 기능이 같은데 왜 비싼 돈 주고 애플사나요?
 
