@@ -61,10 +61,12 @@ Ecommerce MVP
 ```
 1. git clone https://github.com/Doohwancho/ecommerce
 2. cd ecommerce
-3. docker compose -f ./docker-compose-nextjs-ver.yml up --build
-4. http://localhost:80
+3. ecommerce/front/02.nextjs_migration/.env.local 파일 생성 후,
+	- `NEXT_PUBLIC_API_URL=http://ecommerce-app1:8080` 입력
+	- 만약 로컬환경에서 실행하려면 `NEXT_PUBLIC_API_URL=http://127.0.0.1:8080` 입력
+4. docker compose -f ./docker-compose-nextjs-ver.yml up --build
+5. http://localhost:80
 ```
-
 
 
 ### 2. reactjs + spring-server를 docker compose로 실행
@@ -72,8 +74,11 @@ Ecommerce MVP
 ```
 1. git clone https://github.com/Doohwancho/ecommerce
 2. cd ecommerce
-3. docker compose -f ./docker-compose-reactjs-ver.yml up --build
-4. http://localhost:80
+3. ecommerce/front/01.reactjs/.env 파일 생성 후,
+	- `VITE_API_BASE_URL=http://localhost/api` 입력
+	- 만약 로컬환경에서 실행하려면 `VITE_API_BASE_URL=http://127.0.0.1:8080` 입력
+4. docker compose -f ./docker-compose-reactjs-ver.yml up --build
+5. http://localhost:80
 ```
 
 #### Q. docker build시 에러: arm64 아키텍쳐가 아닙니다!
