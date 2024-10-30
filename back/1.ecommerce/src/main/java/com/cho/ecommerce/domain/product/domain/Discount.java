@@ -2,6 +2,7 @@ package com.cho.ecommerce.domain.product.domain;
 
 import com.cho.ecommerce.domain.product.entity.DiscountEntity;
 import com.cho.ecommerce.global.error.exception.business.RiggedDiscountRequested;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,9 @@ import org.springframework.util.Assert;
 
 @Getter
 @Setter
-public class Discount {
+public class Discount implements Serializable { //redis에 json으로 serialize 해서 저장해서 필요
+    
+    private static final long serialVersionUID = 1L; //redis에 json으로 serialize 해서 저장해서 필요
     
     private Long discountId;
     private DiscountType discountType;

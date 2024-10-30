@@ -1,16 +1,22 @@
 package com.cho.ecommerce.domain.product.domain;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.util.Assert;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
 @Setter
 @Getter
-public class Product {
+public class Product implements Serializable { //redis에 json으로 serialize 해서 저장해서 필요
+    
+    private static final long serialVersionUID = 1L; //redis에 json으로 serialize 해서 저장해서 필요
     
     //product
     private Long productId;
@@ -56,12 +62,12 @@ public class Product {
     
     public static Double getDiscountedPrice(Double price, List<Discount> discounts) {
         Double discountedPrice = price;
-    
+        
         for (Discount discount : discounts) {
             discountedPrice = discount.applyDiscount(discountedPrice);
         }
         discountedPrice = Math.max(discountedPrice, 0);
-    
+        
         return discountedPrice;
     }
     

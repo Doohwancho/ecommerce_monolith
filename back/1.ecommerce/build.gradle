@@ -13,6 +13,8 @@ sourceCompatibility = '1.8'
 //for jqwik
 ext.junitJupiterVersion = '5.9.3'
 ext.jqwikVersion = '1.8.1'
+//for jackson's OffsetDateTime formatter
+ext.jacksonVersion = '2.12.5'  // Spring Boot 2.5.6에 맞는 버전으로 수정
 
 dependencies {
 
@@ -23,6 +25,7 @@ dependencies {
     compileOnly 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly 'org.openapitools:jackson-databind-nullable:0.2.1'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
 //    implementation 'org.springframework.boot:spring-boot-starter-hateoas' //TODO - hateoas 적용하기
     // OpenAPI Ends
 
@@ -61,6 +64,11 @@ dependencies {
 
     annotationProcessor 'org.projectlombok:lombok:1.18.28'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+    //for jackson's OffsetDateTime formatter (redis에 discount.OffsetDatetime을 json으로 format 변환시 필요)
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${jacksonVersion}"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

@@ -17,15 +17,25 @@ import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundExcepti
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
     
+    private final Logger log = LoggerFactory.getLogger(ProductService.class);
+    
+    private static final String PRODUCT_CACHE_KEY = "product:detail:";
+    private static final long CACHE_TTL = 3600; // 1시간
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private ProductRepository productRepository;
     @Autowired
@@ -54,6 +64,15 @@ public class ProductService {
     
     @Transactional
     public List<Product> getProductDetailDTOsById(Long productId) {
+        // 1. Look aside: Try to get from cache first
+        String cacheKey = PRODUCT_CACHE_KEY + productId;
+        List<Product> cachedProducts = getCachedProducts(cacheKey);
+        
+        if (cachedProducts != null) {
+            return cachedProducts;
+        }
+        
+        // 2. Cache miss: Get from DB
         Optional<ProductEntity> productEntitiesOptional = productRepository.findProductDetailDTOsById(
             productId);
         
@@ -61,8 +80,33 @@ public class ProductService {
             throw new ResourceNotFoundException("Product not found with ID: " + productId);
         }
         
-        ProductEntity queryResult = productEntitiesOptional.get();
+        // 3. Transform data
+        List<Product> products = transformToProducts(productEntitiesOptional.get());
         
+        // 4. Write to cache
+        cacheProducts(cacheKey, products);
+        
+        return products;
+    }
+    
+    private List<Product> getCachedProducts(String key) {
+        try {
+            return (List<Product>) redisTemplate.opsForValue().get(key);
+        } catch (Exception e) {
+            log.error("Redis cache get error", e);
+            return null;
+        }
+    }
+    
+    private void cacheProducts(String key, List<Product> products) {
+        try {
+            redisTemplate.opsForValue().set(key, products, CACHE_TTL, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            log.error("Redis cache set error", e);
+        }
+    }
+    
+    private List<Product> transformToProducts(ProductEntity queryResult) {
         List<ProductOptionVariationEntity> allProducts = new ArrayList<>();
         List<Product> productList = new ArrayList<>();
         
@@ -97,7 +141,6 @@ public class ProductService {
                 .optionVariationName(optionVariationEntity.getValue()).build();
             productList.add(product);
         }
-        
         return productList;
     }
     
@@ -110,20 +153,24 @@ public class ProductService {
         return productRepository.save(productEntity);
     }
     
+    // Write Through 구현: 상품 수정 시 캐시도 함께 업데이트
     @Transactional
     public ProductEntity updateProduct(com.cho.ecommerce.api.domain.ProductDTO product) {
-        //1. read productEntity from database to check if it exist.
-        ProductEntity productEntity = productRepository.findById(product.getProductId())
+        ProductEntity updatedProduct = productRepository.findById(product.getProductId())
+            .map(productEntity -> {
+                productEntity.setName(product.getName());
+                productEntity.setDescription(product.getDescription());
+                productEntity.setRating(product.getRating());
+                productEntity.setRatingCount(product.getRatingCount());
+                return productRepository.save(productEntity);
+            })
             .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         
-        //2. set productEntity's columns with new productDTO's columns
-        productEntity.setName(product.getName());
-        productEntity.setDescription(product.getDescription());
-        productEntity.setRating(product.getRating());
-        productEntity.setRatingCount(product.getRatingCount());
+        // Update cache
+        String cacheKey = PRODUCT_CACHE_KEY + product.getProductId();
+        redisTemplate.delete(cacheKey);  // Invalidate cache for this product
         
-        //3. save productEntity
-        return productRepository.save(productEntity);
+        return updatedProduct;
     }
     
     public void deleteProduct(Long id) {
