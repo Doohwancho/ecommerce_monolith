@@ -9,10 +9,13 @@
 -->
 
 - A. [프로젝트 소개](#a-프로젝트-소개)
-- B. [사용 기술](#b-사용-기술)
-- C. [AWS architecture](#c-aws-architecture)
-- D. [ERD diagram](#d-erd-diagram)
-- E. [기술적 도전 - Backend](#e-기술적-도전---backend)
+	- a. [빌드 & 실행 방법](#a-빌드-및-실행-방법)
+	- b. [사용 기술](#b-사용-기술)
+- B. [아키텍쳐](#b-architecture)
+	- a. [AWS architecture](#a-aws-architecture)
+	- b. [ERD diagram](#b-erd-diagram)
+	- c. [wireframe](#c-wireframe)
+- C. [기술적 도전 - Backend](#c-기술적-도전---backend)
     - a. [DB 부하를 낮추기 위한 cache 도입기](#a-db-부하를-낮추기-위한-cache-도입기)
     - b. [spring security - authentication](#b-spring-security---authentication)
     - c. [spring batch](#c-spring-batch)
@@ -21,31 +24,24 @@
     - f. [clean code](#f-clean-code)
 	- g. [refactoring](#g-refactoring)
 	- h. [요구사항을 비즈니스 로직 코드로 구현](#h-요구사항을-비즈니스-로직-코드로-구현)
-- F. [기술적 도전 - Database](#f-기술적-도전---database)
+- D. [기술적 도전 - Database](#d-기술적-도전---database)
     - a. [정규화](#a-정규화)
 	- b. [반정규화](#b-반정규화)
     - c. [통계 쿼리](#c-통계-쿼리)
-    - d. [sql tuning 1 - 인덱스 튜닝](#d-sql-tuning-1---index-튜닝)
-    - e. [sql tuning 2 - order by 튜닝](#e-sql-tuning-2---order-by-튜닝)
-    - f. [sql tuning 3 - 통계 쿼리 튜닝](#f-sql-tuning-3---통계-쿼리-튜닝)
-	- g. [bulk insert](#g-bulk-insert)
-- G. [기술적 도전 - Cloud](#g-기술적-도전---cloud)
+    - d. [sql tuning](#d-sql-tuning)
+	- e. [bulk insert](#e-bulk-insert)
+- E. [기술적 도전 - Cloud](#e-기술적-도전---cloud)
 	- a. [docker-compose로 개발환경 구성](#a-docker-compose로-개발환경-구성)
 	- b. [provisioning with terraform & packer](#b-provisioning-with-terraform-and-packer)
 	- c. [prometheus and grafana + PMM](#c-prometheus-and-grafana--pmm)
 	- d. [시행착오: 배포서버에서 log는 error랑 warn만 키자](#d-시행착오---배포서버에서-log는-error랑-warn만-키자)
-	- e. [300 RPS 부하 테스트](#e-300-rps-부하-테스트)
-	- f. [1000 RPS 부하 테스트](#f-1000-rps-부하-테스트)
-	- g. [비용 고려한 scale out 전략](#g-비용을-고려한-scale-out-전략)
-- H. [기술적 도전 - Frontend](#h-기술적-도전---frontend)
+	- e. [부하 테스트](#e-부하-테스트)
+- F. [기술적 도전 - Frontend](#f-기술적-도전---frontend)
 	- a. [카테고리바의 UX 개선기](#a-카테고리바의-UX-개선기)
 	- b. [사용자경험(UX)을 반영한 맞춤형 앱 설계](#b-사용자경험ux을-반영한-맞춤형-앱-설계)
-	- c. [wireframe](#c-wireframe)
-	- d. [state management](#d-state-managment)
-    - e. [API first design](#e-api-first-design)
-	- f. [latency 개선](#f-latency-개선)
-	- g. [nextjs 마이그레이션, 페이지마다 최적화된 렌더링 패턴 적용](#g-nextjs-migration-for-different-rendering-patterns)
-	- h. [atomic design pattern with shadcn-ui](#h-atomic-design-pattern-with-shadcn-ui)
+	- c. [성능개선, 더 나은 UX를 위한](#c-성능개선-더-나은-ux를-위한)
+	- d. [일관성 있는 디자인으로, 더 나은 UX를 위한 atomic design pattern with shadcnUI](#d-atomic-design-pattern-with-shadcn-ui)
+    - e. [개발자의 협업 플로우 개선을 위한 API First Design](#e-개발자의-협업-플로우-개선을-위한-api-first-design)
 
 
 
@@ -55,7 +51,8 @@
 
 Ecommerce MVP
 
-## a. how to start project?
+## a. 빌드 및 실행 방법
+
 
 ### 1. nextjs + spring-server을 docker-compose로 실행
 
@@ -114,9 +111,9 @@ Ecommerce MVP
 
 
 
-# B. 사용 기술
+## b. 사용 기술
 
-## a. 백엔드
+### b-1. 백엔드
 | Category             | Tool/Library              | Version |
 |----------------------|---------------------------|---------|
 | Java                 | JDK                       | 1.8     |
@@ -150,9 +147,9 @@ Ecommerce MVP
 |                      | VSC Plugin - ERD Editor|         |
 
 
-## b. 프론트엔드
+### b-2. 프론트엔드
 
-### b-1. ReactJs.Ver
+#### b-2-1. ReactJs.Ver
 | Category             | Tool/Library           | Version |
 |----------------------|------------------------|---------|
 | Language             | Typescript             | ^5.2.2  |
@@ -168,7 +165,7 @@ Ecommerce MVP
 |                      | react-icons            | ^4.12.0 |
 | Design               | figma                  |         |
 
-### b-2. NextJs.Ver
+#### b-2-2. NextJs.Ver
 | Category             | Tool/Library           | Version |
 |----------------------|------------------------|---------|
 | Language             | Typescript             | ^5.2.2  |
@@ -183,24 +180,48 @@ Ecommerce MVP
 | Design               | figma                  |         |
 
 
+# B. Architecture
 
-# C. AWS architecture
+## a. AWS architecture
 ![](documentation/images/aws-architecture-2.png)
 
 
-# D. ERD diagram
-## a. 정규화 버전 ERD
+## b. ERD diagram
+### b-1. 정규화 버전 ERD
 ![](documentation/images/erd.png)
 
-## b. 반정규화 버전 ERD
+### b-2. 반정규화 버전 ERD
 ![](documentation/images/반정규화된_ERD.png)
 
 VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 열 수 있다.
 
 
+## c. wireframe
+
+![](./documentation/architecture/wireframe/wireframe.svg)
+
+### c-1. wireframe -> home
+
+![](./documentation/architecture/wireframe/outcome/ecommerce_index_page.png)
+
+### c-2. wireframe -> category
+![](./documentation/architecture/wireframe/outcome/ecommerce_product_list_page.png)
 
 
-# E. 기술적 도전 - Backend
+### c-3. wireframe -> product
+![](./documentation/architecture/wireframe/outcome/ecommerce_product_page.png)
+
+
+### c-4. wireframe -> register
+![](./documentation/architecture/wireframe/outcome/ecommerce_register_login_page.png)
+
+
+### c-5. wireframe -> login
+![](./documentation/architecture/wireframe/outcome/ecommerce_register_login_page.png)
+
+
+
+# C. 기술적 도전 - Backend
 
 ## a. DB 부하를 낮추기 위한 cache 도입기
 
@@ -459,7 +480,6 @@ https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95
 https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95f366c/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserService.java#L168-L184
 
 
-## b. ?
 
 
 ## c. spring batch
@@ -704,7 +724,7 @@ https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be74
 https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L65-L178
 
 
-# F. 기술적 도전 - Database
+# D. 기술적 도전 - Database
 
 ## a. 정규화
 
@@ -803,337 +823,50 @@ join 성능은 데이터 사이즈가 커질수록 안좋아진다.
 
 ## b. 반정규화
 
-### 1. 정규화 -> 반정규화
-before)
+### 1. 문제
+
+정규화된 버전으로 부하테스트 해봤는데 성능이 너무 안나왔다.
+
+잘게 쪼개놔서 join을 많이해야 하니까 DB CPU에 부하가 금방 올라간 것으로 보인다.
+
+반정규화 해서 join과 FK_insert 비용을 줄여보자.
+
+
+### 2. 해결책
+
+
+#### before) 정규화 버전
 ![](documentation/images/erd.png)
 
-after)
+#### after) 반정규화 버전
 ![](documentation/images/반정규화된_ERD.png)
 
-1. `option_json`, `discount_json`, `order_item_json`은 별도 테이블이 아닌 product table의 json field를 구체적으로 적은 것이다.
-2. FK도 성능향상 목적으로 모두 제거
-3. db에서는 최대한 index타서 최소량만 i/o 해오는 식으로 짠다(join X). 나머지 데이터 조립/가공은 서버에서 한다.
-
-```json
-[
-	{
-		"item_id": 1,
-		// ... 상품 정보 필드
-
-		"options": [
-			{"option_id": 1, "name": "Color", "value": "Red"},
-			{"option_id": 2, "name": "Size", "value": "Large"}
-		],
-		"discounts": [
-			{"discount_id": 1, "type": "PERCENTAGE", "value": 10, "start_date": "2023-01-01", "end_date": "2023-12-31"}
-		]
-	},
-	// 다른 Product
-]
-```
-
-원래 정규화된 ERD였다면 `PRODUCT, PRODUCT_ITEM, OPTION, DISCOUNT` 테이블 4개를 조인해서 가져왔었다면,
-
-비정규화된 ERD에서는 `OPTION`, `DISCOUNT`를 json타입으로 넣고, 통째고 가져와서 백엔드에서 파싱하는 식으로 처리한다.
-
-여러 테이블 join에서 오는 cost 줄여준다.\
-테이블 사이즈가 커질수록 효과적이다.
+1. db에서는 join 없이 최대한 index타서 최소량만 i/o 해오는 식으로 짠다. 나머지 데이터 조립/가공은 서버에서 한다.
+	1. ex) 기존에 option, discount 테이블을 json화 시켜서 컬럼으로 밀어넣었다.
+	2. 원래는 여러번 join해야 했다면, 지금은 하나의 row를 i/o한 후, json을 파싱해서 사용한다.
+2. FK는 성능향상 목적으로 모두 제거했다.
 
 
-### 2. 성능테스트 (100~800 RPS)
+### 3. 성능테스트로 검증해보자 (100~800 RPS)
 
-#### 2-1. 실험 조건
+#### 3-1. 실험 조건
 1. ec2, rds 둘다 2 core 4GiB RAM
 2. table size: user = 1000, product = 10000, order = 5000
 3. table rows ratio -> user:product:order = 1 : 10 : 5
 4. http request read:write ratio: 9:1
 
-
-#### 2-2. RDS CPU usage 메트릭 해석시 주의점
-
-PMM에서 제공하는 CPU usage 메트릭이 총 7개 이다.
-1. `{node_name="ecommerce-db-instance"}`: MySQL 인스턴스의 전체 CPU 사용률
-2. `nice`: 낮은 우선순위로 실행되는 프로세스의 CPU 사용률
-3. `system`: 시스템 프로세스의 CPU 사용률
-4. `wait`: I/O 대기 시간의 CPU 사용률
-5. `irq`: 하드웨어 인터럽트 처리에 사용된 CPU 시간
-6. `user`: 사용자 프로세스의 CPU 사용률
-7. `steal`: 가상화 환경에서 다른 VM에 의해 "훔쳐진" CPU 시간
-
-처음에 잘 모를 땐 'nice'라고 써진걸 기준으로 실험결과를 기록했는데,\
-나중에 알고보니 {node_name="ecommerce-db-instance"}가 전체 cpu usage를 종합한거라더라.
-
-그런데 막상 실험해보니 저 {node_name="ecommerce-db-instance"} 에 나머지 지표까지 모두 더한게 실제 cpu usage인 것으로 추측된다.\
-서버 터지는 구간이 저 모든 cpu usage 합산이 90% 넘어가는 지점이더라.
-
-
-## 100 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 10% | 7.1% |
-| Load Average | 0.2 | 0.1 |
-| Heap Used | 8.73% | N/A |
-| Non-Heap Used | 12.41% | N/A |
-| Last HTTP Latency | 88ms | 5ms |
-| Last Max Latency | N/A | 290ms |
-| Errors | None | None |
-| **RDS** |
-| CPU Usage | 4.2% | 3.1% (node: 5.78%, total: ~20%) |
-| Load Average | 0.3 | 0.39 |
-| Memory Availability | 71.35% | 67% |
-| QPS | 361 | 285 |
-| TPS | 280 | 163 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 20k ops/s | 10k ops/s |
-| read_next | 1-2k ops/s | 2.1 ops/s |
-| read_key | 1-2k ops/s | 115 ops/s |
-| write | 1-2k ops/s | 162 ops/s |
-| external_lock | N/A | 252 ops/s |
-| **Network Traffic** |
-| Inbound | 250 kb/s | 117 kb/s |
-| Outbound | 610 kb/s | 439 kb/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most queries < 20ms, longest 21ms |
-
-## 200 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 20% | 14.3% |
-| Load Average | 0.6 | 0.6 |
-| Heap Used | 13.21% | N/A |
-| Non-Heap Used | 12.43% | N/A |
-| Avg Latency | 8ms | 5ms |
-| Max Latency | 500ms | 292ms |
-| Errors | None | None |
-| **RDS** |
-| CPU Usage | 8.6% | 5.3% (node: 10.73%, total: ~25%) |
-| Load Average | 0.41 | 0.36 |
-| Memory Availability | 71.16% | 67% |
-| QPS | 704 | 576 |
-| TPS | 577 | 324 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 40k ops/s | 18.5k ops/s |
-| read_next | 3-6k ops/s | 4.5 ops/s |
-| read_key | 3-6k ops/s | 225 ops/s |
-| write | 3-6k ops/s | 172 ops/s |
-| external_lock | N/A | 534 ops/s |
-| **Network Traffic** |
-| Inbound | 596 kb/s | 234 kb/s |
-| Outbound | 1.5 MB/s | 1.03 MB/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
-
-## 300 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 30% | 23.4% |
-| Load Average | 0.8 | 0.8 |
-| Heap Used | 28.13% | N/A |
-| Non-Heap Used | 12.73% | N/A |
-| Last Avg Latency | 12.7ms | 6ms |
-| Last Max Latency | 1.14s | 276ms |
-| Errors | None reported | None |
-| **RDS** |
-| CPU Usage | 14.6% | 7.73% (node: 12.05%, total: ~30%) |
-| Load Average | 1.77 | 0.57 |
-| Memory Availability | 70.80% | 67% |
-| QPS | 1080 | 836 |
-| TPS | 855 | 483 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 63.9k ops/s | 29.4k ops/s |
-| read_next | 5-13k ops/s | 7.6k ops/s |
-| read_key | 5-13k ops/s | 343 ops/s |
-| write | 5-13k ops/s | 182 ops/s |
-| external_lock | N/A | 748 ops/s |
-| **Network Traffic** |
-| Inbound | 888 kb/s | 345 kb/s |
-| Outbound | 2.94 MB/s | 1.76 MB/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
-
-## 400 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 51% | 33.4% |
-| Load Average | 2.3/2.0 | 1.0 |
-| Heap Used | 41.83% | N/A |
-| Non-Heap Used | 12.66% | N/A |
-| Last Avg Latency | 10.9ms | 5ms |
-| Last Max Latency | 664ms | 215ms |
-| Errors | None reported | None |
-| **RDS** |
-| CPU Usage | 21.4% | 11.9% (node: 18.78%, total: ~43%) |
-| Load Average | 1.38 | 0.41 |
-| Memory Availability | 70.50% | 66% |
-| QPS | 1.47k | 1.16k |
-| TPS | 1.17k | 657 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 83.1k ops/s | 35.2k ops/s |
-| read_next | 18.7k ops/s | 12.9k ops/s |
-| read_key | 15.3k ops/s | 449 ops/s |
-| write | 500 ops/s | 269 ops/s |
-| external_lock | N/A | 954 ops/s |
-| **Network Traffic** |
-| Inbound | 1.18 MB/s | 465 kb/s |
-| Outbound | 5.71 MB/s | 3.01 MB/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
-
-## 500 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 73% | 43.0% |
-| Load Average | 4.3/2.0 | 1.4 |
-| Heap Used | 40.83% | N/A |
-| Non-Heap Used | 12.66% | N/A |
-| Last Avg Latency | 10.9ms | 6ms |
-| Last Max Latency | 664ms | 285ms |
-| Errors | None reported | None |
-| **RDS** |
-| CPU Usage | 30.3% | 15.9% (node: 24.3%, total: ~50%) |
-| Load Average | 0.63 | 0.76 |
-| Memory Availability | 70.24% | 66% |
-| QPS | 1.78k | 1.44k |
-| TPS | 1.41k | 778 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 101.1k ops/s | 45.2k ops/s |
-| read_next | 48k ops/s | 19.4k ops/s |
-| read_key | 33k ops/s | 551 ops/s |
-| write | 640 ops/s | 201 ops/s |
-| external_lock | N/A | 1.21k ops/s |
-| **Network Traffic** |
-| Inbound | 1.48 MB/s | 577 kb/s |
-| Outbound | 9.24 MB/s | 4.65 MB/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
-
-## 600 RPS and above
-
-| Metric | Normalized Version (600+ RPS) | Denormalized Version (600 RPS) |
-|--------|------------------------------|--------------------------------|
-| **EC2** |
-| CPU Usage | 97% | 56.2% |
-| Load Average | 6.6/2.0 | 2.3 |
-| Heap Used | 40.83% | N/A |
-| Non-Heap Used | 12.66% | N/A |
-| Last Avg Latency | 10.9ms | 8s |
-| Last Max Latency | 664ms | 374ms |
-| Errors | None reported | None |
-| **RDS** |
-| CPU Usage | 39.1% | 20.0% (node: 28%, total: ~70%) |
-| Load Average | 2.27 | 3.13 |
-| Memory Availability | 69% | 66% |
-| QPS | 2.04k | 1.75k |
-| TPS | 1.6k | 985 |
-| **MySQL Handlers Metric** |
-| read_rnd_next | 111.1k ops/s | 56.3k ops/s |
-| read_next | 65k ops/s | 27.4k ops/s |
-| read_key | 43k ops/s | 671 ops/s |
-| write | 712 ops/s | 211 ops/s |
-| external_lock | N/A | 1.45k ops/s |
-| **Network Traffic** |
-| Inbound | 1.71 MB/s | 682 kb/s |
-| Outbound | 12.56 MB/s | 6.93 MB/s |
-| **Query Analysis** |
-| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
-
-
-## 700 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | N/A (> 97% at 600 RPS) | 70.9% |
-| Load Average | N/A (> 6.6 at 600 RPS) | 4.9 |
-| Heap Used | N/A | N/A |
-| Non-Heap Used | N/A | N/A |
-| Last Avg Latency | N/A | 10ms |
-| Last Max Latency | N/A | 2.23s |
-| Errors | N/A | None |
-| Actual RPS | N/A (< 568 at 600 RPS) | 680-690 |
-| **RDS** |
-| CPU Usage | N/A (> 39.1% at 600 RPS) | 25.3% (node: 32.55%, total: ~75%) |
-| Load Average | N/A (> 2.27 at 600 RPS) | 1.16 |
-| Memory Availability | N/A (< 69% at 600 RPS) | 65% |
-| QPS | N/A (> 2.04k at 600 RPS) | 1.97k |
-| TPS | N/A (> 1.6k at 600 RPS) | 1.095k |
-| **MySQL Handlers Metric** |
-| read_rnd_next | N/A (> 111.1k ops/s at 600 RPS) | 64.47k ops/s |
-| read_next | N/A (> 65k ops/s at 600 RPS) | 40.9k ops/s |
-| read_key | N/A (> 43k ops/s at 600 RPS) | 775 ops/s |
-| write | N/A (> 712 ops/s at 600 RPS) | 220 ops/s |
-| external_lock | N/A | 1.64k ops/s |
-| **Network Traffic** |
-| Inbound | N/A (> 1.71 MB/s at 600 RPS) | 796 kb/s |
-| Outbound | N/A (> 12.56 MB/s at 600 RPS) | 9.96 MB/s |
-| **Query Analysis** |
-| Query Duration | N/A (All queries < 70ms at 600 RPS) | Most < 3ms, longest 20ms |
-
-## 800 RPS
-
-| Metric | Normalized Version | Denormalized Version |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | N/A (> 97% at 600 RPS) | 92.9% |
-| Load Average | N/A (> 6.6 at 600 RPS) | 9.6 |
-| Heap Used | N/A | N/A |
-| Non-Heap Used | N/A | N/A |
-| Last Avg Latency | N/A | 52.4ms |
-| Last Max Latency | N/A | 1.29s |
-| Errors | N/A | None |
-| Actual RPS | N/A (< 568 at 600 RPS) | 750-770 |
-| **RDS** |
-| CPU Usage | N/A (> 39.1% at 600 RPS) | 32.17% (node: 39.48%, total: ~95%) |
-| Load Average | N/A (> 2.27 at 600 RPS) | 1.99 |
-| Memory Availability | N/A (< 69% at 600 RPS) | 65% |
-| QPS | N/A (> 2.04k at 600 RPS) | 2.19k |
-| TPS | N/A (> 1.6k at 600 RPS) | 1.2k |
-| **MySQL Handlers Metric** |
-| read_rnd_next | N/A (> 111.1k ops/s at 600 RPS) | 67.5k ops/s |
-| read_next | N/A (> 65k ops/s at 600 RPS) | 52.6k ops/s |
-| read_key | N/A (> 43k ops/s at 600 RPS) | 848 ops/s |
-| write | N/A (> 712 ops/s at 600 RPS) | 240 ops/s |
-| external_lock | N/A | 1.82k ops/s |
-| **Network Traffic** |
-| Inbound | N/A (> 1.71 MB/s at 600 RPS) | 891 kb/s |
-| Outbound | N/A (> 12.56 MB/s at 600 RPS) | 13.5 MB/s |
-| **Query Analysis** |
-| Query Duration | N/A (All queries < 70ms at 600 RPS) | Most < 3ms, longest 20ms |
-
-
-## 반정규화 성능테스트 결과(monitoring app version)
-
+#### 3-2. 반정규화 성능테스트 결과
 
 ![](./documentation/images/3_반정규화_1000_ec2_ver2_after_orderby_index.png)
 
 ![](./documentation/images/3_반정규화_1000_rds_ver2_after_orderby_index.png)
 
 
-### 3. 성능테스트 결과 비교
+### 4. 성능테스트 결과
 
-같은 스펙의 ec2, rds에서, 같은 테이블 사이즈에 동일한 load test를 했을 때,\
-정규화 버전의 한계는 560 RPS, 비정규화 버전의 한계는 750 RPS 정도 된다.
+반정규화만 잘 하고, FK만 안넣어도, 성능차이가 어마어마하게 난다는걸 알게됬다.
 
-
-정규화 버전에 560RPS일 때, 2k QPS정도 나온다.\
-2k QPS는 비정규화 버전에서는 700 RPS에서 나오는 수치다.\
-join할 때 쿼리 한번할껄 여러번 쪼개서 하기 때문에 QPS도 많이 찍히고\
-join(nested loop join, hash join)할 때 드는 cpu cost가 더 많이 드는 듯 하다.
-
-실험한 테이블 사이즈가 user:product:order = 1000:10000:5000 인데,\
-테이블 사이즈가 10만, 100만 으로 커질 수록\
-join cost이 늘어나기 때문에 정규화, 비정규화 성능 격차는 더 커질 것으로 예상된다.
-
+좀더 자세한 정규화 vs 반정규화 성능비교는 [부하 테스트](#e-부하-테스트)에 기술했다.
 
 
 
@@ -1234,9 +967,11 @@ https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be74
 
 
 
-## d. sql tuning 1 - index 튜닝
+## d. SQL tuning
 
-### 1. 문제
+### a. index 튜닝
+
+#### a-1. 문제
 동일 조건에서 정규화 vs 반정규화의 성능차이가 얼마나 날까 실험중이었는데,
 
 반정규화 DB의 cpu usage가 정규화보다 더 높았다?!
@@ -1267,7 +1002,7 @@ cpu usage가 12.3%가 더 높다?
 (심지어 이 점유율도 적게 잡힌것이다. 나중에 알았는데 pmm에 cpu usage 지표는 {node_name="ecommerce-db-instance"} 이걸 읽거나 전체 usage를 합친 값을 읽었어야 했는데 이땐 nice라고 써진 지표 기준으로 기록함)
 
 
-### 2. 문제 원인 분석
+#### a-2. 문제 원인 분석
 
 ![](./documentation/images/sql-tuning-index-1.png)
 
@@ -1286,12 +1021,12 @@ pmm query analyzer에서 latency 순으로 정렬하니까
 인덱스를 안타서 엄청 비효율적이다라고 해석.
 
 
-### 3. 해결방안
+#### a-3. 해결방안
 ![](./documentation/images/sql-tuning-index-3.png)
 
 where절에 조건걸리는 필드에 인덱스를 걸어준다.
 
-### 4. 개선된 결과
+#### a-4. 개선된 결과
 ![](./documentation/images/sql-tuning-index-4.png)
 
 1. latency가 75ms -> 21ms 로 줄었고,
@@ -1300,9 +1035,9 @@ where절에 조건걸리는 필드에 인덱스를 걸어준다.
 4. filtered 100% -> 필터율 100%이니까 힘들게 io한걸 버리지 않는다는 뜻
 
 
-## e. sql tuning 2 - order by 튜닝
+### b. order by 튜닝
 
-### 1. 문제
+#### b-1. 문제
 
 index tuning했으니까
 
@@ -1312,7 +1047,7 @@ index tuning했으니까
 
 ?
 
-### 2. 문제 원인 분석
+#### b-2. 문제 원인 분석
 정규화 버전 PMM 지표와 반정규화 버전 PMM 지표 비교해봤는데
 
 ![](./documentation/images/sql-tuning-orderby-1.png)
@@ -1331,7 +1066,7 @@ aws-rds에 ssl 접속해서 sort 빈도수가 가장 많은 순으로 쿼리 히
 
 
 
-### 3. 해결방안
+#### b-3. 해결방안
 저 쿼리 담당하는 repository, service에서는 문제가 없었는데
 
 controller에서 Pageable 객체 만들 때 sort 하는 코드가 있었다.
@@ -1348,7 +1083,7 @@ Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
 
 
-### 4. 개선된 결과
+#### b-4. 개선된 결과
 ![](./documentation/images/sql-tuning-orderby-4.png)
 
 기존 order by 쓰던 쿼리가 안잡히는 모습이다.
@@ -1359,7 +1094,7 @@ Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 부하 테스트를 해봐도 이젠 RPS, QPS에 비례해서 Sorts ops/s가 올라가질 않는걸 확인할 수 있다.
 
 
-### 5. 느낀점
+#### b-5. 느낀점
 
 인덱스 하나, order by 하나
 
@@ -1380,33 +1115,33 @@ PMM에 Mysql Sorts 메트릭에 잡혀서 망정이지 아니었으면...
 
 
 
-## f. sql tuning 3 - 통계 쿼리 튜닝
+### c. 통계 쿼리 튜닝
 [c. 통계 쿼리](#c-통계-쿼리)를 튜닝해보자.
 
-### 1. before tuning
+#### c-1. before tuning
 [c. 통계 쿼리](#c-통계-쿼리)"는 크게 3덩이의 subquery로 나뉜다.
 1. tmp1
 2. a
 3. b
 
-#### 1-1. subquery 'a' 실행
+##### c-1-1. subquery 'a' 실행
 ![](documentation/images/sql-tuning-before-3.png)
 이 부분은 가장 처음에 실행되는 쿼리로, 'a' subquery이다.
 
 문제점: 1000개 row가 있는 order 테이블을 fullscan 하는걸 볼 수 있다.
 
-#### 1-2. subquery 'tmp1' 실행
+##### c-1-2. subquery 'tmp1' 실행
 ![](documentation/images/sql-tuning-before-4.png)
 
 문제점: where절 조건이 인덱스를 타지 않아서 풀스캔 한다.
 
 
-#### 1-3. subquery 'b' 실행
+##### c-1-3. subquery 'b' 실행
 ![](documentation/images/sql-tuning-before-5.png)
 문제점: **where절 조건이 인덱스를 안타서 풀스캔을 한다.**
 
 
-#### 1-4. query statistics
+##### c-1-4. query statistics
 ![](documentation/images/sql-tuning-before-1.png)
 
 총 비용(mysql workbench의 cost 계산 툴 기준): 170,763
@@ -1418,9 +1153,9 @@ PMM에 Mysql Sorts 메트릭에 잡혀서 망정이지 아니었으면...
 - 해결책
 	- where절에 인덱스를 태워서 성능튜닝을 해보자..!
 
-### 2. WHERE절 조건의 ORDER_DATE 컬럼에 인덱스 적용하기
+#### c-2. WHERE절 조건의 ORDER_DATE 컬럼에 인덱스 적용하기
 
-#### 2-1. 인덱스 만들고 적용하기
+##### c-2-1. 인덱스 만들고 적용하기
 
 1. 인덱스를 만들고,
 ```java
@@ -1444,7 +1179,7 @@ INNER JOIN `ORDER` o2 USE INDEX (idx_order_date) ON oi2.ORDER_ID = o2.ORDER_ID
 WHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
 ```
 
-#### 2-2. 결과
+##### c-2-2. 결과
 ![](documentation/images/sql-tuning-after-4.png)
 
 여전히 subquery해서 나온 결과물을 담은 tmp table을 두번 full scan하긴 하지만,\
@@ -1476,9 +1211,9 @@ WHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
 왜 nested join loop에서 read하는 rows가 늘어나서 결과적으로는 성능이 떨어졌을까?
 
 
-#### 2-3. 실행계획 뜯어보기
+##### c-2-3. 실행계획 뜯어보기
 
-##### 2-3-1. date 인덱스 타기 전
+###### c-2-3-1. date 인덱스 타기 전
 ![](documentation/images/sql-tuning-before-1.png)
 id6 부분이 subquery 'a' 부분이다.
 
@@ -1529,7 +1264,7 @@ order, order item, product option variation 테이블만 떼어내서 index 없�
 
 
 
-##### 2-3-2. date 인덱스 태운 이후
+###### c-2-3-2. date 인덱스 태운 이후
 ![](documentation/images/sql-tuning-after-4.png)
 이번에도 id6가 subquery 'a'에 해당한다.
 
@@ -1576,7 +1311,7 @@ WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
 	1. **mysql workbench에 visual explain에서 나오는 rows read는 추정치일 뿐이라 그대로 믿으면 안된다.**
 	2. 실제 실행계획 수치는 mysql console에서 commandline인 'explain analyze'을 쳐서 실측치를 봐야한다.
 
-#### 2-4. 검증
+##### c-2-4. 검증
 [c. 통계 쿼리](#c-통계-쿼리)를 다시 돌리되,\
 데이터 사이즈를 키워서 index 타는 쿼리와 타지 않는 쿼리가 시간차가 얼마나 나는지 보자.
 
@@ -1590,17 +1325,17 @@ product: 10000 rows
 productItem: 30000 rows
 productOptionVariation: 30000 rows
 ```
-##### case1) where절에 index를 안태운 쿼리: 1027ms
+###### case1) where절에 index를 안태운 쿼리: 1027ms
 ![](documentation/images/sql-tuning-after-5.png)
 
 
-##### case2) where절에 인덱스를 태운 쿼리: 572ms
+###### case2) where절에 인덱스를 태운 쿼리: 572ms
 ![](documentation/images/sql-tuning-after-6.png)
 
 
 하나의 컬럼에 index를 태웠는지 여부가 약 455ms latency 차이를 보여준다.
 
-## g. bulk insert
+## e. bulk insert
 
 ### 1. 문제
 소규모 데이터 핸들링은, 어떤 DBMS를 사용하던, 어떻게 SQL을 짜던 큰 문제없이 처리 가능한데,\
@@ -2677,7 +2412,7 @@ disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o
 
 
 
-# G. 기술적 도전 - Cloud
+# E. 기술적 도전 - Cloud
 
 ## a. docker-compose로 개발환경 구성
 
@@ -3898,10 +3633,11 @@ Heap 영역 메모리와 GC가 얼마나 일어나나 확인하기 위해 관련
 3. 위 두 방법론을 섞어 SRE 관점으로 해석한 4 golden signals
 
 
+## e. 부하테스트
 
-## e. 300 RPS 부하 테스트
+### a. 300 RPS 부하 테스트
 
-### 0. RPS 별 DAU 예측
+#### a-1. RPS 별 DAU 예측
 
 목표: RPS당 피크 시간대 유저와 DAU 계산 in ecommerce app
 
@@ -3939,7 +3675,7 @@ html 페이지 용량까지 고려하면
 ...에서 남는 9만명은 특종기사 같은거 떴을 때 갑작스럽게 몰리는 유저인 것으로 보인다.
 
 
-### 1. 실험 방향 설정
+#### a-2. 실험 방향 설정
 
 1. 실험 목표
 	1. failover률이 1% 미만이면서
@@ -3988,7 +3724,7 @@ html 페이지 용량까지 고려하면
 	- k6
 
 
-### 2. AWS 아키텍처
+#### a-3. AWS 아키텍처
 
 ![](documentation/images/aws-architecture-2.png)
 
@@ -4015,7 +3751,7 @@ html 페이지 용량까지 고려하면
 	- 1개 노드
 
 
-### 3. 테스트 결과
+#### a-4. 테스트 결과
 
 ```
  data_received..................: 12 GB  10 MB/s
@@ -4041,15 +3777,15 @@ html 페이지 용량까지 고려하면
 	- max_req_duration = 2.4s (Q. full gc 때문?)
 2. failed = 0%
 
-### 4. 모니터링
+#### a-5. 모니터링
 
-#### 4-1. Load Balancer
+##### a-5-1. Load Balancer
 ![](documentation/images/2024-02-06-04-02-20.png)
 
 ![](documentation/images/2024-02-06-04-02-31.png)
 
 
-#### 4-2. EC2
+##### a-5-2. EC2
 case1) 300 RPS
 
 ![](documentation/images/2024-02-05-20-11-45.png)
@@ -4077,7 +3813,7 @@ old gen에서 메모리가 약간씩 오르다가 19:57분경 한번 뚝 떨어�
 
 major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하다.
 
-#### 4-3. RDS
+##### a-5-3. RDS
 ![](documentation/images/2024-02-05-20-13-03.png)
 
 1. DatabaseConnections
@@ -4097,7 +3833,7 @@ major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하�
 	- 새 프로세스를 만들 기 위한 사용가능한 RAM 인데, 렘은 넉넉한 것으로 보인다.
 
 
-### 5. monthly cost estimation
+#### a-6. monthly cost estimation
 - total monthly cost(load balancer 제외한 경우)
 	1. on-demand: $268.33/month
 	2. 인스턴스 절감형 플랜: $194.08/month
@@ -4141,10 +3877,10 @@ major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하�
 		- 13.3Mb/s -> 47.88 Gb/h
 
 
-## f. 1000 RPS 부하 테스트
+### b. 1000 RPS 부하 테스트
 
 
-### 1. EC2 스펙 정하기
+#### b-1. EC2 스펙 정하기
 
 1. core 갯수 정하기
 	- 2 CPU core가 300 RPS를 CPU 점유율 최대 88%로 버텼으니까, 그의 2배인 4코어로는 600 RPS를 버틸 수 있고, 그의 2배인 8 core정도는 되어야 안정적으로 1000 RPS를 버티지 않을까?
@@ -4169,7 +3905,7 @@ major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하�
 	- 8 core, 32GiB+ RAM, aws graviton processor, ebs 지원, 네트워크 대역폭 15Giga Bit, on-demand cost $0.3264 hourly
 
 
-### 2. RDS 스펙 정하기
+#### b-2. RDS 스펙 정하기
 
 1. 코어 갯수 정하기
 	- 1000 TPS를 요청하는 쿼리가 5개의 테이블을 join하는 쿼리인데, 5개 테이블 조인 외에, 별도의 CPU 연산을(ex. 정렬 등) 요구하지 않기 때문에, RDS 서버는 코어의 갯수 보다는, RAM이나 max_connection을 더 신경쓰면 된다고 보인다.
@@ -4197,23 +3933,23 @@ major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하�
 	- 서버 성능이 부족하다 판단하면 8 코어 32 GiB RAM 으로 올리되, 현 프로젝트의 http response에 담기는 문자열의 양이 그리 많지 않으므로, throughput이 적기 때문에 10.0 Gigabit network을 써도 된다고 판단하여 db.m6g.xlarge 를 선택한다.
 
 
-### 3. 시행착오 과정
+#### b-3. 시행착오 과정
 
 1. 1000 RPS load test한 결과 latency가 4초대가 나왔다.
 2. 병목의 90%는 database에서 일어난다길래, RDS를 4core -> 8core 늘렸는데도 매우 느렸다.
 3. RDS monitoring metrics에 database connections을 2000개+ 중에 10개밖에 안쓰길래, jdbc connection pool size의 최솟값 & 최댓값을 코어수 * 2 + HDD수 해서 총 17로 지정했는데도, 성능이 오히려졌다.
 4. 설마 인터넷 속도 문제인가 싶어서 40 Mbps 인터넷에서 440Mbps 인터넷으로 바꾼 후, 부하테스트를 했는데 latency가 500ms 보다 빨리 측정되었다.
 
-### 4. 부하테스트를 거는 client의 인터넷속도 역시 중요하다.
+#### b-4. 부하테스트를 거는 client의 인터넷속도 역시 중요하다.
 
 이런저런 삽질 결과, 인터넷 속도 차이가 부하테스트 결과에 큰 영향을 미친다는걸 발견했다.
 
 동일 조건에서, 인터넷 속도가 46 Mbps일 땐 latency가 4.84s, 83 Mbps일 땐 2.49s가 나왔다.
 
 
-#### 인터넷 속도 별 부하 테스트 latency 비교
+##### 인터넷 속도 별 부하 테스트 latency 비교
 
-##### case1) 인터넷 속도 46 Mbps 에서는 latency(http_req_duration)가 4.84s
+###### case1) 인터넷 속도 46 Mbps 에서는 latency(http_req_duration)가 4.84s
 
 ```
 data_received..................: 7.3 GB 6.1 MB/s
@@ -4236,7 +3972,7 @@ vus_max........................: 1000   min=1000     max=1000
 ```
 
 
-##### case2) 인터넷 속도가 83 Mbps에서 latency는 2.49s.
+###### case2) 인터넷 속도가 83 Mbps에서 latency는 2.49s.
 
 ```
 data_received..................: 12 GB  10 MB/s
@@ -4258,7 +3994,7 @@ vus_max........................: 1000   min=1000     max=1000
 ```
 
 
-##### case3) 인터넷 속도가 490 Mbps에서는 latency가 480.41ms.
+###### case3) 인터넷 속도가 490 Mbps에서는 latency가 480.41ms.
 
 ```
 data_received..................: 29 GB  24 MB/s
@@ -4280,7 +4016,7 @@ vus_max........................: 1000   min=1000     max=1000
 ```
 
 
-##### case4) 인터넷 속도가 490 Mbps에서 로드 테스트를 제외한 다른 모든 프로그램 종료한 경우
+###### case4) 인터넷 속도가 490 Mbps에서 로드 테스트를 제외한 다른 모든 프로그램 종료한 경우
 ```
 data_received..................: 38 GB  32 MB/s
 data_sent......................: 119 MB 99 kB/s
@@ -4305,11 +4041,11 @@ latency만 365ms 차이나고, 서버로부터 받은 response 숫자만 약 20�
 
 
 
-### 5. monitoring metrics
+#### b-5. monitoring metrics
 
 인터넷 속도를 440 Mbps로 바꾼 후 테스트 결과
 
-#### 5-1. aws instance specs
+##### b-5-1. aws instance specs
 
 - network load balancer
 - ec2 (API server)
@@ -4338,7 +4074,7 @@ latency만 365ms 차이나고, 서버로부터 받은 response 숫자만 약 20�
 	- RAM = 1.37 GiB
 
 
-#### 5-2. k6 test result
+##### b-5-2. k6 test result
 ```
 data_received..................: 38 GB  32 MB/s
 data_sent......................: 119 MB 99 kB/s
@@ -4394,7 +4130,7 @@ vus_max........................: 1000   min=1000     max=1000
 - 신기한점은 1000 RPS인데도 10 connection 밖에 쓰지 않는다는 것이다.
 	- 그도 그럴 것이, 부하테스트를 건 쿼리의 실행 속도 측정 결과 5ms 이내로 나오기 때문에, isolation level을 높게 설정해서 read에 락을 걸지 않은 이상, 1 connection당 1초에 200번 쿼리 수행이 가능하고, 5 connection만 있으면 1초에 1000 쿼리를 수행 가능하다는 결론이 나온다.
 
-#### 5-5. Q. 왜 8분경에 1000RPS에서 700RPS로 요청량이 감소했을까?
+##### b-5-5. Q. 왜 8분경에 1000RPS에서 700RPS로 요청량이 감소했을까?
 
 ![](documentation/images/2024-03-08-21-06-06.png)
 
@@ -4431,7 +4167,7 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 따라서 부하테스트를 거는 pc또한 상당한 컴퓨터 자원을 요구하므로,\
 대용량 부하테스트시, 하나의 로컬pc에서 하는게 아니라, 여러개의 ec2 인스턴스를 만들어 나눠서 부하테스트를 진행해야 하는 것으로 보인다.
 
-### 6. monthly cost estimation
+#### b-6. monthly cost estimation
 - architecture
 	- ec2 1개, rds 1개, elasticache 1개에 대한 비용이다.
 	- load balancer 비용이 예상외로 상당했기 때문에, 비용을 줄여보고자 간소화 하였다.
@@ -4498,7 +4234,7 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 
 
-### 7. 느낀점
+#### b-7. 느낀점
 
 부하테스트 시, 처음에는 서버 처리 속도에만 관심이 있었지, 다른 네트워크 지표들은 관심이 없었다.\
 예를들어, 'TCP connection 수립은 빨라서 무시해도 되겠지?' 라는 생각이나,\
@@ -4514,9 +4250,320 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 
 
-## g. 비용을 고려한 scale out 전략
+## c. 정규화 -> 반정규화로 변경 후 부하테스트 실험
 
-1. 성능테스트를 할 수록 느끼는건 **쿼리만 신경써서 짜도**([ex1](#d-sql-tuning-1---index-튜닝), [ex2](#e-sql-tuning-2---order-by-튜닝)) 서버 스펙에 들어가는 돈을 많이 아낄 수 있다는 것이다.
+### c-1. 문제점
+
+다른 개발자의 부하테스트 글 읽었는데,
+
+훨씬 저렴한 스펙의 ec2,rds로 더 많은 부하를 견뎠다.
+
+왜지? join 연산 여러번 해서 그런가?
+
+
+### c-2. 실험 조건
+1. ec2, rds 둘다 2 core 4GiB RAM
+2. table size: user = 1000, product = 10000, order = 5000
+3. table rows ratio -> user:product:order = 1 : 10 : 5
+4. http request read:write ratio: 9:1
+
+
+#### c-2-before. 정규화 버전
+![](documentation/images/erd.png)
+
+#### c-2-after. 반정규화 버전
+![](documentation/images/반정규화된_ERD.png)
+
++FK도 삭제
+
+### c-3. 성능테스트로 검증해보자 (100~800 RPS)
+
+![](./documentation/images/3_반정규화_1000_ec2_ver2_after_orderby_index.png)
+
+![](./documentation/images/3_반정규화_1000_rds_ver2_after_orderby_index.png)
+
+#### c-3-1. RDS CPU usage 메트릭 해석시 주의점
+
+PMM에서 제공하는 CPU usage 메트릭이 총 7개 이다.
+1. `{node_name="ecommerce-db-instance"}`: MySQL 인스턴스의 전체 CPU 사용률
+2. `nice`: 낮은 우선순위로 실행되는 프로세스의 CPU 사용률
+3. `system`: 시스템 프로세스의 CPU 사용률
+4. `wait`: I/O 대기 시간의 CPU 사용률
+5. `irq`: 하드웨어 인터럽트 처리에 사용된 CPU 시간
+6. `user`: 사용자 프로세스의 CPU 사용률
+7. `steal`: 가상화 환경에서 다른 VM에 의해 "훔쳐진" CPU 시간
+
+처음에 잘 모를 땐 'nice'라고 써진걸 기준으로 실험결과를 기록했는데,\
+나중에 알고보니 {node_name="ecommerce-db-instance"}가 전체 cpu usage를 종합한거라더라.
+
+그런데 막상 실험해보니 저 {node_name="ecommerce-db-instance"} 에 나머지 지표까지 모두 더한게 실제 cpu usage인 것으로 추측된다.\
+서버 터지는 구간이 저 모든 cpu usage 합산이 90% 넘어가는 지점이더라.
+
+#### 100 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 10% | 7.1% |
+| Load Average | 0.2 | 0.1 |
+| Heap Used | 8.73% | N/A |
+| Non-Heap Used | 12.41% | N/A |
+| Last HTTP Latency | 88ms | 5ms |
+| Last Max Latency | N/A | 290ms |
+| Errors | None | None |
+| **RDS** |
+| CPU Usage | 4.2% | 3.1% (node: 5.78%, total: ~20%) |
+| Load Average | 0.3 | 0.39 |
+| Memory Availability | 71.35% | 67% |
+| QPS | 361 | 285 |
+| TPS | 280 | 163 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 20k ops/s | 10k ops/s |
+| read_next | 1-2k ops/s | 2.1 ops/s |
+| read_key | 1-2k ops/s | 115 ops/s |
+| write | 1-2k ops/s | 162 ops/s |
+| external_lock | N/A | 252 ops/s |
+| **Network Traffic** |
+| Inbound | 250 kb/s | 117 kb/s |
+| Outbound | 610 kb/s | 439 kb/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most queries < 20ms, longest 21ms |
+
+#### 200 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 20% | 14.3% |
+| Load Average | 0.6 | 0.6 |
+| Heap Used | 13.21% | N/A |
+| Non-Heap Used | 12.43% | N/A |
+| Avg Latency | 8ms | 5ms |
+| Max Latency | 500ms | 292ms |
+| Errors | None | None |
+| **RDS** |
+| CPU Usage | 8.6% | 5.3% (node: 10.73%, total: ~25%) |
+| Load Average | 0.41 | 0.36 |
+| Memory Availability | 71.16% | 67% |
+| QPS | 704 | 576 |
+| TPS | 577 | 324 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 40k ops/s | 18.5k ops/s |
+| read_next | 3-6k ops/s | 4.5 ops/s |
+| read_key | 3-6k ops/s | 225 ops/s |
+| write | 3-6k ops/s | 172 ops/s |
+| external_lock | N/A | 534 ops/s |
+| **Network Traffic** |
+| Inbound | 596 kb/s | 234 kb/s |
+| Outbound | 1.5 MB/s | 1.03 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+#### 300 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 30% | 23.4% |
+| Load Average | 0.8 | 0.8 |
+| Heap Used | 28.13% | N/A |
+| Non-Heap Used | 12.73% | N/A |
+| Last Avg Latency | 12.7ms | 6ms |
+| Last Max Latency | 1.14s | 276ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 14.6% | 7.73% (node: 12.05%, total: ~30%) |
+| Load Average | 1.77 | 0.57 |
+| Memory Availability | 70.80% | 67% |
+| QPS | 1080 | 836 |
+| TPS | 855 | 483 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 63.9k ops/s | 29.4k ops/s |
+| read_next | 5-13k ops/s | 7.6k ops/s |
+| read_key | 5-13k ops/s | 343 ops/s |
+| write | 5-13k ops/s | 182 ops/s |
+| external_lock | N/A | 748 ops/s |
+| **Network Traffic** |
+| Inbound | 888 kb/s | 345 kb/s |
+| Outbound | 2.94 MB/s | 1.76 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+#### 400 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 51% | 33.4% |
+| Load Average | 2.3/2.0 | 1.0 |
+| Heap Used | 41.83% | N/A |
+| Non-Heap Used | 12.66% | N/A |
+| Last Avg Latency | 10.9ms | 5ms |
+| Last Max Latency | 664ms | 215ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 21.4% | 11.9% (node: 18.78%, total: ~43%) |
+| Load Average | 1.38 | 0.41 |
+| Memory Availability | 70.50% | 66% |
+| QPS | 1.47k | 1.16k |
+| TPS | 1.17k | 657 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 83.1k ops/s | 35.2k ops/s |
+| read_next | 18.7k ops/s | 12.9k ops/s |
+| read_key | 15.3k ops/s | 449 ops/s |
+| write | 500 ops/s | 269 ops/s |
+| external_lock | N/A | 954 ops/s |
+| **Network Traffic** |
+| Inbound | 1.18 MB/s | 465 kb/s |
+| Outbound | 5.71 MB/s | 3.01 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+#### 500 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 73% | 43.0% |
+| Load Average | 4.3/2.0 | 1.4 |
+| Heap Used | 40.83% | N/A |
+| Non-Heap Used | 12.66% | N/A |
+| Last Avg Latency | 10.9ms | 6ms |
+| Last Max Latency | 664ms | 285ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 30.3% | 15.9% (node: 24.3%, total: ~50%) |
+| Load Average | 0.63 | 0.76 |
+| Memory Availability | 70.24% | 66% |
+| QPS | 1.78k | 1.44k |
+| TPS | 1.41k | 778 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 101.1k ops/s | 45.2k ops/s |
+| read_next | 48k ops/s | 19.4k ops/s |
+| read_key | 33k ops/s | 551 ops/s |
+| write | 640 ops/s | 201 ops/s |
+| external_lock | N/A | 1.21k ops/s |
+| **Network Traffic** |
+| Inbound | 1.48 MB/s | 577 kb/s |
+| Outbound | 9.24 MB/s | 4.65 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+#### 600 RPS and above
+
+| Metric | Normalized Version (600+ RPS) | Denormalized Version (600 RPS) |
+|--------|------------------------------|--------------------------------|
+| **EC2** |
+| CPU Usage | 97% | 56.2% |
+| Load Average | 6.6/2.0 | 2.3 |
+| Heap Used | 40.83% | N/A |
+| Non-Heap Used | 12.66% | N/A |
+| Last Avg Latency | 10.9ms | 8s |
+| Last Max Latency | 664ms | 374ms |
+| Errors | None reported | None |
+| **RDS** |
+| CPU Usage | 39.1% | 20.0% (node: 28%, total: ~70%) |
+| Load Average | 2.27 | 3.13 |
+| Memory Availability | 69% | 66% |
+| QPS | 2.04k | 1.75k |
+| TPS | 1.6k | 985 |
+| **MySQL Handlers Metric** |
+| read_rnd_next | 111.1k ops/s | 56.3k ops/s |
+| read_next | 65k ops/s | 27.4k ops/s |
+| read_key | 43k ops/s | 671 ops/s |
+| write | 712 ops/s | 211 ops/s |
+| external_lock | N/A | 1.45k ops/s |
+| **Network Traffic** |
+| Inbound | 1.71 MB/s | 682 kb/s |
+| Outbound | 12.56 MB/s | 6.93 MB/s |
+| **Query Analysis** |
+| Query Duration | All queries < 70ms | Most < 3ms, longest 20ms |
+
+
+#### 700 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | N/A (> 97% at 600 RPS) | 70.9% |
+| Load Average | N/A (> 6.6 at 600 RPS) | 4.9 |
+| Heap Used | N/A | N/A |
+| Non-Heap Used | N/A | N/A |
+| Last Avg Latency | N/A | 10ms |
+| Last Max Latency | N/A | 2.23s |
+| Errors | N/A | None |
+| Actual RPS | N/A (< 568 at 600 RPS) | 680-690 |
+| **RDS** |
+| CPU Usage | N/A (> 39.1% at 600 RPS) | 25.3% (node: 32.55%, total: ~75%) |
+| Load Average | N/A (> 2.27 at 600 RPS) | 1.16 |
+| Memory Availability | N/A (< 69% at 600 RPS) | 65% |
+| QPS | N/A (> 2.04k at 600 RPS) | 1.97k |
+| TPS | N/A (> 1.6k at 600 RPS) | 1.095k |
+| **MySQL Handlers Metric** |
+| read_rnd_next | N/A (> 111.1k ops/s at 600 RPS) | 64.47k ops/s |
+| read_next | N/A (> 65k ops/s at 600 RPS) | 40.9k ops/s |
+| read_key | N/A (> 43k ops/s at 600 RPS) | 775 ops/s |
+| write | N/A (> 712 ops/s at 600 RPS) | 220 ops/s |
+| external_lock | N/A | 1.64k ops/s |
+| **Network Traffic** |
+| Inbound | N/A (> 1.71 MB/s at 600 RPS) | 796 kb/s |
+| Outbound | N/A (> 12.56 MB/s at 600 RPS) | 9.96 MB/s |
+| **Query Analysis** |
+| Query Duration | N/A (All queries < 70ms at 600 RPS) | Most < 3ms, longest 20ms |
+
+#### 800 RPS
+
+| Metric | Normalized Version | Denormalized Version |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | N/A (> 97% at 600 RPS) | 92.9% |
+| Load Average | N/A (> 6.6 at 600 RPS) | 9.6 |
+| Heap Used | N/A | N/A |
+| Non-Heap Used | N/A | N/A |
+| Last Avg Latency | N/A | 52.4ms |
+| Last Max Latency | N/A | 1.29s |
+| Errors | N/A | None |
+| Actual RPS | N/A (< 568 at 600 RPS) | 750-770 |
+| **RDS** |
+| CPU Usage | N/A (> 39.1% at 600 RPS) | 32.17% (node: 39.48%, total: ~95%) |
+| Load Average | N/A (> 2.27 at 600 RPS) | 1.99 |
+| Memory Availability | N/A (< 69% at 600 RPS) | 65% |
+| QPS | N/A (> 2.04k at 600 RPS) | 2.19k |
+| TPS | N/A (> 1.6k at 600 RPS) | 1.2k |
+| **MySQL Handlers Metric** |
+| read_rnd_next | N/A (> 111.1k ops/s at 600 RPS) | 67.5k ops/s |
+| read_next | N/A (> 65k ops/s at 600 RPS) | 52.6k ops/s |
+| read_key | N/A (> 43k ops/s at 600 RPS) | 848 ops/s |
+| write | N/A (> 712 ops/s at 600 RPS) | 240 ops/s |
+| external_lock | N/A | 1.82k ops/s |
+| **Network Traffic** |
+| Inbound | N/A (> 1.71 MB/s at 600 RPS) | 891 kb/s |
+| Outbound | N/A (> 12.56 MB/s at 600 RPS) | 13.5 MB/s |
+| **Query Analysis** |
+| Query Duration | N/A (All queries < 70ms at 600 RPS) | Most < 3ms, longest 20ms |
+
+
+
+### c-4. 실험 결과 해석
+
+같은 스펙의 ec2, rds에서, 같은 테이블 사이즈에 동일한 load test를 했을 때,\
+정규화 버전의 한계는 560 RPS, 비정규화 버전의 한계는 750 RPS 정도 된다.
+
+
+정규화 버전에 560RPS일 때, 2k QPS정도 나온다.\
+2k QPS는 비정규화 버전에서는 700 RPS에서 나오는 수치다.\
+join할 때 쿼리 한번할껄 여러번 쪼개서 하기 때문에 QPS도 많이 찍히고\
+join(nested loop join, hash join)할 때 드는 cpu cost가 더 많이 드는 듯 하다.
+
+실험한 테이블 사이즈가 user:product:order = 1000:10000:5000 인데,\
+테이블 사이즈가 10만, 100만 으로 커질 수록\
+join cost이 늘어나기 때문에 정규화, 비정규화 성능 격차는 더 커질 것으로 예상된다.
+
+
+
+### c-5. 깨달은 점: 비용을 고려한 scale out 전략을 어떻게 짤 것인가?
+
+1. 성능테스트를 할 수록 느끼는건 **쿼리만 신경써서 짜도**([example](#d-sql-tuning)) 서버 스펙에 들어가는 돈을 많이 아낄 수 있다는 것이다.
 2. [반정규화](#b-반정규화) 실험에서 느낀건, 반정규화만 해놔도 서버 비용을 많이 아낄 수 있다.
 3. 서비스 초기 때 HA고려를 배제하면 많은 비용을 아낄 수 있다.
 	1. ALB가 생각보다 비용이 엄청 나온다. (기본 요금은 싼데 데이터 요금이 어마어마하게 많이 나온다. RDS보다 더 나온다.) 따라서 서비스 초기에 ALB + scale out 세팅 비용보다 단순 ec2 scale up이 훨씬 싸게 먹힌다.
@@ -4533,7 +4580,7 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 
 
-# H. 기술적 도전 - Frontend
+# F. 기술적 도전 - Frontend
 
 ## a. 카테고리바의 UX 개선기
 
@@ -5137,100 +5184,27 @@ SSR로 몸비틀기 한지 알게됬다.
 
 
 
-
-
-
-## c. wireframe
-
-![](./documentation/architecture/wireframe/wireframe.svg)
-
-### c-1. wireframe -> home
-
-![](./documentation/architecture/wireframe/outcome/ecommerce_index_page.png)
-
-### c-2. wireframe -> category
-![](./documentation/architecture/wireframe/outcome/ecommerce_product_list_page.png)
-
-
-### c-3. wireframe -> product
-![](./documentation/architecture/wireframe/outcome/ecommerce_product_page.png)
-
-
-### c-4. wireframe -> register
-![](./documentation/architecture/wireframe/outcome/ecommerce_register_login_page.png)
-
-
-### c-5. wireframe -> login
-![](./documentation/architecture/wireframe/outcome/ecommerce_register_login_page.png)
-
-
-## d. state managment
-프론트는 같은걸 2가지 버전(reactjs, nextjs)으로 만들었다.\
-React.js 버전에서 상태관리한 방법을 기술한다.
-
----
-1. react query
-	- server state를 관리한다.
-	- custom hooks에 react query의 fetch 함수와 더불어, 각 페이지에 맞게 가공하여 전달하는 함수까지 포함한다.
-2. recoil
-	- client state를 관리한다.
-	- global state에 담아 관리해야할 것을(ex. user authentication status) recoil로 관리한다.
-3. props
-	- 가능한 depth 1 정도만 props를 내려준다. 그 이상 depth는 recoil 사용을 고려한다. (props drilling problem)
-	- ex. `<ProductCard />`같이 loop 돌면서 값을 내려줘야 하는 경우
-
-
-## e. API first design
+## c. 성능개선, 더 나은 UX를 위한
 
 ### 1. 문제
-1. 기존 프론트/백 협업 방식은 프론트 개발자와 백엔드 개발자 사이의 결합도가 높아진다는 문제점이 있다.
-	- 기존에 frontend, backend 협업 시, 코드를 각자 짜면서 슬랙으로 프론트가 백 한테 필요 데이터를 매번 요청하는 식으로 일했다.
-	- 프론트 개발자의 요구사항이 수시로 바뀌는 경우, 백엔드 개발자도 그에 맞춰서 엔드포인트를 계속 수정해야 하는데, 이는 일의 효율을 저해한다.
-2. API endpoint 변경시, 누가 언제 어느 목적으로 추가/변경/삭제했는지 버전관리 하기 힘들다.
-3. API endpoint를 정의하는 사내 프로토콜의 부재
 
-### 2. 문제의 원인
-- API 공통 프로토콜의 부재
+페이지 로드속도가 빨라지면 사용자경험이 더 좋아지겠지?
+
+feedback_to_action 속도가 빨라지니까.
+
+페이지 로드 속도를 어떻게 개선시키지?
 
 
-### 3. 해결책
-1. API 공통 프로토콜인 openapi을 사용한다.
-2. API first approach을 사용해 프론트/백이 코드 작성 전에, 서버에 요청되는 request/response를 미리 합의해 정해두고, openapi 문서를 작성한다.
-3. openapi spec에 맞추어 작성된 문서를 코드로 변환해주는 SDK(openapi-codegen)을 사용하여 프론트는 request, response에 필요한 모델을, 백엔드는 컨트롤러 코드를 자동으로 생성해 사용한다.
-4. API를 읽는 문서는 redoc이라는 오픈소스 툴을 사용한다.
+### 2. latency 개선
 
+[uiux 관련 글](https://x.com/__keeeeeem/status/1661246021412990983)들을 찾아보면,\
+페이지 로드 속도가 **500ms** 안쪽이여야 사용자가 UX적으로 불편함을 덜 느끼는 듯 하다.
+
+latency를 줄여서 UX를 개선해보자.
 
 
 
-#### 3-1. openapi codegen
-
-![](documentation/images/swagger.png)
-
-openapi3 spec으로 작성된 코드를 swagger로 변환해준 모습
-
-- Q. how to see oepnapi docs online?
-    1. https://editor.swagger.io/
-    2. [openapi-docs code](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/resources/api/openapi.yaml) 붙여넣기
-
-
-#### 3-2. redoc
-![](documentation/images/redoc.png)
-
-```
-Q. how to install redoc and run?
-
-npm i -g @redocly/cli
-git clone https://github.com/Doohwancho/ecommerce
-cd ecommerce
-redocly preview-docs back/1.ecommerce/src/main/resources/api/openapi.yaml
-```
-
-
-
-
-## f. latency 개선
-
-### 1. 불필요한 랜더링을 React.memo() 으로 최적화
+#### 방법1. 불필요한 랜더링을 React.memo() 으로 최적화
 
 - 문제
 	- 페이지 이동할 때 마다 `<Header />, <Footer />, < TopNav />`가 불필요하게 다시 랜더링 되던 문제가 있었다.
@@ -5259,7 +5233,7 @@ redocly preview-docs back/1.ecommerce/src/main/resources/api/openapi.yaml
 
 ---
 
-### 2. useMemo()로 memoization 활용
+#### 방법2. useMemo()로 memoization 활용
 
 1. API fetch받은 products들을 재정리 하는 함수의 결과값을 memoization 한다.
 
@@ -5282,7 +5256,7 @@ https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549a
 
 
 
-### 3. code splitting
+#### 방법3. code splitting
 
 ```tsx
 import React, { Suspense } from 'react';
@@ -5307,7 +5281,7 @@ export default Home;
 2. 화면 하단부 top 10 rated products fetch는 lazy하게 랜더링
 
 
-### 4. main page caching
+#### 방법4. main page caching
 
 ![top-ten-rated-products](documentation/images/top-ten-rated-products.gif)
 
@@ -5319,11 +5293,16 @@ https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be74
 
 
 
-### 5. .png -> .webp로 변경
+#### 방법5. png -> webp로 변경
 이미지 용량이 약 60%로 축소됨으로 인해, 페이지 로드 속도가 빨라졌다.
 
 
-## g. nextjs migration for different rendering patterns
+### 3. 페이지마다 최적화된 랜더링 패턴을 써보자
+react는 CSR 원툴이니까,\
+CSR, SSR, ISR, SSG 를 하이브리드로 쓸 수 있는 nextjs로 마이그레이션 했다.
+
+페이지마다 최적화된 렌더링 패턴을 적용해보자.
+
 
 1. SSG: register, login 페이지
 	- register, login 페이지는 내용이 안바뀌는 static page라 빌드타임 때 만들고 뿌리는 SSG 사용한다.
@@ -5338,12 +5317,38 @@ https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be74
 	- product 페이지는 상품내용이 자주 업데이트 될 수 있음과 동시에 SEO에 잡히는게 중요하므로 SSR로 렌더링한다.
 
 
-## h. atomic design pattern with shadcn-ui
+
+### 4. 결론
+
+현업이 아니라 몰랐던 사실인데,\
+수백개의 페이지가 있는 사이트에서 가장 트래픽이 몰리는 페이지는 인덱스 페이지도 아닌\
+회원가입 & 로그인 페이지란다.
+
+Q. 가장 트래픽이 많이 몰리는 register/login 페이지와 index페이지를 static page로 만들었는데도 불구하고, latency가 느리다면?
+
+A. 빌드 파일 사이즈를 줄여보자 (`npm` -> `yarn berry`)
+
+여기까지가 프론트 개발자가 할 수 있는 일반적인 performance optimization을 한 것이다.\
+그럼에도 불구하고 static page인데 latency가 느리다면,\
+그건 DB나 WAS서버 문제일 확률이 높다.
+
+
+
+
+
+
+## d. atomic design pattern with shadcn-ui
 
 
 ### 1. 문제
 
-가끔 카카오앱이 구린 이유.txt를 보면, 카카오에 종속된 회사 앱들의 카카오의 메인 컬러: 노란색의 RGB값을 찍어보면 약간씩 다르다. 색상도 다르고 UI 스타일도 달라서, 다른 카카오 앱 쓸 때마다, 심지어 어떤 경우는 같은 앱의 다른 페이지를 볼 때 이질감을 느낄 때도 있다.
+![kakao_diff_colors](./documentation/images/kakao_color.jpg)
+
+가끔 카카오앱이 구린 이유.txt를 보면,\
+카카오앱들의 primary color RGB값을 찍어보면 약간씩 다르다.
+
+색상만 다른게 아니라 UI 스타일도 달라서,\
+다른 카카오 앱 쓸 때마다, 심지어 어떤 경우는 같은 앱의 다른 페이지를 볼 때 이질감을 느낄 때도 있다.
 
 이런 이질감을 없애기 위해 스타일, 색 조합, ui에 일관성이 있는 앱을 개발해야 한다.
 
@@ -5362,4 +5367,184 @@ https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be74
 
 처음엔 컴포넌트 설계를 직접 하려고 했으나 [몇번의 시행착오](https://github.com/Doohwancho/javascript/tree/main/05.react/01.syntax/src/05.atomic-design)\
 끝에 점점 일이 커지는걸 깨닿고, best practice opensource library인 shadcn-ui을 썼다.
+
+
+
+
+
+## e. 개발자의 협업 플로우 개선을 위한 API first design
+
+### 1. 문제
+
+프론트개발자와 백엔드개발자가 협업하는 접점이 API 통신 부분인데\
+초장에 잡고가지 않으면 혼란스러울 수 있다.
+
+example)
+
+1. "백엔드님 저 이 데이터 필요해요, 이 데이터 API로 내려주세요"
+2. "생각해보니 이건 필요 없었어요". or "이거 필요해요 추가해주세요"의 반복
+3. 요구사항이 자주 바뀔 수록, DTO, validation-check 로직, controller/service 로직 수정이 잦아짐.
+4. API가 바뀐 부분도 버전관리가 안됨. 혹은 수동으로 API 버전관리 문서 작성해야 함.
+
+
+### 2. 해결책
+
+![api_first_design](./documentation/images/codefirst_vs_api_first.jpeg)
+
+`Code First Design`은 기존 프론트 & 백 협업 방식으로, 각자 개발하고 다 만들면 합치는 방식이다.\
+`API First Design`은
+
+1. 기능구현 전, 프론트 & 백이 어떤 spec으로 API 만들지를 .yaml 파일로 적어두면,
+2. 그 파일을 자동으로 파싱해서
+3. 프론트에겐 모델을,
+4. 백에겐 DTO와 컨트롤러 코드를 만들어준다.
+5. 심지어 .yaml 파일 기반 API 문서도 생성해준다.
+
+
+
+example)\
+openapi3 spec으로 작성된 .yaml파일을 넣으면 API 문서로 변환해준다.
+
+![](documentation/images/swagger.png)
+
+
+1. https://editor.swagger.io/
+2. [openapi-docs code](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/resources/api/openapi.yaml) 붙여넣기
+
+
+
+
+### 3. 결과
+
+#### 3-1. 프론트와 백엔드의 협업 process가 개선되었다.
+
+![api_first_design](./documentation/images/api_first_design.png)
+
+1. API 공통 프로토콜인 openapi을 사용한다.
+2. API first approach을 사용해 프론트/백이 코드 작성 전에, 서버에 요청되는 request/response를 미리 합의해 정해두고, openapi 문서를 작성한다.
+3. openapi spec에 맞추어 작성된 문서를 코드로 변환해주는 SDK(openapi-codegen)을 사용하여 프론트는 request, response에 필요한 모델을, 백엔드는 컨트롤러 코드를 자동으로 생성해 사용한다.
+4. API를 읽는 문서는 redoc이라는 오픈소스 툴을 사용한다.
+
+
+#### 3-2. 프론트는 이제 API 관련 model들 자동으로 만들어준다.
+
+example)
+
+https://github.com/Doohwancho/ecommerce/blob/73f634a45ae0e985eb158183ea021ea57aaf7a9c/front/02.nextjs_migration/models/src/model/product-with-options-ver2-dto.ts#L16-L83
+
+1. [reactjs_ver](https://github.com/Doohwancho/ecommerce/tree/main/front/01.reactjs/models)
+2. [nextjs_ver](https://github.com/Doohwancho/ecommerce/tree/main/front/02.nextjs_migration/models)
+
+
+#### 3-3. 백엔드는 이제 controller와 request/response DTO를 자동으로 만들어준다.
+##### step1) openapi.yml에 아래처럼 적는다.
+
+```yml
+paths:
+  /products/{productId}:
+    get:
+      summary: Get product details by product ID
+      operationId: getProductDetailDTOsById
+      tags:
+        - Product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: The ID of the product to retrieve.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: An array of product objects along with related details.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductDetailResponseDTO'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        default: #ensures any unexpected errors are handled in a consistent format, providing a clear and standardized method
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+```
+
+
+##### step2) openapi.yml를 빌드하면, 컨트롤러 코드와 DTO가 자동생성된다.
+자동 생성된 코드를 가져다 쓰기만 하면 된다.
+
+
+###### 1. 자동 생성된 컨트롤러 코드
+```java
+@ApiOperation(value = "Get product details by product ID", nickname = "getProductDetailDTOsById", notes = "", response = ProductDetailResponseDTO.class, responseContainer = "List", tags={ "Product", })
+@ApiResponses(value = {
+	@ApiResponse(code = 200, message = "An array of product objects along with related details.", response = ProductDetailResponseDTO.class, responseContainer = "List"),
+	@ApiResponse(code = 404, message = "Product not found", response = ErrorResponseDTO.class),
+	@ApiResponse(code = 200, message = "Unexpected error", response = ErrorResponseDTO.class) })
+@RequestMapping(value = "/products/{productId}",
+	produces = { "application/json" },
+	method = RequestMethod.GET)
+default ResponseEntity<List<ProductDetailResponseDTO>> getProductDetailDTOsById(@ApiParam(value = "The ID of the product to retrieve.",required=true) @PathVariable("productId") Long productId) {
+	getRequest().ifPresent(request -> {
+		for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+			if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+				String exampleString = "{ \"quantity\" : 5, \"productId\" : 0, \"rating\" : 6.027456183070403, \"description\" : \"description\", \"categoryCode\" : \"categoryCode\", \"ratingCount\" : 1, \"categoryName\" : \"categoryName\", \"optionVariationId\" : 2, \"discounts\" : [ { \"endDate\" : \"2000-01-23T04:56:07.000+00:00\", \"discountType\" : \"discountType\", \"discountId\" : 2, \"discountValue\" : 7.061401241503109, \"startDate\" : \"2000-01-23T04:56:07.000+00:00\" }, { \"endDate\" : \"2000-01-23T04:56:07.000+00:00\", \"discountType\" : \"discountType\", \"discountId\" : 2, \"discountValue\" : 7.061401241503109, \"startDate\" : \"2000-01-23T04:56:07.000+00:00\" } ], \"optionVariationName\" : \"optionVariationName\", \"price\" : 5.637376656633329, \"name\" : \"name\", \"optionId\" : 3, \"optionName\" : \"optionName\", \"categoryId\" : 9 }";
+				com.cho.ecommerce.api.ApiUtil.setExampleResponse(request, "application/json", exampleString);
+				break;
+			}
+		}
+	});
+	return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+}
+```
+
+
+###### 2. 자동 생성된 DTO
+```java
+@JacksonXmlRootElement(localName = "ProductDetailResponseDTO")
+@XmlRootElement(name = "ProductDetailResponseDTO")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class ProductDetailResponseDTO  implements Serializable {
+  private static final long serialVersionUID = 1L;
+
+  @JsonProperty("productId")
+  @JacksonXmlProperty(localName = "productId")
+  private Long productId;
+
+  @JsonProperty("name")
+  @JacksonXmlProperty(localName = "name")
+  private String name;
+
+  @JsonProperty("description")
+  @JacksonXmlProperty(localName = "description")
+  private String description;
+
+  //...
+}
+```
+
+#### 3-4. API 문서 관리 자동화
+![](documentation/images/redoc.png)
+
+본 프로젝트에서는 `redoc`을 사용했고, 사용법은 아래와 같다.
+
+```
+Q. how to install redoc and run?
+
+npm i -g @redocly/cli
+git clone https://github.com/Doohwancho/ecommerce
+cd ecommerce
+redocly preview-docs back/1.ecommerce/src/main/resources/api/openapi.yaml
+```
+
 
