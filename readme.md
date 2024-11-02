@@ -27,8 +27,8 @@
 	- e. [bulk insert](#e-bulk-insert)
 - E. [기술적 도전 - Cloud](#e-기술적-도전---cloud)
 	- a. [docker-compose로 개발환경 구성](#a-docker-compose로-개발환경-구성)
-	- b. [provisioning with terraform & packer](#b-provisioning-with-terraform-and-packer)
-	- c. [prometheus and grafana + PMM](#c-prometheus-and-grafana--pmm)
+	- b. [provisioning: terraform & packer](#b-provisioning-terraform-and-packer)
+	- c. [모니터링 서버 세팅: prometheus and grafana + PMM](#c-monitoring-prometheus-and-grafana--pmm)
 	- d. [시행착오: 배포서버에서 log는 error랑 warn만 키자](#d-시행착오---배포서버에서-log는-error랑-warn만-키자)
 	- e. [부하 테스트](#e-부하-테스트)
 - F. [기술적 도전 - Frontend](#f-기술적-도전---frontend)
@@ -2470,51 +2470,135 @@ ex. 프론트에서 스프링에 데이터 fetch 할 때,\
 
 
 
-## b. provisioning with terraform and packer
+## b. provisioning: terraform and packer
 
 ### 1. 문제
-1. aws 서버 구성하고 한달동안 쓰지도 않았는데 10만원이 청부되었다.
-2. 그래서 서버를 다 껐는데 ec2를 꺼도 elastic ip나 ebs같은 서비스가 남아서 요금이 청구되었다.
-3. 다 지우고 다시 aws 서버를 처음부터 구축하려니 너무 번거로웠다.
+
+그... 원래 테라폼같은 프로비저닝 툴은 세팅한번 딱 해놓고 버튼한번 누르면 인프라가 샤라락~\
+전체 인프라가 돌아가는 중에 인스턴스 스펙 업/다운 하고 싶으면 .tf 파일에서 스펙만 바꾸고 업데이트하면\
+자동으로 인스턴스 내리고 새롭게 만들어서 기존거랑 이어주는 맛으로 쓰는건데....
+
+내가 테라폼을 찾게 된 이유는,\
+부하테스트하려고 aws 세팅 찾아서 했는데, 내리고 다시 세팅하려니까 너무 귀찮았다.\
+그래서 그냥 냅뒀는데...\
+요금이 생각 이상으로 많이 나오더라.. 맘 찢어진다..\
+(도메인 ip도 무료로 사서 신경 꺼놨는데 1년뒤에 자동으로 유료로 바뀌면서 청구되더라... 아...)
+
+
+aws는 일일히 세팅하는것도 피곤한데, 부하테스트 끝나고 지우는 것도 피곤하다.\
+그리고 다 지웠다고 생각했는데 알고보니 ebs, elastic ip 안지워져서 요금청구되는거 볼 때마다 스트레스다.\
+왜냐면 인스턴스에 걸려있는 서비스는 그냥 지우면 안지워지고 그걸 걸치는 다른 서비스를 먼저 찾아서 지워야 지워지기 때문..
+
+aws-nuke이라는것도 써봤는데 이것도 가끔씩 에러터지면서 짜잘하게 안지워지는 부분이 있더라.
+
 
 ### 2. 해결책
-1. 명령어 한번에 클라우드가 구성되고, 전부 제거되는 툴을 찾다보니 terraform이라는 provisioning tool을 찾아 적용하게 되었다.
-2. terraform 파일 작성시 막혔을 땐, 직접 수동으로 aws를 구성하고 terraformer이라는 오픈소스를 이용해 terraform 파일로 import해서 참조했다.
-3. terraform으로 인스턴스 생성한 다음, 수동으로 서버에 접속해서 프로젝트 다운, 빌드, 실행 했는데, 불편함을 느껴 빌드 스크립트로 자동화 함.
-4. autoscaling 하려면 빠른 ec2 인스턴스 생성이 중요한데, 빌드 스크립트로 ec2에 openjdk8을 설치하는 것 보다, packer를 이용해 미리 jdk8을 설치한 ec2를 custom ami로 만들어서 가져다 씀.
+
+테라폼 처음 한번만 세팅해두면\
+그 이후부터는 `terraform start`, `terraform destroy` 명령어 한방에 인프라가 샤라락! 펼쳐졌다 정리되기 때문에,\
+처음 진입장벽만 넘어서 딱 한번만 세팅해두면 이후로 매우 편하다.
+
+
+부하테스트 실험이 처음하면 생각보다 시행착오가 많다.\
+부하수준별 적정 스펙 찾는거나, 부하테스트를 거는 ec2가 생각보다 코어수가 많이 필요하다.\
+예를들어 1000RPS 테스트할 때 4코어 ec2로 안되길래 8코어 ec2로도 안되길래\
+16코어 ec2로 해도 터지길래 32코어로 하니까 됬다.\
+그리고 32코어 인스턴스, RDS, ALB, 모니터링 서버, elastic cache(cluster이면 더 비싸짐) 등 생각보다 엄청 비싼데,\
+힘들게 세팅했는데 밤이 깊어서 내일 해야지~ 낼 모래 해야지~ \
+미뤘다간 15일날인가 청구서 보고 손발이 덜덜 떨리는걸 경험하게된다.
+
+부하테스트의 RPS가 올라갈 수록 생각 이상으로 비싸지니까\
+`terraform start`가 땅! 끝나는 순간\
+바로 부하테스트 걸고\
+끝나자마자 모니터링 서버 화면 전체캡쳐 한 후\
+바로 `terraform destroy`를 눌러야\
+최소한의 돈으로 부하테스트를 할 수 있다.\
+(이거 진짜 꿀팁임)
+
 
 ### 3. 다른 좋았던 점
-1. 부하 테스트에서 인스턴스의 스펙별로 스트레스 테스트를 할 때, provisioning tool이 유용했다.
-	- 원래였다면 테스트 케이스마다 수동으로 ec2 내리고 다른 스펙으로 만들고 security group, elastic ip, ebs 등 매번 재설정 해야 했다.
-	- 그런데 terraform을 쓰면, 이미 작성된 테라폼 파일에 변경된 스펙만 바꾸고 `terraform apply`만 하면 적용되는게 편했다.
-2. 테라폼도 코드 형식이기 때문에, git으로 버전관리가 된다는 이점도 존재한다.
-3. aws 학습 목적으로도 좋았다.
-	- 세세한 설정 하나만 빠지거나 잘못 입력해도 테라폼은 작동을 안하기 때문에 vpc, sg, rt, igw 등의 세부 설정을 왜 해야하는지 이해하는데 도움을 주었다.
+provisioning 기능 + 부하테스트시 유용하다는 장점 이외에 의외의 장점이 있다.
 
-## c. prometheus and grafana + PMM
+**aws 이해에 도움을 준다.**
+
+왜냐면 aws 홈페이지에서 인프라 세팅하면 건드릴 수 있는 옵션이 많은데\
+대충 중요한것만 세팅하고 넘겨도 내부적으로 자동세팅 해준다.
+
+근데 테라폼 코드는 한글자만 잘못쳐도 에러를 뱉기 때문에 자세히 알아야 한다.\
+vpc, sg(security_group), rt(route_table), igw(internet_gateway) 이런 개념들 부터 시작해서
+
+```terraform
+module "vpc" {
+  source                           = "terraform-aws-modules/vpc/aws"
+  version                          = "5.5.0"
+
+  name                             = "${var.namespace}-vpc"
+  cidr                             = "10.0.0.0/16"
+
+  azs                              = data.aws_availability_zones.available.names
+  private_subnets                  = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets                   = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+  database_subnets                 = ["10.0.21.0/24", "10.0.22.0/24", "10.0.23.0/24"]
+  elasticache_subnets              = ["10.0.31.0/24", "10.0.32.0/24"]
+
+  create_database_subnet_group     = true
+  enable_nat_gateway               = true
+  single_nat_gateway               = true
+}
+```
+cidr로 ip의 서브넷 나눠서 ec2, db, redis 서버에게 내부ip 할당하는걸 수동으로 해줘야 한다.
+
+추가적으로 .tf 파일은 git으로 버전관리 된다는 것도 이점이다.
+
+
+### 4. packer도 전통적인 alb-ec2-rds에서 scaleout시 유용하게 쓰일 수 있다.
+
+packer는 비유하자면 약간 도커 컨테이너에 이것저것 설치해놓고\
+이미지로 말아 도커 레지스트리에 올린거의 aws 버전이다.
+
+1. ec2 띄우고
+2. 이것저것 설치하고
+3. 프로젝트 클론 뜨고
+4. 빌드하고
+5. 실행한다
+
+이 과정에서 1 & 2번을 미리 해놔서 저장해놓는게 packer가 하는 일이다.
+
+
+요즘은 대부분 도커로 올리면 클라우드에서 자동으로 scale-out 해주는데,\
+전통적인 방식의 ec2 띄우는건 scale-out 하려면 앞단에 ALB 붙이고 특정 부하 시점이 오면,\
+packer로 만들어놓은 ec2-ami 띄운 후, 배포 스크립트 실행시키는 식으로 스케일아웃 한 걸로 안다.
+
+
+
+
+
+## c. monitoring: prometheus and grafana + PMM
 
 ### 1. 문제
 서버를 구축하면, 에러 예방/핸들링, 성능 튜닝을 위한 스트레스 테스트 메트릭을 뽑기 위해 모니터링 서버를 구축해야 한다.
 
-### 2. 해결방안
+### 2. EC2 모니터링 선택
 
 ec2 monitoring을 위해 고려한 APM 툴은 3가지 이다.
 1. datadog
 2. uptime kuma
-3. prometheus
-
-### 3. 선택 이유
-3. prometheus + grafana를 선택하였다.
-
-이유는 아래와 같다.
-
-1. 가장 현업에서 자주 쓴다는 datadog를 차용하려고 했지만, 간단한 WAS 서버 APM 최소비용만 월 31$이고, 이 외에 DB 모니터링은 최소 월 70$ 부터 시작이라, 토이 프로젝트 치고 가격이 너무 쎄서 다른 툴을 쓰기로 했다.
-2. APM 오픈소스중에 uptime kuma라는 툴이 있는데, 예전에 사용해본 경험이 있어 다른 툴 대비 익숙하고, 사용법도 간단하고, 스타 수도 46000개 정도 되고, 현재까지도 업데이트가 잘 이루어지고 있어서 써볼까 했으나, 후술할 이유로 인해 사용하지 않았다.
-3. prometheus + grafana 조합이 현업에서 자주 이용되는 점과, 추후 이 프로젝트를 monolith에서 MSA로 변경할 때, k8s APM 툴로 prometheus를 많이 사용한다고 한다.
-
+3. prometheus + grafana
 
 ---
-PMM도 같은 위와 같은 이유로 선택하게 되었다.
+3. prometheus + grafana를 선택하였다.
+
+- 이유
+	1. 가장 현업에서 자주 쓴다는 datadog를 차용하려고 했지만, 간단한 WAS 서버 APM 최소비용만 월 `31$`이고, 이 외에 DB 모니터링은 최소 월 `70$` 부터 시작이라, 토이 프로젝트 치고 가격이 너무 쎄서 다른 툴을 쓰기로 했다.
+	2. APM 오픈소스중에 uptime kuma라는 툴이 있는데, 예전에 사용해본 경험이 있어 다른 툴 대비 익숙하고, 사용법도 간단하고, 스타 수도 46000개 정도 되고, 현재까지도 업데이트가 잘 이루어지고 있어서 써볼까 했으나, 후술할 이유로 인해 사용하지 않았다.
+	3. prometheus + grafana 조합이 현업에서 자주 이용되는 점과, 추후 이 프로젝트를 monolith에서 MSA로 변경할 때, k8s APM 툴로 prometheus를 많이 사용한다고 한다.
+
+
+
+### 3. mysql 모니터링 도구 선택
+mysql은 percona사에서 오픈소스로 제공하는 PMM(percona monitoring management)를 쓰기로 했다.
+
+무료 mysql 모니터링 도구중에 메트릭제공이 상세하고, 사람들이 많이 쓰기 때문이다.
 
 
 ### 4. 구현 화면
