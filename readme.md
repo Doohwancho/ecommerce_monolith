@@ -17,13 +17,8 @@
 	- c. [wireframe](#c-wireframe)
 - C. [기술적 도전 - Backend](#c-기술적-도전---backend)
     - a. [DB 부하를 낮추기 위한 cache 도입기](#a-db-부하를-낮추기-위한-cache-도입기)
-    - b. [spring security - authentication](#b-spring-security---authentication)
-    - c. [spring batch](#c-spring-batch)
-	- d. [test 전략](#d-test-전략)
-    - e. [defensive programming](#e-defensive-programming)
-    - f. [clean code](#f-clean-code)
-	- g. [refactoring](#g-refactoring)
-	- h. [요구사항을 비즈니스 로직 코드로 구현](#h-요구사항을-비즈니스-로직-코드로-구현)
+    - b. [전자상거래에서 인증 및 보안](#b-전자상거래에서-인증-및-보안)
+	- c. [돈관련 코드 테스트 정밀도 높힌 방법](#c-돈관련-코드-테스트-정밀도-높힌-방법)
 - D. [기술적 도전 - Database](#d-기술적-도전---database)
     - a. [정규화](#a-정규화)
 	- b. [반정규화](#b-반정규화)
@@ -435,293 +430,270 @@ https://github.com/Doohwancho/ecommerce/blob/3a07a123eb971db1ba7952fedc0ae39cb3c
 
 
 
-## b. spring security - authentication
-![](documentation/architecture/uml/authentication/authentication-sequence.png)
+## b. 전자상거래에서 인증 및 보안
 
 ### 1. 문제
-ecommerce에 유저 인증 시스템이 필요하다.
 
-### 2. 구현 방법론
+돈 안걸린 서비스(ex. 이상형 월드컵)는 해킹 당해도 피해가 크진 않다.\
+'개인정보가 또 유출됬구나~'
 
-#### 2-1. session vs jwt
+근데 전자상거래같은 돈 걸린 사이트는 해킹당하면 큰일난다.\
+'내 신용카드로 몇백 질러버리면?'\
+두려움에 편도체가 마비되고 기억에 강렬하게 남아 나쁘게 입소문난다.
 
-- 핵심
-	- 인증 시스템 만듬에 있어서, 가장 중요하게 생각해야하는 요소는 보안이라고 생각한다.
-- 이유
-	1. ecommerce는 사용자의 돈이 걸린 서비스이다.
-		- 게시판이나 지도앱 같은 다른 앱들은 돈이 걸린 앱이 아니어서 인증이 탈취당해도 소송을 당한다거나, 피해규모가 크지 않다.
-		- 그런데 ecommerce의 경우, 해킹당하면 금전적인 피해가 있을 확률이 높고, 그에 따른 소송 가능성도 있다.
-	2. session의 이상현상 감지 시, 즉각 invalidate session 기능은 jwt보다 보안적으로 강력하다.
-		- session이나 jwt이나 어짜피 client side에 보관한다면 local/session storage에 보관하나, cookie에 보관하나, 탈취당하기 마련이라고 보았다.
-		- 어짜피 탈취당할 거라면, 서버에서 이상현상 발견시 즉각 invalidate 할 수 있는 세션이 보안적으로 더 낫다고 보았다.
-		- jwt는 탈취당하면 유효기간이 끝날 때 까지 서버를 이용할 수 있고, 서버에서는 이를 막을 수 없다.
-		- 위 문제를 보완하기 위해 jwt + refresh token 방식으로 구현했을 경우, refresh token의 expiration을 짧게하면 토큰 재발급 통신비용이 늘어나 성능이 session과 별 다를바가 없어지고, 그렇다고 늘리면 보안성이 떨어진다는 문제점이 있다.
-		-  어느 쇼핑몰 사이트가 해킹당해서 금전적 손해를 봤는데 즉각적인 대처를 못했다는 소문이 SNS로 퍼지면 브랜드 이미지에 큰 타격을 입힐 수 있다.
-	3. monolith는 session 방식이, msa는 jwt 방식이 더 궁합상 맞다고 생각한다.
-		- MSA에서 백엔드 서버가 수십개로 나뉘어져 있고, 각 서버마다 인증서버와 통신해야 한다면 너무 비효율이니 보안을 약간 포기하더라도 jwt를 선택하는게 맞다고 보인다.
-		- 다만 monolith는 인증을 한번만 하면 모든게 하나의 서버에서 처리되니까, 보안적 이점이 더 있는 session 방식이 더 적합하다고 판단했다.
+회사가 물질적 피해 물어줘야하고 소송당해서 법적 책임 물을 수도 있고 하여튼 골치아프다.\
+무엇보다 고객의 신뢰를 잃는다는게 제일 크다.
 
 
-### 3. 결과
-
-- 구현기능
-	1. session clustering (spring security + redis)
-	2. 이상행동 감지시(로그인 5회 틀림) invalidate session + account lock 한다.
-	3. 매주 일요일 새벽 3시에 cron + batch로 locked account를 MEMBER table에서 INACTIVE_MEMBER table로 이전한다.
-
----
-1. login attempt 실패할 때마다 카운트+1
-
-https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95f366c/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserService.java#L147-L166
+인증 시스템을 사용해 어떻게 하면 보안수준을 높힐 수 있을까?
 
 
-2. 카운트가 일정 수치 이상 쌓이면, 비정상적인 유저라고 판단, invalidate session && lock account
-
-https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95f366c/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserService.java#L168-L184
-
-
-
-
-## c. spring batch
-
-### 1. inactive user를 Member 테이블로부터 이관하기
-![](documentation/images/inactive-user.png)
-
-authentication에 3번째 구현기능인
-
-`iii. 매주 일요일 새벽 3시에 cron + batch로 locked account를 MEMBER table에서 INACTIVE_MEMBER table로 이전한다.`
-
-...를 spring batch로 구현하였다.
-
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L24-L144
-
-
-
-### 2. bulk insert fake data for test
-
-- 구현 기능
-	- datafaker라는 오픈소스 라이브러리를 이용해 가데이터 수천 & 수만 데이터를 JPA .saveAll()을 이용해 입력한다.
-- 오해했던 점
-	- .saveAll()이 .save()처럼 개별 row마다 insert시 Transaction 걸어서 느린데, spring batch의 batch size를 1000개로 설정하면, 트렌젝션을 1000개 단위로 훨씬 적게 거니까 insert 성능이 빨라지지 않을까? 기대하였다.
-	- 그러나, .saveAll() 역시 트렌젝션 한번에 전부 insert하는 거였고, 성능상 개선은 거의 없었다.
-	- 다만, 10000개 rows를 insert할 때, .saveAll()은 중간에 한번 에러나면 10000개가 전부다 rollback 되는 것에 반에, spring batch의 .chunk(1000) 를 이용하면, 1000개 rows씩 insert 하다가 중간에 에러나면, 1000 개 단위로 트렌젝션이 걸려 롤백되기 때문에, data lose나 recovery 관점에서의 이점은 있었다.
-
-
-구현 코드)
-
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/InsertFakeUsersStepConfig.java#L26-L155
-
-
-
-## d. test 전략
-
-### 1. 문제
-Q. ecommerce app은 어떤 테스트 방법론을 써야 적합할까?
 
 
 ### 2. 방법론
 
-1. 고전파 & TDD
-	- unit test 을 바텀업으로 꼼꼼하게 높은 test coverage를 목표로 하는 방법
-	- 군사, 의료처럼 절대 깨지거나 실패하면 안되는 앱 만들 때 하면 좋은 듯 하다.
-	- 선택과 집중의 문제인데, 현 프로젝트는 쇼핑몰 MVP인데, 테스트 코드에 시간 & 리소스를 써서 서비스 안정성을 높히는 것 보다, MVP 서비스 초기 때는 빨리 기능 하나 추가하는게 우선순위 상위로 판단된다.
-2. 런던파 & mockist
-	- top down식으로 의존하는 모듈은 mocking 하는 방법이다.
-	- 테스트 범위가 좁고 세밀한게 정확히 어디서 에러났는지 찾을 수 있다는 장점이 있지만, 그만큼 테스트 커버리지를 늘리려면 많은 테스트 코드를 작성해야 한다.
-	- mocking 을 많이 해 놓으면, 통합 테스트 환경이 아니라 실제로 작동한다는 보장이 없다.
-	- 개발자가 제어할 수 없는 외부 API 사용 시나, database 연동하는 테스트가 많이 무거울 경우에 선택적으로 사용하는게 좋아 보인다고 판단했다.
-3. 여러 방법론을 결합한 혼종
-	1. 테스트 커버리지가 높아야 에러 발견확률이 늘어나기 때문에 unit test 보다는 integration test 위주로 작성한다.
-	2. 크리티컬한 기능 위주로 테스트 하는 smoke test(ex. 서버가 시작했는지 체크하는 테스트)도 포함한다.
-	3. unit test는 개발자가 모든 이상 input에 대해 대비할 수 있는것이 아니고, 대비해서 unit test를 작성할 정도라면 이미 코드 수정을 했을 것이다.
-	4. 따라서 프로그램이 반드시 만족해야하는 속성(input range)을 설정해두면, 해당 범위 내에 발생할 수 있는 대부분의 input test case를(corner case 포함) 자동 생성 후 테스트 까지 해주는 PBT(Property Based Test)를 한다.
-	5. 단, PBT는 CPU 리소스를 너무 많이 잡아먹고, 시간도 오래 걸리므로, 돈이 걸린 매우 중요한 메서드 위주(ex. 상품 가격에 discount 적용하는 코드)로 적용한다.
+#### 2-1. session vs jwt 뭐 쓰지?
+
+세션 썼다.
+
+왜?
+
+세션이 jwt보다 보안적으로 더 뛰어나니까.
+
+왜?
+
+세션은 이상현상 감지 시, "즉시" session invalidate 하고 계정 락 걸면 계정탈취 후에 일어나는 피해를 최소화할 수 있다.
+
+하지만 jwt는 토큰이 expire할 때 까지 서버에서 뭘 할 수가 없다.
+
+그래서 [jwt+refresh token](https://github.com/Doohwancho/spring/tree/main/03.spring-security/jwt-refresh-token) 쓰는 방법도 만들어 봤는데,\
+expire 시간을 아무리 짧게해도,\
+결국 stateful한 session 방식이 아닌 stateless한 jwt방식은 탈취당하면 서버에서 벤 할 방법이 없다.
+
+
+#### 2-2. 분산 시스템에서 JWT의 stateless함의 단점 극복법?
+추후 서비스가 성장하고 부하가 커져서 레디스로 수 많은 세션들 부하 처리가 힘들어지거나 등의 이유로 jwt를 도입해야 할 때,\
+stateless의 단점인 '탈취 후 이상현상 감지시 즉시벤이 안됨'을 어떻게 극복할 수 있을까?
+
+redis에서 블랙리스트 관리하면 되지 않을까?\
+근데 그건 stateful한 방식이잖아? -> 세션 하위호환이다.
+
+ec2의 로컬캐시로 블랙리스트를 관리하면 된다.\
+근데 분산환경에서 ec2-1, ec2-2, ec2-3 여러개가 있는데, 서로 가지고있는 블랙리스트의 싱크가 안맞으니까\
+ec2들 앞단에 로드밸런서에 기능중에 sticky-session 기능이었던가? 를 이용해서\
+스케일아웃된 ec2들에게 요청을 라운드로빈으로 순서대로, 랜덤하게 보내는게 아니라,\
+한번 ip-2요청이 3번째 ec2에게 갔으면, 계속 ip-2는 ec2-3 에게 보내는 식으로 처리한 후,\
+스프링 로컬캐시로 블랙리스트를 캐싱하여 매 jwt validate마다 같이 검증할 듯 하다.\
+일정 주기마다 배치로 banned_user 테이블에 저장하고.
+
+이 방식은 분산시스템에서 redis 서버에 부하를 주지 않으면서,\
+수십, 수백개에 분산된 WAS서버에서 스스로 인증을 하는데\
+stateless한 jwt의 단점을 기술적으로 극복하여\
+stateful한 session의 이점인 즉시 벤처리 기능도 구현할 수 있는 방법인 것으로 예측된다.\
+(근데 안만들어봐서 확실하진 않다)
+
+
+
+
+#### 2-3. 세션 저장소는 어디에?
+Q. 클라이언트에서 세션키를 보관할건데, 보안적으로 그나마 우수한 장소는?
+
+![](./documentation/architecture/uml/authentication/저장소_보안.png)
+
+cookie에서 보관한다.
+
+javascript로 데이터 못빼가니까 그나마 보안적으로 다른 선택지 대비 낫다고 판단된다.
+
+
+
+#### 2-4. 이상행동 감지시 계정 잠금 기능
+
+![](documentation/architecture/uml/authentication/authentication_flowchart.png)
+
+
+
+#### 2-5. inactive user를 Member 테이블로부터 이관하기
+![](documentation/images/inactive-user.png)
+
+1. 매주 일요일 새벽 3시에
+2. cron + batch로
+3. locked account를
+4. MEMBER table -> INACTIVE_MEMBER table로 이전한다.
+
 
 
 ### 3. 결과
 
-1. smoke test
-    - springboot app이 RUNNING 상태인지 확인한다.
-    - 유저 인증시 이상 현상이 일어나는지 확인한다.
-2. integration test
-    - 도메인 별로 굵직한 서비스 레이어 위주로 테스트한다.
-    - mocking 보다는, 최대한 넓은 범위의 모듈을 커버하여 깨지는 부분이 있는지, 있다면 대략 어느 부분인지 확인한다.
-3. property based test (PBT)
-    - 절대 문제 생기면 안되는 기능(ex. 돈 관련 코드 등..)을 PBT로 테스트한다. ([PBT code link](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java))
-4. unit test
-    - 이 외 작은 기능 단위는 unit test로 처리한다.
+#### 3-1. 구현기능
+1. session clustering (spring security + redis)
+2. 이상행동 감지시(로그인 5회 틀림) invalidate session + account lock 한다.
+3. 매주 일요일 새벽 3시에 cron + batch로 locked account를 MEMBER table에서 INACTIVE_MEMBER table로 이전한다.
+
+
+#### 3-2. 기능1: login attempt 실패할 때마다 카운트+1
+
+https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95f366c/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserService.java#L147-L166
+
+
+#### 3-3. 기능2: 카운트가 일정 수치 이상 쌓이면 비정상적인 유저라고 판단, invalidate session && lock account
+
+https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95f366c/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserService.java#L168-L184
+
+
+#### 3-4. 기능3: INACTIVE_MEMBER를 다른 테이블로 이전하기 batch job
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L24-L144
+
+#### 3-5. 기능4: 매주 새벽 3시마다 batch job 실행하도록 cron 걸기
+
+https://github.com/Doohwancho/ecommerce/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/scheduled/ScheduledJobConfig.java#L22-L32
 
 
 
-
-## e. defensive programming
-
-### 1. exception 전략
-1. [custom Error Code Protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java) 에 맞추어 error code를 enum으로 선언한다.
-2. 도메인 별로 Error Code를 나누고 파일 하나에 일괄 관리한다.
-3. 도메인 별로 Runtime Exception을 나누어 일괄관리한다.
-    - 모든 business 관련 Exception들은 BusinessException을 상속받아 일괄관리하고,
-    - 모든 member 관련 Exception들 또한 MemberException을 상속받아 일괄관리한다.
-4. Runtime Error가 날만한 부분에 throw CustomException 처리한다.
-
->
-
-### 2. logging 전략
-1. logback-spring.xml에 logging format을 가독성이 좋게 설정한다. (디테일한 정보 + log level별 색깔 다르게 설정)
-2. 에러가 날만한 부분에 log.error() 처리한다.
-3. profile 별(ex. local/docker/prod/test) log level을 구분하여 log/ 디렉토리에 레벨별로 저장한다.
-4. production에서 error 로그 확인 시, 실행중인 스프링 앱에서 에러 로그를 찾지 말고, log/error/ 를 확인한다.
-
-
-### 3. Valid 전략
-- backend server filtering
-	1. openapi에서 필드마다 validity 조건 걸어서, 컨트롤러 레이어에서 파라미터로 받을 때, 백엔드 시스템 안에 들어오는 필드값을 1차적으로 type check, null check한다.
-	2. backend Entity에 validity 조건을 걸어서 database에 값을 넣을 때, 올바른 값이 들어가는지 다시한번 필터링 한다.
-
-
-### 4. rate limiting
-1. backend server에 http request시,
-2. 개별 ip address마다
-3. 1초에 5 request 리밋을 건다.
-4. 단, "burst"라고 초당 기본 5 request에 short spike of 10 request까지 queue에 담아 허용한다.
-5. 그 이상 request가 오면 503 Service Temporarily Unavailable error 를 보낸다.
-
-https://github.com/Doohwancho/ecommerce/blob/91f61cd43591f8d56b8925e9bb8ceac0cbe89d29/web-server/default.conf#L1-L5
-
-https://github.com/Doohwancho/ecommerce/blob/dc963b102c65178fe7bd52960a344991272cfeab/web-server/default.conf#L29-L34
-
-
-
-## f. clean code
-
-개발자 마다 코딩하는 스타일이 천차만별이고,
-
-clean code라는게 오답은 있으나 정답이 없는 경우가 많다보니,
-
-클린코드 규칙을 논의하고 코드리뷰로 하나하나 체크하는 것 보다,
-
-시스템적으로 google-style-code-convention 적용해서 단축키 누르면 자동으로 포멧 변환하거나 수정해야 하는 부분 체크하는 식으로 처리한다.
-
-
-
-
-### 1. code convention & protocol 설정
-1. [google style java code convention](https://google.github.io/styleguide/javaguide.html)
-2. [custom error code protocol](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/error/ErrorCode.java)
-3. [common / business / member, 도메인 별 exception](https://github.com/Doohwancho/ecommerce/tree/main/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/error/exception)
-4. [commit-message protocol](https://github.com/Doohwancho/ecommerce/blob/main/documentation/protocols/commit-message.md)
-
-### 2. linter를 단축키로 적용
-- intellij plugins
-	1. sonarlint
-	2. checkstyle
-- intellij 단축키 설정
-	1. command + shift + 1 단축키로 google style java code convention 적용
-		- ![](documentation/images/2024-01-30-21-02-05.png)
-	2. command + shift + 2 단축키로 sonarlint를 적용
-		- ![](documentation/images/2024-01-30-21-02-47.png)
-	3. 'format on save'을 해서 저장 시에 자동으로 포멧이 되게끔 설정한다.
-		- ![](documentation/images/2024-01-30-21-04-34.png)
-
-
-
-## g. refactoring
+## c. 돈관련 코드 테스트 정밀도 높힌 방법
 
 ### 1. 문제
+
+일반적인 코드는 테스트 커버리지가 넓은 integration 테스트 위주로 하면서,\
+에러나면 그 부분 위주로 top-down으로 디버깅하는 방식이 효율적이다.
+
+근데 돈 관련 코드는 실패하면 금전적 손실, 배상 및 소송, 평판 하락, 신뢰 손실 등\
+골치아파지기 때문에 테스트를 더 정교하게 짜야한다.
+
+문제는 테스트코드에서 예외케이스를 짤 정도로 **예상한 에러면, 이미 고쳤다는 것**이다.\
+예상하지 못한 다양한 예외케이스를 던져주는 테스트 라이브러리가 없을까?
+
+
+### 2. 방법론
+
+![](./documentation/images/fuzzy_testing_pbt.webp)
+
+PBT(`property_based_test`) + fuzzy testing을 이용하면 이 문제를 해결할 수 있다.
+
+
+#### 2-1. PBT: '속성'에서 반드시 참이어야 하는 부분 검증
+PBT란 '속성'을 던져주면 해당 '속성'이라면 반드시 참이여야 하는 점을 테스트 해준다.
+
+ex1) Q. `sort(list)`를 PBT하면, 출력 list가 반드시 만족해야 하는 속성이란?
+
+1. 입력 list.size()가 출력 list.size()와 반드시 같아야 한다.
+2. 출력 list의 n번째 원소는, n+1번째 원소보다 반드시 같거나 작아야 한다.
+
+
+ex2) `add(a,b)`를 PBT하면, `add(b,a)`의 출력 값도 같게 나오는지 테스트 해준다.
+
+
+...이걸 PBT가 자동으로 검증해준다.
+
+
+#### 2-2. fuzzy test: 파라미터에 edge cases 검증을 세심하게 해준다.
+테스트코드 짤 때, 모든 에지케이스들 다 생각하고 도입하는건 비현실적인데, 이걸 fuzzy test가 자동으로 해준다.
+
+Q. 테스트 인풋이 `Integer`이라면?
+
+A. 해당 인풋안에서 일어날 수 있는 모든 edge case들을 던져준다.
+
+ex. 0, -1, null, "abc", "0xfffffff", -2147483648, 2147483647, -2147483648-1, 4294967295, ...
+
+
+
+
+
+#### 2-3. fuzzy test: 랜덤 파라미터 넣는걸 수십, 수백번 해준다.
+
+
 ```java
-@Service
-public class ProductService {
+@RunWith(JUnitQuickcheck.class)
+public class StringReverserProperties {
 
-    private ProductService self;
-
-    @Transactional
-    public List<Product> getProductDetailDTOsById(Long productId) {
-        //business logics
-    }
-
-    public List<ProductDetailResponseDTO> findProductDetailDTOsById(Long productId) {
-        List<Product> productDetailDTOsList = self.getProductDetailDTOsById(productId); //fix: solution to "Methods should not call same-class methods with incompatible @Transactional"
-
-        return productMapper.productsToProductDetailDTOs(productDetailDTOsList);
-    }
-}
-```
-1. 서비스 메서드의 반환타입이 `List<ResponseDTO>`로 하자니, 재사용성이 떨어지고, `List<도메인VO>`로 하면 재사용성은 올라가는데, 컨트롤러에 반환시 ResponseDTO로 한번 더 변환해주어야 한다.
-2. ResponseDTO로 변환해주는 메서드를 동일한 서비스 레이어 파일에서 작성 시, @Transactional이 걸려있는 경우, self.메서드()로 참조해야 하는데, 그닥 좋은 패턴은 아닌 듯 하다.
-3. 서비스 레이어에서는 서비스 로직 관련 코드만 있어야 하는데, 로직은 없고 DTO 변환 코드가 있어서 가독성에 문제가 생기고 서비스 레이어가 비대해진다.
-
-
-### 2. 해결책
-
-service layer와 adapter layer를 분리한다.
-
-```java
-1) Adapter layer
-
-@Component
-public class ProductAdapter {
     @Autowired
-    private ProductMapper productMapper;
-    @Autowired
-    private ProductService productService;
+    private StringReverser stringReverser;
 
-    public List<ProductDetailResponseDTO> getProductDetailDTOsById(Long id) {
-        List<Product> productList = productService.getProductDetailDTOsById(id);
-
-        return productMapper.productsToProductDetailDTOs(productList);
-    }
-}
-```
-```
-2) Service layer
-
-@Service
-public class ProductService {
-
-    private ProductService self;
-
-    @Transactional
-    public List<Product> getProductDetailDTOsById(Long productId) {
-        //business logics
+    @Property(trials = 50)  //랜덤 String s 를 보내고 50번 트라이 한다는 것
+    public void reversingTwiceGivesOriginalString(String s) {
+        String reversedOnce = stringReverser.reverse(s);
+        String reversedTwice = stringReverser.reverse(reversedOnce);
+        assertEquals(s, reversedTwice);
     }
 }
 ```
 
-1. 타입 변환만 전문적으로 하는 어답터 레이어
-2. 서비스 레이어
+예를들어, 이 코드는 `reverse_string()` 테스트 코드인데,\
+PBT가 50번동안 랜덤한 `String s`를 만들어 테스트 돌려준다.
 
-...로 분리함으로써, 서비스 레이어에서는 비즈니스 로직만 있도록 했다.
+만약 테스트 실패했다?\
+그러면 실패한 모든 케이스 다 주는게 아니라,\
+실패 케이스 중에서 제일 짧고 간단한 케이스를 반환해줘서, 디버깅시 편하는 이점도 있다.
 
-
-
-## h. 요구사항을 비즈니스 로직 코드로 구현
-
-### 1. 요구사항
-클라이언트가 요청한 product_item에 대해 할인된 가격을 적용하여 주문을 등록한다.
-
-### 2. validation
-1. validation check를 하되
-2. 악성 request라면, invalidate session + lock user account 한다.
-
-구현 코드)
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L65-L90
+내가 짠 코드의 **최소 반례 데이터**를 반환해준다.
 
 
-### 3. domain 메서드
+### 3. 주의점
 
-상품 가격에 discount를 적용하는 함수
+#### 3-1. 메서드 하나에 테스트 수십,수백번 돌리는거라 cpu cost가 매우 크고 시간도 오래걸린다.
+1. 수 많은 corner case들과
+2. 속성에 반드시 참이어야 하는 명제
+3. 랜덤 인풋 파라미터 수십번 테스트 돌리면,
 
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/domain/Discount.java#L20-L37
+... test 비용이 매우 커지고 시간도 오래걸린다.
 
-### 4. domain 메서드는 PBT로 테스트
 
-Discount 도메인 객체에 applyDiscount()는 돈이 걸린 아주 중요한 함수이므로,\
-Property Based Testing을 한다.
+그러니 모든 코드에 PBT를 적용할 순 없다.
 
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L25-L100
+사람 생명 연관된 코드, 돈 관련코드 등,\
+반드시 실패하면 안되는 코드에만 적용하자.
 
-### 5. 요구사항을 구현한 주문 코드
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/service/OrderService.java#L65-L178
+
+### 4. 적용
+
+#### 4-1. PBT + fuzzy test 지원 라이브러리 고르기
+
+아래의 후보군이 있었는데, 선정 기준은 다음과 같다.
+
+1. 필요한 기능(PBT + fuzzy test)을 지원하는가?
+2. 최근까지 maintain 되고 있는가?
+3. 사람들이 많이 사용하는가? star 수가 많은가?
+
+
+`jqwik` 쓰기로 했다.
+
+---
+1. jqwik
+	1. junit5와의 호환이 가능하다
+	2. 최근까지 maintain 되고 있다
+	3. 4494 commits
+2. junit-quickcheck
+	1. 2022년까지 업데이트
+	2. 1161 commits
+	3. junit-quickcheck (2021.10.29. 현재 1.0 버전 기준)는 junit4에 dependency를 두고 있다고 명시되어있어서,
+	4. https://github.com/pholser/junit-quickcheck
+3. quick theory
+	1. 마지막 업데이트가 4년전
+	2. 212 commits
+	3. https://github.com/quicktheories/QuickTheories
+4. quickcheck
+	1. https://pholser.github.io/junit-quickcheck/site/1.0/javadoc.html
+5. kotlin test
+	1. also has basic support for PBT. Currently no shrinking yet.
+
+
+#### 4-2. 가격 discount 코드에 PBT + fuzzy test 적용하기
+
+돈관련된 상품가격에 할인율 적용하는 코드에 PBT + fuzzy test를 도입했다.
+
+https://github.com/Doohwancho/ecommerce/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L39-L68
+
+
+### 5. 결과
+
+이젠 머리아프게 수 많은 코너케이스들 고려 안해도 자동으로 처리해준다.\
+PBT + fuzzy test로 검증한 코드는 절대 안깨진다는걸 아니까,\
+안심하고 리펙토링 할 수 있다는 이점도 있다.
+
+
+
+
+
+
 
 
 # D. 기술적 도전 - Database
@@ -2560,7 +2532,7 @@ PMM도 같은 위와 같은 이유로 선택하게 되었다.
 ## d. 시행착오 - 배포서버에서 log는 error랑 warn만 키자
 
 
-### d-a. 사건의 발단
+### a. 사건의 발단
 
 대규모 트래픽을 견디는 아키텍처를 만들기 위해 먼저 aws에 간단한 3 tier architecture를 구상했다.
 
@@ -2657,7 +2629,7 @@ high latency의 원인은 다음으로 유추할 수 있다.
 	1. 현재 L7 load balancer로 구성되있는데, 어짜피 현 프로젝트에서는 http request을 열어서 ALB가 로깅한다거나 등 별도 처리를 안하니까, L7 load balancer로 변경한다.
 
 
-### d-b. 가설1 - RDS의 connections 수가 부족해서 latency가 높아졌다.
+### b. 가설1 - RDS의 connections 수가 부족해서 latency가 높아졌다.
 
 
 #### 1. 문제 원인 예측
@@ -3060,7 +3032,7 @@ RDS connections의 문제는 아닌 듯 하다.
 
 
 
-### d-c. 가설2 - query가 느려서 latency가 높아졌다.
+### c. 가설2 - query가 느려서 latency가 높아졌다.
 
 
 #### 1. 성능 모니터링할 쿼리
@@ -3147,7 +3119,7 @@ duration: 0.0056 = 5.6ms
 
 
 
-### d-d(puff diddy 아님). 가설3 - RDS의 네트워크 문제인가?
+### d. 가설3 - RDS의 네트워크 문제인가?
 
 #### 1. 문제 원인 예측
 [rds instance spec 비교 사이트](https://www.cloudzero.com/blog/rds-instance-types/)에 따르면, db.t2.micro의 네트워크 퍼포먼스는 'low to moderate'라고 한다.
@@ -3188,7 +3160,7 @@ RDS의 네트워크 문제가 high latency의 문제는 아니었다.
 
 
 
-### d-e. 가설4 - ec2 spec을 올려보자
+### e. 가설4 - ec2 spec을 올려보자
 
 Q. ec2 instance의 class를 small 에서 medium 으로 업그레이드 하면 latency가 빨라지지 않을까?
 
@@ -3281,7 +3253,7 @@ ec2 스펙을 올렸는데 레이턴시가 오히려 느려졌다?
 
 
 
-### d-f. 가설5 - core 수를 늘려보자
+### f. 가설5 - core 수를 늘려보자
 
 CPU core 수가 부족해서 스로틀링이 걸린게 아닐까?
 
@@ -3371,7 +3343,7 @@ CPU나 메모리 등, 리소스 부족 현상이 일어날 경우, 단순히 스
 문제의 근본원인 제거할 때 까지인 듯 하다.
 
 
-### d-g. 문제의 원인
+### g. 문제의 원인
 
 #### 1. 고민
 
@@ -3438,7 +3410,7 @@ INFO, WARN, ERROR 레벨 로그를 콘솔에 프린트 하고, 파일로 저장�
 2. warn & error level log만 파일로 저장하자.
 
 
-### d-h. 실험
+### h. 실험
 
 문제 원인을 알았으니, 실험해보자.
 
@@ -3583,7 +3555,7 @@ minor GC는 316 -> 2231로 증가했다.\
 
 
 
-### d-i. 결과 및 배운 점
+### i. 결과 및 배운 점
 
 #### 1. logging protocol을 정하고 지키자
 

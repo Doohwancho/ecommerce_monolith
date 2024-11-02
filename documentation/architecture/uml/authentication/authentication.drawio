@@ -1,44 +1,44 @@
 <mxfile host="65bd71144e">
     <diagram id="nCowHIRgVM99yYhaKh4a" name="페이지-1">
-        <mxGraphModel dx="2157" dy="1001" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="1489" dy="670" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="2" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+                <mxCell id="2" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
                     <mxGeometry x="100" y="140" width="30" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="3" value="API" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;" vertex="1" parent="1">
+                <mxCell id="3" value="API" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;" parent="1" vertex="1">
                     <mxGeometry x="290" y="160" width="100" height="930" as="geometry"/>
                 </mxCell>
-                <mxCell id="25" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;" vertex="1" parent="3">
+                <mxCell id="25" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;" parent="3" vertex="1">
                     <mxGeometry x="45" y="75" width="10" height="155" as="geometry"/>
                 </mxCell>
-                <mxCell id="30" value="1.1 loadUserByUserName()" style="html=1;verticalAlign=bottom;endArrow=block;" edge="1" parent="3" target="4">
+                <mxCell id="30" value="1.1 loadUserByUserName()" style="html=1;verticalAlign=bottom;endArrow=block;" parent="3" target="4" edge="1">
                     <mxGeometry x="-0.0258" width="80" relative="1" as="geometry">
                         <mxPoint x="55" y="100" as="sourcePoint"/>
                         <mxPoint x="135" y="100" as="targetPoint"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="41" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;" vertex="1" parent="3">
+                <mxCell id="41" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;" parent="3" vertex="1">
                     <mxGeometry x="45" y="360" width="10" height="140" as="geometry"/>
                 </mxCell>
-                <mxCell id="53" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;labelBackgroundColor=#000000;fillColor=#FFFFFF;" vertex="1" parent="3">
+                <mxCell id="53" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;labelBackgroundColor=#000000;fillColor=#FFFFFF;" parent="3" vertex="1">
                     <mxGeometry x="45" y="630" width="10" height="140" as="geometry"/>
                 </mxCell>
-                <mxCell id="4" value="Service" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;" vertex="1" parent="1">
+                <mxCell id="4" value="Service" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;" parent="1" vertex="1">
                     <mxGeometry x="470" y="160" width="100" height="930" as="geometry"/>
                 </mxCell>
-                <mxCell id="29" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;" vertex="1" parent="4">
+                <mxCell id="29" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;" parent="4" vertex="1">
                     <mxGeometry x="45" y="75" width="10" height="125" as="geometry"/>
                 </mxCell>
-                <mxCell id="31" value="1.1.1get userDetails" style="html=1;verticalAlign=bottom;endArrow=block;" edge="1" parent="4">
+                <mxCell id="31" value="1.1.1get userDetails" style="html=1;verticalAlign=bottom;endArrow=block;" parent="4" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
                         <mxPoint x="55" y="100" as="sourcePoint"/>
                         <mxPoint x="210" y="100" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="33" value="1.1.2 authentication success" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;entryX=1;entryY=0;" edge="1" parent="4">
+                <mxCell id="33" value="1.1.2 authentication success" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;entryX=1;entryY=0;" parent="4" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="55" y="110" as="sourcePoint"/>
                         <Array as="points">
@@ -47,16 +47,16 @@
                         <mxPoint x="60" y="130" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="44" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;" vertex="1" parent="4">
+                <mxCell id="44" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;" parent="4" vertex="1">
                     <mxGeometry x="45" y="360" width="10" height="110" as="geometry"/>
                 </mxCell>
-                <mxCell id="54" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;labelBackgroundColor=#000000;fillColor=#FFFFFF;" vertex="1" parent="4">
+                <mxCell id="54" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;labelBackgroundColor=#000000;fillColor=#FFFFFF;" parent="4" vertex="1">
                     <mxGeometry x="45" y="630" width="10" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="66" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;labelBackgroundColor=#000000;fillColor=#FFFFFF;" vertex="1" parent="4">
+                <mxCell id="66" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;labelBackgroundColor=#000000;fillColor=#FFFFFF;" parent="4" vertex="1">
                     <mxGeometry x="45" y="840" width="10" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="67" value="3.2.3. &lt;br&gt;매주 일요일 새벽 3시, lock된 유저를 &lt;br&gt;MEMBER table -&amp;gt; INACTIVE_MEMBER table로 이전" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;entryX=1;entryY=0;" edge="1" target="66" parent="4">
+                <mxCell id="67" value="3.2.3. &lt;br&gt;매주 일요일 새벽 3시, lock된 유저를 &lt;br&gt;MEMBER table -&amp;gt; INACTIVE_MEMBER table로 이전" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;entryX=1;entryY=0;" parent="4" target="66" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="50" y="820" as="sourcePoint"/>
                         <Array as="points">
@@ -64,10 +64,10 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="74" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;labelBackgroundColor=#000000;fillColor=#FFFFFF;" vertex="1" parent="4">
+                <mxCell id="74" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;labelBackgroundColor=#000000;fillColor=#FFFFFF;" parent="4" vertex="1">
                     <mxGeometry x="45" y="740" width="10" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="75" value="3.2.1. userDetails.failedAttempt + 1" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;entryX=1;entryY=0;" edge="1" target="74" parent="4">
+                <mxCell id="75" value="3.2.1. userDetails.failedAttempt + 1" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;entryX=1;entryY=0;" parent="4" target="74" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="50" y="720" as="sourcePoint"/>
                         <Array as="points">
@@ -75,196 +75,196 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="5" value="Repository" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;" vertex="1" parent="1">
+                <mxCell id="5" value="Repository" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;" parent="1" vertex="1">
                     <mxGeometry x="660" y="160" width="100" height="930" as="geometry"/>
                 </mxCell>
-                <mxCell id="22" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.mysql_db_instance_2;fillColor=#2E73B8;gradientColor=none;" vertex="1" parent="5">
+                <mxCell id="22" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.mysql_db_instance_2;fillColor=#2E73B8;gradientColor=none;" parent="5" vertex="1">
                     <mxGeometry x="25" y="60" width="50" height="53" as="geometry"/>
                 </mxCell>
-                <mxCell id="23" value="" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;" vertex="1" parent="5">
+                <mxCell id="23" value="" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;" parent="5" vertex="1">
                     <mxGeometry x="25" y="140" width="50" height="42" as="geometry"/>
                 </mxCell>
-                <mxCell id="46" value="" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;" vertex="1" parent="5">
+                <mxCell id="46" value="" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;" parent="5" vertex="1">
                     <mxGeometry x="25" y="370" width="50" height="42" as="geometry"/>
                 </mxCell>
-                <mxCell id="55" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.mysql_db_instance_2;fillColor=#2E73B8;gradientColor=none;" vertex="1" parent="5">
+                <mxCell id="55" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.mysql_db_instance_2;fillColor=#2E73B8;gradientColor=none;" parent="5" vertex="1">
                     <mxGeometry x="30" y="630" width="50" height="53" as="geometry"/>
                 </mxCell>
-                <mxCell id="64" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/compute/Batch_Accounts.svg;labelBackgroundColor=#000000;fillColor=#FFFFFF;" vertex="1" parent="5">
+                <mxCell id="64" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/compute/Batch_Accounts.svg;labelBackgroundColor=#000000;fillColor=#FFFFFF;" parent="5" vertex="1">
                     <mxGeometry x="25" y="860" width="68" height="64" as="geometry"/>
                 </mxCell>
-                <mxCell id="76" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.mysql_db_instance_2;fillColor=#2E73B8;gradientColor=none;" vertex="1" parent="5">
+                <mxCell id="76" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.mysql_db_instance_2;fillColor=#2E73B8;gradientColor=none;" parent="5" vertex="1">
                     <mxGeometry x="30" y="740" width="50" height="53" as="geometry"/>
                 </mxCell>
-                <mxCell id="6" value="Cookie" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
-                    <mxGeometry x="-372" y="200" width="60" height="80" as="geometry"/>
+                <mxCell id="6" value="Cookie" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+                    <mxGeometry x="-472" y="200" width="60" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="7" value="Session Storage" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
-                    <mxGeometry x="-370" y="530" width="60" height="80" as="geometry"/>
+                <mxCell id="7" value="Session Storage" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+                    <mxGeometry x="-470" y="530" width="60" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="Local Storage" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
-                    <mxGeometry x="-370" y="370" width="60" height="80" as="geometry"/>
+                <mxCell id="8" value="Local Storage" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+                    <mxGeometry x="-470" y="370" width="60" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="9" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/general/Code.svg;" vertex="1" parent="1">
-                    <mxGeometry x="-372" y="670" width="64" height="52" as="geometry"/>
+                <mxCell id="9" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/general/Code.svg;" parent="1" vertex="1">
+                    <mxGeometry x="-472" y="670" width="64" height="52" as="geometry"/>
                 </mxCell>
-                <mxCell id="10" value="&lt;div&gt;1. cookie&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; - 자동으로 브라우저가 담아서 보내줌. (js로 명시 안해도 됨)&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- pros&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;1. HttpOnly -&amp;gt; prevent js access(XSS)&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;2. SameSite -&amp;gt; prevent CSRF&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;3. Secure -&amp;gt; no Http, Http's'!&lt;/div&gt;&lt;div&gt;- cons&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;1. stateful -&amp;gt; server에서(redis) 유저 정보 관리 -&amp;gt;&amp;nbsp;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;&amp;nbsp; &amp;nbsp; 동접유저 늘어나면 서버 과부하&lt;/div&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-                    <mxGeometry x="-290" y="160" width="335" height="180" as="geometry"/>
+                <mxCell id="10" value="&lt;div&gt;1. cookie&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; - 자동으로 브라우저가 담아서 보내줌. (js로 명시 안해도 됨)&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- pros&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;1. HttpOnly -&amp;gt; prevent js access(XSS)&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;2. SameSite -&amp;gt; prevent CSRF&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;3. Secure -&amp;gt; no Http, Http's'!&lt;/div&gt;&lt;div&gt;- cons&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;1. stateful -&amp;gt; server에서(redis) 유저 정보 관리 -&amp;gt;&amp;nbsp;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;&amp;nbsp; &amp;nbsp; 동접유저 늘어나면 서버 과부하&lt;/div&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="-390" y="160" width="335" height="180" as="geometry"/>
                 </mxCell>
-                <mxCell id="11" value="&lt;div&gt;2. local-storage&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; - can be accessed using js -&amp;gt; vulnerable to XSS&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- pros&amp;nbsp;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- 1. 5MB+ large size&lt;/div&gt;&lt;div&gt;- cons&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- XSS에 취약&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-                    <mxGeometry x="-290" y="400" width="360" height="30" as="geometry"/>
+                <mxCell id="11" value="&lt;div&gt;2. local-storage&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; - can be accessed using js -&amp;gt; vulnerable to XSS&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- pros&amp;nbsp;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- 1. 5MB+ large size&lt;/div&gt;&lt;div&gt;- cons&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- XSS에 취약&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="-390" y="400" width="360" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="12" value="&lt;div&gt;3. session-storage&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- same as local-storage except, when you exit browser,&amp;nbsp;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; auto-delete all things&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- avascript can have an access to it -&amp;gt; XSS에 취약&lt;/div&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-                    <mxGeometry x="-290" y="530" width="360" height="30" as="geometry"/>
+                <mxCell id="12" value="&lt;div&gt;3. session-storage&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- same as local-storage except, when you exit browser,&amp;nbsp;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; auto-delete all things&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- avascript can have an access to it -&amp;gt; XSS에 취약&lt;/div&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="-390" y="530" width="360" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="13" value="&lt;div&gt;4. javascript closure&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- closure로 변수 내부에 보관. 브라우저 꺼지면 날아감.&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- cons&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- XSS공격에 취약 - javascript exploit script 해서&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; jwt-module.getToken() 하면 빼갈 수 있음&lt;/div&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-                    <mxGeometry x="-280" y="700" width="360" height="30" as="geometry"/>
+                <mxCell id="13" value="&lt;div&gt;4. javascript closure&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- closure로 변수 내부에 보관. 브라우저 꺼지면 날아감.&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- cons&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;- XSS공격에 취약 - javascript exploit script 해서&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; jwt-module.getToken() 하면 빼갈 수 있음&lt;/div&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="-380" y="700" width="360" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="15" value="CSRF에 취약" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-                    <mxGeometry x="-480" y="225" width="90" height="30" as="geometry"/>
+                <mxCell id="15" value="CSRF에 취약" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="-580" y="225" width="90" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="18" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="16" target="8">
+                <mxCell id="18" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="16" target="8" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="19" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="16" target="7">
+                <mxCell id="19" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="16" target="7" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="21" style="edgeStyle=none;html=1;entryX=0.002;entryY=0.535;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="16" target="9">
+                <mxCell id="21" style="edgeStyle=none;html=1;entryX=0.002;entryY=0.535;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="16" target="9" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="16" value="XSS에 취약" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-                    <mxGeometry x="-480" y="525" width="90" height="30" as="geometry"/>
+                <mxCell id="16" value="XSS에 취약" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="-580" y="525" width="90" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="17" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="15" target="6">
+                <mxCell id="17" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="15" target="6" edge="1">
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="-30" y="500" as="sourcePoint"/>
-                        <mxPoint x="20" y="450" as="targetPoint"/>
+                        <mxPoint x="-130" y="500" as="sourcePoint"/>
+                        <mxPoint x="-80" y="450" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="24" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;" vertex="1" parent="1">
+                <mxCell id="24" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;" parent="1" vertex="1">
                     <mxGeometry x="110" y="240" width="10" height="530" as="geometry"/>
                 </mxCell>
-                <mxCell id="27" value="&lt;div style=&quot;text-align: left;&quot;&gt;1. POST /login&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;{&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;username: ${username}&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;password: ${password}&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;}&lt;/div&gt;" style="html=1;verticalAlign=bottom;endArrow=block;" edge="1" parent="1" target="3">
+                <mxCell id="27" value="&lt;div style=&quot;text-align: left;&quot;&gt;1. POST /login&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;{&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;username: ${username}&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;password: ${password}&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;}&lt;/div&gt;" style="html=1;verticalAlign=bottom;endArrow=block;" parent="1" target="3" edge="1">
                     <mxGeometry x="-0.2711" y="-80" width="80" relative="1" as="geometry">
                         <mxPoint x="120" y="260" as="sourcePoint"/>
                         <mxPoint x="200" y="260" as="targetPoint"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="34" value="1.1.3 save session in redis" style="html=1;verticalAlign=bottom;endArrow=block;exitX=1.077;exitY=0.594;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.085;entryY=0.221;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="29" target="23">
+                <mxCell id="34" value="1.1.3 save session in redis" style="html=1;verticalAlign=bottom;endArrow=block;exitX=1.077;exitY=0.594;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.085;entryY=0.221;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="29" target="23" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
                         <mxPoint x="530" y="310" as="sourcePoint"/>
                         <mxPoint x="610" y="310" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="35" value="1.1.4 return session id" style="html=1;verticalAlign=bottom;endArrow=block;exitX=-0.025;exitY=0.697;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1.277;entryY=0.746;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="23" target="29">
+                <mxCell id="35" value="1.1.4 return session id" style="html=1;verticalAlign=bottom;endArrow=block;exitX=-0.025;exitY=0.697;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1.277;entryY=0.746;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="23" target="29" edge="1">
                     <mxGeometry x="0.0001" width="80" relative="1" as="geometry">
                         <mxPoint x="360" y="430" as="sourcePoint"/>
                         <mxPoint x="440" y="430" as="targetPoint"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="36" value="1.1.5 return" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.077;exitY=0.842;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="29" target="3">
+                <mxCell id="36" value="1.1.5 return" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.077;exitY=0.842;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="29" target="3" edge="1">
                     <mxGeometry x="-0.0015" width="80" relative="1" as="geometry">
                         <mxPoint x="360" y="430" as="sourcePoint"/>
                         <mxPoint x="440" y="430" as="targetPoint"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="37" value="&lt;div&gt;1.1.6&lt;/div&gt;&lt;div&gt;Http Status: 201 OK&lt;/div&gt;&lt;div&gt;set-cookie: 'JSESSIONID = ${session}',&amp;nbsp;&lt;/div&gt;&lt;div&gt;set-cookie: 'CSRF_token = ${CSRF}'&lt;br&gt;&lt;/div&gt;&lt;div&gt;max-age(exp_time): 30m,&amp;nbsp;&lt;/div&gt;&lt;div&gt;HttpOnly: true, (XSS 방어)&lt;/div&gt;&lt;div&gt;Secure: true, (https -&amp;gt; XSS 방어)&lt;/div&gt;&lt;div&gt;SameSite: true (CSRF 방어)&lt;/div&gt;" style="html=1;verticalAlign=bottom;endArrow=block;exitX=-0.023;exitY=0.795;exitDx=0;exitDy=0;exitPerimeter=0;align=left;" edge="1" parent="1" source="25" target="24">
+                <mxCell id="37" value="&lt;div&gt;1.1.6&lt;/div&gt;&lt;div&gt;Http Status: 201 OK&lt;/div&gt;&lt;div&gt;set-cookie: 'JSESSIONID = ${session}',&amp;nbsp;&lt;/div&gt;&lt;div&gt;set-cookie: 'CSRF_token = ${CSRF}'&lt;br&gt;&lt;/div&gt;&lt;div&gt;max-age(exp_time): 30m,&amp;nbsp;&lt;/div&gt;&lt;div&gt;HttpOnly: true, (XSS 방어)&lt;/div&gt;&lt;div&gt;Secure: true, (https -&amp;gt; XSS 방어)&lt;/div&gt;&lt;div&gt;SameSite: true (CSRF 방어)&lt;/div&gt;" style="html=1;verticalAlign=bottom;endArrow=block;exitX=-0.023;exitY=0.795;exitDx=0;exitDy=0;exitPerimeter=0;align=left;" parent="1" source="25" target="24" edge="1">
                     <mxGeometry x="0.9069" y="122" width="80" relative="1" as="geometry">
                         <mxPoint x="360" y="430" as="sourcePoint"/>
                         <mxPoint x="440" y="430" as="targetPoint"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="38" value="Hacker" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#1F1F1F;" vertex="1" parent="1">
+                <mxCell id="38" value="Hacker" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#1F1F1F;" parent="1" vertex="1">
                     <mxGeometry x="70" y="510" width="30" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="43" value="&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;2. POST /login&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;{&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;&lt;span style=&quot;border-color: var(--border-color);&quot;&gt;&#9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;username: ${username}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;&lt;span style=&quot;border-color: var(--border-color);&quot;&gt;&#9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;password: ${password}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;set-cookie:&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;'JSESSIONID = ${stolen_session}'&lt;/div&gt;" style="html=1;verticalAlign=bottom;endArrow=block;exitX=1.241;exitY=0.558;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="24" target="3">
+                <mxCell id="43" value="&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;2. POST /login&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;{&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;&lt;span style=&quot;border-color: var(--border-color);&quot;&gt;&#9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;username: ${username}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;&lt;span style=&quot;border-color: var(--border-color);&quot;&gt;&#9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;password: ${password}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;set-cookie:&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;'JSESSIONID = ${stolen_session}'&lt;/div&gt;" style="html=1;verticalAlign=bottom;endArrow=block;exitX=1.241;exitY=0.558;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="24" target="3" edge="1">
                     <mxGeometry x="-0.1009" y="-104" width="80" relative="1" as="geometry">
                         <mxPoint x="220" y="570" as="sourcePoint"/>
                         <mxPoint x="300" y="570" as="targetPoint"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="45" value="2.1 check&amp;nbsp; session exists" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.941;exitY=0.129;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="41" target="4">
+                <mxCell id="45" value="2.1 check&amp;nbsp; session exists" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.941;exitY=0.129;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="41" target="4" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
                         <mxPoint x="370" y="530" as="sourcePoint"/>
                         <mxPoint x="450" y="530" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="47" value="2.1.1 query user session" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0.008;entryY=0.225;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="46">
+                <mxCell id="47" value="2.1.1 query user session" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0.008;entryY=0.225;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" target="46" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
                         <mxPoint x="530" y="539" as="sourcePoint"/>
                         <mxPoint x="665" y="540" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="48" value="2.1.2 session already exists" style="html=1;verticalAlign=bottom;endArrow=block;exitX=-0.032;exitY=0.677;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="46" target="4">
+                <mxCell id="48" value="2.1.2 session already exists" style="html=1;verticalAlign=bottom;endArrow=block;exitX=-0.032;exitY=0.677;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="46" target="4" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
                         <mxPoint x="570" y="600" as="sourcePoint"/>
                         <mxPoint x="650" y="600" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="49" value="2.1.3. max session is 1, invalid!" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0.941;entryY=0.482;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="4" target="41">
+                <mxCell id="49" value="2.1.3. max session is 1, invalid!" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0.941;entryY=0.482;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="4" target="41" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
                         <mxPoint x="374" y="585" as="sourcePoint"/>
                         <mxPoint x="454" y="585" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="50" value="2.1.4.&amp;nbsp;&lt;br&gt;/Login&lt;br&gt;http status: 302 Ridirect&lt;br&gt;" style="html=1;verticalAlign=bottom;endArrow=block;exitX=-0.059;exitY=0.889;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.941;entryY=0.763;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="41" target="24">
+                <mxCell id="50" value="2.1.4.&amp;nbsp;&lt;br&gt;/Login&lt;br&gt;http status: 302 Ridirect&lt;br&gt;" style="html=1;verticalAlign=bottom;endArrow=block;exitX=-0.059;exitY=0.889;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.941;entryY=0.763;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="41" target="24" edge="1">
                     <mxGeometry x="-0.0289" y="56" width="80" relative="1" as="geometry">
                         <mxPoint x="190" y="690" as="sourcePoint"/>
                         <mxPoint x="270" y="690" as="targetPoint"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="52" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;labelBackgroundColor=#000000;fillColor=#FFFFFF;" vertex="1" parent="1">
+                <mxCell id="52" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;labelBackgroundColor=#000000;fillColor=#FFFFFF;" parent="1" vertex="1">
                     <mxGeometry x="110" y="790" width="10" height="170" as="geometry"/>
                 </mxCell>
-                <mxCell id="57" value="Hacker" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#1F1F1F;" vertex="1" parent="1">
+                <mxCell id="57" value="Hacker" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#1F1F1F;" parent="1" vertex="1">
                     <mxGeometry x="70" y="790" width="30" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="58" value="&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;3. POST /login 5번 시도!&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;{&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;&lt;span style=&quot;border-color: var(--border-color);&quot;&gt;&#9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;username: ${username}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;&lt;span style=&quot;border-color: var(--border-color);&quot;&gt;&#9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;password: ${wrong-password}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;set-cookie:&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;'JSESSIONID = ${stolen_session}'&lt;/div&gt;" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.817;exitY=0.062;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="52">
+                <mxCell id="58" value="&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;3. POST /login 5번 시도!&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;{&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;&lt;span style=&quot;border-color: var(--border-color);&quot;&gt;&#9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;username: ${username}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;&lt;span style=&quot;border-color: var(--border-color);&quot;&gt;&#9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;password: ${wrong-password}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;}&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;set-cookie:&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); text-align: left;&quot;&gt;'JSESSIONID = ${stolen_session}'&lt;/div&gt;" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.817;exitY=0.062;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="52" edge="1">
                     <mxGeometry x="-0.103" y="-104" width="80" relative="1" as="geometry">
                         <mxPoint x="132.40999999999985" y="545.74" as="sourcePoint"/>
                         <mxPoint x="330" y="802" as="targetPoint"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="59" value="3.1 loadUserByUserName()" style="html=1;verticalAlign=bottom;endArrow=block;exitX=1.041;exitY=0.143;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="53" target="4">
+                <mxCell id="59" value="3.1 loadUserByUserName()" style="html=1;verticalAlign=bottom;endArrow=block;exitX=1.041;exitY=0.143;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="53" target="4" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
                         <mxPoint x="354.40999999999985" y="548.06" as="sourcePoint"/>
                         <mxPoint x="529.5" y="548.06" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="60" value="3.1.1. get userDetails" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.941;exitY=0.334;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="54">
+                <mxCell id="60" value="3.1.1. get userDetails" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.941;exitY=0.334;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="54" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
                         <mxPoint x="535" y="270" as="sourcePoint"/>
                         <mxPoint x="690" y="817" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="61" value="3.1.2 userDetails not found" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0.941;entryY=0.721;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="5" target="54">
+                <mxCell id="61" value="3.1.2 userDetails not found" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0.941;entryY=0.721;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="5" target="54" edge="1">
                     <mxGeometry x="0.0001" width="80" relative="1" as="geometry">
                         <mxPoint x="670" y="840" as="sourcePoint"/>
                         <mxPoint x="537.77" y="338.25" as="targetPoint"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="62" value="3.1.3. authentication failed!" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.041;exitY=0.884;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="54" target="53">
+                <mxCell id="62" value="3.1.3. authentication failed!" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.041;exitY=0.884;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="54" target="53" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
                         <mxPoint x="270" y="740" as="sourcePoint"/>
                         <mxPoint x="350" y="740" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="63" value="3.1.4. 5번 로그인 실패!&lt;br&gt;Http Status: 302 Redirect&lt;br&gt;/login" style="html=1;verticalAlign=bottom;endArrow=block;entryX=1.117;entryY=0.768;entryDx=0;entryDy=0;entryPerimeter=0;exitX=-0.159;exitY=0.945;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="53" target="52">
+                <mxCell id="63" value="3.1.4. 5번 로그인 실패!&lt;br&gt;Http Status: 302 Redirect&lt;br&gt;/login" style="html=1;verticalAlign=bottom;endArrow=block;entryX=1.117;entryY=0.768;entryDx=0;entryDy=0;entryPerimeter=0;exitX=-0.159;exitY=0.945;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="53" target="52" edge="1">
                     <mxGeometry x="-0.0247" y="47" width="80" relative="1" as="geometry">
                         <mxPoint x="270" y="790" as="sourcePoint"/>
                         <mxPoint x="350" y="790" as="targetPoint"/>
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="77" value="3.2.2. save userDetails" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.965;exitY=0.454;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.027;entryY=0.343;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="74" target="76">
+                <mxCell id="77" value="3.2.2. save userDetails" style="html=1;verticalAlign=bottom;endArrow=block;exitX=0.965;exitY=0.454;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.027;entryY=0.343;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="74" target="76" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
                         <mxPoint x="410" y="950" as="sourcePoint"/>
                         <mxPoint x="490" y="950" as="targetPoint"/>
