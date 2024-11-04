@@ -52,7 +52,7 @@ public class ProductViewCountMaxHeapBenchmark {
     }
     
     @Benchmark
-    @Group("second_heap_write")
+    @Group("max_heap_write")
     @GroupThreads(2)
     public void writeTest() {
         int randomProductIndex = (int) (Math.random() * PRODUCT_COUNT);
@@ -61,7 +61,7 @@ public class ProductViewCountMaxHeapBenchmark {
     }
     
     @Benchmark
-    @Group("second_heap_read")
+    @Group("max_heap_read")
     @GroupThreads(2)
     public void readTest(Blackhole blackhole) {
         blackhole.consume(heap.getTopNProducts(10));

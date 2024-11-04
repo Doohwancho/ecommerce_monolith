@@ -14,6 +14,16 @@ import lombok.extern.slf4j.Slf4j;
     A. max_heap.ver writes twice (one for view_count, other one for ranking)
        ConcurrentSkipListMap is like TreeMap with concurrency-control.
        you write "once", and it orders items automatically.
+       
+    Q. benchmark results
+    
+    Benchmark                                                                         (threadCount)   Mode  Cnt      Score   Error   Units
+    c.c.e.d.p.v._01_redis.benchmark.ProductViewCountRedisBenchmark.first_redis_read               2  thrpt    2     77.903          ops/ms
+    c.c.e.d.p.v._01_redis.benchmark.ProductViewCountRedisBenchmark.first_redis_write              2  thrpt    2     78.658          ops/ms
+    c.c.e.d.p.v._02_max_heap.ProductViewCountMaxHeapBenchmark.second_heap_read                    2  thrpt    2    741.954          ops/ms
+    c.c.e.d.p.v._02_max_heap.ProductViewCountMaxHeapBenchmark.second_heap_write                   2  thrpt    2     49.924          ops/ms
+    c.c.e.d.p.v._03_concurrentSkipList.ViewCounterBenchmarkTest.third_counter_read                2  thrpt    2  49621.789          ops/ms
+    c.c.e.d.p.v._03_concurrentSkipList.ViewCounterBenchmarkTest.third_counter_write               2  thrpt    2     37.911          ops/ms
  */
 
 @Slf4j

@@ -107,7 +107,7 @@ public class ProductViewCountRedisBenchmark {
     // Simulates high-frequency write operations (product views)
     @Benchmark
 //    @Threads(2) //writeTest() benchmark will be executed using 2 threads concurrently.
-    @Group("first_redis_write")
+    @Group("redis_write")
     @GroupThreads(2)
     //It specifies how many threads should be allocated to a particular method within a group of benchmarks.
     //It's used to simulate different ratios of operations in multi-threaded scenarios.
@@ -119,7 +119,7 @@ public class ProductViewCountRedisBenchmark {
     }
     
     @Benchmark
-    @Group("first_redis_read")
+    @Group("redis_read")
     @GroupThreads(2)
     public void readTest(Blackhole blackhole) {
         List<String> topProducts = rankingService.getTopViewedProducts();
