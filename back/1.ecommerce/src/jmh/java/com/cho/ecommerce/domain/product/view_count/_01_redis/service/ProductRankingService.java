@@ -1,6 +1,6 @@
-package com.cho.ecommerce.domain.product.service;
+package com.cho.ecommerce.domain.product.view_count._01_redis.service;
 
-import com.cho.ecommerce.domain.product.domain.MockProduct;
+import com.cho.ecommerce.domain.product.view_count._01_redis.domain.MockProduct;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

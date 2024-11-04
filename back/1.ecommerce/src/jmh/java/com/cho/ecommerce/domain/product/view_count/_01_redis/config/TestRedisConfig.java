@@ -1,7 +1,7 @@
-package com.cho.ecommerce.domain.product.config;
+package com.cho.ecommerce.domain.product.view_count._01_redis.config;
 
 
-import com.cho.ecommerce.domain.product.service.ProductRankingService;
+import com.cho.ecommerce.domain.product.view_count._01_redis.service.ProductRankingService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

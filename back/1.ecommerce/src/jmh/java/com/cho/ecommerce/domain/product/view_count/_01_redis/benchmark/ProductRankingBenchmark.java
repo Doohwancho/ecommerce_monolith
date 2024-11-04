@@ -1,9 +1,9 @@
-package com.cho.ecommerce.domain.product.benchmark;
+package com.cho.ecommerce.domain.product.view_count._01_redis.benchmark;
 
 
-import com.cho.ecommerce.domain.product.config.TestRedisConfig;
-import com.cho.ecommerce.domain.product.domain.MockProduct;
-import com.cho.ecommerce.domain.product.service.ProductRankingService;
+import com.cho.ecommerce.domain.product.view_count._01_redis.config.TestRedisConfig;
+import com.cho.ecommerce.domain.product.view_count._01_redis.domain.MockProduct;
+import com.cho.ecommerce.domain.product.view_count._01_redis.service.ProductRankingService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -51,7 +51,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(value = 1)
 @Warmup(iterations = 2)
-@Measurement(iterations = 3)
+@Measurement(iterations = 2)
 @Threads(4) //총 4개의 스레드만 할당한다.
 //total number of threads allocated for this benchmark test. 이걸 @GroupTrheads(8)로 메서드별로 나눠가져서 테스트 한다.
 //Q. whats number of threads of ec2 with 2core, 4GiB RAM?

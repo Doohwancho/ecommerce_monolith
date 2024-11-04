@@ -1,4 +1,4 @@
-package com.cho.ecommerce.domain.product.domain;
+package com.cho.ecommerce.domain.product.view_count._01_redis.domain;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
