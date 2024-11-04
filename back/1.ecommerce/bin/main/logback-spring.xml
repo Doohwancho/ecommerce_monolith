@@ -36,6 +36,12 @@
   -->
 
 
+  <!-- for benchmark with jmh -->
+  <logger name="io.lettuce" level="WARN"/>
+  <logger name="org.springframework" level="WARN"/>
+  <logger name="org.springframework.data.redis" level="WARN"/>
+  <logger name="com.cho.ecommerce.domain.mockProduct.ProductRankingBenchmark" level="WARN"/>
+
   <springProfile name="local"> <!-- 로컬 개발환경에서 로깅 설정 -->
     <include resource="log/console-appender.xml"/> <!-- info | debug | trace 레벨의 로그를 터미널에 출력 -->
 
@@ -52,7 +58,7 @@
     </root>
   </springProfile>
 
-  <springProfile name="test"> <!-- docker 개발환경에서 로깅 설정 -->
+  <springProfile name="test"> <!-- test 개발환경에서 로깅 설정 -->
     <include resource="log/console-appender.xml"/> <!-- info | debug | trace 레벨의 로그를 터미널에 출력 -->
 
     <root level="INFO"> <!-- 개발 환경에서는 콘솔에서 info | debug | trace 레벨 이상 로그 출력 -->

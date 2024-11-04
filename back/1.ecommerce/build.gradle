@@ -5,11 +5,13 @@ plugins {
     id 'org.hidetake.swagger.generator' version '2.18.2'
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
     id 'idea'
+    id 'me.champeau.gradle.jmh' version '0.5.3'
 }
 
 group = 'com.cho.ecommerce'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 //for jqwik
 ext.junitJupiterVersion = '5.9.3'
@@ -17,6 +19,7 @@ ext.jqwikVersion = '1.8.1'
 
 //for jackson's OffsetDateTime formatter
 ext.jacksonVersion = '2.13.5'
+
 
 dependencies {
     // jackson-data formatter에서 JSR310 라이브러리가 (Java 8 Date/Time) 지원
@@ -77,11 +80,21 @@ dependencies {
     testImplementation "org.junit.platform:junit-platform-launcher:1.5.2"
     testImplementation('org.junit.jupiter:junit-jupiter:5.9.2')
     testImplementation "net.jqwik:jqwik:${jqwikVersion}" //for Property Based Testing
+
+    //jmh
+    jmh 'org.openjdk.jmh:jmh-core:1.21'
+    jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
+    jmh 'org.springframework:spring-context'
+    jmh 'org.springframework.boot:spring-boot-starter-data-redis'
+    jmh 'io.lettuce:lettuce-core'
+    jmh 'org.projectlombok:lombok'
+    jmhAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 
 test {
     jvmArgs '--enable-preview'
+
     //start of jqwik config
     useJUnitPlatform {
         includeEngines 'jqwik', 'junit-jupiter', 'junit-vintage'
@@ -93,6 +106,8 @@ test {
     include '**/*Properties.class'
     include '**/*Test.class'
     include '**/*Tests.class'
+
+    exclude '**/*Benchmark*'
 
     environment "MY_ENV_VAR", "true"
     //end of jqwik config
@@ -108,7 +123,9 @@ repositories {
     mavenCentral()
 }
 
-//openapi config
+/***************************
+ * openapi config
+ */
 swaggerSources {
 //    def typeMappings = 'URI=URI, BigDecimal=BigDecimal, EntityModel=EntityModel'
 //    def importMappings = 'URI=java.net.URI, BigDecimal=java.math.BigDecimal, EntityModel=org.springframework.hateoas.EntityModel'
@@ -133,7 +150,9 @@ sourceSets.main.java.srcDir "${swaggerSources.ecommerce.code.outputDir}"
 sourceSets.main.resources.srcDir "${swaggerSources.ecommerce.code.outputDir}"
 
 
-//query dsl config
+/****************************
+ * query dsl config
+ */
 def querydslDir = "$buildDir/generated/querydsl"
 
 querydsl {
@@ -154,3 +173,51 @@ compileTestJava.options.compilerArgs += '-parameters' //for jqwik
 processResources.mustRunAfter swaggerSources.ecommerce.code
 compileQuerydsl.mustRunAfter swaggerSources.ecommerce.code
 compileJava.dependsOn swaggerSources.ecommerce.code, compileQuerydsl
+
+
+/**********************
+ * jmh
+ */
+//아래 세팅이 있어야 jmh 테스트 시, log-file conflict가 안난다.
+//org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':processJmhResources'.
+//Caused by: org.gradle.api.InvalidUserCodeException: Entry jmh-log-config.xml is a duplicate but no duplicate handling strategy has been set. Please refer to https://docs.gradle.org/7.5.1/dsl/org.gradle.api.tasks.Copy.html#org.gradle.api.tasks.Copy:duplicatesStrategy for details.
+sourceSets {
+    jmh {
+        java {
+            srcDirs = ['src/jmh/java']
+        }
+        resources {
+            srcDirs = ['src/jmh/resources']
+        }
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+jmh {
+    jmhVersion = '1.21'
+    includeTests = false
+    // Allows to include test sources into generate JMH jar, i.e. use it when benchmarks depend on the test classes.
+    include = ['.*Benchmark.*']
+
+//    benchmarkMode = ['all']
+//    fork = 1
+//    warmupIterations = 2
+//    iterations = 2
+//    threads = 4 //이건 benchmark class마다 총 할당할 쓰레드 수를 정하고, 메서드마다 @GroupThreads() 수로 할당해주자.
+
+    timeUnit = 'ms'
+
+    jvmArgs = [
+            //jvm memory 관련
+            //WAS 서버의 ec2를 2core, 4GiB RAM + scale_out 한다고 가정,
+            //초기 힙 사이즈 (-Xms): 일반적으로 전체 RAM의 25% 정도로 설정 -> 1GiB
+            //최대 힙 사이즈 (-Xmx): 일반적으로 전체 RAM의 50-75% 정도로 설정 -> 2.5GiB
+            '-Xms1024m',           // 초기 힙 사이즈: 1G
+            '-Xmx2560m',           // 최대 힙 사이즈: 2.5G
+            '-XX:MaxMetaspaceSize=256m',
+
+            //로깅 설정
+            '-Dlogback.configurationFile=jmh-log-config.xml'
+    ]
+}

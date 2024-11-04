@@ -1,0 +1,4 @@
+<configuration>
+  <!-- lettuce의 default log level은 DEBUG이고, lettuce 개발자는 님 앱의 log level을 올려서 조절하라고 말한다. 출처: https://github.com/redis/lettuce/issues/1238-->
+  <logger name="io.lettuce" level="WARN"/>
+</configuration>

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/1.ecommerce.ecommerce.main.iml" filepath="$PROJECT_DIR$/.idea/modules/1.ecommerce.ecommerce.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/back.ecommerce.main.iml" filepath="$PROJECT_DIR$/.idea/modules/back.ecommerce.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.cho.ecommerce.ecommerce.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.cho.ecommerce.ecommerce.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ecommerce.jmh.iml" filepath="$PROJECT_DIR$/.idea/modules/ecommerce.jmh.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ecommerce.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ecommerce.main.iml" />
     </modules>
   </component>
