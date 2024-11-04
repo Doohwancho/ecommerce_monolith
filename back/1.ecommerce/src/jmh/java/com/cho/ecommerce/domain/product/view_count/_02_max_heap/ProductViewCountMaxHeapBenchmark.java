@@ -24,7 +24,7 @@ import org.openjdk.jmh.infra.Blackhole;
 @Fork(value = 1)
 @Warmup(iterations = 2)
 @Measurement(iterations = 2)
-public class ProductMaxHeapBenchmark {
+public class ProductViewCountMaxHeapBenchmark {
     
     private ProductViewCountMaxHeap heap;
     private static final int PRODUCT_COUNT = 10000;
@@ -52,7 +52,7 @@ public class ProductMaxHeapBenchmark {
     }
     
     @Benchmark
-    @Group("heap_write")
+    @Group("second_heap_write")
     @GroupThreads(2)
     public void writeTest() {
         int randomProductIndex = (int) (Math.random() * PRODUCT_COUNT);
@@ -61,7 +61,7 @@ public class ProductMaxHeapBenchmark {
     }
     
     @Benchmark
-    @Group("heap_read")
+    @Group("second_heap_read")
     @GroupThreads(2)
     public void readTest(Blackhole blackhole) {
         blackhole.consume(heap.getTopNProducts(10));

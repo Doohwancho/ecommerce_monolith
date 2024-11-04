@@ -55,7 +55,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 @Threads(4) //총 4개의 스레드만 할당한다.
 //total number of threads allocated for this benchmark test. 이걸 @GroupTrheads(8)로 메서드별로 나눠가져서 테스트 한다.
 //Q. whats number of threads of ec2 with 2core, 4GiB RAM?
-public class ProductRankingBenchmark {
+public class ProductViewCountRedisBenchmark {
     
     @Param({"2"}) // Test with different core counts
     private int threadCount;
@@ -107,7 +107,7 @@ public class ProductRankingBenchmark {
     // Simulates high-frequency write operations (product views)
     @Benchmark
 //    @Threads(2) //writeTest() benchmark will be executed using 2 threads concurrently.
-    @Group("redis_write")
+    @Group("first_redis_write")
     @GroupThreads(2)
     //It specifies how many threads should be allocated to a particular method within a group of benchmarks.
     //It's used to simulate different ratios of operations in multi-threaded scenarios.
@@ -119,7 +119,7 @@ public class ProductRankingBenchmark {
     }
     
     @Benchmark
-    @Group("redis_read")
+    @Group("first_redis_read")
     @GroupThreads(2)
     public void readTest(Blackhole blackhole) {
         List<String> topProducts = rankingService.getTopViewedProducts();
