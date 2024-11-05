@@ -16,22 +16,34 @@ docs: https://github.com/melix/jmh-gradle-plugin
 
 ### b. 에러 핸들링
 
-case1) jdk 버전이 안맞아서 실행 안되는 경우 -> 쓰는 jdk의 위치를 지정해줘야 한다.
+#### case1) jdk 버전이 안맞아서 실행 안되는 경우 -> 쓰는 jdk의 위치를 지정해줘야 한다.
 
 ```
 ./gradlew -Dorg.gradle.java.home=/Users/cho-cho/.asdf/installs/java/zulu-11.60.19 jmh
 ```
 
-case2) 특정 클래스만 run 하는 경우
+#### case2) 특정 클래스 하나만 run 하는 경우
+
+```build.gradle
+jmh {
+    include = ['UpdateCacheStrategyBenchmark.*']
+    //...
+}
+```
+
+#### case3) 전체 jmh 테스트를 run 하는 경우
+
+```build.gradle
+jmh {
+    include = ['.*Benchmark.*']
+    //...
+}
+```
+
+#### case4) 기존 코드의 컴파일, 빌드를 스킵하고 jmh 벤치마크만 하고 싶다면
 
 ```
-./gradlew jmh -PjmhIncludes=ProductRankingBenchmark
-```
-
-case3) 기존 코드의 컴파일, 빌드를 스킵하고 jmh 벤치마크만 하고 싶다면
-
-```
-./gradlew clean jmh -x test -x compileJava -x compileTestJava -x generateSwaggerCode -x generateSwaggerCodeEcommerce -x querydslClasses -x compileQuerydsl -PjmhIncludes=ProductRankingBenchmark
+./gradlew clean jmh -x test -x compileJava -x compileTestJava -x generateSwaggerCode -x generateSwaggerCodeEcommerce -x querydslClasses -x compileQuerydsl 
 ```
 
 # B. troubleshooting
