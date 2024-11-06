@@ -250,24 +250,25 @@ public class PrimitiveArrayViewCounterSortOptimized implements AutoCloseable {
      * Time: O(n + k log n), Space: O(k) where k = MAX_CACHED_SIZE
      */
     private void updateWithHeapSelection() {
+        //step1) 힙 생성 (size = 100)
         PriorityQueue<long[]> maxHeap = new PriorityQueue<>(
             MAX_CACHED_SIZE, // Only allocates space for 100 elements
             (a, b) -> Long.compare(b[1], a[1])  // Compare pre-fetched values
         );
         
-        // First pass: fill heap with first MAX_CACHED_SIZE non-zero elements
-        for (int i = 0; i < viewCounts.length(); i++) {
+        //step2) N개 요소를 순회하면서
+        for (int i = 0; i < viewCounts.length(); i++) { //O(N)
             long count = viewCounts.get(i);
-            if (count > 0) {
-                maxHeap.offer(new long[]{i, count});  // Store both id and count
+            if (count > 0) { //get non-zero-view-count products only
+                maxHeap.offer(new long[]{i, count});  // Store both id and count, O(log K), K = 100
                 if (maxHeap.size() > MAX_CACHED_SIZE) {
-                    maxHeap.poll(); //remove product with smallest view_count
+                    maxHeap.poll(); //remove product with smallest view_count, O(log K)
                 }
             }
         }
         
-        // Convert heap to sorted array
-        int[] result = new int[maxHeap.size()];
+        // step3) Convert heap to sorted array
+        int[] result = new int[maxHeap.size()]; //O(K log K), K = 100
         for (int i = result.length - 1; i >= 0; i--) {
             result[i] = (int) maxHeap.poll()[0];
         }
