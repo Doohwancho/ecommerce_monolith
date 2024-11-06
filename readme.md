@@ -121,13 +121,15 @@ Ecommerce MVP
 |                      | Spring Boot Starter Cache | 2.5.6   |
 | External Java Library| QueryDSL                  | 4.4.0   |
 |                      | OpenAPI-Codegen           | 4.3.1   |
-|                      | Jqwik                     | 1.8.1   |
 |                      | MapStruct                 | 1.5.5   |
+|                      | Jackson-datatype-jsr310   | 2.12.5  |
 |                      | Datafaker                 | 1.9.0   |
 | Database             | MySQL                     | 8.0.23  |
 |                      | Redis                     | 7.0.9   |
 | Test                 | junit                     | 5.9.2   |
 |                      | hamcrest                  | 2.2     |
+|                      | Jqwik                     | 1.8.1   |
+|                      | jmh                       | 1.21    |
 | Deploy               | AWS                       |         |
 |                      | Docker                    | 20.10.13|
 | Provisioning         | Terraform                 | 1.6.6   |
