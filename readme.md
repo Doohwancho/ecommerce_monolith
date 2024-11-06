@@ -17,8 +17,9 @@
 	- c. [wireframe](#c-wireframe)
 - C. [기술적 도전 - Backend](#c-기술적-도전---backend)
     - a. [DB 부하를 낮추기 위한 cache 도입기](#a-db-부하를-낮추기-위한-cache-도입기)
-    - b. [전자상거래에서 인증 및 보안](#b-전자상거래에서-인증-및-보안)
-	- c. [돈관련 코드 테스트 정밀도 높힌 방법](#c-돈관련-코드-테스트-정밀도-높힌-방법)
+    - b. [상품 랭킹 기능 구현기, 최적화를 곁들인](#b-상품-랭킹-기능-구현기)
+    - c. [전자상거래에서 인증 및 보안](#c-전자상거래에서-인증-및-보안)
+	- d. [돈관련 코드 테스트 정밀도 높힌 방법](#d-돈관련-코드-테스트-정밀도-높힌-방법)
 - D. [기술적 도전 - Database](#d-기술적-도전---database)
     - a. [정규화](#a-정규화)
 	- b. [반정규화](#b-반정규화)
@@ -429,8 +430,569 @@ https://github.com/Doohwancho/ecommerce/blob/3a07a123eb971db1ba7952fedc0ae39cb3c
 https://github.com/Doohwancho/ecommerce/blob/3a07a123eb971db1ba7952fedc0ae39cb3cd0f09/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/service/ProductService.java#L155-L174
 
 
+## b. 상품 랭킹 기능 구현기
 
-## b. 전자상거래에서 인증 및 보안
+### 1. 문제
+쇼핑몰에 가면 실시간 가장 핫한 아이템 top 10을 어렵지 않게 볼 수 있다.\
+이 기능을 구현하고자 하는데,\
+바로 앞전에 [redis' sortedSet으로 클릭률 집계](#방법4-redis에-sortedset-자료구조로-클릭률-집계하기)로 구현하는게 일반적인 듯하다.\
+(구글 검색시 대부분 이방식으로 만듬)
+
+문제는 DB가 비싸서 cache layer을 쓰는데,\
+**cache layer 역시 비싸다**는 것이다.\
+같은 기능을 리소스 효율적이게 만들 순 없을까?
+
+
+### 2. 랭킹 집계에 적절한 자료구조 선정
+#### step1) Redis sortedSet
+
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+
+
+1. 방법
+	- redis의 `sortedSet` 자료구조에 `{product:view_count}`넣으면 랭킹 집계 해준다.
+	- time complexity
+		- write: O(log N)
+		- read: O(log N+M), where N = total element and M = number of returned element
+2. 장점
+	1. 정확한 조회수를 집계 가능하다.
+	2. 분산시스템에서 single source of truth라 ec2간 조회수 read()하면, 결과값 차이가 거의 없다.
+	3. 구현이 간단하다. 이미 redis 측에서 만든 자료구조를 가져다 쓰는 것이기 때문.
+3. 문제점
+	1. 상품 클릭할 때마다 view_count+1되서 write 부하가 엄청나게 클 텐데, `sortedSet`의 write-time-complexity가 O(1)도 아니고 O(log N)이다. 서비스가 커지고 상품 수(N)이 커질수록, 효율이 떨어진다.
+	2. redis는 비싸고 실전에서는 이미 다양하게 활용되고 있을텐데(세션관리, heavy query caching, rate-limiting, etc) 여기에 heavy_computation 작업 하나 추가하는게 맞나? 싶다.
+	3. 분리된 redis(aws_elastic_cache) 서버와 통신비용이 있다.
+	4. 벤치마크를 로컬pc에 설치된 redis로 돌렸기 때문에 통신비용이 고려 안되었음 + redis 서버 성능은 실전에서 사용하는 2core 6GiB RAM elastic_cache 대비, 로컬 pc가 8코어 16GiB RAM으로 월등히 우수한걸 고려하면, 실 성능이 이 보다 훨씬 더 낮다.
+4. 결론
+	- 벤치마크 결과가 다른 방식 대비 낮다. 다른 효율적인 방법을 찾아보자.
+5. 코드
+
+https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_01_redis/service/ProductRankingService.java#L11-L40
+
+
+#### step2) Max_Heap with concurrency control
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+
+1. 방법
+	- redis에서 view_count 집계를 하지 말고, 스프링 로컬서버에서 view_count & ranking 집계 하는 방식, max_heap 자료구조를 써서.
+	- Q. 로컬에서 랭킹 집계해도 되나? 정확도가 떨어지지 않을까?
+		- A. 원하는 값이 완전 정확하게 집계된 값이 아니라, 대략적으로 현재 트랜디 한 상품값이 필요한거라 이 방식이 가능한 것이다.
+		- 분산환경에서 WAS서버가 5대라고 할 때, 상품클릭률 분포는 조회수 조작하는 스팸유저만 없다면(이상현상 감지 후, 벤처리) WAS서버당 고르게 분포할 것이다.
+		- 만약 WAS-1에서 2등인 상품이 WAS-3에서 3 or 4등이다? 그정도의 오차는 top 10-in 했으니 괜찮다고 보는 것. 서버 자원관리를 위해.
+	- 상품별 view_count 필드에 `volatile` 키워드를 걸어서, write() 후 값이 multi-threads들에게 바로 보이도록 적용.
+		- multi-core 환경에서 원래는 thread들이 공유자원 접근시, cpu 내부 cache에 저장해서 쓰는데, 이러면 RAM에 값이 update되었을 때 cpu 내부 캐시 값을 읽으면 값이 틀리니까, 공유자원 값을 cpu 내부 cache에 저장하지 말고 RAM에서 가져와 쓰자는게 `volatile` 이다.
+	- view_count를 read/write 시, ReentrantLock사용
+		- read lock은 read하는 쓰레드끼리는 통과 가능하다
+		- write lock은 베타 락이다.
+	- view_count별 랭킹 정렬은 `priority_queue` 자료구조로 한다.
+		- time complexity
+			- write: O(log N) (ex. add(), offer())
+			- read: O(log N) (ex. poll(), remove())
+2. 장점
+	1. 벤치마크 결과, read가 `redis_sortedSet`의 read 대비 쓰루풋이 9.6배 더 좋다.
+		- `sortedSet`'s read_time_complexity: O(log N+M)
+		- `priority_queue`'s read_time_complexity: O(log N)
+	2. redis보다 상대적으로 비용이 저렴한 WAS서버에 로컬 램을 활용하기 때문에 경제적이다.
+3. 문제점
+	1. write 성능이 redis보다 안좋다. 베타 락이 `redis_sortedSet`이 내부적으로 사용하는 write_lock 방식보다 더 비용이 큰 것으로 예상된다.
+	2. 왜냐면 incrementView()시, 상품별 view_count 저장과 heap에 랭킹저장 2번 하는데, 랭킹저장시 `priority_queue`에 기존 product를 지우고, 새로운 view_count가 들어있는 product를 추가하기 때문.
+4. 결론
+	- redis에 부담을 WAS로 덜어주면서, read 성능이 개선되었다.
+	- read가 개선됬긴 했는데, 더 괜찮은 방법이 없을까?
+5. 코드
+
+https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_02_max_heap/ProductViewCountMaxHeap.java#L11-L173
+
+
+#### step3) ConcurrentSkipListMap
+
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+
+
+1. 방법
+	- `TreeMap`(sorted HashMap)인데, concurrency control이 달려있는게 `ConcurrentSkipListMap`이다.
+		- time complexity
+			- write: O(log N)
+			- read: O(log N)
+		- lock
+			- 베타락 안쓰는 대신 CAS(compare and swap) 방식을 쓴다.
+			- write 직후 정합성이 떨어진다고 한다.
+			- 그런데 정밀한 view_count를 원하는게 아니기에, 성능이 더 좋은게 더 낫다.
+2. 장점
+	1. read()가 redis_read() 대비 644배, max_heap_read() 대비 66.9배 빨라졌다.
+		- write()할 때 sort()까지 하는거라 read()가 엄청 빠르다.
+	2. redis가 아닌 로컬 RAM 이용하는거라 자원을 더 경제적으로 쓰는 방법이다.
+3. 코드
+https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_03_concurrentSkipList/ProductViewCounter.java#L29-L123
+
+
+##### Q. 왜 read()가 빨라졌지?
+
+1. max_heap read: O(log N)
+2. concurrentSkipListMap의 read: O(log N)
+...똑같은데 왜 성능차이 나는거지?
+
+
+###### A. `max_heap`에 read()가 애초에 비효율적이게 짜져있다.
+```java
+public List<MockProduct> getTopNProducts(int n) {
+	if (n <= 0) {
+		return Collections.emptyList();
+	}
+
+	heapLock.readLock().lock();
+	try {
+		List<MockProduct> result = new ArrayList<>();
+		// Create a temporary heap for reading to avoid blocking writes
+		PriorityQueue<MockProduct> tempHeap = new PriorityQueue<>(maxHeap);
+
+		for (int i = 0; i < n && !tempHeap.isEmpty(); i++) {
+			result.add(tempHeap.poll());
+		}
+
+		return result;
+	} finally {
+		heapLock.readLock().unlock();
+	}
+}
+```
+
+이게 `max_heap`의 read() 인데, 매번 read()할 때마다 `priority_queue`에 heap 통째로 넣어서 정렬한다.
+
+Q. 근데 `max_heap` 쓰는 이유가, write()시 정렬하기 때문에 read()가 빠르다는 이점 때문에 쓰는건데, read() 할 때마다 `priority_queue` 새로 만들어서 sort()할꺼면, `max_heap` 쓰는 이유가 퇴색되는거 아닌가?
+
+A. 맞다. 역시 늘상 느끼지만 ai가 짠 코드를 무지성으로 복붙하면 이런 폐혜가 생긴다.
+
+여튼 `max_heap`의 올바른 read()방식은 이렇다.
+
+write()할 때마다 정렬하면서 저장하고,
+
+read()할 땐 root node로 부터 BST(breadth first search)로 top-N-node 까지 돌면서 읽으면 된다.
+
+아마 `max_heap`을 원래 의도한 방식으로 짜면 `sorted treemap`과 read() 성능이 비슷하게 나올 것이라 예상된다.
+
+
+##### Q. 왜 write가 느리지?
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+
+
+`max_heap`은 view_count 1번, priority_queue에 1번 2번 write하는데,\
+`sorted_hashmap`은 1번 write하는데 왜 느릴까?
+
+```java
+public void incrementView(String productId, long delta) {
+	while (true) { // CAS loop for atomic update
+		Map.Entry<ViewCount, LongAdder> existingEntry = null;
+
+		// Find existing entry for this productId
+		for (Map.Entry<ViewCount, LongAdder> entry : viewCounts.entrySet()) {
+			if (entry.getKey().productId.equals(productId)) {
+				existingEntry = entry;
+				break;
+			}
+		}
+
+		if (existingEntry == null) {
+			// New product - try to insert
+			ViewCount newCount = new ViewCount(productId, delta, System.nanoTime());
+			LongAdder counter = new LongAdder();
+			counter.add(delta);
+
+			if (viewCounts.putIfAbsent(newCount, counter) == null) {
+				// Successfully inserted
+				break;
+			}
+			// If insert failed, retry
+			continue;
+		}
+
+		// Existing product - update count
+		ViewCount oldCount = existingEntry.getKey();
+		LongAdder counter = existingEntry.getValue();
+		counter.add(delta);
+
+		// Remove old entry and insert new one with updated count
+		ViewCount newCount = new ViewCount(productId, oldCount.count + delta,
+			oldCount.timestamp);
+		if (viewCounts.remove(oldCount) != null &&
+			viewCounts.putIfAbsent(newCount, counter) == null) {
+			// Successfully updated
+			break;
+		}
+		// If update failed, retry
+	}
+}
+```
+
+값이 바뀔 때 까지 쓰레드가 `while(true)` + retry 로 `WAITING` 상태다.\
+jmh 벤치마크 테스트할 때 코어수 2개에 맞게 쓰레드 2개 할당해줬는데 (실전엔 2코어 4기가 램 ec2 스케일 아웃한다고 가정)\
+쓰레드1이 write 끝날 때 까지 쓰레드2가 기다린다.
+
+CAS(compare and swap)방식이 low-contention 상황에서는 beta lock보다 성능이 더 좋다곤 하는데,
+
+문제는 view_count + 1은 high-contention 상황이다!
+
+그래서 write() 성능이 별로다.
+
+
+
+
+
+
+#### step4) ConcurrentHashMap for write + read from cached sorted_map
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
+| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
+
+1. 방법
+	- 3번까지 아이디어는 자료구조에 write할 때 sort by view_count 하고, read할 때 이미 정렬된걸 읽자! 였다면,
+	- 4번 방식은 write할 땐 젤 빠른 방식인 `hashmap`에 O(1)으로 insert하고, 10분마다 sort by view_count를 데몬쓰레드로 돌려서 캐싱해두면, 캐싱해 둔 값을 read 하는 방식이다.
+2. 장점
+	1. write가 매우매우 빨라졌다. redis방식 대비 무려 191배, `max_heap` 대비 317배, `sorted_hashmap` 대비 429배 쓰루풋이 더 많다. 왜? O(1)이니까.
+	2. read도 매우매우 빨라졌다. 왜? 캐싱해둔거 로컬에서 그대로 꺼내쓰니까. redis 방식보다 무려 205배 빠르다.
+3. 문제점
+	1. 기존 1~3 방식은 실시간으로 랭킹을 볼 수 있다면, 4번 방식은 10분마다 캐싱한 랭킹을 보는 방식이라 성능을 얻었지만 정확도가 떨어졌다.
+4. 결론
+	1. 랭킹 정확도가 약간 떨어졌지만, read/write 효율이 압도적으로 좋아졌다.
+	2. 아마 레디스로 랭킹 관리 안하고 로컬에서 관리하면 대부분 이 방식으로 구현하지 않을까? 싶다.
+5. 코드
+
+https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_04_concurrentHashMap_with_cache/CachedViewCounter.java#L30-L113
+
+
+#### step5) Array for write + read from cache
+
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
+| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
+| 05.array_read               | 2             | thrpt | 2   | 48065.797  |       | ops/ms |
+| 05.array_write              | 2             | thrpt | 2   | 18921.207  |       | ops/ms |
+
+1. 방법
+	- hashmap -> array로 바꾼 방법
+	- write도 O(1), read도 O(1) (from cache)
+	- 10분마다 sort할 땐 hashMap은 .stream() (map reduce internally)로 한다면, array는 quicksort(n < 10000) or merge sort(n >= 10000)를 쓴다.
+2. 장점
+	- step4)hashmap과 벤치마크 성능을 비교해보면 read 성능이 2.17배 쓰루풋이 더 좋다. write는 1.2배 더 좋다.
+3. 문제점
+	1. 10분에 한번씩 객체 수만개, 수십만개를 sort()할텐데, cpu_usage spike 치면 어쩌지?
+	2. 객체 수십만개 sort()하기 직전에, 기존 객체 수만, 수십만개를 메모리 해제할텐데, 이정도 규모면 full-gc 10분마다 n번씩 자주 일어나지 않을까?
+4. 결론
+	- redis방식 대비 read는 445배, write는 227배 나아지긴 했는데, 좀 더 최적화 시켜보자
+5. 코드
+
+https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_05_array_with_cache/ArrayViewCounter.java#L32-L139
+
+
+##### Q. 왜 array가 map 대비 더 빠르지?
+
+1. memory(cache) locality 때문.
+	- `AtomicLongArray`는 메모리상에서 값을 붙여서 저장하기 때문에, for문같은거로 read할 때 컴파일러가 안읽어도 array size만큼 chunk 띄어와서 cache에 저장하고 쓰는데,
+	- `hashmap`은 메모리 포인터가 다른 장소를 가르키는데, 캐싱하는 시점 컴파일러 입장에서는 포인터가 가르키는 장소에 다음 원소들이 어디있는지를 모르니까 다 읽어서 값을 가져와야 해서 느리다.
+2. `array`는 `hashmap` 대비, hash 계산을 안해도 된다.
+	- `hashmap`은 인덱스 정하려면 hash() 돌려야 하는데, `array`는 이 스텝을 스킵하고 바로 read/write 할 수 있다.
+	- 어떤 값은 다른데 hash() 돌리면 우연히 인덱스가 같은 값이 나온다. 이 때, hash-collision handling도 해줘야 해서 `array`보다 성능이 느리다.
+3. `ConcurrentHashMap`의 concurrency control이 `AtomicLongArray`의 방식보다 내부적으로 더 복잡하다고 한다.
+
+
+Q. array, hashmap 둘 다 read()의 time_complexity: O(1)인데, 실상은?
+
+```java
+// Array access - truly O(1)
+viewCounts.get(productId)  // Direct memory access
+
+// ConcurrentHashMap access - technically O(1) but with more steps
+viewCounts.get(productId)  // 1. Hash computation
+                           // 2. Segment location
+                           // 3. Bucket traversal if collision
+                           // 4. Value retrieval
+```
+
+#### step6) primitive Array for write + read from cache
+
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
+| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
+| 05.array_read               | 2             | thrpt | 2   | 48065.797  |       | ops/ms |
+| 05.array_write              | 2             | thrpt | 2   | 18921.207  |       | ops/ms |
+| 06.array_optimized_read     | 2             | thrpt | 2   | 269472.295 |       | ops/ms |
+| 06.array_optimized_write    | 2             | thrpt | 2   | 19227.155  |       | ops/ms |
+
+
+
+1. 방법
+	- step5) array 방식에서 객체생성을 빼고, array의 index를 product_id 삼아 쓰는 방식
+	- write()시 lock을 쓰진 않고 CAS방식을 쓴다.
+2. 장점
+	1. 객체 생성하는 단계가 스킵되서 훨씬 빠르다. 객체 생성 하고 안하고 차이가 read는 쓰루풋 5.6배 빠르고, write는 1.6% 더 빠르다.
+	2. 상품별 view_count 객체 수만, 수십만개 안만들어도 되서 메모리를 아낄 수 있다.
+	3. 수만, 수십만개 객체가 young generation 꽉 채우고 old generation까지 넘어가서 full-gc할 때 드는 비용도 줄일 수 있다.
+3. 문제점
+	1. 프레임워크/언어에서 제공하는 자료구조를 쓰면, 다양한 상황에서도 모두 오류없이 동작해야 하기 때문에, safety-check가 깐깐하게 되있어서 조금 느려진다는 단점이 있지만, 에러날 확률이 낮아진다는 극장점이 있는데, 이렇게 자체적으로 자료구조를 만들면 예상치 못한 에러가 터질 수 있기 때문에, 단순히 성능 이외에 validation-check라던지 등과 꼼꼼한 테스트 등을 고려해야 한다.
+4. 결론
+	1. 성능은 압도적으로 좋긴 하나, 만약 실전이라면 음... 성능이 매우 고픈 상황이 아니라면 도입하기 망설여지긴 한다.
+	2. 만약 도입한다고 해도, safety-check 관련 코드를 꼼꼼히 붙이고, [fuzzy test & PBT](#d-돈관련-코드-테스트-정밀도-높힌-방법)도 붙일 듯 하다.
+5. 코드
+
+https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_06_primitive_array_with_cache/PrimitiveArrayViewCounter.java#L28-L123
+
+
+
+### 3. 적절한 정렬 알고리즘 선정
+
+Q. array에서 10분마다 상품별 랭킹을 sort해서 캐싱하는데, 어떤 방식으로 정렬해야 효율적일까?
+
+
+
+#### 3-1. when N < 50, insertion sort
+insertion sort의 Big O는 다음과 같다.
+- Time: O(n²)
+- Space: O(1)
+
+별도의 변수, 객체 선언 없이, 기존에 있던 메모리에서 swap()하며 옮기는 방식이라 메모리를 아낄 수 있다는 장점이 있다.
+
+시간복잡도는 O(N^2)이지만, 어짜피 N=50, 매우 작은 수라 괜찮다.
+
+[이 사이트](https://visualgo.net/en/sorting)에서 insertion sort가 어떻게 진행되는지 시각화해서 볼 수 있다.
+
+
+##### a. insertion sort, N=50 benchmark
+
+| Benchmark | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
+|-----------|-------------|-----------------|-------------|------|-----|-------|-------|--------|
+| simple_insertion_sort | 100000 | 50 | 2 | sample | 90599 | 0.452 | ± 0.355 | ms/op |
+| simple_insertion_sort (p0.00) | 100000 | 50 | 2 | sample | | 0.216 | | ms/op |
+| simple_insertion_sort (p0.50) | 100000 | 50 | 2 | sample | | 0.219 | | ms/op |
+| simple_insertion_sort (p0.90) | 100000 | 50 | 2 | sample | | 0.225 | | ms/op |
+| simple_insertion_sort (p0.95) | 100000 | 50 | 2 | sample | | 0.231 | | ms/op |
+| simple_insertion_sort (p0.99) | 100000 | 50 | 2 | sample | | 0.244 | | ms/op |
+| simple_insertion_sort (p0.999) | 100000 | 50 | 2 | sample | | 0.309 | | ms/op |
+| simple_insertion_sort (p0.9999) | 100000 | 50 | 2 | sample | | 1.965 | | ms/op |
+| simple_insertion_sort (p1.00) | 100000 | 50 | 2 | sample | | 5989.466 | | ms/op |
+
+N=50일 때 insertion sort를 벤치마크 돌린 결과값이다.
+
+N사이즈가 작으면
+1. 성능이 준수하고,
+2. worse / avg / best case scenario에서 even한 퍼포먼스를 보여주며,
+3. 메모리도 들지 않기 때문에
+
+... 적절한 선택지라 볼 수 있다.
+
+##### b. insertion sort, N=100,000 benchmark
+
+| Benchmark | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
+|-----------|-------------|-----------------|-------------|------|-----|-------|-------|--------|
+| simple_insertion_sort | 100000 | 100000 | 2 | sample | 4937 | 10.320 | ± 11.823 | ms/op |
+| simple_insertion_sort (p0.00) | 100000 | 100000 | 2 | sample | | 4.022 | | ms/op |
+| simple_insertion_sort (p0.50) | 100000 | 100000 | 2 | sample | | 4.039 | | ms/op |
+| simple_insertion_sort (p0.90) | 100000 | 100000 | 2 | sample | | 4.080 | | ms/op |
+| simple_insertion_sort (p0.95) | 100000 | 100000 | 2 | sample | | 4.100 | | ms/op |
+| simple_insertion_sort (p0.99) | 100000 | 100000 | 2 | sample | | 4.224 | | ms/op |
+| simple_insertion_sort (p0.999) | 100000 | 100000 | 2 | sample | | 1248.086 | | ms/op |
+| simple_insertion_sort (p0.9999) | 100000 | 100000 | 2 | sample | | 15837.692 | | ms/op |
+| simple_insertion_sort (p1.00) | 100000 | 100000 | 2 | sample | | 15837.692 | | ms/op |
+
+
+N=100,000으로 커지면, 99%까지는 고른 성능을 보여주다가,\
+99.9%부터 latency가 4ms -> 1248ms 로 느려지더니,\
+99.99%에는 4ms -> 15837ms 로 매우매우 느려지는걸 볼 수 있다.
+
+따라서 N이 커졌을 때, 안정적이게 좋은 성능을 내는 다른 정렬 알고리즘을 찾아야 한다.
+
+#### 3-2. when 50 < N < 10,000, quick sort
+- Big O
+	- Time: O(n log n) average
+	- Space: O(log n)
+- 정렬 방법
+	1. pivot number를 정해서,
+	2. 이 숫자보다 작은 애들을 왼쪽에, swap으로 넘기는걸 반복하면서 반씩 쪼개다가 (log N번 쪼갠다)
+	3. 정렬되면 합치는걸 하는 앤데,
+
+[이 사이트](https://visualgo.net/en/sorting)에서 quick sort가 어떻게 진행되는지 시각화해서 볼 수 있다.
+
+반씩 쪼갤 때 별도 메모리 공간 필요해서 space complexity가 O(1)보다 크고,\
+기본적으로 전체 row N 만큼 훑는걸 log N번 쪼갠 만큼 반복하니까\
+time complexity가 O(N log N)이라고 대~략적으로 이해하곤 있는데\
+Big O 엄밀하게 계산하는법이 따로 있다. 관심있으면 찾아보자.
+
+
+##### a. quick sort, N=10,000 성능비교 w/ insertion sort
+
+| Benchmark | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
+|-----------|-------------|-----------------|-------------|------|-----|-------|-------|--------|
+| optimized_multi_strategy_sort | 100000 | 10000 | 2 | thrpt | 2 | 4.357 | | ops/ms |
+| simple_insertion_sort | 100000 | 10000 | 2 | thrpt | 2 | 1.928 | | ops/ms |
+
+1. quicksort의 쓰루풋은 4.3 ops/ms
+2. insertion sort의 쓰루풋은 1.9 ops/ms
+
+2.2배 성능이 더 좋다.
+
+왜?
+
+insertion sort의 time complexity는 O(N^2), quicksort는 O(N log N)이기 때문.
+
+insertion sort 대비 2배 빨라졌지만, 단점도 있다.
+
+pivot number 기준으로 적은 수, 큰수 반토막씩 내는걸 log N번 하는데, 이 때, 추가 메모리 필요하고 stacktrace 차지한다.
+
+
+
+
+
+#### 3-3. when N > 10,000, heap sort? quick sort?
+
+- Time Complexity 비교
+	1. Quicksort: O(N log N)
+	2. Heap Sort: O(N log K), where N is size of view_count array & K is top-100 products
+
+
+N이 작으면 quicksort가 이름값 한다. heap sort보다 더 빠르다.
+
+왜?
+
+heap은 아무래도 tree이고, tree_node가 가르키는 다음 노드의 다음노드의 주솟값이 RAM상 어디인지 모르니, 컴파일러가 한번에 못가져가니까 다 읽어야 한다.
+
+반면 array는 arr[1000]이면 1000개 다 읽지 않아도 int size * 1000만큼 뭉텅이로 가져가서 캐싱해 처리하기 때문에 빠르다.
+
+
+하지만, top-100-products 랭킹 기능에서 결국 K값이 100밖에 안되니까,
+
+처음엔 quicksort가 더 빠를지라도, K는 고정값인데 N이 커지면, 언젠가 crossover 지점이 온다.
+
+그 지점이 언제일까?
+
+
+##### a. benchmark (quicksort vs heapsort)
+
+| Benchmark       | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
+|-----------------|--------------|-----------------|-------------|------|-----|-------|-------|-------|
+| heap_sort       | 100000       | 10000           | 2           | thrpt | 2   | 4.058 |       | ops/ms |
+| heap_sort       | 100000       | 100000          | 2           | thrpt | 2   | 0.667 |       | ops/ms |
+| heap_sort       | 100000       | 1000000         | 2           | thrpt | 2   | 0.643 |       | ops/ms |
+| quick_sort      | 100000       | 10000           | 2           | thrpt | 2   | 4.308 |       | ops/ms |
+| quick_sort      | 100000       | 100000          | 2           | thrpt | 2   | 0.519 |       | ops/ms |
+| quick_sort      | 100000       | 1000000         | 2           | thrpt | 2   | 0.508 |       | ops/ms |
+
+N이 만, 십만, 백만일 때 quick_sort vs heap_sort 벤치마크 돌렸다.
+
+N이 10,000일 때 quicksort가 heap_sort보다 쓰루풋이 더 좋다. (4.3 > 4.0)\
+하지만 N이 100,000이 넘어가는 순간 heap_sort의 성능이 더 좋아진다.
+
+
+
+| Benchmark       | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
+|-----------------|--------------|-----------------|-------------|------|-----|-------|-------|-------|
+| heap_sort       | 100000       | 10000           | 2           | avgt  | 2   | 0.512 |       | ms/op  |
+| heap_sort       | 100000       | 100000          | 2           | avgt  | 2   | 3.189 |       | ms/op  |
+| heap_sort       | 100000       | 1000000         | 2           | avgt  | 2   | 3.152 |       | ms/op  |
+| quick_sort      | 100000       | 10000           | 2           | avgt  | 2   | 0.484 |       | ms/op  |
+| quick_sort      | 100000       | 100000          | 2           | avgt  | 2   | 3.760 |       | ms/op  |
+| quick_sort      | 100000       | 1000000         | 2           | avgt  | 2   | 3.910 |       | ms/op  |
+
+latency를 봐도 마찬가지이다.
+
+N이 10만이상 부터는 heap_sort가 quick_sort보다 성능이 더 좋다.
+
+##### b. 코드로 이해하는 heap sort
+
+
+https://github.com/Doohwancho/ecommerce/blob/9f536efcb18b883467a3e2d02b1fdd58c57c4dbf/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_07_primitive_array_with_cache_and_optimized_sort/PrimitiveArrayViewCounterSortOptimized.java#L252-L276
+
+
+heap sort는 크게 3파트로 이루어져 있다.
+
+1. view_count한 array를 for-loop 한다 - O(N)
+2. size가 100(top 100 products만 필요하니까)인 priority_queue에 .offer(), .poll()하면서 사이즈 100 맞춘다. - O(log K)를 2번 한다. (그래도 K값이 작아서 괜찮다.)
+3. priority_queue -> array로 형변환 하면 이게 top-100-products_id 이다.
+
+N이 10만이 넘어가도, K=100 고정값이라, step2를 반복하는 step1의 횟수가 더 늘어날 뿐이다. cost가 linear하게 늘어난다.
+
+반면 quicksort는 O(N log N)이다.\
+O(log K), where k=100 보다 O(log N), N=1,000,000 이 cost 증가폭이 더 높다.
+
+
+
+
+### 4. 결론
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
+| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
+| 05.array_read               | 2             | thrpt | 2   | 48065.797  |       | ops/ms |
+| 05.array_write              | 2             | thrpt | 2   | 18921.207  |       | ops/ms |
+| 06.array_optimized_read     | 2             | thrpt | 2   | 269472.295 |       | ops/ms |
+| 06.array_optimized_write    | 2             | thrpt | 2   | 19227.155  |       | ops/ms |
+
+실시간 상품랭킹 기능을 구현하였다.
+
+일반적인 redis로 구현하는 방식 대비, read는 3326배, write는 231배의 성능 향상이 있었다.\
+혹은 로컬 concurrentHashMap으로 구현하는 방식 대비, read는 16.8배, write는 1.21배 성능향상이 있었다.
+
+
+10분마다 상품 조회수 정렬하는 알고리즘도,\
+상품 사이즈 N에 따라서 최적화된 정렬 알고리즘(insertion_sort, quick_sort, heap_sort)을 적용하였다.
+
+
+
+
+
+
+## c. 전자상거래에서 인증 및 보안
 
 ### 1. 문제
 
@@ -549,7 +1111,7 @@ https://github.com/Doohwancho/ecommerce/blob/add3486330c26f69afb55656aa5740ed5d1
 
 
 
-## c. 돈관련 코드 테스트 정밀도 높힌 방법
+## d. 돈관련 코드 테스트 정밀도 높힌 방법
 
 ### 1. 문제
 
