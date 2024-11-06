@@ -82,7 +82,6 @@ public class PrimitiveArrayViewCounterSortOptimized implements AutoCloseable {
                 cachedTopProductIds.set(new int[0]);
                 return;
             }
-            
             if (nonZeroCount <= INSERTION_SORT_THRESHOLD) {
                 updateWithInsertionSort(nonZeroCount);
             } else if (nonZeroCount <= QUICKSORT_THRESHOLD) {
@@ -251,17 +250,18 @@ public class PrimitiveArrayViewCounterSortOptimized implements AutoCloseable {
      * Time: O(n + k log n), Space: O(k) where k = MAX_CACHED_SIZE
      */
     private void updateWithHeapSelection() {
-        PriorityQueue<int[]> maxHeap = new PriorityQueue<>(
-            MAX_CACHED_SIZE,
-            (a, b) -> Long.compare(viewCounts.get(b[0]), viewCounts.get(a[0]))
+        PriorityQueue<long[]> maxHeap = new PriorityQueue<>(
+            MAX_CACHED_SIZE, // Only allocates space for 100 elements
+            (a, b) -> Long.compare(b[1], a[1])  // Compare pre-fetched values
         );
         
         // First pass: fill heap with first MAX_CACHED_SIZE non-zero elements
         for (int i = 0; i < viewCounts.length(); i++) {
-            if (viewCounts.get(i) > 0) {
-                maxHeap.offer(new int[]{i});
+            long count = viewCounts.get(i);
+            if (count > 0) {
+                maxHeap.offer(new long[]{i, count});  // Store both id and count
                 if (maxHeap.size() > MAX_CACHED_SIZE) {
-                    maxHeap.poll(); // Remove smallest
+                    maxHeap.poll(); //remove product with smallest view_count
                 }
             }
         }
@@ -269,7 +269,7 @@ public class PrimitiveArrayViewCounterSortOptimized implements AutoCloseable {
         // Convert heap to sorted array
         int[] result = new int[maxHeap.size()];
         for (int i = result.length - 1; i >= 0; i--) {
-            result[i] = maxHeap.poll()[0];
+            result[i] = (int) maxHeap.poll()[0];
         }
         
         cachedTopProductIds.set(result);

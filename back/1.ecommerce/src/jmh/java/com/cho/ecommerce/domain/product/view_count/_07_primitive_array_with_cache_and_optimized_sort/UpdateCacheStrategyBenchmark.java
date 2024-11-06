@@ -139,6 +139,13 @@ public class UpdateCacheStrategyBenchmark {
         optimizedCounter.close();
         optimizedCounter = null;
     }
+
+//    @Benchmark
+//    @Group("simple_insertion_sort")
+//    @GroupThreads(2)
+//    public void simpleUpdateCache() {
+//        simpleCounter.updateTopProductsCache();
+//    }
     
     @Benchmark
     @Group("simple_insertion_sort")
@@ -153,7 +160,6 @@ public class UpdateCacheStrategyBenchmark {
     public void optimizedUpdateCache() {
         optimizedCounter.updateTopProductsCache();
     }
-    
     // Verify results are the same
 //    @Benchmark
 //    @Group("verify")
