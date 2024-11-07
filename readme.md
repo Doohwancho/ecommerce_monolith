@@ -961,6 +961,65 @@ N이 10만이 넘어가도, K=100 고정값이라, step2를 반복하는 step1�
 O(log K), where k=100 보다 O(log N), N=1,000,000 이 cost 증가폭이 더 높다.
 
 
+##### Q. 왜 heap에 insert & delete가 O(log K), where K = size of heap 이지?
+
+A. heap은 2진트리, 자식이 left_child, right_child 2개다.
+
+tree의 depth를 알고 싶으면, 자식수가 밑인 로그를 씌우면 된다.
+
+ex1. 2진트리에서 K값이 7(1 as root, 2 on 2nd layer, 4 on 3rd layer = total 7)일 때, depth는?
+
+3인데, root->leaf 노드로 갈 때 2번만 타면 된다.
+
+
+그래서 log_2 7 = 2.807355 -> 2
+
+ex2. 만약 이 트리에 노드가 하나 추가되서 K=8이라면?
+
+log_2 8 = 3  -> root node에서 3번 만으로 leaf노드까지 갈 수 있다.
+
+
+##### Q . heap에 insert/delete할 때 무슨 일이 일어나지?
+
+
+K=6인 heap이 있다고 하자.
+```
+K = 6일때:
+     1          level 0 (depth 0)
+   /   \
+  2     3       level 1 (depth 1)
+ / \   /
+4   5 6         level 2 (depth 2)
+
+depth = ⌊log₂(6)⌋ = 2
+```
+
+여기서 노드 하나 insert하면 무슨일이 일어날까?
+
+```
+K = 6, 새로운 값 8 삽입:
+
+1) 초기 상태:        2) 8 추가:           3) swap with 3:      4) swap with 1:
+     1                    1                    1                    8
+   /   \                /   \                /   \                /   \
+  2     3              2     3              2     8              2     3
+ / \   /              / \   / \            / \   / \            / \   / \
+4   5 6              4   5 6   8          4   5 6   3          4   5 6   1
+
+총 swap 횟수 = 트리의 높이 = ⌊log₂(7)⌋ = 2
+```
+
+
+step1) 8을 마지막에 추가한다- O(1)\
+step2) 8의 parent와 비교하여 크면 swap() 하는데, 이걸 root_node 까지 **tree_depth 만큼 반복**한다. - O(log K)
+
+그래서 tree_depth를 구하는 O(log K)가 O(log 100) = 6.64... = 6 이니까,
+
+매번 insert/delete 할 때마다 6번의 operation이 일어난다고 보면 된다.
+
+
+
+
 
 
 ### 4. 결론
