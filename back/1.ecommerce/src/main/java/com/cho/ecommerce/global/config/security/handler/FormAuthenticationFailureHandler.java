@@ -29,6 +29,7 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
     @Transactional
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException exception) throws IOException, ServletException {
+        //feat: 로그인 실패할 때마다, 실패 카운트 + 1씩 쌓고, 5회면 계정 잠금
         
         //유저가 데이터베이스에 존재하는지 확인한다.
         String username = request.getParameter("username");
