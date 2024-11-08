@@ -95,6 +95,7 @@ public class UserEntity implements
     //    @NotBlank(message = "failedAttempt is required") //note: Integer은 @NotBlank를 쓰면 에러난다!
     @Min(0)
     @Max(SecurityConstants.MAX_LOGIN_ATTEMPTS + 1)
+    @Column(name = "FAILED_ATTEMPT")
     private Integer failedAttempt;
     
     @JsonIgnore //for error - "Could not write JSON: (was java.lang.NullPointerException)"

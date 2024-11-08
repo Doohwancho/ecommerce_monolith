@@ -66,7 +66,7 @@ public class JdbcFakeDataGenerator {
         int baseAmount = numberOfUsers;
         // set size of fake string/float objects in proportion to bulk-insert size
         if (baseAmount <= 1000) {
-            NUMBER_OF_UNIQUE_STRINGS = 542; //541 이하 부터는 bulk-insert 때 option_variation_index 값인가 그것보다 작아서 에러남
+            NUMBER_OF_UNIQUE_STRINGS = 1000; //541 이하 부터는 bulk-insert 때 option_variation_index 값인가 그것보다 작아서 에러남
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 500;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
         } else if (baseAmount <= 10000) {
@@ -74,11 +74,11 @@ public class JdbcFakeDataGenerator {
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = baseAmount;
         } else if (baseAmount <= 100_000) {
-            NUMBER_OF_UNIQUE_STRINGS = 30_000;
+            NUMBER_OF_UNIQUE_STRINGS = 100_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
         } else {
-            NUMBER_OF_UNIQUE_STRINGS = 80_000;
+            NUMBER_OF_UNIQUE_STRINGS = 100_000; //TODO - duplicate user exists problem이 있다. 그렇다고 unique 객체 너무 많이 만들면 bulk-insert 성능이 떨어진다.
             NUMBER_OF_DOUBLE_HUNDRED_TO_HUNDREDTHOUSAND = 1_000;
             NUMBER_OF_DOUBLE_HUNDRED_TO_MILLION = 10_000;
         }
@@ -594,7 +594,7 @@ public class JdbcFakeDataGenerator {
     public void bulkInsertUsersAndAddresses(Connection connection, int numberOfUsers, int batchSize) {
         String addressSql = "INSERT INTO ADDRESS (ADDRESS_ID, STREET, CITY, STATE, COUNTRY, ZIP_CODE) VALUES (?, ?, ?, ?, ?, ?)";
         String authoritySql = "INSERT INTO AUTHORITY (AUTHORITY_ID, AUTHORITY) VALUES (?, ?)";
-        String userSql = "INSERT INTO MEMBER (MEMBER_ID, USER_ID, EMAIL, NAME, ADDRESS_ID, PASSWORD, ROLE, ENABLED, CREATED_AT, UPDATED_AT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String userSql = "INSERT INTO MEMBER (MEMBER_ID, USER_ID, EMAIL, NAME, ADDRESS_ID, PASSWORD, ROLE, ENABLED, CREATED_AT, UPDATED_AT, FAILED_ATTEMPT) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String userAuthoritySql = "INSERT INTO MEMBER_AUTHORITY (USER_AUTHORITY_ID, MEMBER_ID, AUTHORITY_ID) VALUES (?, ?, ?)";
     
         try (
@@ -699,7 +699,7 @@ public class JdbcFakeDataGenerator {
                 //case3) custom unique strings
                 userStatement.setLong(1, i);
                 userStatement.setString(2, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
-                userStatement.setString(3, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
+                userStatement.setString(3, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS] + "@gmail.com");
                 userStatement.setString(4, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
                 userStatement.setLong(5, i);
                 userStatement.setString(6, uniqueStrings[i % NUMBER_OF_UNIQUE_STRINGS]);
@@ -707,6 +707,7 @@ public class JdbcFakeDataGenerator {
                 userStatement.setBoolean(8, true);
                 userStatement.setTimestamp(9, CURRENT_TIMESTAMP);
                 userStatement.setTimestamp(10, CURRENT_TIMESTAMP);
+                userStatement.setInt(11, 0);
                 
                 // batch에 추가
                 userStatement.addBatch();
