@@ -7,6 +7,26 @@
 
 back/ecommerce/.idea/
 
+# Ignore everything under bin/
+
+# Compiled Java classes and build outputs
+bin/
+**/bin/
+/bin/
+/bin/**
+build/
+**/build/
+
+# Specific project bin directories
+back/**/bin/
+back/1.ecommerce/bin/
+back/1.ecommerce/build/
+back/2.same_ecommerce_without_authentication_for_stress_test_purpose/bin/
+back/2.same_ecommerce_without_authentication_for_stress_test_purpose/build/
+back/3.denormalized_ver_without_authentication_for_stress_test_purpose/bin/
+back/3.denormalized_ver_without_authentication_for_stress_test_purpose/build/
+
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
