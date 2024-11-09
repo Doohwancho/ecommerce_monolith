@@ -33,7 +33,6 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         QAuthorityEntity authority = QAuthorityEntity.authorityEntity;
         
         try {
-            
             // First, fetch the user with address
             List<UserEntity> results = queryFactory
                 .selectFrom(user)

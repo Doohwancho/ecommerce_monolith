@@ -1,6 +1,7 @@
 package com.cho.ecommerce.global.error;
 
 import com.cho.ecommerce.global.error.exception.business.BusinessException;
+import com.cho.ecommerce.global.error.exception.member.DuplicateUsernameException;
 import com.cho.ecommerce.global.error.exception.member.MemberException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -96,5 +97,13 @@ public class GlobalExceptionHandler {
         log.error("handleEntityNotFoundException", e); //exception이 발생하면 에러 로그를 남긴다!
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+    @ExceptionHandler(DuplicateUsernameException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateUsername(DuplicateUsernameException e) {
+        log.error("Duplicate username detected", e);
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
     }
 }

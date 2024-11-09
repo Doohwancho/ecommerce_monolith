@@ -44,7 +44,7 @@ public class InactiveMemberEntity {
     @Column(name = "ROLE", nullable = false, length = 20)
     private String role;
     
-    @Column(name = "FAILEDATTEMPT", nullable = false)
+    @Column(name = "FAILED_ATTEMPT", nullable = false)
     private Integer failedAttempt;
     
     @Column(name = "ENABLED", nullable = false)
