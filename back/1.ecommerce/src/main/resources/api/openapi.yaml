@@ -126,6 +126,125 @@ paths:
                   message:
                     type: string
                     example: "An unexpected error occurred."
+  /api/verification/user:
+    post:
+      summary: verify if userid exists in the database
+      description: user sends userId in string format to verify if that user exists
+      operationId: verifyUserExists
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyUserIdDTO'
+      responses:
+        '200':
+          description: Verification code sent successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "user exists in the database!"
+        '400':
+          description: Failed to send verification code
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Failed to send verification: Invalid format"
+        '429':
+          description: Too many requests
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Please wait before requesting another code"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Failed to send verification code: Internal server error"
+  /api/verification/send:
+    post:
+      summary: Send verification code
+      description: Sends a verification code to the specified email address
+      operationId: sendVerificationCode
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyUserIdDTO'
+      responses:
+        '200':
+          description: Verification code sent successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Verification code sent successfully"
+        '400':
+          description: Failed to send verification code
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Failed to send verification code: Invalid email format"
+        '429':
+          description: Too many requests
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Please wait before requesting another code"
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Failed to send verification code: Internal server error"
+  /api/verification/verify:
+    post:
+      summary: Verify email code
+      description: Verifies the code sent to the email address
+      operationId: verifyCode
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationRequestDTO'
+      responses:
+        '200':
+          description: Email verified successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Email verified successfully"
+        '400':
+          description: Invalid or expired verification code
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Invalid or expired verification code"
+        '429':
+          description: Too many verification attempts
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Maximum verification attempts exceeded"
   /users/{username}:
     get:
       tags:
@@ -723,6 +842,30 @@ components:
         message:
           type: string
           example: "Login successful"
+    VerifyUserIdDTO:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          example: "thisIsUserId1234"
+    VerificationRequestDTO:
+      type: object
+      required:
+        - userId
+        - code
+      properties:
+        userId:
+          type: string
+          example: "thisIsUserId1234"
+        code:
+          type: string
+          minLength: 6
+          maxLength: 6
+          pattern: '^[0-9]{6}$'
+          example: "123456"
+          description: 6-digit verification code
     UserDetailsResponseDTO:
       type: object
       required:

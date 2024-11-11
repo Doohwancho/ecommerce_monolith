@@ -8,10 +8,8 @@ import com.cho.ecommerce.domain.member.mapper.UserMapper;
 import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserAuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
-import com.cho.ecommerce.global.config.security.SecurityConstants;
 import com.cho.ecommerce.global.error.ErrorCode;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
-import com.cho.ecommerce.global.error.exception.member.InvalidatingSessionForUser;
 import com.cho.ecommerce.global.error.exception.member.LockedAccountUserFailedToAuthenticate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -20,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -141,45 +138,5 @@ public class UserService implements UserDetailsService {
             userRepository.save(user);
         });
         return userOptional.isPresent();
-    }
-    
-    
-    public void incrementFailedAttempts(UserEntity user) {
-        user.setFailedAttempt(user.getFailedAttempt() + 1);
-        if (user.getFailedAttempt() >= SecurityConstants.MAX_LOGIN_ATTEMPTS) {
-            user.setEnabled(false); //lock user account
-            invalidateUserSessions(user.getUsername()); // Invalidate session
-            log.warn(user.getUsername()
-                + "has failed to login more than 5 times, therefore account has become locked.");
-        }
-        userRepository.save(user);
-    }
-    
-    public void resetFailedAttempts(String username) {
-        UserEntity user = userRepository.findByUsername(username);
-        if (user == null) {
-            log.warn("user not found! therefore, resetFailedAttempts() failed!" + username);
-            throw new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
-        }
-        user.setFailedAttempt(0);
-        userRepository.save(user);
-    }
-    
-    private void invalidateUserSessions(String username) {
-        try {
-            for (SessionInformation session : sessionRegistry.getAllSessions(username, false)) {
-                session.expireNow();
-            }
-        } catch (Exception e) {
-            log.error("Error invalidating sessions for user: " + username, e);
-            throw new InvalidatingSessionForUser(ErrorCode.INVALIDATING_SESSION_FOR_USER);
-        }
-    }
-    
-    public void invalidateUserSessionAndLockUser(UserEntity user) {
-        user.setEnabled(false); //lock user account
-        invalidateUserSessions(user.getUsername()); // Invalidate session
-        
-        userRepository.save(user);
     }
 }

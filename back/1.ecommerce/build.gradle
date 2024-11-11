@@ -41,6 +41,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'com.querydsl:querydsl-jpa'
@@ -57,6 +58,7 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'commons-validator:commons-validator:1.7'
     implementation 'org.thymeleaf:thymeleaf-spring5'
 
     runtimeOnly 'com.h2database:h2'
@@ -209,16 +211,16 @@ jmh {
 //아래 세팅이 있어야 jmh 테스트 시, log-file conflict가 안난다.
 //org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':processJmhResources'.
 //Caused by: org.gradle.api.InvalidUserCodeException: Entry jmh-log-config.xml is a duplicate but no duplicate handling strategy has been set. Please refer to https://docs.gradle.org/7.5.1/dsl/org.gradle.api.tasks.Copy.html#org.gradle.api.tasks.Copy:duplicatesStrategy for details.
-sourceSets {
-    jmh {
-        java {
-            srcDirs = ['src/jmh/java']
-        }
-        resources {
-            srcDirs = ['src/jmh/resources']
-        }
-        compileClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.main.output
-    }
-}
+//sourceSets {
+//    jmh {
+//        java {
+//            srcDirs = ['src/jmh/java']
+//        }
+//        resources {
+//            srcDirs = ['src/jmh/resources']
+//        }
+//        compileClasspath += sourceSets.main.output
+//        runtimeClasspath += sourceSets.main.output
+//    }
+//}
 

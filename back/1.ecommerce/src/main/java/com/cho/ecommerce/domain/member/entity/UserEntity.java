@@ -19,6 +19,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -38,7 +39,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Table(name = "MEMBER")
+@Table(
+    name = "MEMBER",
+    indexes = {
+        @Index(name = "idx_userId", columnList = "USER_ID"),
+        @Index(name = "idx_username", columnList = "NAME")
+    }
+)
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -63,14 +70,14 @@ public class UserEntity implements
     //MYSQL의 utf8mb4은 최대 764byte(== 191 * 4) 까지 저장 가능
     private String username;
     
+    @NotBlank(message = "Name is required")
+    @Column(length = DatabaseConstants.MEMBER_NAME_SIZE, name = "NAME")
+    private String name;
+    
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email is required")
     @Column(length = DatabaseConstants.EMAIL_SIZE) //MYSQL의 utf8mb4은 최대 764byte(== 191 * 4) 까지 저장 가능
     private String email;
-    
-    @NotBlank(message = "Name is required")
-    @Column(length = DatabaseConstants.MEMBER_NAME_SIZE)
-    private String name;
 
 //    private String picUrl; //TODO - apply user picture
     

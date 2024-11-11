@@ -8,6 +8,10 @@ spring:
   config:
     activate:
       on-profile: prod
+    #confidential이 적힌 파일 import.
+    #.gitignore에는 제외되었지만,
+    #spring: mail: username:, password: 가 적힌 application-secret.yml을 적고, import한다.
+    import: application-secret.yml
   datasource:
     platform: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -43,6 +47,29 @@ spring:
   session:
     store-type: redis
     timeout: 30m
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    #    username: ${YOUR_EMAIL_ADDRESS}
+    #    password: ${16자리 google account's app password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  task:
+    scheduling:
+      pool:
+        size: 5
+
+verification:
+  code:
+    length: 6
+    expiry-minutes: 5
+    max-attempts: 3
+  rate-limit:
+    requests-per-second: 1
 
 logging:
   level:

@@ -26,6 +26,9 @@ back/2.same_ecommerce_without_authentication_for_stress_test_purpose/build/
 back/3.denormalized_ver_without_authentication_for_stress_test_purpose/bin/
 back/3.denormalized_ver_without_authentication_for_stress_test_purpose/build/
 
+# exclude application-secret.yml that contains confidential data
+application-secret.yml
+
 
 # User-specific stuff
 .idea/**/workspace.xml

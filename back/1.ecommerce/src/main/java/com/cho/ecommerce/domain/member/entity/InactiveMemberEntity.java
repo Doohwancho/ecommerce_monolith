@@ -29,14 +29,13 @@ public class InactiveMemberEntity {
     @Column(name = "MEMBER_ID")
     private Long memberId;
     
-    @Column(name = "USERNAME", nullable = false, length = 30)
+    @Column(name = "USER_ID", nullable = false, length = 30)
     private String username;
-    
-    @Column(name = "EMAIL", nullable = false, length = 100)
-    private String email;
     
     @Column(name = "NAME", nullable = false, length = 100)
     private String name;
+    @Column(name = "EMAIL", nullable = false, length = 100)
+    private String email;
     
     @Column(name = "PASSWORD", nullable = false, length = 255)
     private String password;

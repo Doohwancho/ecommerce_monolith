@@ -5,15 +5,25 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long>, UserRepositoryCustom {
-    Optional<UserEntity> findByEmail(String email);
     
+    Optional<UserEntity> findByEmail(String email);
     
     @Query("SELECT u FROM UserEntity u")
     List<UserEntity> findAll();
     
     UserEntity findByUsername(String username);
+    
+    Optional<UserEntity> findByUserId(String userId);
+    
+    @Query(
+        "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.username = :userId "
+            +
+            "UNION " +
+            "SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END FROM InactiveMemberEntity i WHERE i.username = :userId")
+    Boolean existsByUserId(@Param("userId") String userId);
 }

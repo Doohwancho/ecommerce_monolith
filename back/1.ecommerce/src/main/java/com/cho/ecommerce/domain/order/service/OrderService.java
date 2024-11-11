@@ -4,6 +4,7 @@ import com.cho.ecommerce.api.domain.OrderDTO;
 import com.cho.ecommerce.domain.member.domain.User;
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.service.UserService;
+import com.cho.ecommerce.domain.member.service.UserVerificationService;
 import com.cho.ecommerce.domain.order.domain.Order;
 import com.cho.ecommerce.domain.order.domain.OrderItemDetails;
 import com.cho.ecommerce.domain.order.entity.OrderEntity;
@@ -53,6 +54,7 @@ public class OrderService {
     
     @Autowired
     private UserService userService;
+    private UserVerificationService userVerificationService;
     @Autowired
     private OptionService optionService;
     @Autowired
@@ -85,7 +87,7 @@ public class OrderService {
             
         } catch (BusinessException e) {
             //1-4. if request is rigged, invalidate his session and lock the user
-            userService.invalidateUserSessionAndLockUser(user);
+            userVerificationService.invalidateUserSessionAndLockUser(user);
             throw e;
         }
         
@@ -131,7 +133,7 @@ public class OrderService {
                 discount.validateRequestedDiscountWithSavedDiscountEntity(discountEntityFromDb);
             } catch (BusinessException e) {
                 //if user requested discount is rigged, lock the user
-                userService.invalidateUserSessionAndLockUser(user);
+                userVerificationService.invalidateUserSessionAndLockUser(user);
                 throw e;
             }
             

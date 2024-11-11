@@ -12,6 +12,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500, "C004", "Server Error"),
     INVALID_TYPE_VALUE(400, "C005", " Invalid Type Value"),
     HANDLE_ACCESS_DENIED(403, "C006", "Access is Denied"),
+    TOO_MANY_REQUESTS(400, "C007", "Too Many Requests"),
     
     // Business
     
@@ -23,6 +24,12 @@ public enum ErrorCode {
         "locked account user tried to authenticate and failed"),
     INVALIDATING_SESSION_FOR_USER(500, "M005", "Error invalidating sessions for user"),
     DUPLICATE_USERS(400, "M006", "Duplicate User already exists with the same id"),
+    
+    // Member/Verification
+    VERIFICATION_ERROR(400, "V001", "Error verifying User"),
+    VERIFICATION_CODE_ALREADY_EXISTS(400, "V002",
+        "Server generated Verification Code but it already exists"),
+    EXCEEDS_MAX_VERIFICATION_ATTEMPTS(400, "V003", "verification attempts exceeds maximum amounts"),
     
     // Order
     INVALID_ORDER_REQUEST(400, "O001", "Invalid Order Request"),
