@@ -16,9 +16,9 @@
 	- b. [ERD diagram](#b-erd-diagram)
 	- c. [wireframe](#c-wireframe)
 - C. [기술적 도전 - Backend](#c-기술적-도전---backend)
-    - a. [DB 부하를 낮추기 위한 cache 도입기](#a-db-부하를-낮추기-위한-cache-도입기)
-    - b. [상품 랭킹 기능 구현기, 최적화를 곁들인](#b-상품-랭킹-기능-구현기)
-    - c. [전자상거래에서 인증 및 보안](#c-전자상거래에서-인증-및-보안)
+    - a. [전자상거래에서 인증 및 보안](#a-전자상거래에서-인증-및-보안)
+    - b. [DB 부하를 낮추기 위한 cache 도입기](#b-db-부하를-낮추기-위한-cache-도입기)
+    - c. [상품 랭킹 기능 구현기, 최적화를 곁들인](#c-상품-랭킹-기능-구현기)
 	- d. [돈관련 코드 테스트 정밀도 높힌 방법](#d-돈관련-코드-테스트-정밀도-높힌-방법)
 - D. [기술적 도전 - Database](#d-기술적-도전---database)
     - a. [정규화](#a-정규화)
@@ -104,8 +104,39 @@ mindmap
 
 ## a. 빌드 및 실행 방법
 
+### a-1. prerequisites
 
-### 1. nextjs + spring-server을 docker-compose로 실행
+#### a-1-1. google email 16자리 코드 발급 후 적용
+- step1) gmail 로그인
+- step2) account setting -> security -> 검색창에 'App Passwords' 검색
+- step3) 16자리 app passwords 발급
+- step4) 아래 위치에 다음처럼 저장
+
+```
+back/1.ecommerce/src/main/resources/application-secret.yml
+
+spring:
+  mail:
+    username: ${insert your gmail}
+    password: ${insert 16 digit secret key}
+```
+
+
+#### a-1-2. .env setting if you run locally(not on docker-compose)
+if react -> front/01.reactjs/.env\
+if nextjs -> front/02.nextjs_migration/.env.local
+
+...파일에서
+
+1. base_url을 http://127.0.0.1:8080 로 수정
+2. `npm i`
+3. `npm start` or `npm run dev`
+
+
+### a-2. react / nextjs ver 실행방법
+
+
+#### a-2-1. nextjs + spring-server을 docker-compose로 실행
 
 ```
 1. git clone https://github.com/Doohwancho/ecommerce
@@ -118,7 +149,7 @@ mindmap
 ```
 
 
-### 2. reactjs + spring-server를 docker compose로 실행
+#### a-2-2. reactjs + spring-server를 docker compose로 실행
 
 ```
 1. git clone https://github.com/Doohwancho/ecommerce
@@ -129,6 +160,8 @@ mindmap
 4. docker compose -f ./docker-compose-reactjs-ver.yml up --build
 5. http://localhost:80
 ```
+
+### a-3. 빌드 에러 해결법
 
 #### Q. docker build시 에러: arm64 아키텍쳐가 아닙니다!
 
@@ -148,17 +181,6 @@ mindmap
 4. `create database ecommerce;`
 5. 다시 `docker compose up --build`
 
-
-#### Q. 로컬환경에서 react, nextjs 프로젝트를 실행하고 싶다면?
-
-1. react -> front/01.reactjs/.env
-2. nextjs -> front/02.nextjs_migration/.env.local
-
-파일에서
-
-1. base_url을 http://127.0.0.1:8080 로 수정
-2. `npm i`
-3. `npm start` or `npm run dev`
 
 
 
@@ -276,7 +298,244 @@ VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 �
 
 # C. 기술적 도전 - Backend
 
-## a. DB 부하를 낮추기 위한 cache 도입기
+## a. 전자상거래에서 인증 및 보안
+
+### 1. 문제
+
+돈 안걸린 서비스(ex. 이상형 월드컵)는 해킹 당해도 피해가 크진 않다.\
+'개인정보가 또 유출됬구나~'
+
+근데 전자상거래같은 돈 걸린 사이트는 해킹당하면 큰일난다.\
+'내 신용카드로 몇백 질러버리면?'\
+두려움에 편도체가 마비되고 기억에 강렬하게 남아 나쁘게 입소문난다.
+
+회사가 물질적 피해 물어줘야하고 소송당해서 법적 책임 물을 수도 있고 하여튼 골치아프다.\
+무엇보다 고객의 신뢰를 잃는다는게 제일 크다.
+
+
+인증 시스템을 사용해 어떻게 하면 보안수준을 높힐 수 있을까?
+
+
+
+### 2. 인증 시스템 플로우 차트
+```mermaid
+flowchart TD
+    subgraph Registration
+        A[/Register Page/] --> B{Register Form}
+        B --> C[Submit User Data]
+        C --> D[Save User to DB]
+        D --> E[/Login Page/]
+    end
+    subgraph Authentication
+        E[/Login Page/] --> F{Login Form}
+        F --> G[Submit Credentials]
+        G --> H{Check Credentials}
+        H -->|Valid| I[Redirect to Dashboard]
+        H -->|Invalid| Q[Increment Failed Attempts]
+        Q --> R{Failed >= 5 Times?}
+        R -->|No| F
+        R -->|Yes| S[Lock Account]
+        S --> W[Notify User via Email]
+        S --> Z1[Transfer to inactiveMember Table via Cron Job]
+    end
+    subgraph Password Recovery
+        E --> J{Forgot Password?}
+        J --> U[/Password Recovery Page/]
+        U --> K[Enter UserId]
+        K --> L{User Exists?}
+        L -->|Yes| M[Send Verification Email]
+        L -->|No| N[Display 'User Does Not Exist']
+        N --> V[Show Register Button] --> A
+        M --> O[User Enters 6-Digit Code]
+        O --> P{Code Valid?}
+        P -->|Yes| T[Unlock User's Account]
+        T --> X[Reset Password Form]
+        X --> Y{Password Requirements Met?}
+        Y -->|Yes| Z[Update Password] --> E
+        Y -->|No| X
+        P -->|No| O
+    end
+    %% Define classes for nodes with black text
+    classDef blackText fill:#fff,stroke:#333,color:#000
+    %% Apply black text class to all nodes
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,Z1 blackText
+    %% Registration nodes - Orange shades
+    style A fill:#FFB74D,stroke:#333
+    style B fill:#FFB74D,stroke:#333
+    style C fill:#FFB74D,stroke:#333
+    style D fill:#FFB74D,stroke:#333
+    style V fill:#FFB74D,stroke:#333
+
+    %% Authentication nodes - Blue shades
+    style E fill:#64B5F6,stroke:#333
+    style F fill:#64B5F6,stroke:#333
+    style G fill:#64B5F6,stroke:#333
+    style H fill:#64B5F6,stroke:#333
+    style I fill:#64B5F6,stroke:#333
+    style Q fill:#64B5F6,stroke:#333
+    style R fill:#64B5F6,stroke:#333
+
+    %% Account Lock/Unlock nodes - Red & Green shades
+    style S fill:#EF5350,stroke:#333
+    style T fill:#81C784,stroke:#333
+    style W fill:#EF5350,stroke:#333
+    style Z1 fill:#EF5350,stroke:#333
+
+    %% Password Reset nodes - Purple shades
+    style X fill:#9575CD,stroke:#333
+    style Y fill:#9575CD,stroke:#333
+    style Z fill:#9575CD,stroke:#333
+
+    %% Password Recovery nodes - Teal shades
+    style U fill:#4DB6AC,stroke:#333
+    style J fill:#4DB6AC,stroke:#333
+    style K fill:#4DB6AC,stroke:#333
+    style L fill:#4DB6AC,stroke:#333
+    style M fill:#4DB6AC,stroke:#333
+    style N fill:#4DB6AC,stroke:#333
+    style O fill:#4DB6AC,stroke:#333
+    style P fill:#4DB6AC,stroke:#333
+```
+
+인증 시스템이 양이 많으니까 나눠서 생각하자.
+
+1. 인증 방법 정하기(session vs jwt)
+2. 인증 실패 & 이상현상 감지 시, 유저 밴 기능
+3. 밴한 유저 정보 관리 & 리커버리 기능
+
+
+
+
+
+### 3. 인증 방법론 정하기
+
+#### 3-1. session vs jwt 뭐 쓰지?
+
+세션 썼다.
+
+왜?
+
+세션이 jwt보다 보안적으로 더 뛰어나니까.
+
+왜?
+
+세션은 이상현상 감지 시, "즉시" session invalidate 하고 계정 락 걸면 계정탈취 후에 일어나는 피해를 최소화할 수 있다.
+
+하지만 jwt는 토큰이 expire할 때 까지 서버에서 뭘 할 수가 없다.
+
+그래서 [jwt+refresh token](https://github.com/Doohwancho/spring/tree/main/03.spring-security/jwt-refresh-token) 쓰는 방법도 만들어 봤는데,\
+expire 시간을 아무리 짧게해도,\
+결국 stateful한 session 방식이 아닌 stateless한 jwt방식은 탈취당하면 서버에서 벤 할 방법이 없다.
+
+
+#### 3-2. 분산 시스템에서 JWT의 stateless함의 단점 극복법?
+추후 서비스가 성장하고 부하가 커져서 레디스로 수 많은 세션들 부하 처리가 힘들어지거나,\
+monolith에서 MSA로 변경 등의 이유로 jwt를 도입해야 할 때,\
+stateless의 단점인 '탈취 후 이상현상 감지시 즉시벤이 안됨'을 어떻게 극복할 수 있을까?
+
+redis에서 블랙리스트 관리하면 되지 않을까?\
+근데 그건 stateful한 방식이잖아? -> 세션 하위호환이다.
+
+ec2의 로컬캐시로 블랙리스트를 관리하면 된다.\
+근데 분산환경에서 ec2-1, ec2-2, ec2-3 여러개가 있는데, 서로 가지고있는 블랙리스트의 싱크가 안맞으니까\
+ec2들 앞단에 로드밸런서에 기능중에 sticky-session 기능이었던가? 를 이용해서\
+스케일아웃된 ec2들에게 요청을 라운드로빈으로 순서대로, 랜덤하게 보내는게 아니라,\
+한번 ip-2요청이 3번째 ec2에게 갔으면, 계속 ip-2는 ec2-3 에게 보내는 식으로 처리한 후,\
+스프링 로컬캐시로 블랙리스트를 캐싱하여 매 jwt validate마다 같이 검증할 듯 하다.\
+일정 주기마다 배치로 banned_user 테이블에 저장하고.
+
+이 방식은 분산시스템에서 redis 서버에 부하를 주지 않으면서,\
+수십, 수백개에 분산된 WAS서버에서 스스로 인증을 하는데\
+stateless한 jwt의 단점을 기술적으로 극복하여\
+stateful한 session의 이점인 즉시 벤처리 기능도 구현할 수 있는 방법인 것으로 예측된다.\
+(근데 안만들어봐서 확실하진 않다)
+
+
+
+
+#### 3-3. 세션 저장소는 어디에?
+Q. 클라이언트에서 세션키를 보관할건데, 보안적으로 그나마 우수한 장소는?
+
+![](./documentation/architecture/uml/authentication/저장소_보안.png)
+
+cookie에서 보관한다.
+
+javascript로 데이터 못빼가니까 그나마 보안적으로 다른 선택지 대비 낫다고 판단된다.
+
+
+
+#### 3-4. 이상행동 감지시 계정 잠금 기능
+
+![](documentation/architecture/uml/authentication/authentication_flowchart.png)
+
+현재는 가장 기초적인 password 5회 틀릴 시, 계정잠금 기능만 구현되어있다.\
+다른 이상현상의 예시로는 client에서 사용자 ip range가 한국에서 오는지, 외국에서 오는지 체크할 수 있다.
+
+
+
+
+#### 3-5. inactive user를 Member 테이블로부터 이관하기
+![](documentation/images/inactive-user.png)
+
+- what
+	- 잠긴 계정은 주기적으로 `Member table`에서 `INACTIVE_MEMBER table`로 이관된다.
+- why
+	- member table의 사이즈가 너무 커지면, `Member table` 쿼리 성능이 낮아지기 때문에, inactive user, banned user는 다른 테이블로 이관해줘서 자주 쓰이는 member table의 사이즈 조절해준다.
+- how
+	1. 매주 일요일 새벽 3시에
+	2. cron + batch로
+	3. locked account를
+	4. MEMBER table -> INACTIVE_MEMBER table로 이전한다.
+
+
+
+
+
+
+### 4. 결과
+
+#### a. 이상현상 감지 시, 유저 벤 기능
+1. session clustering (spring security + redis)
+2. 이상행동 감지시(로그인 5회 틀림) invalidate session + account lock 한다.
+3. 매주 일요일 새벽 3시에 cron + batch로 locked account를 MEMBER table에서 INACTIVE_MEMBER table로 이전한다.
+
+
+##### a-1. 기능1: login attempt 실패할 때마다 카운트+1
+
+https://github.com/Doohwancho/ecommerce/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L71-L82
+
+
+##### a-2. 기능2: 카운트가 일정 수치 이상 쌓이면 비정상적인 유저라고 판단, invalidate session && lock account
+
+https://github.com/Doohwancho/ecommerce/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L82-L101
+
+
+##### a-3. 기능3: INACTIVE_MEMBER를 다른 테이블로 이전, 매주 새벽 3시마다 cron job
+https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L24-L144
+
+https://github.com/Doohwancho/ecommerce/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/scheduled/ScheduledJobConfig.java#L22-L32
+
+
+
+
+#### b. 'forgot password?' 에서 email로 유저 verify 후 reset password
+
+##### b-1. 기능1: send 6 digit code verification to user's email
+https://github.com/Doohwancho/ecommerce/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L125-L175
+
+##### b-2. 기능2: verify 6 digit code
+
+https://github.com/Doohwancho/ecommerce/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L201-L251
+
+##### b-3. 기능3: reset password
+
+https://github.com/Doohwancho/ecommerce/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L353-L379
+
+
+
+
+
+## b. DB 부하를 낮추기 위한 cache 도입기
 
 ### 1. 문제
 
@@ -487,7 +746,7 @@ https://github.com/Doohwancho/ecommerce/blob/3a07a123eb971db1ba7952fedc0ae39cb3c
 https://github.com/Doohwancho/ecommerce/blob/3a07a123eb971db1ba7952fedc0ae39cb3cd0f09/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/service/ProductService.java#L155-L174
 
 
-## b. 상품 랭킹 기능 구현기
+## c. 상품 랭킹 기능 구현기
 
 ### 1. 문제
 쇼핑몰에 가면 실시간 가장 핫한 아이템 top 10을 어렵지 않게 볼 수 있다.\
@@ -1106,124 +1365,6 @@ step2) 8의 parent와 비교하여 크면 swap() 하는데, 이걸 root_node 까
 
 
 
-
-
-## c. 전자상거래에서 인증 및 보안
-
-### 1. 문제
-
-돈 안걸린 서비스(ex. 이상형 월드컵)는 해킹 당해도 피해가 크진 않다.\
-'개인정보가 또 유출됬구나~'
-
-근데 전자상거래같은 돈 걸린 사이트는 해킹당하면 큰일난다.\
-'내 신용카드로 몇백 질러버리면?'\
-두려움에 편도체가 마비되고 기억에 강렬하게 남아 나쁘게 입소문난다.
-
-회사가 물질적 피해 물어줘야하고 소송당해서 법적 책임 물을 수도 있고 하여튼 골치아프다.\
-무엇보다 고객의 신뢰를 잃는다는게 제일 크다.
-
-
-인증 시스템을 사용해 어떻게 하면 보안수준을 높힐 수 있을까?
-
-
-
-
-### 2. 방법론
-
-#### 2-1. session vs jwt 뭐 쓰지?
-
-세션 썼다.
-
-왜?
-
-세션이 jwt보다 보안적으로 더 뛰어나니까.
-
-왜?
-
-세션은 이상현상 감지 시, "즉시" session invalidate 하고 계정 락 걸면 계정탈취 후에 일어나는 피해를 최소화할 수 있다.
-
-하지만 jwt는 토큰이 expire할 때 까지 서버에서 뭘 할 수가 없다.
-
-그래서 [jwt+refresh token](https://github.com/Doohwancho/spring/tree/main/03.spring-security/jwt-refresh-token) 쓰는 방법도 만들어 봤는데,\
-expire 시간을 아무리 짧게해도,\
-결국 stateful한 session 방식이 아닌 stateless한 jwt방식은 탈취당하면 서버에서 벤 할 방법이 없다.
-
-
-#### 2-2. 분산 시스템에서 JWT의 stateless함의 단점 극복법?
-추후 서비스가 성장하고 부하가 커져서 레디스로 수 많은 세션들 부하 처리가 힘들어지거나 등의 이유로 jwt를 도입해야 할 때,\
-stateless의 단점인 '탈취 후 이상현상 감지시 즉시벤이 안됨'을 어떻게 극복할 수 있을까?
-
-redis에서 블랙리스트 관리하면 되지 않을까?\
-근데 그건 stateful한 방식이잖아? -> 세션 하위호환이다.
-
-ec2의 로컬캐시로 블랙리스트를 관리하면 된다.\
-근데 분산환경에서 ec2-1, ec2-2, ec2-3 여러개가 있는데, 서로 가지고있는 블랙리스트의 싱크가 안맞으니까\
-ec2들 앞단에 로드밸런서에 기능중에 sticky-session 기능이었던가? 를 이용해서\
-스케일아웃된 ec2들에게 요청을 라운드로빈으로 순서대로, 랜덤하게 보내는게 아니라,\
-한번 ip-2요청이 3번째 ec2에게 갔으면, 계속 ip-2는 ec2-3 에게 보내는 식으로 처리한 후,\
-스프링 로컬캐시로 블랙리스트를 캐싱하여 매 jwt validate마다 같이 검증할 듯 하다.\
-일정 주기마다 배치로 banned_user 테이블에 저장하고.
-
-이 방식은 분산시스템에서 redis 서버에 부하를 주지 않으면서,\
-수십, 수백개에 분산된 WAS서버에서 스스로 인증을 하는데\
-stateless한 jwt의 단점을 기술적으로 극복하여\
-stateful한 session의 이점인 즉시 벤처리 기능도 구현할 수 있는 방법인 것으로 예측된다.\
-(근데 안만들어봐서 확실하진 않다)
-
-
-
-
-#### 2-3. 세션 저장소는 어디에?
-Q. 클라이언트에서 세션키를 보관할건데, 보안적으로 그나마 우수한 장소는?
-
-![](./documentation/architecture/uml/authentication/저장소_보안.png)
-
-cookie에서 보관한다.
-
-javascript로 데이터 못빼가니까 그나마 보안적으로 다른 선택지 대비 낫다고 판단된다.
-
-
-
-#### 2-4. 이상행동 감지시 계정 잠금 기능
-
-![](documentation/architecture/uml/authentication/authentication_flowchart.png)
-
-
-
-#### 2-5. inactive user를 Member 테이블로부터 이관하기
-![](documentation/images/inactive-user.png)
-
-1. 매주 일요일 새벽 3시에
-2. cron + batch로
-3. locked account를
-4. MEMBER table -> INACTIVE_MEMBER table로 이전한다.
-
-
-
-### 3. 결과
-
-#### 3-1. 구현기능
-1. session clustering (spring security + redis)
-2. 이상행동 감지시(로그인 5회 틀림) invalidate session + account lock 한다.
-3. 매주 일요일 새벽 3시에 cron + batch로 locked account를 MEMBER table에서 INACTIVE_MEMBER table로 이전한다.
-
-
-#### 3-2. 기능1: login attempt 실패할 때마다 카운트+1
-
-https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95f366c/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserService.java#L147-L166
-
-
-#### 3-3. 기능2: 카운트가 일정 수치 이상 쌓이면 비정상적인 유저라고 판단, invalidate session && lock account
-
-https://github.com/Doohwancho/ecommerce/blob/33427c25a583416b8c086e7c6dbd008de95f366c/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserService.java#L168-L184
-
-
-#### 3-4. 기능3: INACTIVE_MEMBER를 다른 테이블로 이전하기 batch job
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L24-L144
-
-#### 3-5. 기능4: 매주 새벽 3시마다 batch job 실행하도록 cron 걸기
-
-https://github.com/Doohwancho/ecommerce/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/scheduled/ScheduledJobConfig.java#L22-L32
 
 
 
