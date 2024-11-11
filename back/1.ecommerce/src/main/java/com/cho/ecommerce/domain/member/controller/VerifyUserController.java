@@ -63,4 +63,14 @@ public class VerifyUserController implements com.cho.ecommerce.api.UserApi {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @Override
+    public ResponseEntity<Void> resetPassword(
+        @Valid @RequestBody com.cho.ecommerce.api.domain.PasswordResetRequestDTO request) {
+        userAdapter.setPasswordAfterVerification(
+            request.getUserId(),
+            request.getNewPassword()
+        );
+        return ResponseEntity.ok().build();
+    }
 }

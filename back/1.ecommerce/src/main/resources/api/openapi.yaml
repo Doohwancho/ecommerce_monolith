@@ -245,6 +245,33 @@ paths:
               schema:
                 type: string
                 example: "Maximum verification attempts exceeded"
+  /api/verification/reset-password:
+    post:
+      summary: Reset user's password after verification
+      operationId: resetPassword
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestDTO'
+      responses:
+        '200':
+          description: Password successfully reset
+        '400':
+          description: Invalid password format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
   /users/{username}:
     get:
       tags:
@@ -866,6 +893,22 @@ components:
           pattern: '^[0-9]{6}$'
           example: "123456"
           description: 6-digit verification code
+    PasswordResetRequestDTO:
+      type: object
+      required:
+        - userId
+        - newPassword
+      properties:
+        userId:
+          type: string
+          description: User's ID
+          example: "user123"
+        newPassword:
+          type: string
+          description: New password (must meet security requirements)
+          example: "SecurePassword123!"
+          minLength: 8
+          maxLength: 100
     UserDetailsResponseDTO:
       type: object
       required:

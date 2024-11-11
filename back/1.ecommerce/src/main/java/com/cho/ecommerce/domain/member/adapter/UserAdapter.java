@@ -41,4 +41,8 @@ public class UserAdapter {
     public boolean verifyCode(String userId, String code) {
         return userVerificationService.verifyCode(userId, code);
     }
+    
+    public void setPasswordAfterVerification(String userId, String password) {
+        userVerificationService.setPasswordAfterVerification(userId, password);
+    }
 }

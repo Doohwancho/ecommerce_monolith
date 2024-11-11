@@ -13,9 +13,11 @@ import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.global.config.security.SecurityConstants;
 import com.cho.ecommerce.global.error.ErrorCode;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
+import com.cho.ecommerce.global.error.exception.member.InvalidPasswordException;
 import com.cho.ecommerce.global.error.exception.member.InvalidatingSessionForUser;
 import com.cho.ecommerce.global.error.exception.member.MaxAttemptsExceededException;
 import com.cho.ecommerce.global.error.exception.member.TooManyRequestsException;
+import com.cho.ecommerce.global.error.exception.member.UnauthorizedAccessException;
 import com.cho.ecommerce.global.error.exception.member.VerificationCodeAlreadyExistsException;
 import com.cho.ecommerce.global.error.exception.member.VerificationException;
 import com.google.common.util.concurrent.RateLimiter;
@@ -35,6 +37,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -49,16 +52,18 @@ public class UserVerificationService {
     private final JavaMailSender emailSender;
     private final ConcurrentHashMap<String, VerificationCode> verificationCodes = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Email> userEmails = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, LocalDateTime> verifiedUsers = new ConcurrentHashMap<>();
+    
     private final SecureRandom secureRandom = new SecureRandom();
     private final RateLimiter rateLimiter = RateLimiter.create(1.0); // 1 request per second
+    private final PasswordEncoder passwordEncoder;
     
     private static final int VERIFICATION_CODE_LENGTH = 6;
     private static final int USER_EMAIL_EXPIRY_MINUTES = 10;
     private static final int VERIFICATION_CODE_EXPIRY_MINUTES = 5;
+    private static final int VERIFICATION_STATE_EXPIRY_MINUTES = 5;
     private static final int MAX_VERIFICATION_ATTEMPTS = 3;
     private static final String CODE_CHARS = "0123456789";
-    
-    private final UserService userService;
     
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -203,7 +208,7 @@ public class UserVerificationService {
         }
         
         //2) verify if stored code exists
-        VerificationCode storedCode = verificationCodes.get(email);
+        VerificationCode storedCode = verificationCodes.get(email.getValue());
         
         if (storedCode == null) {
             log.warn("No verification code found for email: {}", email);
@@ -213,14 +218,14 @@ public class UserVerificationService {
         //3) Check expiry
         if (LocalDateTime.now().isAfter(storedCode.getExpiryTime())) {
             log.warn("Verification code expired for email: {}", email);
-            verificationCodes.remove(email);
+            verificationCodes.remove(email.getValue());
             return false;
         }
         
         //4) Check attempts
         if (storedCode.getAttempts() >= MAX_VERIFICATION_ATTEMPTS) {
             log.warn("Max verification attempts exceeded for email: {}", email);
-            verificationCodes.remove(email);
+            verificationCodes.remove(email.getValue());
             throw new MaxAttemptsExceededException("Maximum verification attempts exceeded");
         }
         
@@ -231,11 +236,13 @@ public class UserVerificationService {
         boolean isValid = storedCode.getCode().equals(code);
         if (isValid) {
 //            log.info("Code verified successfully for email: {}", email);
-            verificationCodes.remove(email);
+            verificationCodes.remove(email.getValue());
             
-            //7) Re-activate user
-            reactivateUserAfterVerification(
-                userId);
+            //7) Re-activate user with temporary password
+            reactivateUserAfterVerification(userId);
+            
+            verifiedUsers.put(userId,
+                LocalDateTime.now().plusMinutes(VERIFICATION_STATE_EXPIRY_MINUTES));
         } else {
             log.warn("Invalid code attempt for email: {}", email);
         }
@@ -278,7 +285,6 @@ public class UserVerificationService {
         }
         return code.toString();
     }
-    
     
     @Transactional
     public void reactivateUserAfterVerification(String userId) {
@@ -344,6 +350,34 @@ public class UserVerificationService {
         inactiveMemberRepository.delete(inactiveMember);
     }
     
+    @Transactional
+    public void setPasswordAfterVerification(String userId, String newPassword) {
+        // Check if user was verified and verification hasn't expired
+        LocalDateTime expiryTime = verifiedUsers.get(userId);
+        if (expiryTime == null || LocalDateTime.now().isAfter(expiryTime)) {
+            verifiedUsers.remove(userId); // Cleanup expired entry if exists
+            throw new UnauthorizedAccessException("User not verified or verification expired");
+        }
+        
+        UserEntity user = userRepository.findByUserId(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        
+        // Validate password history (optional)
+//        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+        if (newPassword.equals(user.getPassword())) {
+            throw new InvalidPasswordException("New password must be different from old password");
+        }
+        
+        // Update password
+//        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPassword(newPassword);
+//        user.setPasswordUpdatedAt(LocalDateTime.now()); //TODO - tracking last password saved date, and if over 3, 6 months, notive user to re-make password
+        userRepository.save(user);
+        
+        // Remove from verified users after password reset
+        verifiedUsers.remove(userId);
+    }
+    
     @Scheduled(fixedRate = 1800000) // Every 30m, remove expired code
     public void cleanupExpiredCodes() {
         verificationCodes.entrySet().removeIf(entry -> {
@@ -365,5 +399,11 @@ public class UserVerificationService {
             }
             return isExpired;
         });
+    }
+    
+    @Scheduled(fixedRate = 600000) // Every 10 minutes, removed expired verification token
+    public void cleanupExpiredVerifications() {
+        LocalDateTime now = LocalDateTime.now();
+        verifiedUsers.entrySet().removeIf(entry -> now.isAfter(entry.getValue()));
     }
 }

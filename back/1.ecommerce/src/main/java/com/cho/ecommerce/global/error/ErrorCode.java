@@ -30,6 +30,8 @@ public enum ErrorCode {
     VERIFICATION_CODE_ALREADY_EXISTS(400, "V002",
         "Server generated Verification Code but it already exists"),
     EXCEEDS_MAX_VERIFICATION_ATTEMPTS(400, "V003", "verification attempts exceeds maximum amounts"),
+    UNAUTHORIZED_VERIFICATION_ATTEMPT(400, "V004", "unauthorized verification attempts"),
+    INVALID_PASSWORD(400, "V005", "Invalid Password"),
     
     // Order
     INVALID_ORDER_REQUEST(400, "O001", "Invalid Order Request"),
