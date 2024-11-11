@@ -191,14 +191,21 @@ if nextjs -> front/02.nextjs_migration/.env.local
 |----------------------|---------------------------|---------|
 | Java                 | JDK                       | 1.8     |
 | Spring               | Spring Boot Starter Web   | 2.5.6   |
-|                      | Spring Security           | 2.5.6   |
-|                      | Spring Data JPA           | 2.5.6   |
-|                      | Spring Batch              | 2.5.6   |
-|                      | Spring Quartz             | 2.5.6   |
+|                      | Spring Boot Starter Security           | 2.5.6   |
+|                      | Spring Boot Starter Mail | 2.5.6   |
+|                      | Spring Boot Starter JDBC  | 2.5.6   |
+|                      | Spring Boot Starter data JPA | 2.5.6   |
+|                      | Spring Boot Starter data Redis | 2.5.6   |
+|                      | Spring Boot Starter Batch              | 2.5.6   |
+|                      | Spring Boot Starter Quartz             | 2.5.6   |
 |                      | Spring Boot Starter Cache | 2.5.6   |
+|                      | Spring Boot Starter Validation | 2.5.6   |
+|                      | Spring Boot Starter Actuator | 2.5.6   |
 | External Java Library| QueryDSL                  | 4.4.0   |
 |                      | OpenAPI-Codegen           | 4.3.1   |
 |                      | MapStruct                 | 1.5.5   |
+|                      | gson                      | 2.8.9   |
+|                      | guava                     | 31.1   |
 |                      | Jackson-datatype-jsr310   | 2.12.5  |
 |                      | Datafaker                 | 1.9.0   |
 | Database             | MySQL                     | 8.0.23  |
@@ -211,7 +218,8 @@ if nextjs -> front/02.nextjs_migration/.env.local
 |                      | Docker                    | 20.10.13|
 | Provisioning         | Terraform                 | 1.6.6   |
 |                      | Packer                    | 1.10.2  |
-| Monitoring           | Prometheus                | 2.49    |
+| Monitoring           | micrometer-registry-prometheus | 1.7.5    |
+|                      | Prometheus                | 2.49    |
 |                      | Grafana                   | 10.3    |
 | Stress Test          | K6                        | 0.49    |
 | Development Tools    | IntelliJ                  |         |
