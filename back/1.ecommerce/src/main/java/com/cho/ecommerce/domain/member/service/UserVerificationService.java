@@ -101,7 +101,8 @@ public class UserVerificationService {
     
     
     public void resetFailedAttempts(String username) {
-        UserEntity user = userRepository.findByUsername(username);
+        UserEntity user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("user not found"));
         if (user == null) {
             log.warn("user not found! therefore, resetFailedAttempts() failed!" + username);
             throw new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
@@ -175,7 +176,7 @@ public class UserVerificationService {
     
     private String findUserEmailById(String userId) {
         // First try active users
-        Optional<UserEntity> activeUser = userRepository.findByUserId(userId);
+        Optional<UserEntity> activeUser = userRepository.findByUsername(userId);
         if (activeUser.isPresent()) {
             return activeUser.get().getEmail();
         }
@@ -289,7 +290,7 @@ public class UserVerificationService {
     @Transactional
     public void reactivateUserAfterVerification(String userId) {
         // First check if user is in active members table
-        Optional<UserEntity> activeUser = userRepository.findByUserId(userId);
+        Optional<UserEntity> activeUser = userRepository.findByUsername(userId);
         if (activeUser.isPresent()) {
             UserEntity user = activeUser.get();
             user.setEnabled(true);
@@ -359,7 +360,7 @@ public class UserVerificationService {
             throw new UnauthorizedAccessException("User not verified or verification expired");
         }
         
-        UserEntity user = userRepository.findByUserId(userId)
+        UserEntity user = userRepository.findByUsername(userId)
             .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
         // Validate password history (optional)

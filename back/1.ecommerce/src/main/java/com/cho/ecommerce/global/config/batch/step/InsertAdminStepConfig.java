@@ -8,6 +8,7 @@ import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserAuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
+import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.time.LocalDateTime;
 import net.datafaker.Faker;
 import org.springframework.batch.core.Step;
@@ -47,7 +48,8 @@ public class InsertAdminStepConfig {
     public Tasklet createAdminTasklet() {
         return (contribution, chunkContext) -> {
             if (authorityRepository.findByAuthority("ROLE_ADMIN").isPresent()) {
-                UserEntity existingAdmin = userRepository.findByUsername("admin");
+                UserEntity existingAdmin = userRepository.findByUsername("admin")
+                    .orElseThrow(() -> new ResourceNotFoundException("user does not exists!"));
                 
                 if (existingAdmin
                     == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000

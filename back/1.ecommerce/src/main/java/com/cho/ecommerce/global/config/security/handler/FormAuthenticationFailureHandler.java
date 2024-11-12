@@ -33,14 +33,8 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
         
         //유저가 데이터베이스에 존재하는지 확인한다.
         String username = request.getParameter("username");
-        UserEntity user = userRepository.findByUsername(username);
-        
-        //없는 유저였다면, Exception을 던진다.
-        if (user == null) {
-            log.info("onAuthenticationFailure() failed! username: " + username);
-            throw new ResourceNotFoundException(
-                ErrorCode.RESOURCE_NOT_FOUND);
-        }
+        UserEntity user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND));
         
         // 개발 편의성을 위해 failed login request의 JSESSIONID를 꺼내 log 찍어본다.
 //        Cookie[] cookies = request.getCookies();

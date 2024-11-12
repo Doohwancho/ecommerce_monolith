@@ -16,9 +16,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, UserRep
     @Query("SELECT u FROM UserEntity u")
     List<UserEntity> findAll();
     
-    UserEntity findByUsername(String username);
-    
-    Optional<UserEntity> findByUserId(String userId);
+    Optional<UserEntity> findByUsername(String username);
     
     @Query(
         "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.username = :userId "

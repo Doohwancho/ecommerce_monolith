@@ -8,6 +8,7 @@ import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserAuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
+import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.time.LocalDateTime;
 import net.datafaker.Faker;
 import org.springframework.batch.core.Step;
@@ -49,7 +50,8 @@ public class InsertTestUserStepConfig {
         return (contribution, chunkContext) -> {
             if (authorityRepository.findByAuthority("ROLE_USER").isPresent()) {
                 
-                UserEntity existingTestUser = userRepository.findByUsername("testUser");
+                UserEntity existingTestUser = userRepository.findByUsername("testUser")
+                    .orElseThrow(() -> new ResourceNotFoundException("user not found!"));
                 
                 if (existingTestUser
                     == null) { //to avoid duplicate key error (UserEntity.username is @Unique) - SQL Error: 1062, SQLState: 23000
