@@ -6,9 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.Duration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
+import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -34,8 +33,7 @@ public class RedisConfig {
     @Value("${spring.redis.port}")
     private int port;
     
-    @Autowired
-    private CacheManager cacheManager;
+    private RedisCacheManager redisCacheManager;
     
     @Bean
     public LettuceConnectionFactory connectionFactory() {
@@ -93,9 +91,11 @@ public class RedisConfig {
             .serializeValuesWith(
                 SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(mapper)));
         
-        return RedisCacheManager.builder(redisConnectionFactory)
+        this.redisCacheManager = RedisCacheManager.builder(redisConnectionFactory)
             .cacheDefaults(config)
             .build();
+        
+        return this.redisCacheManager;
     }
     
     //Note)
@@ -119,7 +119,12 @@ public class RedisConfig {
     // @Scheduled(cron = "0 0 0 * * ?") // OR using a cron expression, for example, every day at midnight
     @Scheduled(fixedRate = 3600000) // 3600000 milliseconds = 1 hour (Run every hour)
     public void clearTopTenRatedProductsCache() {
-        cacheManager.getCache("topTenRatedProductsCached")
-            .clear(); //main page에 top 10 rated products를 매 시간마다 캐시에 새로 갱신
+        if (this.redisCacheManager != null) {
+            Cache cache = this.redisCacheManager.getCache(
+                "topTenRatedProductsCached"); //main page에 top 10 rated products를 매 시간마다 캐시에 새로 갱신
+            if (cache != null) {
+                cache.clear();
+            }
+        }
     }
 }
