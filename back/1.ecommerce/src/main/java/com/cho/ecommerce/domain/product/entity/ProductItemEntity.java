@@ -1,6 +1,8 @@
 package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +25,7 @@ import lombok.Setter;
 @Table(name = "PRODUCT_ITEM")
 @Setter
 @Getter
+@JsonIgnoreProperties("product")
 public class ProductItemEntity {
     
     @Id
@@ -44,6 +47,7 @@ public class ProductItemEntity {
     @Column(name = "PRICE", length = DatabaseConstants.PRODUCT_ITEM_PRICE_SIZE)
     private Double price;
     
+    @JsonBackReference
     @NotNull(message = "Product is required")
     @ManyToOne
     @JoinColumn(name = "PRODUCT_ID")

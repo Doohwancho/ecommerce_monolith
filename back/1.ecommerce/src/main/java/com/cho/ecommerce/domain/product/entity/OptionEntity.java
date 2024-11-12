@@ -1,6 +1,8 @@
 package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,6 +24,7 @@ import lombok.Setter;
 //mysql에 OPTION 이름의 테이블 생성 불가라 `OPTION`으로 적었지만, h2에서는 "OPTION"으로 생성되어 문제가 생긴다.
 @Getter
 @Setter
+@JsonIgnoreProperties("category")
 public class OptionEntity {
     
     @Id
@@ -39,6 +42,7 @@ public class OptionEntity {
     @Column(name = "VALUE", length = DatabaseConstants.OPTION_VALUE_SIZE)
     private String value;
     
+    @JsonBackReference
     @NotNull(message = "Category is required")
     @ManyToOne
     @JoinColumn(name = "CATEGORY_ID")

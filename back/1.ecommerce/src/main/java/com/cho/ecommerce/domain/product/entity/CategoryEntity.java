@@ -1,6 +1,8 @@
 package com.cho.ecommerce.domain.product.entity;
 
 import com.cho.ecommerce.global.config.database.DatabaseConstants;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -20,6 +22,7 @@ import lombok.Setter;
 @Table(name = "CATEGORY")
 @Getter
 @Setter
+@JsonIgnoreProperties({"optionEntities", "products"})
 public class CategoryEntity implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -49,9 +52,11 @@ public class CategoryEntity implements Serializable {
     @Column(name = "DEPTH")
     private Integer depth;
     
+    @JsonManagedReference
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private Set<OptionEntity> optionEntities;
     
+    @JsonManagedReference
     @OneToMany(mappedBy = "category")
     private Set<ProductEntity> products;
     
