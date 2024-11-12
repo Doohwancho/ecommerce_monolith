@@ -113,7 +113,7 @@ public class UserVerificationService {
     
     
     public Boolean findUserExistsByUserId(String userId) {
-        return userRepository.existsByUserId(userId);
+        return userRepository.existsByUsername(userId);
     }
     
     /*

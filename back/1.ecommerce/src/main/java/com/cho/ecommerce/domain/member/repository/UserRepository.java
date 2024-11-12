@@ -19,9 +19,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, UserRep
     Optional<UserEntity> findByUsername(String username);
     
     @Query(
-        "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.username= :username "
-            +
-            "UNION " +
-            "SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END FROM InactiveMemberEntity i WHERE i.username = :username")
-    Boolean existsByUserId(@Param("username") String username);
+        "SELECT CASE WHEN COUNT(u) > 0 OR COUNT(i) > 0 THEN true ELSE false END " +
+            "FROM UserEntity u, InactiveMemberEntity i " +
+            "WHERE u.username = :username OR i.username = :username")
+    Boolean existsByUsername(@Param("username") String username);
 }
