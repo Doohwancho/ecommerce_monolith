@@ -414,7 +414,7 @@ const CategoryBar: React.FC = () => {
                     : 'opacity-0 invisible pointer-events-none'
                 }
             `}
-            style={{ transitionProperty: 'opacity', transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1);', transitionDuration: '800ms'}} //transition-all duration-800 ease-in-out 입력에서 duration이 800ms로 적용 안되서 이 방식으로 대신 입력함 
+            style={{ transitionProperty: 'opacity', transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', transitionDuration: '800ms'}} //transition-all duration-800 ease-in-out 입력에서 duration이 800ms로 적용 안되서 이 방식으로 대신 입력함 
         >
         </div>
     </>
