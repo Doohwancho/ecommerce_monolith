@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-public class VerifyUserController implements com.cho.ecommerce.api.UserApi {
+public class VerifyUserController implements com.cho.ecommerce.api.UserVerifyApi {
     
     private final UserAdapter userAdapter;
     

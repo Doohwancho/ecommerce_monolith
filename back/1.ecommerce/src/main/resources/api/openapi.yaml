@@ -132,7 +132,7 @@ paths:
       description: user sends userId in string format to verify if that user exists
       operationId: verifyUserExists
       tags:
-        - User
+        - User_Verify
       requestBody:
         required: true
         content:
@@ -174,7 +174,7 @@ paths:
       description: Sends a verification code to the specified email address
       operationId: sendVerificationCode
       tags:
-        - User
+        - User_Verify
       requestBody:
         required: true
         content:
@@ -216,7 +216,7 @@ paths:
       description: Verifies the code sent to the email address
       operationId: verifyCode
       tags:
-        - User
+        - User_Verify
       requestBody:
         required: true
         content:
@@ -250,7 +250,7 @@ paths:
       summary: Reset user's password after verification
       operationId: resetPassword
       tags:
-        - User
+        - User_Verify
       requestBody:
         required: true
         content:

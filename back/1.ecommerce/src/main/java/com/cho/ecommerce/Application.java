@@ -17,13 +17,6 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class Application {
     
-    //DEPRECATED
-    //spring-batch for bulk-insert code
-//    private final JpaFakeDataGenerator jpaDataGenerator;
-//    private final DatabaseCleanup databaseCleanup;
-//    private final JobLauncher jobLauncher;
-//    private final Job dataInitializationJob; // SimpleBatch에 firstJob 메서드 명과 이름이 일치해야 한다.
-    
     private final BulkInsertController bulkInsertController;
     
     public static void main(String[] args) {
@@ -43,6 +36,14 @@ public class Application {
      * spring-batch로 bulk-insert하는 코드
      * 더 효율적인 방법을 찾아서 이제는 안쓴다.
      */
+    
+    //DEPRECATED
+    //spring-batch for bulk-insert code
+//    private final JpaFakeDataGenerator jpaDataGenerator;
+//    private final DatabaseCleanup databaseCleanup;
+//    private final JobLauncher jobLauncher;
+//    private final Job dataInitializationJob; // SimpleBatch에 firstJob 메서드 명과 이름이 일치해야 한다.
+
 //    @Bean
 //    public CommandLineRunner commandLineRunner() {
 //        return args -> {
