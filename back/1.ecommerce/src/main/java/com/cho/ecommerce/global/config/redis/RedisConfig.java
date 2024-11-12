@@ -24,7 +24,8 @@ import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 @Configuration
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1800) // 30 minutes
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1800)
+// 30 minutes, use redis as session manager
 public class RedisConfig {
     
     @Value("${spring.redis.host}")

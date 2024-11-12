@@ -1,5 +1,6 @@
 package com.cho.ecommerce.domain.member.service;
 
+import com.cho.ecommerce.domain.common.email.adapter.EmailAdapter;
 import com.cho.ecommerce.domain.member.domain.Email;
 import com.cho.ecommerce.domain.member.domain.VerificationCode;
 import com.cho.ecommerce.domain.member.entity.AddressEntity;
@@ -10,11 +11,8 @@ import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.AuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.InactiveMemberRepository;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
-import com.cho.ecommerce.global.config.security.SecurityConstants;
-import com.cho.ecommerce.global.error.ErrorCode;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import com.cho.ecommerce.global.error.exception.member.InvalidPasswordException;
-import com.cho.ecommerce.global.error.exception.member.InvalidatingSessionForUser;
 import com.cho.ecommerce.global.error.exception.member.MaxAttemptsExceededException;
 import com.cho.ecommerce.global.error.exception.member.TooManyRequestsException;
 import com.cho.ecommerce.global.error.exception.member.UnauthorizedAccessException;
@@ -31,12 +29,7 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,9 +40,8 @@ public class UserVerificationService {
     
     private final AuthorityRepository authorityRepository;
     private final UserRepository userRepository;
-    private InactiveMemberRepository inactiveMemberRepository;
-    private final SessionRegistry sessionRegistry;
-    private final JavaMailSender emailSender;
+    private final InactiveMemberRepository inactiveMemberRepository;
+    private final EmailAdapter emailAdapter;
     private final ConcurrentHashMap<String, VerificationCode> verificationCodes = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Email> userEmails = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, LocalDateTime> verifiedUsers = new ConcurrentHashMap<>();
@@ -64,52 +56,6 @@ public class UserVerificationService {
     private static final int VERIFICATION_STATE_EXPIRY_MINUTES = 5;
     private static final int MAX_VERIFICATION_ATTEMPTS = 3;
     private static final String CODE_CHARS = "0123456789";
-    
-    @Value("${spring.mail.username}")
-    private String fromEmail;
-    
-    
-    public void incrementFailedAttempts(UserEntity user) {
-        user.setFailedAttempt(user.getFailedAttempt() + 1);
-        if (user.getFailedAttempt() >= SecurityConstants.MAX_LOGIN_ATTEMPTS) {
-            user.setEnabled(false); //lock user account
-            invalidateUserSessions(user.getUsername()); // Invalidate session
-            log.warn(user.getUsername()
-                + "has failed to login more than 5 times, therefore account has become locked.");
-        }
-        userRepository.save(user);
-    }
-    
-    public void invalidateUserSessionAndLockUser(UserEntity user) {
-        user.setEnabled(false); //lock user account
-        invalidateUserSessions(user.getUsername()); // Invalidate session
-        
-        userRepository.save(user);
-        sendEmailYourAccountHasBeenLockedMsg(user.getEmail());
-    }
-    
-    private void invalidateUserSessions(String username) {
-        try {
-            for (SessionInformation session : sessionRegistry.getAllSessions(username, false)) {
-                session.expireNow();
-            }
-        } catch (Exception e) {
-            log.error("Error invalidating sessions for user: " + username, e);
-            throw new InvalidatingSessionForUser(ErrorCode.INVALIDATING_SESSION_FOR_USER);
-        }
-    }
-    
-    
-    public void resetFailedAttempts(String username) {
-        UserEntity user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new ResourceNotFoundException("user not found"));
-        if (user == null) {
-            log.warn("user not found! therefore, resetFailedAttempts() failed!" + username);
-            throw new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
-        }
-        user.setFailedAttempt(0);
-        userRepository.save(user);
-    }
     
     
     public Boolean findUserExistsByUserId(String userId) {
@@ -157,7 +103,7 @@ public class UserVerificationService {
             });
             
             //6) sending code to email
-            sendEmailVerificationCode(toEmail, code);
+            emailAdapter.sendVerificationCode(toEmail, code, VERIFICATION_CODE_EXPIRY_MINUTES);
             
             //7) save user's email (save db i/o)
             LocalDateTime expiryTimeForUserEmail = LocalDateTime.now()
@@ -251,33 +197,6 @@ public class UserVerificationService {
         return isValid;
     }
     
-    private void sendEmailVerificationCode(String toEmail, String code) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(toEmail);
-        message.setSubject("Your Verification Code");
-        message.setText(String.format(
-            "Your verification code is: %s\n" +
-                "This code will expire in %d minutes.\n" +
-                "If you didn't request this code, please ignore this email.",
-            code, VERIFICATION_CODE_EXPIRY_MINUTES));
-        
-        emailSender.send(message);
-    }
-    
-    public void sendEmailYourAccountHasBeenLockedMsg(String toEmail) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(toEmail);
-        message.setSubject("Your Accounts has been Locked");
-        message.setText(
-            "Abnormal Activity Detected. %s\n" +
-                "Your Account has been locked.\n" +
-                "To Reactivate account, click 'forgot password?' on login page." +
-                "If you didn't request this code, please ignore this email.");
-        
-        emailSender.send(message);
-    }
     
     private String generateVerificationCode() {
         StringBuilder code = new StringBuilder(VERIFICATION_CODE_LENGTH);

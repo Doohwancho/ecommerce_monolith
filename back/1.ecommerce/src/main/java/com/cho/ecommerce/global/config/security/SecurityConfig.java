@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.web.cors.CorsConfiguration;
@@ -28,7 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdapter {
     
     private final UserDetailsService userDetailsService;
-    private final FindByIndexNameSessionRepository<S> sessionRepository;
+    private final SpringSessionBackedSessionRegistry<?> sessionRegistry;
     private final SecuritySessionExpiredStrategy securitySessionExpiredStrategy;
     private final FormAuthenticationSuccessHandler formSuccessHandler;
     private final FormAuthenticationFailureHandler formFailureHandler;
@@ -54,7 +53,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
             .sessionManagement(s -> s
                     .maximumSessions(
                         1) //동일 세션 개수 제한 => 1개로 설정하여 중복 로그인 방지 (localhost:8080에서 로그인하고, localhost:8081로 로그인 시도하면 http status 401 UNAUTHORIZED error 뜬다.
-                    .sessionRegistry(sessionRegistry())
+                    .sessionRegistry(sessionRegistry)
                     .maxSessionsPreventsLogin(
                         true) // true : 먼저 사용 중인 사용자의 세션이 유지되며, 새로 접속 한 사람은 로그인이 되지 않음. false: it expires the oldest session
                     .expiredSessionStrategy(securitySessionExpiredStrategy) //Session 만료됐을 때 가져갈 전략 설정
@@ -106,11 +105,6 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
         return super.authenticationManagerBean();
     }
     
-    // sessionRegistry 추가
-    @Bean
-    public SpringSessionBackedSessionRegistry<S> sessionRegistry() {
-        return new SpringSessionBackedSessionRegistry<>(this.sessionRepository);
-    }
     
     // CORS configuration for local react-vite development
     @Bean

@@ -2,7 +2,7 @@ package com.cho.ecommerce.global.config.security.handler;
 
 import com.cho.ecommerce.domain.member.entity.UserEntity;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
-import com.cho.ecommerce.domain.member.service.UserVerificationService;
+import com.cho.ecommerce.domain.member.service.UserAuthenticationService;
 import com.cho.ecommerce.global.error.ErrorCode;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     
     private final Logger log = LoggerFactory.getLogger(FormAuthenticationSuccessHandler.class);
-    private final UserVerificationService userVerificationService;
+    private final UserAuthenticationService userAuthenticationService;
     private final UserRepository userRepository;
     
     @Override
@@ -49,7 +49,7 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
 //        }
         
         //있는 유저였는데 로그인 실패했다면, 비밀번호 실패했다는 말이니, 실패시도 +1을 한다. (5회 이상 실패하면 계정 잠김)
-        userVerificationService.incrementFailedAttempts(user);
+        userAuthenticationService.incrementFailedAttempts(user);
         
         response.setHeader("login-status", "failed");
         response.setHeader("Access-Control-Expose-Headers",

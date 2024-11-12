@@ -2,11 +2,19 @@ package com.cho.ecommerce.global.config.security.session;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
 @Configuration
 public class SessionConfig {
+    
+    @Bean
+    public SpringSessionBackedSessionRegistry<?> sessionRegistry(
+        FindByIndexNameSessionRepository<?> sessionRepository) {
+        return new SpringSessionBackedSessionRegistry<>(sessionRepository);
+    }
     
     @Bean
     public CookieSerializer cookieSerializer() {
