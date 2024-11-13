@@ -1,9 +1,11 @@
 package com.cho.ecommerce;
 
+import com.cho.ecommerce.domain.product.domain.ProductViewCounter;
 import com.cho.ecommerce.global.config.bulk_insert.fakedata.BulkInsertController;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,16 +20,19 @@ import org.springframework.context.annotation.Bean;
 public class Application {
     
     private final BulkInsertController bulkInsertController;
+    private final ProductViewCounter productViewCounter;
     
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
     
     @Bean
-    public CommandLineRunner commandLineRunner() {
-        int bulkInsertAmount = 1000;
+    public CommandLineRunner commandLineRunner(
+        @Value("${app.product.max-id:10000}") int MAX_PRODUCT_ID) {
+        int bulkInsertAmount = MAX_PRODUCT_ID;
         return args -> {
             bulkInsertController.bulkInsert(String.valueOf(bulkInsertAmount));
+            productViewCounter.initialize();
         };
     }
     

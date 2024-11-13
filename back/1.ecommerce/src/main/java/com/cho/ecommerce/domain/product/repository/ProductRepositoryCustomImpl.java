@@ -142,13 +142,12 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     
     @Override
     @Cacheable("topTenRatedProductsCached")
-    public List<ProductEntity> findTop10ByRating() {
+    public List<ProductEntity> findProductsByIdIn(List<Long> productIds) {
         QProductEntity product = QProductEntity.productEntity;
         
         return queryFactory
             .selectFrom(product)
-            .orderBy(product.rating.desc())
-            .limit(10)
+            .where(product.productId.in(productIds))
             .fetch();
     }
 }

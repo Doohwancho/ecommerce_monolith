@@ -61,6 +61,10 @@ spring:
       pool:
         size: 5
 
+app:
+  product:
+    max-id: 1000
+
 verification:
   code:
     length: 6

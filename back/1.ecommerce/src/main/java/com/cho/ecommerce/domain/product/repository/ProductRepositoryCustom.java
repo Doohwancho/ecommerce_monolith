@@ -14,5 +14,5 @@ public interface ProductRepositoryCustom {
     
     Optional<ProductEntity> findProductDetailDTOsById(Long productId);
     
-    List<ProductEntity> findTop10ByRating();
+    List<ProductEntity> findProductsByIdIn(List<Long> productIds);
 }

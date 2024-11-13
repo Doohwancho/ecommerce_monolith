@@ -57,7 +57,11 @@ spring:
       pool:
         size: 5
 
-verification:
+app:
+  product:
+    max-id: 1000
+
+  verification:
   code:
     length: 6
     expiry-minutes: 5

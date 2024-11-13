@@ -1,6 +1,7 @@
 package com.cho.ecommerce.domain.product.service;
 
 import com.cho.ecommerce.domain.product.domain.Product;
+import com.cho.ecommerce.domain.product.domain.ProductViewCounter;
 import com.cho.ecommerce.domain.product.entity.CategoryEntity;
 import com.cho.ecommerce.domain.product.entity.DiscountEntity;
 import com.cho.ecommerce.domain.product.entity.OptionEntity;
@@ -12,59 +13,50 @@ import com.cho.ecommerce.domain.product.mapper.DiscountMapper;
 import com.cho.ecommerce.domain.product.mapper.ProductMapper;
 import com.cho.ecommerce.domain.product.repository.CategoryRepository;
 import com.cho.ecommerce.domain.product.repository.ProductRepository;
-import com.cho.ecommerce.domain.product.repository.ProductRepositoryCustomImpl;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
     
     private final Logger log = LoggerFactory.getLogger(ProductService.class);
     
     private static final String PRODUCT_CACHE_KEY = "product:detail:";
     private static final long CACHE_TTL = 3600; // 1시간
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    private CategoryRepository categoryRepository;
-    
-    @Autowired
-    private ProductRepositoryCustomImpl productRepositoryCustom;
-    
-    @Autowired
-    private ProductMapper productMapper;
-    @Autowired
-    private DiscountMapper discountMapper;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductViewCounter productViewCounter;
+    private final ProductMapper productMapper;
+    private final DiscountMapper discountMapper;
     
     public Page<ProductEntity> getProductsWithPagination(int page,
         int size) { //TODO - change name from PaginatedProductResponse to PaginatedProductResponseDTO
         return productRepository.findAll(PageRequest.of(page, size));
     }
     
-    public List<ProductEntity> getTop10RatedProducts() {
-        return productRepository.findTop10ByRating();
-    }
-    
-    public Optional<ProductEntity> getProductById(Long id) {
-        return productRepository.findById(id);
+    public List<com.cho.ecommerce.api.domain.ProductDTO> getTop10RatedProducts() {
+        return productViewCounter.getTopViewedProductsCached();
     }
     
     @Transactional
     public List<Product> getProductDetailDTOsById(Long productId) {
-        // 1. Look aside: Try to get from cache first
+        // 1. increase product viewcount by 1
+        productViewCounter.incrementView(productId.intValue(), 1);
+        
+        // 2. Look aside: Try to get from cache first
         String cacheKey = PRODUCT_CACHE_KEY + productId;
         List<Product> cachedProducts = getCachedProducts(cacheKey);
         
@@ -72,7 +64,7 @@ public class ProductService {
             return cachedProducts;
         }
         
-        // 2. Cache miss: Get from DB
+        // 3. Cache miss: Get from DB
         Optional<ProductEntity> productEntitiesOptional = productRepository.findProductDetailDTOsById(
             productId);
         
@@ -80,10 +72,10 @@ public class ProductService {
             throw new ResourceNotFoundException("Product not found with ID: " + productId);
         }
         
-        // 3. Transform data
+        // 4. Transform data
         List<Product> products = transformToProducts(productEntitiesOptional.get());
         
-        // 4. Write to cache
+        // 5. Write to cache
         cacheProducts(cacheKey, products);
         
         return products;

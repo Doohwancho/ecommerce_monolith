@@ -48,8 +48,7 @@ public class ProductAdapter {
     }
     
     public List<com.cho.ecommerce.api.domain.ProductDTO> getTop10RatedProducts() {
-        List<ProductEntity> top10ProductsByRating = productService.getTop10RatedProducts();
-        return productMapper.productEntitiesToProductDTOs(top10ProductsByRating);
+        return productService.getTop10RatedProducts();
     }
     
     public com.cho.ecommerce.api.domain.ProductWithOptionsListResponseDTO findAllProductsByCategory(

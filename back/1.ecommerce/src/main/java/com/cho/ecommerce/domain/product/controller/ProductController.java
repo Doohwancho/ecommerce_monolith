@@ -49,7 +49,7 @@ public class ProductController implements ProductApi {
     }
     
     @Override
-    public ResponseEntity<List<ProductDTO>> getTopTenHighestRatedProducts() {
+    public ResponseEntity<List<ProductDTO>> getTopTenHighestViewedProducts() {
         List<ProductDTO> top10RatedProducts = productAdapter.getTop10RatedProducts();
         return ResponseEntity.ok(top10RatedProducts);
     }

@@ -452,11 +452,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
-  /products/highestRatings:
+  /products/highestViews:
     get:
-      summary: Retrieve top 10 products sort by highest rating
-      description: Fetches top 10 higest rated products
-      operationId: getTopTenHighestRatedProducts
+      summary: Retrieve top 10 products sort by highest views
+      description: Fetches top 10 highest viewed products
+      operationId: getTopTenHighestViewedProducts
       tags:
         - Product
       responses:
