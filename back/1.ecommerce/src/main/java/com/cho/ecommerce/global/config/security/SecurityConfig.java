@@ -1,6 +1,7 @@
 package com.cho.ecommerce.global.config.security;
 
 
+import com.cho.ecommerce.global.config.security.filter.IpAuthenticationFilter;
 import com.cho.ecommerce.global.config.security.filter.RequestRateLimitFilter;
 import com.cho.ecommerce.global.config.security.handler.CustomLogoutSuccessHandler;
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationFailureHandler;
@@ -35,6 +36,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     private final FormAuthenticationSuccessHandler formSuccessHandler;
     private final FormAuthenticationFailureHandler formFailureHandler;
     private final RequestRateLimitFilter requestRateLimitFilter;
+    private final IpAuthenticationFilter ipAuthenticationFilter;
     
     
     @Bean
@@ -55,6 +57,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
             .disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
             .and()
             .addFilterBefore(requestRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(ipAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .sessionManagement(s -> s
                     .maximumSessions(
                         1) //동일 세션 개수 제한 => 1개로 설정하여 중복 로그인 방지 (localhost:8080에서 로그인하고, localhost:8081로 로그인 시도하면 http status 401 UNAUTHORIZED error 뜬다.

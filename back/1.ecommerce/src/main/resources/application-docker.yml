@@ -69,7 +69,6 @@ app:
   rate-limit:
     requests-per-second: 1
 
-
 logging:
   level:
     root: INFO

@@ -517,3 +517,8 @@ crash.log
 output-*/
 
 # End of https://www.toptal.com/developers/gitignore/api/packer
+
+
+# exclude geoip2
+GeoLite2-Country.mmdb
+

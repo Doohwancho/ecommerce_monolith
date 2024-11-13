@@ -35,21 +35,45 @@ public class UserAuthenticationService {
     }
     
     public void invalidateUserSessionAndLockUser(UserEntity user) {
-        user.setEnabled(false); //lock user account
-        invalidateUserSessions(user.getUsername()); // Invalidate session
-        
-        userRepository.save(user);
-        emailAdapter.sendAccountLockedNotification(user.getEmail());
+        // Skip if no user provided
+        if (user == null) {
+            log.warn("Attempted to invalidate session for null username");
+            return;
+        }
+        try {
+            user.setEnabled(false); //lock user account
+            invalidateUserSessions(user.getUsername()); // Invalidate session
+            userRepository.save(user);
+            emailAdapter.sendAccountLockedNotification(user.getEmail());
+        } catch (ResourceNotFoundException e) {
+            log.warn("Attempted to invalidate session for non-existent user: {}",
+                user.getUsername());
+        } catch (Exception e) {
+            log.error("Error while invalidating session for user: {}", user.getUsername(), e);
+        }
     }
     
     public void invalidateUserSessionAndLockUser(String username) {
-        UserEntity user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND));
-        user.setEnabled(false); //lock user account
-        invalidateUserSessions(user.getUsername()); // Invalidate session
+        // Skip if no username provided
+        if (username == null) {
+            log.warn("Attempted to invalidate session for null username");
+            return;
+        }
         
-        userRepository.save(user);
-        emailAdapter.sendAccountLockedNotification(user.getEmail());
+        try {
+            UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND));
+            
+            user.setEnabled(false); //lock user account
+            invalidateUserSessions(user.getUsername()); // Invalidate session
+            userRepository.save(user);
+            emailAdapter.sendAccountLockedNotification(user.getEmail());
+            
+        } catch (ResourceNotFoundException e) {
+            log.warn("Attempted to invalidate session for non-existent user: {}", username);
+        } catch (Exception e) {
+            log.error("Error while invalidating session for user: {}", username, e);
+        }
     }
     
     private void invalidateUserSessions(String username) {

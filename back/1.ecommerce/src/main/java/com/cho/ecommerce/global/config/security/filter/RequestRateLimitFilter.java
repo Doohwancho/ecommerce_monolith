@@ -3,7 +3,6 @@ package com.cho.ecommerce.global.config.security.filter;
 import com.cho.ecommerce.domain.member.service.UserAuthenticationService;
 import com.google.common.util.concurrent.RateLimiter;
 import java.io.IOException;
-import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.FilterChain;
@@ -27,8 +26,6 @@ public class RequestRateLimitFilter extends OncePerRequestFilter {
     
     // Rate limit: 15 requests per second per user
     private static final double REQUESTS_PER_SECOND = 15.0;
-    
-    private final Map<String, Deque<Long>> userRequestTimestamps = new ConcurrentHashMap<>();
     
     public RequestRateLimitFilter(UserAuthenticationService userAuthenticationService) {
         this.userAuthenticationService = userAuthenticationService;
