@@ -42,7 +42,7 @@ async function fetchProducts(): Promise<GroupedProduct[]> {
       return fallbackProducts;
     }
 
-    const endpoint = `/products/highestRatings`;
+    const endpoint = `/products/highestViews`;
     const fullUrl = BASE_URL + endpoint;
 
     const response = await fetch(fullUrl, {
