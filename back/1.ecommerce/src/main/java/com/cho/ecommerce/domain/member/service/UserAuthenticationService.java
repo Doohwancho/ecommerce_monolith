@@ -42,6 +42,16 @@ public class UserAuthenticationService {
         emailAdapter.sendAccountLockedNotification(user.getEmail());
     }
     
+    public void invalidateUserSessionAndLockUser(String username) {
+        UserEntity user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND));
+        user.setEnabled(false); //lock user account
+        invalidateUserSessions(user.getUsername()); // Invalidate session
+        
+        userRepository.save(user);
+        emailAdapter.sendAccountLockedNotification(user.getEmail());
+    }
+    
     private void invalidateUserSessions(String username) {
         try {
             for (SessionInformation session : sessionRegistry.getAllSessions(username, false)) {

@@ -1,6 +1,7 @@
 package com.cho.ecommerce.global.config.security;
 
 
+import com.cho.ecommerce.global.config.security.filter.RequestRateLimitFilter;
 import com.cho.ecommerce.global.config.security.handler.CustomLogoutSuccessHandler;
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationFailureHandler;
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationSuccessHandler;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.web.cors.CorsConfiguration;
@@ -32,6 +34,7 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
     private final SecuritySessionExpiredStrategy securitySessionExpiredStrategy;
     private final FormAuthenticationSuccessHandler formSuccessHandler;
     private final FormAuthenticationFailureHandler formFailureHandler;
+    private final RequestRateLimitFilter requestRateLimitFilter;
     
     
     @Bean
@@ -51,12 +54,21 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
             .xssProtection()
             .disable() //prevent Spring Security from adding the X-XSS-Protection header to the response, for spring security test
             .and()
+            .addFilterBefore(requestRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
             .sessionManagement(s -> s
                     .maximumSessions(
                         1) //동일 세션 개수 제한 => 1개로 설정하여 중복 로그인 방지 (localhost:8080에서 로그인하고, localhost:8081로 로그인 시도하면 http status 401 UNAUTHORIZED error 뜬다.
                     .sessionRegistry(sessionRegistry)
                     .maxSessionsPreventsLogin(
                         true) // true : 먼저 사용 중인 사용자의 세션이 유지되며, 새로 접속 한 사람은 로그인이 되지 않음. false: it expires the oldest session
+                    /**
+                     * Q. maxSessionsPreventsLogin() 가 true vs false?
+                     *
+                     * A. true: 보안상 더 좋다. false: 사용자 경험이 더 좋다.
+                     *
+                     * true가 비정상적인 로그인 시도를 차단하니까, 보안상 더 좋지만,
+                     * 새로운 기기에서 로그인 시도가 막히므로 기존 기기에서 로그아웃 한 후 새 기기에서 다시 로그인 해야 하니까 불편하다.
+                     */
                     .expiredSessionStrategy(securitySessionExpiredStrategy) //Session 만료됐을 때 가져갈 전략 설정
 //                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // This is the default, but just to be explicit
                     .and()
