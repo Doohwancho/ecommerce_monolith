@@ -1,6 +1,7 @@
 package com.cho.ecommerce.global.config.security;
 
 
+import com.cho.ecommerce.global.config.security.handler.CustomLogoutSuccessHandler;
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationFailureHandler;
 import com.cho.ecommerce.global.config.security.handler.FormAuthenticationSuccessHandler;
 import com.cho.ecommerce.global.config.security.session.SecuritySessionExpiredStrategy;
@@ -91,7 +92,9 @@ public class SecurityConfig<S extends Session> extends WebSecurityConfigurerAdap
                 .logoutUrl("/logout") // URL to trigger logout
                 .logoutSuccessUrl("/login?logout") // URL to redirect after logout
                 .invalidateHttpSession(true) // Invalidate the session
-                .deleteCookies("JSESSIONID")); // Delete cookies on logout
+                .deleteCookies("JSESSIONID") // Delete cookies on logout
+                .logoutSuccessHandler(
+                    new CustomLogoutSuccessHandler())); //custom handler에서 현재 요청의 인증 정보를 명시적으로 제거
     }
     
     @Override

@@ -9,6 +9,7 @@ import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundExcepti
 import com.cho.ecommerce.global.error.exception.member.InvalidatingSessionForUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,11 @@ public class UserAuthenticationService {
             for (SessionInformation session : sessionRegistry.getAllSessions(username, false)) {
                 session.expireNow();
             }
+            //Q. 다른 사용자 인증정보도 같이 삭제하는거 아냐?
+            //A. 아님. SecurityContextHolder.clearContext()는 현재 스레드의 SecurityContext만 삭제합니다.
+            //   Spring Security는 사용자별로 ThreadLocal을 사용하기 때문에, 다른 사용자의 인증 정보는 삭제되지 않습니다
+            //   현재 요청 스레드에서만 영향을 미치므로, 다른 사용자의 세션은 그대로 유지됩니다.
+            SecurityContextHolder.clearContext();
         } catch (Exception e) {
             log.error("Error invalidating sessions for user: " + username, e);
             throw new InvalidatingSessionForUser(ErrorCode.INVALIDATING_SESSION_FOR_USER);
