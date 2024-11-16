@@ -4,6 +4,7 @@ import com.cho.ecommerce.global.error.exception.business.BusinessException;
 import com.cho.ecommerce.global.error.exception.member.DuplicateUsernameException;
 import com.cho.ecommerce.global.error.exception.member.MemberException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -105,5 +106,24 @@ public class GlobalExceptionHandler {
         final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
+    
+    
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+        DataIntegrityViolationException e) {
+        log.error("Data integrity violation occurred", e);
+        
+        // For uk_user_id constraint violation
+        if (e.getMessage() != null && e.getMessage().contains("uk_user_id")) {
+            log.error("Duplicate username detected", e);
+            final ErrorResponse response = ErrorResponse.of(ErrorCode.DUPLICATE_USERS);
+            return new ResponseEntity<>(response,
+                HttpStatus.valueOf(ErrorCode.DUPLICATE_USERS.getStatus()));
+        }
+        
+        // For any other database errors
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

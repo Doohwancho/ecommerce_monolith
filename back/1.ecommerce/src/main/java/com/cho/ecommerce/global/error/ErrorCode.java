@@ -1,6 +1,7 @@
 package com.cho.ecommerce.global.error;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
@@ -55,11 +56,20 @@ public enum ErrorCode {
     private final String code;
     private final String message;
     private int status;
+    private final LocalDateTime timestamp;
+    
+    ErrorCode(ErrorCodeBuilder builder) {
+        this.status = builder.status;
+        this.code = builder.code;
+        this.message = builder.message;
+        this.timestamp = builder.timestamp;
+    }
     
     ErrorCode(final int status, final String code, final String message) {
         this.status = status;
         this.message = message;
         this.code = code;
+        this.timestamp = LocalDateTime.now();
     }
     
     public String getMessage() {
@@ -72,5 +82,45 @@ public enum ErrorCode {
     
     public int getStatus() {
         return status;
+    }
+    
+    public LocalDateTime getErrorTime() {
+        return timestamp;
+    }
+    
+    // Static inner builder class
+    public static class ErrorCodeBuilder {
+        
+        private final int status;
+        private final String code;
+        private final String message;
+        private final LocalDateTime timestamp;
+        
+        private ErrorCodeBuilder(int status, String code, String message) {
+            this.status = status;
+            this.code = code;
+            this.message = message;
+            this.timestamp = LocalDateTime.now();
+        }
+        
+        public static ErrorCodeBuilder of(int status, String code, String message) {
+            return new ErrorCodeBuilder(status, code, message);
+        }
+        
+        public int getStatus() {
+            return status;
+        }
+        
+        public String getCode() {
+            return code;
+        }
+        
+        public String getMessage() {
+            return message;
+        }
+        
+        public LocalDateTime getTimestamp() {
+            return timestamp;
+        }
     }
 }

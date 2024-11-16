@@ -10,6 +10,7 @@ import com.cho.ecommerce.domain.member.repository.UserAuthorityRepository;
 import com.cho.ecommerce.domain.member.repository.UserRepository;
 import com.cho.ecommerce.global.error.ErrorCode;
 import com.cho.ecommerce.global.error.exception.business.ResourceNotFoundException;
+import com.cho.ecommerce.global.error.exception.member.DuplicateUsernameException;
 import com.cho.ecommerce.global.error.exception.member.LockedAccountUserFailedToAuthenticate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -52,6 +54,11 @@ public class UserService implements UserDetailsService {
     
     @Transactional
     public UserEntity saveRoleUser(UserEntity userEntity) {
+        // Check if username already exists
+        if (userRepository.existsByUsername(userEntity.getUsername())) {
+            throw new DuplicateUsernameException(userEntity.getUsername());
+        }
+        
         //1. get user's authority
         AuthorityEntity userRole = authorityRepository.findByAuthority(AuthorityEntity.ROLE_USER)
             .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
@@ -63,7 +70,15 @@ public class UserService implements UserDetailsService {
         
         //3. save user
         userEntity.setUserAuthorities(userAuthorityEntity);
-        return userRepository.save(userEntity);
+        try {
+            return userRepository.save(userEntity);
+        } catch (DataIntegrityViolationException e) {
+            // Handle concurrent registration attempts
+            if (e.getMessage().contains("uk_user_id")) {
+                throw new DuplicateUsernameException(userEntity.getUsername());
+            }
+            throw e;
+        }
     }
     
     public UserEntity findUserById(Long id) {
