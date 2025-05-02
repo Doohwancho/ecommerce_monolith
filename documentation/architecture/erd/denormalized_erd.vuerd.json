@@ -4,9 +4,9 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": -263.912,
-    "scrollLeft": -276.2179,
-    "zoomLevel": 0.71,
+    "scrollTop": 0,
+    "scrollLeft": -237.8541,
+    "zoomLevel": 0.95,
     "show": 431,
     "database": 4,
     "databaseName": "",
@@ -148,37 +148,6 @@
           "createAt": 1726136983180
         }
       },
-      "eb4f7053-d499-4177-aeb3-be091f57a763": {
-        "id": "eb4f7053-d499-4177-aeb3-be091f57a763",
-        "name": "CATEGORY",
-        "comment": "",
-        "columnIds": [
-          "3ee36088-4d89-48f7-9370-366dcd70cb3e",
-          "7005ee33-ec09-4c10-87f9-e5d4d65f5d74",
-          "14ce4bda-385a-4466-a714-ffd51e916353",
-          "928fb178-e3cd-4231-ac26-4c39cd6b07f4",
-          "556c7eb2-7bb6-4784-a589-dfa4b59ea4fa"
-        ],
-        "seqColumnIds": [
-          "3ee36088-4d89-48f7-9370-366dcd70cb3e",
-          "7005ee33-ec09-4c10-87f9-e5d4d65f5d74",
-          "14ce4bda-385a-4466-a714-ffd51e916353",
-          "928fb178-e3cd-4231-ac26-4c39cd6b07f4",
-          "556c7eb2-7bb6-4784-a589-dfa4b59ea4fa"
-        ],
-        "ui": {
-          "x": 567.3901,
-          "y": 166.1133,
-          "zIndex": 1,
-          "widthName": 66,
-          "widthComment": 60,
-          "color": "#00FF97"
-        },
-        "meta": {
-          "updateAt": 1727265441732,
-          "createAt": 1726136983180
-        }
-      },
       "6a58c7ea-61a4-483b-9ad3-57f3a85aa0ab": {
         "id": "6a58c7ea-61a4-483b-9ad3-57f3a85aa0ab",
         "name": "DISCOUNT_JSON",
@@ -261,67 +230,6 @@
         },
         "meta": {
           "updateAt": 1727281274736,
-          "createAt": 1726136983180
-        }
-      },
-      "e4830b4c-30f8-428a-a1d8-d2c2ca529388": {
-        "id": "e4830b4c-30f8-428a-a1d8-d2c2ca529388",
-        "name": "ORDER_ITEM",
-        "comment": "",
-        "columnIds": [
-          "133e3368-1ed1-4320-a37c-6f2dd7abec2a",
-          "825ccbbd-814e-499f-99af-0b7cd7b33fbe",
-          "71d2cdcb-7ece-4f60-8bc9-7cf3b2d0295b",
-          "c0002dd6-5f18-4775-a492-bda716189c55",
-          "9a5e3fb7-ad61-453b-8a04-b5d415b6c594"
-        ],
-        "seqColumnIds": [
-          "133e3368-1ed1-4320-a37c-6f2dd7abec2a",
-          "825ccbbd-814e-499f-99af-0b7cd7b33fbe",
-          "71d2cdcb-7ece-4f60-8bc9-7cf3b2d0295b",
-          "c0002dd6-5f18-4775-a492-bda716189c55",
-          "9a5e3fb7-ad61-453b-8a04-b5d415b6c594"
-        ],
-        "ui": {
-          "x": 388.6109,
-          "y": 976.4155,
-          "zIndex": 14,
-          "widthName": 78,
-          "widthComment": 60,
-          "color": "#FFEC00"
-        },
-        "meta": {
-          "updateAt": 1727265353344,
-          "createAt": 1726136983180
-        }
-      },
-      "c437f8c9-21be-493b-9987-a941537ae2cb": {
-        "id": "c437f8c9-21be-493b-9987-a941537ae2cb",
-        "name": "ADDRESS",
-        "comment": "",
-        "columnIds": [
-          "4dcce11f-09db-4da2-9526-226a48e5490c",
-          "17f54e70-ed9a-40df-93ec-4c25e74f9de2"
-        ],
-        "seqColumnIds": [
-          "4dcce11f-09db-4da2-9526-226a48e5490c",
-          "44d1f524-9ab4-47a4-aa0c-9b7fdbd90cf5",
-          "1ec99dd9-f89b-4e8c-a195-6ae08f82e0fc",
-          "17f54e70-ed9a-40df-93ec-4c25e74f9de2",
-          "28f5949a-da0b-4a26-a1dc-dab435b39fb8",
-          "2d640871-f0f3-4663-bff2-b5484ac83843",
-          "fb0c57f0-4274-47a4-9f08-936bf9a5b1d4"
-        ],
-        "ui": {
-          "x": 1057.6673,
-          "y": 18.8886,
-          "zIndex": 11,
-          "widthName": 60,
-          "widthComment": 60,
-          "color": "#3F51B5"
-        },
-        "meta": {
-          "updateAt": 1727265127172,
           "createAt": 1726136983180
         }
       },
@@ -701,106 +609,6 @@
           "createAt": 1726136983180
         }
       },
-      "3ee36088-4d89-48f7-9370-366dcd70cb3e": {
-        "id": "3ee36088-4d89-48f7-9370-366dcd70cb3e",
-        "tableId": "eb4f7053-d499-4177-aeb3-be091f57a763",
-        "name": "CATEGORY_ID",
-        "comment": "",
-        "dataType": "BIGINT(20)",
-        "default": "",
-        "options": 10,
-        "ui": {
-          "keys": 1,
-          "widthName": 84,
-          "widthComment": 60,
-          "widthDataType": 66,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "7005ee33-ec09-4c10-87f9-e5d4d65f5d74": {
-        "id": "7005ee33-ec09-4c10-87f9-e5d4d65f5d74",
-        "tableId": "eb4f7053-d499-4177-aeb3-be091f57a763",
-        "name": "CATEGORY_CODE",
-        "comment": "",
-        "dataType": "VARCHAR(50)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 105,
-          "widthComment": 60,
-          "widthDataType": 83,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "14ce4bda-385a-4466-a714-ffd51e916353": {
-        "id": "14ce4bda-385a-4466-a714-ffd51e916353",
-        "tableId": "eb4f7053-d499-4177-aeb3-be091f57a763",
-        "name": "NAME",
-        "comment": "",
-        "dataType": "VARCHAR(100)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 60,
-          "widthComment": 60,
-          "widthDataType": 89,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "928fb178-e3cd-4231-ac26-4c39cd6b07f4": {
-        "id": "928fb178-e3cd-4231-ac26-4c39cd6b07f4",
-        "tableId": "eb4f7053-d499-4177-aeb3-be091f57a763",
-        "name": "PARENT_CATEGORY_ID",
-        "comment": "",
-        "dataType": "BIGINT(20)",
-        "default": "",
-        "options": 0,
-        "ui": {
-          "keys": 0,
-          "widthName": 136,
-          "widthComment": 60,
-          "widthDataType": 66,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "556c7eb2-7bb6-4784-a589-dfa4b59ea4fa": {
-        "id": "556c7eb2-7bb6-4784-a589-dfa4b59ea4fa",
-        "tableId": "eb4f7053-d499-4177-aeb3-be091f57a763",
-        "name": "DEPTH",
-        "comment": "",
-        "dataType": "INT",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 60,
-          "widthComment": 60,
-          "widthDataType": 60,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
       "2edfce1d-af1d-42ad-b2b0-ce41c5143043": {
         "id": "2edfce1d-af1d-42ad-b2b0-ce41c5143043",
         "tableId": "6a58c7ea-61a4-483b-9ad3-57f3a85aa0ab",
@@ -1034,246 +842,6 @@
           "widthName": 76,
           "widthComment": 60,
           "widthDataType": 60,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "133e3368-1ed1-4320-a37c-6f2dd7abec2a": {
-        "id": "133e3368-1ed1-4320-a37c-6f2dd7abec2a",
-        "tableId": "e4830b4c-30f8-428a-a1d8-d2c2ca529388",
-        "name": "ORDER_ITEM_ID",
-        "comment": "",
-        "dataType": "BIGINT(20)",
-        "default": "",
-        "options": 10,
-        "ui": {
-          "keys": 1,
-          "widthName": 97,
-          "widthComment": 60,
-          "widthDataType": 66,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "825ccbbd-814e-499f-99af-0b7cd7b33fbe": {
-        "id": "825ccbbd-814e-499f-99af-0b7cd7b33fbe",
-        "tableId": "e4830b4c-30f8-428a-a1d8-d2c2ca529388",
-        "name": "QUANTITY",
-        "comment": "",
-        "dataType": "INT(11)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 63,
-          "widthComment": 60,
-          "widthDataType": 60,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "71d2cdcb-7ece-4f60-8bc9-7cf3b2d0295b": {
-        "id": "71d2cdcb-7ece-4f60-8bc9-7cf3b2d0295b",
-        "tableId": "e4830b4c-30f8-428a-a1d8-d2c2ca529388",
-        "name": "PRICE",
-        "comment": "productItem의 price에 discount 적용된 값",
-        "dataType": "DOUBLE(22)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 60,
-          "widthComment": 224,
-          "widthDataType": 74,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "c0002dd6-5f18-4775-a492-bda716189c55": {
-        "id": "c0002dd6-5f18-4775-a492-bda716189c55",
-        "tableId": "e4830b4c-30f8-428a-a1d8-d2c2ca529388",
-        "name": "ORDER_ID",
-        "comment": "",
-        "dataType": "BIGINT(20)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 62,
-          "widthComment": 60,
-          "widthDataType": 66,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "9a5e3fb7-ad61-453b-8a04-b5d415b6c594": {
-        "id": "9a5e3fb7-ad61-453b-8a04-b5d415b6c594",
-        "tableId": "e4830b4c-30f8-428a-a1d8-d2c2ca529388",
-        "name": "PRODUCT_OPTION_VARIATION_ID",
-        "comment": "",
-        "dataType": "BIGINT(20)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 199,
-          "widthComment": 60,
-          "widthDataType": 66,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "4dcce11f-09db-4da2-9526-226a48e5490c": {
-        "id": "4dcce11f-09db-4da2-9526-226a48e5490c",
-        "tableId": "c437f8c9-21be-493b-9987-a941537ae2cb",
-        "name": "ADDRESS_ID",
-        "comment": "",
-        "dataType": "BIGINT(20)",
-        "default": "",
-        "options": 10,
-        "ui": {
-          "keys": 1,
-          "widthName": 77,
-          "widthComment": 60,
-          "widthDataType": 66,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "1ec99dd9-f89b-4e8c-a195-6ae08f82e0fc": {
-        "id": "1ec99dd9-f89b-4e8c-a195-6ae08f82e0fc",
-        "tableId": "c437f8c9-21be-493b-9987-a941537ae2cb",
-        "name": "STREET",
-        "comment": "",
-        "dataType": "VARCHAR(255)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 60,
-          "widthComment": 60,
-          "widthDataType": 90,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "44d1f524-9ab4-47a4-aa0c-9b7fdbd90cf5": {
-        "id": "44d1f524-9ab4-47a4-aa0c-9b7fdbd90cf5",
-        "tableId": "c437f8c9-21be-493b-9987-a941537ae2cb",
-        "name": "CITY",
-        "comment": "",
-        "dataType": "VARCHAR(100)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 60,
-          "widthComment": 60,
-          "widthDataType": 89,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "fb0c57f0-4274-47a4-9f08-936bf9a5b1d4": {
-        "id": "fb0c57f0-4274-47a4-9f08-936bf9a5b1d4",
-        "tableId": "c437f8c9-21be-493b-9987-a941537ae2cb",
-        "name": "STATE",
-        "comment": "",
-        "dataType": "VARCHAR(100)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 60,
-          "widthComment": 60,
-          "widthDataType": 89,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "2d640871-f0f3-4663-bff2-b5484ac83843": {
-        "id": "2d640871-f0f3-4663-bff2-b5484ac83843",
-        "tableId": "c437f8c9-21be-493b-9987-a941537ae2cb",
-        "name": "COUNTRY",
-        "comment": "",
-        "dataType": "VARCHAR(100)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 61,
-          "widthComment": 60,
-          "widthDataType": 89,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "28f5949a-da0b-4a26-a1dc-dab435b39fb8": {
-        "id": "28f5949a-da0b-4a26-a1dc-dab435b39fb8",
-        "tableId": "c437f8c9-21be-493b-9987-a941537ae2cb",
-        "name": "ZIPCODE",
-        "comment": "",
-        "dataType": "VARCHAR(20)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 60,
-          "widthComment": 60,
-          "widthDataType": 83,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1726136983180,
-          "createAt": 1726136983180
-        }
-      },
-      "17f54e70-ed9a-40df-93ec-4c25e74f9de2": {
-        "id": "17f54e70-ed9a-40df-93ec-4c25e74f9de2",
-        "tableId": "c437f8c9-21be-493b-9987-a941537ae2cb",
-        "name": "MEMBER_ID",
-        "comment": "",
-        "dataType": "BIGINT(20)",
-        "default": "",
-        "options": 8,
-        "ui": {
-          "keys": 0,
-          "widthName": 72,
-          "widthComment": 60,
-          "widthDataType": 66,
           "widthDefault": 60
         },
         "meta": {
@@ -1953,12 +1521,6 @@
         "name": 1727265004738
       }
     ],
-    "1ec99dd9-f89b-4e8c-a195-6ae08f82e0fc": [
-      "tableColumnEntities",
-      -1,
-      1727265115453,
-      {}
-    ],
     "PrRxkqwAbP5KJTAJdslIp": [
       "tableColumnEntities",
       1727265115453,
@@ -1973,12 +1535,6 @@
         "options(unique)": 1727265115453,
         "options(autoIncrement)": 1727265115453
       }
-    ],
-    "44d1f524-9ab4-47a4-aa0c-9b7fdbd90cf5": [
-      "tableColumnEntities",
-      -1,
-      1727265120088,
-      {}
     ],
     "_xwQz8n64V9EvnxhrPShT": [
       "tableColumnEntities",
@@ -1995,12 +1551,6 @@
         "options(autoIncrement)": 1727265120089
       }
     ],
-    "fb0c57f0-4274-47a4-9f08-936bf9a5b1d4": [
-      "tableColumnEntities",
-      -1,
-      1727265122154,
-      {}
-    ],
     "cD8Lfp6jfYiMobdH9Q4Me": [
       "tableColumnEntities",
       1727265122154,
@@ -2015,12 +1565,6 @@
         "options(unique)": 1727265122154,
         "options(autoIncrement)": 1727265122154
       }
-    ],
-    "2d640871-f0f3-4663-bff2-b5484ac83843": [
-      "tableColumnEntities",
-      -1,
-      1727265124637,
-      {}
     ],
     "7mLPxCkbwZokm9OJu13dP": [
       "tableColumnEntities",
@@ -2037,12 +1581,6 @@
         "options(autoIncrement)": 1727265124637
       }
     ],
-    "28f5949a-da0b-4a26-a1dc-dab435b39fb8": [
-      "tableColumnEntities",
-      -1,
-      1727265127171,
-      {}
-    ],
     "V31qG37rme99GFjWIG384": [
       "tableColumnEntities",
       1727265127171,
@@ -2057,12 +1595,6 @@
         "options(unique)": 1727265127171,
         "options(autoIncrement)": 1727265127171
       }
-    ],
-    "c437f8c9-21be-493b-9987-a941537ae2cb": [
-      "tableEntities",
-      -1,
-      1727265131379,
-      {}
     ],
     "PVdO3e0uwG2ETWQ8UMQYD": [
       "tableColumnEntities",
@@ -2161,12 +1693,6 @@
         "name": 1727265324992,
         "dataType": 1727280991427
       }
-    ],
-    "e4830b4c-30f8-428a-a1d8-d2c2ca529388": [
-      "tableEntities",
-      -1,
-      1727265358021,
-      {}
     ],
     "f8bee689-639d-4c09-b310-0a40a62ad27e": [
       "tableEntities",
@@ -2271,12 +1797,6 @@
         "dataType": 1727280934146,
         "options(notNull)": 1727281057618
       }
-    ],
-    "eb4f7053-d499-4177-aeb3-be091f57a763": [
-      "tableEntities",
-      -1,
-      1727266003825,
-      {}
     ],
     "2edfce1d-af1d-42ad-b2b0-ce41c5143043": [
       "tableColumnEntities",
