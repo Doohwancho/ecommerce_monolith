@@ -510,18 +510,18 @@ javascript로 데이터 못빼가니까 그나마 보안적으로 다른 선택�
 
 ##### a-1. 기능1: login attempt 실패할 때마다 카운트+1
 
-https://github.com/Doohwancho/ecommerce/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L71-L82
+https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L71-L82
 
 
 ##### a-2. 기능2: 카운트가 일정 수치 이상 쌓이면 비정상적인 유저라고 판단, invalidate session && lock account
 
-https://github.com/Doohwancho/ecommerce/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L82-L101
+https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L82-L101
 
 
 ##### a-3. 기능3: INACTIVE_MEMBER를 다른 테이블로 이전, 매주 새벽 3시마다 cron job
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L24-L144
+https://github.com/Doohwancho/ecommerce_monolith/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L24-L144
 
-https://github.com/Doohwancho/ecommerce/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/scheduled/ScheduledJobConfig.java#L22-L32
+https://github.com/Doohwancho/ecommerce_monolith/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/scheduled/ScheduledJobConfig.java#L22-L32
 
 
 
@@ -529,15 +529,15 @@ https://github.com/Doohwancho/ecommerce/blob/add3486330c26f69afb55656aa5740ed5d1
 #### b. 'forgot password?' 에서 email로 유저 verify 후 reset password
 
 ##### b-1. 기능1: send 6 digit code verification to user's email
-https://github.com/Doohwancho/ecommerce/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L125-L175
+https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L125-L175
 
 ##### b-2. 기능2: verify 6 digit code
 
-https://github.com/Doohwancho/ecommerce/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L201-L251
+https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L201-L251
 
 ##### b-3. 기능3: reset password
 
-https://github.com/Doohwancho/ecommerce/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L353-L379
+https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L353-L379
 
 
 
@@ -747,11 +747,11 @@ default 세팅이고, 이대로 사용한다.
 ### 4. 결과 - 코드 적용
 #### 1. look aside
 
-https://github.com/Doohwancho/ecommerce/blob/3a07a123eb971db1ba7952fedc0ae39cb3cd0f09/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/service/ProductService.java#L64-L91
+https://github.com/Doohwancho/ecommerce_monolith/blob/3a07a123eb971db1ba7952fedc0ae39cb3cd0f09/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/service/ProductService.java#L64-L91
 
 #### 2. write through
 
-https://github.com/Doohwancho/ecommerce/blob/3a07a123eb971db1ba7952fedc0ae39cb3cd0f09/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/service/ProductService.java#L155-L174
+https://github.com/Doohwancho/ecommerce_monolith/blob/3a07a123eb971db1ba7952fedc0ae39cb3cd0f09/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/service/ProductService.java#L155-L174
 
 
 ## c. 상품 랭킹 기능 구현기
@@ -795,7 +795,7 @@ https://github.com/Doohwancho/ecommerce/blob/3a07a123eb971db1ba7952fedc0ae39cb3c
 	- 벤치마크 결과가 다른 방식 대비 낮다. 다른 효율적인 방법을 찾아보자.
 5. 코드
 
-https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_01_redis/service/ProductRankingService.java#L11-L40
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_01_redis/service/ProductRankingService.java#L11-L40
 
 
 #### step2) Max_Heap with concurrency control
@@ -835,7 +835,7 @@ https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1
 	- read가 개선됬긴 했는데, 더 괜찮은 방법이 없을까?
 5. 코드
 
-https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_02_max_heap/ProductViewCountMaxHeap.java#L11-L173
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_02_max_heap/ProductViewCountMaxHeap.java#L11-L173
 
 
 #### step3) ConcurrentSkipListMap
@@ -865,7 +865,7 @@ https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1
 		- write()할 때 sort()까지 하는거라 read()가 엄청 빠르다.
 	2. redis가 아닌 로컬 RAM 이용하는거라 자원을 더 경제적으로 쓰는 방법이다.
 3. 코드
-https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_03_concurrentSkipList/ProductViewCounter.java#L29-L123
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_03_concurrentSkipList/ProductViewCounter.java#L29-L123
 
 
 ##### Q. 왜 read()가 빨라졌지?
@@ -1011,7 +1011,7 @@ CAS(compare and swap)방식이 low-contention 상황에서는 beta lock보다 �
 	2. 아마 레디스로 랭킹 관리 안하고 로컬에서 관리하면 대부분 이 방식으로 구현하지 않을까? 싶다.
 5. 코드
 
-https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_04_concurrentHashMap_with_cache/CachedViewCounter.java#L30-L113
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_04_concurrentHashMap_with_cache/CachedViewCounter.java#L30-L113
 
 
 #### step5) Array for write + read from cache
@@ -1043,7 +1043,7 @@ https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1
 	- redis방식 대비 read는 445배, write는 227배 나아지긴 했는데, 좀 더 최적화 시켜보자
 5. 코드
 
-https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_05_array_with_cache/ArrayViewCounter.java#L32-L139
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_05_array_with_cache/ArrayViewCounter.java#L32-L139
 
 
 ##### Q. 왜 array가 map 대비 더 빠르지?
@@ -1104,7 +1104,7 @@ viewCounts.get(productId)  // 1. Hash computation
 	2. 만약 도입한다고 해도, safety-check 관련 코드를 꼼꼼히 붙이고, [fuzzy test & PBT](#d-돈관련-코드-테스트-정밀도-높힌-방법)도 붙일 듯 하다.
 5. 코드
 
-https://github.com/Doohwancho/ecommerce/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_06_primitive_array_with_cache/PrimitiveArrayViewCounter.java#L28-L123
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_06_primitive_array_with_cache/PrimitiveArrayViewCounter.java#L28-L123
 
 
 
@@ -1268,7 +1268,7 @@ N이 10만이상 부터는 heap_sort가 quick_sort보다 성능이 더 좋다.
 ##### b. 코드로 이해하는 heap sort
 
 
-https://github.com/Doohwancho/ecommerce/blob/9f536efcb18b883467a3e2d02b1fdd58c57c4dbf/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_07_primitive_array_with_cache_and_optimized_sort/PrimitiveArrayViewCounterSortOptimized.java#L252-L276
+https://github.com/Doohwancho/ecommerce_monolith/blob/9f536efcb18b883467a3e2d02b1fdd58c57c4dbf/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_07_primitive_array_with_cache_and_optimized_sort/PrimitiveArrayViewCounterSortOptimized.java#L252-L276
 
 
 heap sort는 크게 3파트로 이루어져 있다.
@@ -1507,7 +1507,7 @@ PBT가 50번동안 랜덤한 `String s`를 만들어 테스트 돌려준다.
 
 돈관련된 상품가격에 할인율 적용하는 코드에 PBT + fuzzy test를 도입했다.
 
-https://github.com/Doohwancho/ecommerce/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L39-L68
+https://github.com/Doohwancho/ecommerce_monolith/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L39-L68
 
 
 ### 5. 결과
@@ -1762,7 +1762,7 @@ INNER JOIN
 ON tmp1.CategoryId = tmp2.CategoryId
 ORDER BY tmp1.CategoryId
 ```
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java#L15-L110
+https://github.com/Doohwancho/ecommerce_monolith/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java#L15-L110
 
 
 
@@ -6120,7 +6120,7 @@ latency를 줄여서 UX를 개선해보자.
 
 1. API fetch받은 products들을 재정리 하는 함수의 결과값을 memoization 한다.
 
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L23-L56
+https://github.com/Doohwancho/ecommerce_monolith/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L23-L56
 
 option/price filter에서 product list를 호출할 때마다, 재정리를 요구하는데,
 이 함수를 useMemo()로 최적화 했다.
@@ -6130,7 +6130,7 @@ option/price filter에서 product list를 호출할 때마다, 재정리를 요�
 ...하지만 option들을 묶는 함수에 적용한 useMemo()는 이른 최적화 같다.
 
 2. option들을 optionId를 기준으로 묶는 함수
-https://github.com/Doohwancho/ecommerce/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L9-L21
+https://github.com/Doohwancho/ecommerce_monolith/blob/ee47f915de501e7142f4fc17b7abd46549ac750e/front/ecommerce/src/pages/product/Category/hooks/useCategoryData.ts#L9-L21
 
 - Q. 왜 useMemo()를 여기에 쓰는게 좋은 선택이 아닌가?
 	1. 무거운 연산이 아니다.
@@ -6170,9 +6170,9 @@ export default Home;
 
 main page에서 요구하는 top 10 rated products를 redis cache에 매 시간 갱신하여 뿌려준다.
 
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L76-L79
+https://github.com/Doohwancho/ecommerce_monolith/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/redis/RedisConfig.java#L76-L79
 
-https://github.com/Doohwancho/ecommerce/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L143-L153
+https://github.com/Doohwancho/ecommerce_monolith/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/repository/ProductRepositoryCustomImpl.java#L143-L153
 
 
 
@@ -6292,7 +6292,7 @@ openapi3 spec으로 작성된 .yaml파일을 넣으면 API 문서로 변환해�
 
 
 1. https://editor.swagger.io/
-2. [openapi-docs code](https://github.com/Doohwancho/ecommerce/blob/main/back/1.ecommerce/src/main/resources/api/openapi.yaml) 붙여넣기
+2. [openapi-docs code](https://github.com/Doohwancho/ecommerce_monolith/blob/main/back/1.ecommerce/src/main/resources/api/openapi.yaml) 붙여넣기
 
 
 
@@ -6313,7 +6313,7 @@ openapi3 spec으로 작성된 .yaml파일을 넣으면 API 문서로 변환해�
 
 example)
 
-https://github.com/Doohwancho/ecommerce/blob/73f634a45ae0e985eb158183ea021ea57aaf7a9c/front/02.nextjs_migration/models/src/model/product-with-options-ver2-dto.ts#L16-L83
+https://github.com/Doohwancho/ecommerce_monolith/blob/73f634a45ae0e985eb158183ea021ea57aaf7a9c/front/02.nextjs_migration/models/src/model/product-with-options-ver2-dto.ts#L16-L83
 
 1. [reactjs_ver](https://github.com/Doohwancho/ecommerce/tree/main/front/01.reactjs/models)
 2. [nextjs_ver](https://github.com/Doohwancho/ecommerce/tree/main/front/02.nextjs_migration/models)
