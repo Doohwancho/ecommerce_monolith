@@ -1,5 +1,4 @@
 # index
-
 <!--
 .md jump-to-secion naming rules
 
@@ -9,35 +8,53 @@
 -->
 
 - A. [프로젝트 소개](#a-프로젝트-소개)
-	- a. [빌드 & 실행 방법](#a-빌드-및-실행-방법)
+	- a. [빌드 및 실행 방법](#a-빌드-및-실행-방법)
 	- b. [사용 기술](#b-사용-기술)
-- B. [아키텍쳐](#b-architecture)
+- B. [Architecture](#b-architecture)
 	- a. [AWS architecture](#a-aws-architecture)
 	- b. [ERD diagram](#b-erd-diagram)
 	- c. [wireframe](#c-wireframe)
-- C. [기술적 도전 - Backend](#c-기술적-도전---backend)
-    - a. [전자상거래에서 인증 및 보안](#a-전자상거래에서-인증-및-보안)
-    - b. [DB 부하를 낮추기 위한 cache 도입기](#b-db-부하를-낮추기-위한-cache-도입기)
-    - c. [상품 랭킹 기능 구현기, 최적화를 곁들인](#c-상품-랭킹-기능-구현기)
-	- d. [돈관련 코드 테스트 정밀도 높힌 방법](#d-돈관련-코드-테스트-정밀도-높힌-방법)
-- D. [기술적 도전 - Database](#d-기술적-도전---database)
-    - a. [정규화](#a-정규화)
-	- b. [반정규화](#b-반정규화)
-    - c. [통계 쿼리](#c-통계-쿼리)
-    - d. [sql tuning](#d-sql-tuning)
-	- e. [bulk insert](#e-bulk-insert)
-- E. [기술적 도전 - Cloud](#e-기술적-도전---cloud)
-	- a. [docker-compose로 개발환경 구성](#a-docker-compose로-개발환경-구성)
-	- b. [provisioning: terraform & packer](#b-provisioning-terraform-and-packer)
-	- c. [모니터링 서버 세팅: prometheus and grafana + PMM](#c-monitoring-prometheus-and-grafana--pmm)
-	- d. [시행착오: 배포서버에서 log는 error랑 warn만 키자](#d-시행착오---배포서버에서-log는-error랑-warn만-키자)
-	- e. [부하 테스트](#e-부하-테스트)
-- F. [기술적 도전 - Frontend](#f-기술적-도전---frontend)
-	- a. [카테고리바의 UX 개선기](#a-카테고리바의-UX-개선기)
-	- b. [사용자경험(UX)을 반영한 맞춤형 앱 설계](#b-사용자경험ux을-반영한-맞춤형-앱-설계)
-	- c. [성능개선, 더 나은 UX를 위한](#c-성능개선-더-나은-ux를-위한)
-	- d. [일관성 있는 디자인으로, 더 나은 UX를 위한 atomic design pattern with shadcnUI](#d-atomic-design-pattern-with-shadcn-ui)
-    - e. [개발자의 협업 플로우 개선을 위한 API First Design](#e-개발자의-협업-플로우-개선을-위한-api-first-design)
+- C. [4 RPS -> 750 RPS 부하 개선기](#c-4-rps---750-rps-부하-개선기)
+	- a. [4 RPS 서버?](#a-4-rps-서버)
+	- b. [terraform 도입!](#b-terraform-도입)
+	- c. [300 RPS 부하 테스트](#c-300-rps-부하-테스트)
+	- d. [1000 RPS 부하 테스트 (스케일 업해서)](#d-1000-rps-부하-테스트-스케일-업해서)
+	- e. [500RPS -> 700RPS(정규화 -> 반정규화, FK 삭제)](#e-500rps---700rps정규화---반정규화-fk-삭제)
+	- f. [prometheus만으론 부족해! DB monitoring 추가](#f-prometheus만으론-부족해-db-monitoring-추가)
+	- g. [700RPS -> 750+RPS (sql tuning)](#g-700rps---750rps-sql-tuning)
+- D. [상품 랭킹 기능 구현기](#d-상품-랭킹-기능-구현기)
+	- a. [문제](#1-문제)
+	- b. [방법1) Redis sortedSet](#2-1-redis-sortedset)
+	- c. [방법2) Max_Heap with concurrency control](#2-2-max_heap-with-concurrency-control)
+	- d. [방법3) ConcurrentSkipListMap](#2-3-concurrentskiplistmap)
+	- e. [방법4) ConcurrentHashMap for write + read from cached sorted_map](#2-4-concurrenthashmap-for-write--read-from-cached-sorted_map)
+	- f. [방법5) Array for write + read from cache](#2-5-array-for-write--read-from-cache)
+	- g. [방법6) primitive Array for write + read from cache](#2-6-primitive-array-for-write--read-from-cache)
+	- h. [사이즈별 정렬 알고리즘 선정](#3-사이즈별-정렬-알고리즘-선정)
+	- i. [결론](#4-결론)
+- E. [DB 부하를 낮추기 위한 cache 도입기](#e-db-부하를-낮추기-위한-cache-도입기)
+	- a. [문제](#1-문제-1)
+	- b. [방법1) 상품별 조회수 컬럼 추가](#2-1-상품별-조회수-컬럼-추가)
+	- c. [방법2) DB에서 처리](#2-2-db에서-처리)
+	- d. [방법3) message queue + 분석 전용 모듈 추가](#2-3-message-queue--분석-전용-모듈-추가)
+	- e. [방법4) redis에 'sortedSet' 자료구조로 클릭률 집계하기](#2-4-redis에-sortedset-자료구조로-클릭률-집계하기)
+	- f. [방법5) look aside + write through 전략](#2-5-look-aside--write-through-전략)
+	- g. [redis 고려사항](#3-redis-고려사항)
+	- h. [결과](#4-결과)
+- F. [기술적 도전 - Backend](#f-기술적-도전---backend)
+	- a. [bulk insert 성능개선기](#a-bulk-insert-성능개선기)
+	- b. [ecommerce에서 인증 및 보안](#b-ecommerce에서-인증-및-보안) 
+	- c. [돈관련 코드 테스트 정밀도 높힌 방법](#c-돈관련-코드-테스트-정밀도-높힌-방법)
+- G. [기술적 도전 - Database](#g-기술적-도전---database)
+	- a. [정규화 도입한 방법론과 결국 반정규화 한 이유](#a-정규화-도입한-방법론과-결국-반정규화-한-이유)
+	- b. [통계 쿼리 튜닝](#b-통계-쿼리-튜닝)
+- H. [기술적 도전 - Frontend](#h-기술적-도전---frontend)
+	- a. [카테고리바의 UX 개선기](#a-카테고리바의-ux-개선기)
+	- b. [왜 나이키는 일부러 페이지를 끊기게 만들었을까?](#b-왜-나이키는-일부러-페이지를-끊기게-만들었을까)
+	- c. [성능개선](#c-성능개선)
+	- d. [atomic design pattern with shadcn-ui](#d-atomic-design-pattern-with-shadcn-ui)
+	- e. [개발자의 협업 플로우 개선을 위한 API First Design](#e-개발자의-협업-플로우-개선을-위한-api-first-design)
+
 
 
 
@@ -46,61 +63,6 @@
 ![](./documentation/images/ecommerce_main_gif.gif)
 
 Ecommerce MVP
-
-```mermaid
-mindmap
-  root((Ecommerce))
-    Backend
-        Security
-            Session-based auth
-            User behavior monitoring
-            Account locking mechanism
-        Database
-            MySQL 8.0
-            Redis
-        Performance Optimizations
-            Cache Strategy
-                Look aside and Write through
-                Ranking Count on Local Cache
-            Database Tuning
-                Query optimization
-                Denormalization strategy
-    Frontend
-        UI/UX Improvements
-            Atomic Design with ShadcnUI
-            Category bar optimization
-            Responsive design
-        React to Next.js Migration
-            SSR for SEO
-            CSR for dynamic content
-            ISR for static pages
-        Performance
-            Code splitting
-            Component memoization
-            Bundle optimization
-    Infrastructure
-        AWS Architecture
-            EC2 for app servers
-            RDS for database
-            ElastiCache for Redis
-        Monitoring
-            Prometheus
-            Grafana
-            PMM for MySQL
-        DevOps
-            Docker compose
-            Terraform and Packer
-            Load testing with k6
-    Development Process
-        API First Design
-            OpenAPI Specification
-            Auto-generated models
-            Documentation with Redoc
-        Testing Strategy
-            Load testing
-            Property-based testing
-            Fuzzy testing
-```
 
 ## a. 빌드 및 실행 방법
 
@@ -303,3144 +265,25 @@ VSC plugin: ERD Editor를 다운받고, documentation/erd.vuerd.json 파일을 �
 ![](./documentation/architecture/wireframe/outcome/ecommerce_register_login_page.png)
 
 
+# C. 4 RPS -> 750 RPS 부하 개선기
 
-# C. 기술적 도전 - Backend
+## a. 4 RPS 서버?
 
-## a. 전자상거래에서 인증 및 보안
+### TLDR;
+첫 배포 후 부하테스트!\
+그런데 초당 10RPS 보냈는데 latency가 4초나 나온다?\
+말이 안되는 상황에서 문제원인을 하나씩 가설을 세워가며 검증해나간다. 
 
-### 1. 문제
+1. 가설1 - RDS의 connections 수가 부족해서 latency가 높아졌다.
+2. 가설2 - query가 느려서 latency가 높아졌다.
+3. 가설3 - RDS의 네트워크 문제인가?
+4. 가설4 - ec2가 micro라 그런가?
+5. 가설5 - core수가 부족해서인가?
 
-돈 안걸린 서비스(ex. 이상형 월드컵)는 해킹 당해도 피해가 크진 않다.\
-'개인정보가 또 유출됬구나~'
+삽질 하다가 느린 이유를 찾았다.\
+불필요한 로깅 때문.
 
-근데 전자상거래같은 돈 걸린 사이트는 해킹당하면 큰일난다.\
-'내 신용카드로 몇백 질러버리면?'\
-두려움에 편도체가 마비되고 기억에 강렬하게 남아 나쁘게 입소문난다.
-
-회사가 물질적 피해 물어줘야하고 소송당해서 법적 책임 물을 수도 있고 하여튼 골치아프다.\
-무엇보다 고객의 신뢰를 잃는다는게 제일 크다.
-
-
-인증 시스템을 사용해 어떻게 하면 보안수준을 높힐 수 있을까?
-
-
-
-### 2. 인증 시스템 플로우 차트
-```mermaid
-flowchart TD
-    subgraph Registration
-        A[/Register Page/] --> B{Register Form}
-        B --> C[Submit User Data]
-        C --> D[Save User to DB]
-        D --> E[/Login Page/]
-    end
-    subgraph Authentication
-        E[/Login Page/] --> F{Login Form}
-        F --> G[Submit Credentials]
-        G --> H{Check Credentials}
-        H -->|Valid| I[Redirect to Dashboard]
-        H -->|Invalid| Q[Increment Failed Attempts]
-        Q --> R{Failed >= 5 Times?}
-        R -->|No| F
-        R -->|Yes| S[Lock Account]
-        S --> W[Notify User via Email]
-        S --> Z1[Transfer to inactiveMember Table via Cron Job]
-    end
-    subgraph Password Recovery
-        E --> J{Forgot Password?}
-        J --> U[/Password Recovery Page/]
-        U --> K[Enter UserId]
-        K --> L{User Exists?}
-        L -->|Yes| M[Send Verification Email]
-        L -->|No| N[Display 'User Does Not Exist']
-        N --> V[Show Register Button] --> A
-        M --> O[User Enters 6-Digit Code]
-        O --> P{Code Valid?}
-        P -->|Yes| T[Unlock User's Account]
-        T --> X[Reset Password Form]
-        X --> Y{Password Requirements Met?}
-        Y -->|Yes| Z[Update Password] --> E
-        Y -->|No| X
-        P -->|No| O
-    end
-    %% Define classes for nodes with black text
-    classDef blackText fill:#fff,stroke:#333,color:#000
-    %% Apply black text class to all nodes
-    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,Z1 blackText
-    %% Registration nodes - Orange shades
-    style A fill:#FFB74D,stroke:#333
-    style B fill:#FFB74D,stroke:#333
-    style C fill:#FFB74D,stroke:#333
-    style D fill:#FFB74D,stroke:#333
-    style V fill:#FFB74D,stroke:#333
-
-    %% Authentication nodes - Blue shades
-    style E fill:#64B5F6,stroke:#333
-    style F fill:#64B5F6,stroke:#333
-    style G fill:#64B5F6,stroke:#333
-    style H fill:#64B5F6,stroke:#333
-    style I fill:#64B5F6,stroke:#333
-    style Q fill:#64B5F6,stroke:#333
-    style R fill:#64B5F6,stroke:#333
-
-    %% Account Lock/Unlock nodes - Red & Green shades
-    style S fill:#EF5350,stroke:#333
-    style T fill:#81C784,stroke:#333
-    style W fill:#EF5350,stroke:#333
-    style Z1 fill:#EF5350,stroke:#333
-
-    %% Password Reset nodes - Purple shades
-    style X fill:#9575CD,stroke:#333
-    style Y fill:#9575CD,stroke:#333
-    style Z fill:#9575CD,stroke:#333
-
-    %% Password Recovery nodes - Teal shades
-    style U fill:#4DB6AC,stroke:#333
-    style J fill:#4DB6AC,stroke:#333
-    style K fill:#4DB6AC,stroke:#333
-    style L fill:#4DB6AC,stroke:#333
-    style M fill:#4DB6AC,stroke:#333
-    style N fill:#4DB6AC,stroke:#333
-    style O fill:#4DB6AC,stroke:#333
-    style P fill:#4DB6AC,stroke:#333
-```
-
-인증 시스템이 양이 많으니까 나눠서 생각하자.
-
-1. 인증 방법 정하기(session vs jwt)
-2. 인증 실패 & 이상현상 감지 시, 유저 밴 기능
-3. 밴한 유저 정보 관리 & 리커버리 기능
-
-
-
-
-
-### 3. 인증 방법론 정하기
-
-#### 3-1. session vs jwt 뭐 쓰지?
-
-세션 썼다.
-
-왜?
-
-세션이 jwt보다 보안적으로 더 뛰어나니까.
-
-왜?
-
-세션은 이상현상 감지 시, "즉시" session invalidate 하고 계정 락 걸면 계정탈취 후에 일어나는 피해를 최소화할 수 있다.
-
-하지만 jwt는 토큰이 expire할 때 까지 서버에서 뭘 할 수가 없다.
-
-그래서 [jwt+refresh token](https://github.com/Doohwancho/spring/tree/main/03.spring-security/jwt-refresh-token) 쓰는 방법도 만들어 봤는데,\
-expire 시간을 아무리 짧게해도,\
-결국 stateful한 session 방식이 아닌 stateless한 jwt방식은 탈취당하면 서버에서 벤 할 방법이 없다.
-
-
-#### 3-2. 분산 시스템에서 JWT의 stateless함의 단점 극복법?
-추후 서비스가 성장하고 부하가 커져서 레디스로 수 많은 세션들 부하 처리가 힘들어지거나,\
-monolith에서 MSA로 변경 등의 이유로 jwt를 도입해야 할 때,\
-stateless의 단점인 '탈취 후 이상현상 감지시 즉시벤이 안됨'을 어떻게 극복할 수 있을까?
-
-redis에서 블랙리스트 관리하면 되지 않을까?\
-근데 그건 stateful한 방식이잖아? -> 세션 하위호환이다.
-
-ec2의 로컬캐시로 블랙리스트를 관리하면 된다.\
-근데 분산환경에서 ec2-1, ec2-2, ec2-3 여러개가 있는데, 서로 가지고있는 블랙리스트의 싱크가 안맞으니까\
-ec2들 앞단에 로드밸런서에 기능중에 sticky-session 기능이었던가? 를 이용해서\
-스케일아웃된 ec2들에게 요청을 라운드로빈으로 순서대로, 랜덤하게 보내는게 아니라,\
-한번 ip-2요청이 3번째 ec2에게 갔으면, 계속 ip-2는 ec2-3 에게 보내는 식으로 처리한 후,\
-스프링 로컬캐시로 블랙리스트를 캐싱하여 매 jwt validate마다 같이 검증할 듯 하다.\
-일정 주기마다 배치로 banned_user 테이블에 저장하고.
-
-이 방식은 분산시스템에서 redis 서버에 부하를 주지 않으면서,\
-수십, 수백개에 분산된 WAS서버에서 스스로 인증을 하는데\
-stateless한 jwt의 단점을 기술적으로 극복하여\
-stateful한 session의 이점인 즉시 벤처리 기능도 구현할 수 있는 방법인 것으로 예측된다.\
-(근데 안만들어봐서 확실하진 않다)
-
-
-
-
-#### 3-3. 세션 저장소는 어디에?
-Q. 클라이언트에서 세션키를 보관할건데, 보안적으로 그나마 우수한 장소는?
-
-![](./documentation/architecture/uml/authentication/저장소_보안.png)
-
-cookie에서 보관한다.
-
-javascript로 데이터 못빼가니까 그나마 보안적으로 다른 선택지 대비 낫다고 판단된다.
-
-
-
-#### 3-4. 이상행동 감지시 계정 잠금 기능
-
-![](documentation/architecture/uml/authentication/authentication_flowchart.png)
-
-현재는 가장 기초적인 password 5회 틀릴 시, 계정잠금 기능만 구현되어있다.\
-다른 이상현상의 예시로는 client에서 사용자 ip range가 한국에서 오는지, 외국에서 오는지 체크할 수 있다.
-
-
-
-
-#### 3-5. inactive user를 Member 테이블로부터 이관하기
-![](documentation/images/inactive-user.png)
-
-- what
-	- 잠긴 계정은 주기적으로 `Member table`에서 `INACTIVE_MEMBER table`로 이관된다.
-- why
-	- member table의 사이즈가 너무 커지면, `Member table` 쿼리 성능이 낮아지기 때문에, inactive user, banned user는 다른 테이블로 이관해줘서 자주 쓰이는 member table의 사이즈 조절해준다.
-- how
-	1. 매주 일요일 새벽 3시에
-	2. cron + batch로
-	3. locked account를
-	4. MEMBER table -> INACTIVE_MEMBER table로 이전한다.
-
-
-
-
-
-
-### 4. 결과
-
-#### a. 이상현상 감지 시, 유저 벤 기능
-1. session clustering (spring security + redis)
-2. 이상행동 감지시(로그인 5회 틀림) invalidate session + account lock 한다.
-3. 매주 일요일 새벽 3시에 cron + batch로 locked account를 MEMBER table에서 INACTIVE_MEMBER table로 이전한다.
-
-
-##### a-1. 기능1: login attempt 실패할 때마다 카운트+1
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L71-L82
-
-
-##### a-2. 기능2: 카운트가 일정 수치 이상 쌓이면 비정상적인 유저라고 판단, invalidate session && lock account
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L82-L101
-
-
-##### a-3. 기능3: INACTIVE_MEMBER를 다른 테이블로 이전, 매주 새벽 3시마다 cron job
-https://github.com/Doohwancho/ecommerce_monolith/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L24-L144
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/scheduled/ScheduledJobConfig.java#L22-L32
-
-
-
-
-#### b. 'forgot password?' 에서 email로 유저 verify 후 reset password
-
-##### b-1. 기능1: send 6 digit code verification to user's email
-https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L125-L175
-
-##### b-2. 기능2: verify 6 digit code
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L201-L251
-
-##### b-3. 기능3: reset password
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L353-L379
-
-
-
-
-
-## b. DB 부하를 낮추기 위한 cache 도입기
-
-### 1. 문제
-
-[부하 테스트](#e-부하-테스트)를 해보니, **DB에 i/o를 줄이는게** 성능 & 비용 측면에서 필요하다 느꼈다.
-
-그렇다면, DB에 i/o를 줄이려면 어떻게 해야할까?
-
-자주 i/o되는 정보 위주로,\
-DB에 요청 보내기 전 앞단 미들웨어에 캐싱해두면,\
-DB 부하를 줄이면서 latency가 더 줄지 않을까?
-
-
-#### Q. 자주 i/o 되는 쿼리?
-
-ecommerce 쿼리분포가 모든 상품에 **even**하게 나타나지 않는다.
-
-![안성재_even하게_익지_않았어요](./documentation/images/안성재_even.jpg)
-
-유저들이 ecommerce에서 상품검색하면,\
-보통 1,2,3등, 최대 10등까지 만 클릭하고 나머지 상품은 클릭 안한다.
-
-그렇다면,\
-**쿼리의 대부분을 차지하는 1,2,3등 상품정보만 캐싱하면 db부하를 줄일 수 있겠네?**
-
-
-### 2. 어떤 상품이 클릭수가 높고 낮은지 어떻게 파악하지?
-
-#### 방법1) 상품별 조회수 컬럼 추가
-
-![](./documentation/architecture/uml/db부하를_줄이기위한_cache도입기/01.상품별_조회수컬럼_추가.png)
-
-- 방법
-	1. product 필드에 view_count 추가해서
-	2. read 할 때마다 update(product.view_count+1) 한다.
-	3. 그리고 10분 주기 batch로
-		1. product order by view_count
-		2. redis-cache update
-		3. 모든 product들의 view_count set to 0
-- 장점
-	- 구현이 간단하다.
-- 문제점
-	1. DB에 view_count 컬럼에 계속 write하는게 DB에 부하를 많이 준다.
-	2. `ORDER BY VIEW_COUNT`는 PRODUCT table size가 커질수록 cost가 커질 것으로 예상된다.
-	3. 10분마다 product table을 full scan 하면서 view_count 를 0로 초기화 하는 배치 또한 DB에 부하를 많이 주고 lock contention으로 인한 latency 증가 우려가 있다.
-- 결론
-	- 구현은 간단하나, DB 부하 줄이겠다고 캐싱 도입한다는 본래 목적과 어긋나는 해결법이다.
-
-
-
-#### 방법2) DB에서 처리
-
-![](./documentation/architecture/uml/db부하를_줄이기위한_cache도입기/02.db에서_처리.png)
-
-- 방법
-	1. Disk i/o 없이 RAM에서 작동하는 임시 테이블을 만든다. `CREATE TEMPORARY TABLE temp_product_views { product_id INT, view_count INT}`
-	2. 트리거를 건다: Product table에 특정 row가 읽힐 때 마다, 임시테이블의 해당 productId에 view_count+1
-	3. 집계 프로시저를 만든다: 임시 테이블에서 product_id를 `GROUP BY`로 묶어서 `select product_id, SUM(view_count) ...`
-	4. 프로시저의 결괏값을 batch로 n분마다 redis에 캐싱한다.
-- 장점
-	1. disk i/o가 아닌 RAM 기반이라 빠르다.
-- 문제점
-	1. 이 방법 역시 DB자원 아끼려고 캐시 미들웨어 도입하는 의미가 퇴색된다.
-		- 그나마 방법1 대비 장점은, 임시 테이블이 Disk I/O를 하지 않고 RAM에서 작동하기 때문에, view_count 같이 빠른 빈도로 write하는 상황에 더 어울린다는 것이다.
-		- 또한 product table에 직접 write하는게 아니라 다른 별개의 임시테이블에 write하기 때문에 기존에 product table에 write-lock을 걸지 않아, product table을 read/write하던 다른 쿼리에 lock contention으로 인한 latency delay를 주지 않는다.
-	2. DB에서 비즈니스로직을 SQL로 처리하면, 파일로 남지않아 버전관리가 힘들어, 후임개발자가 시스템 파악에 곤란할 수 있다.
-
-
-
-#### 방법3) message queue + 분석 전용 모듈 추가
-
-![](./documentation/architecture/uml/db부하를_줄이기위한_cache도입기/03.mq_분석모듈_추가.png)
-
-- 방법
-	1. 상품조회가 일어날 때마다 비동기로 동작하는 메시지 브로커(e.g rabbitmq, kafka, etc)에 상품별 조회수를 남긴 후,
-	2. 메시지큐에서 상품별 view_count를 구독하는 분석전용 서버에서 가져와
-	3. view_count가 높은 상품 위주로 정렬해 redis에 저장하는 방식(다른 분석도 하는 겸)
-- 장점
-	1. 확장성 좋고 실시간 분석코드 추가 가능하다.
-- 문제점
-	1. 오버 엔지니어링이다.
-- 결론
-	- 단순히 핫한상품 캐시용이 아닌, 실시간 유저 행동 패턴 데이터를 a/b testing에 먹일 목적으로 전처리를 하거나, 헤비한 통계처리를 하거나 등의 특수목적용 서버가 있으면 고려해볼 순 있는 방법
-
-
-#### 방법4) redis에 'sortedSet' 자료구조로 클릭률 집계하기
-
-![](./documentation/architecture/uml/db부하를_줄이기위한_cache도입기/04.redis_sortedset_집계.png)
-
-- what
-	- redis 자료구조 중에 `sortedSet`를 사용하는 방식.
-		- `{key:value}`인데 내부적으로 write할 때 정렬하는 듯 하며,
-		- write의 time_complexity는 O(log N),
-		- read의 time_complexity는 O(log N+M), where N = total element and M = number of returned element
-- 방법
-	1. read 할 때마다 `sortedSet`에 `{productId:view_count+1}` 추가한다.
-	2. 10분에 1번씩 배치로 `sortedSet`의 상위 N개의 아이템을 DB에서 쿼리해와서 Redis에 저장한다.
-- 장점
-	1. 실시간 정확한 상품별 클릭률 랭킹을 집계할 수 있다.
-- 문제점
-	1. 이미 유저 세션관리와 상품 디테일 정보 캐싱, heavy query 캐싱으로 redis가 자원을 많이 쓰는 상황에서 자원 많이 잡아먹는 일을 추가하면 시스템이 감당될까?
-		- ecommerce는 read:write 비율이 9:1인 read-heavy 앱이고, 상품 클릭률이 1초에 엄청 많은 수의 read 요청이 올텐데, 그걸 실시간으로 자료구조에서 view_count 계속 정렬하면서 다른 요청도 처리한다는건데, redis에 부하를 많이 주지 않을까?
-		- 다시 생각해보니 만약에 실시간 랭킹 시스템을 만든다고 해도, 그대로 sortedSet을 사용하지는 않을 듯 하다.
-		- 클릭률이 실시간으로 엄청나게 요청이 많이 올텐데, write연산이 O(1)도 아니고 O(log N)인 연산을 계속 끊기지 않고 하는건 시스템에 부하가 너무 클 듯 하다.
-- 결론
-	- 실시간 상품 랭킹이 필요하면 이 방법을 쓸 것 같긴 하지만, 실시간 랭킹이 아닌 대략 많이 클릭하는 상품들을 뭉텅이를 찾는 목적으로는 최적의 솔루션은 아닌 듯 하다.
-
-
-#### 방법5) look aside + write through 전략
-
-![](./documentation/architecture/uml/db부하를_줄이기위한_cache도입기/05.lookaside_writethrough.png)
-
-조회수 많은거 집계해서 넣지 말고,\
-읽히는 상품만 캐싱하고 주기적으로 cache evict해주면,\
-실시간 핫한 상품이 바뀌더라도 좀 더 유연하지 않을까?
-
-
-- what
-	1. 읽기 전략 (Look Aside):
-	    - 데이터를 읽을 때 먼저 캐시를 확인합니다.
-	    - 캐시에 데이터가 있으면(cache hit) 바로 반환합니다.
-	    - 캐시에 데이터가 없으면(cache miss) DB에서 데이터를 가져와 반환하고, 동시에 캐시에 저장합니다.
-	2. 쓰기 전략 (Write Around):
-	    - 데이터를 쓸 때는 DB에만 직접 씁니다.
-	    - 캐시는 업데이트하지 않습니다.
-- 장점
-	1. 트랜드가 빠르게 바뀌는 타입의 ecommerce면 조회수를 한번에 집계해서 캐싱하는 전략보다 이 전략이 유리하다.
-		- Q. 만약 핫한 상품 뽑아서 캐싱했고, @CacheEvict를 3시간으로 설정했는데, 유튜브 때문에 이슈가 몰렸다던지의 이유로 특정 상품이 많이 조회되었는데 캐싱이 안된 상품이었다면?
-		- A. 다음 캐싱될 3시간 동안 DB는 평소 이상으로 부하를 받아 고통받을 것이다.
-- 문제점
-	1. 만약 상품의 read 분포가 고르다면? -> cache miss가 많아진다.
-		- Q. 여성의류쇼핑몰에서 유저 행동패턴이 안 살 상품들 이것저것 수십개씩 클릭한다? 100개 상품 중 40~50개 상품을 클릭한다면?
-		- A. cache_miss율이 올라가고, 불필요하게 redis에 요청하는 스텝이 하나 더 추가 +  cache에 write하는 스탭이 추가되어 오히려 latency가 더 느려질 수 있다.
-		- 또한 상품이 다양하고 양이 많을 수록, redis의 메모리 한계치까지 다 채워 out of memory의 위험도 있다.
-- 해결책
-	- read 분포가 퍼져서 redis 메모리가 빨리 채워진다면,  @CacheEvict 주기를 짧게 가저가서 자주 비워주면 된다.
-- 결론
-	- 트랜드가 자주 바뀔 수 있는 ecommerce에 적합한 캐싱 전략인 듯 하다.
-	- 쿠팡같이 카테고리별 제품 1,2위 찍으면 잘 안바뀌는 특성을 가진 ecommerce는 이 전략에 @CacheEvict 주기를 매우 길게해서 사용해도 될 것 같다.
-
-
-### 3. redis 고려사항
-
-#### Q. cache evict 주기를 어떻게 설정해야 할까?
-
-A. 정답은 없다. 서비스 앱의 특성마다 다르고, 유저의 행동패턴에 따라 달라진다.
-
-1. redis 모니터링하면서
-2. 전체 상품의 몇%가 캐싱되었을 때, 해당 상품들이 레디스의 메모리를 몇% 차지하고,
-3. 다른 메모리 점유하는 데이터들과 함께, 얼마나 여유분의 메모리가 남았는지 체크하며 cache-evict 주기를 조절한다.
-
-
-#### Q. 메모리 점유율 외에, 모니터링하면서 중점적으로 봐야할 부분은?
-**cache-hit율**을 봐야한다.
-
-유저의 상품 쿼리분포가 집약적이지 않고 고루 퍼져있어서 cache-miss가 자주 일어나고 있다면,\
-redis에 캐싱을 안하는게 더 빠를 수 있다.
-
-
-
-#### Q. 서버 터지면 캐싱한 데이터는 어떻게 복구하지?
-
-- case1) 서버 자체가 터져버리는 경우 -> 로그 손실. 답이 없다.
-- case2) 서버는 살아있는데 레디스가 터진 후 재시작 되는 경우
-	- redis-client인 lettuce를 쓰면, 레디스 서버 시작시, 스냅샷으로 저장된걸 로드해준다고 한다.
-
-
-#### Q. 데이터 복구 방법은 뭐가 있고 뭘 쓰지?
-
-레디스에는 데이터 백업뜨는 방법이 2가지 있다.
-
-1. 특정 조건 만족하면 snapshot 찍어서 dump.rdb파일로 보관하는 방법(default)
-2. 데이터에 read 말고 write 할 때마다 appendonly.aof 파일로 저장해 보관하는 방법
-
-
-1번이 부하가 몰릴 때 성능 측면에서 유리해 보이니, 1번을 선택한다.
-
-
-
-#### Q. 스냅샷 뜨는 세팅 어떻게 설정하지?
-`redis.conf`를 보면 주석을 매우 친절하게 달아줬는데,
-
-```
-# Unless specified otherwise, by default Redis will save the DB:
-#   * After 3600 seconds (an hour) if at least 1 change was performed
-#   * After 300 seconds (5 minutes) if at least 100 changes were performed
-#   * After 60 seconds if at least 10000 changes were performed
-#
-# You can set these explicitly by uncommenting the following line.
-#
-# save 3600 1 300 100 60 10000
-```
-
-1. 매 1분마다 AOF에 저장한다. (데이터가 10000번 바뀐경우)
-2. 매 5분마다 AOF에 저장한다. (데이터가 100번 바뀐경우)
-3. 매 1시간마다 AOF에 저장한다. (데이터가 1번 바뀐경우)
-
-
-default 세팅이고, 이대로 사용한다.
-
-
-### 4. 결과 - 코드 적용
-#### 1. look aside
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/3a07a123eb971db1ba7952fedc0ae39cb3cd0f09/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/service/ProductService.java#L64-L91
-
-#### 2. write through
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/3a07a123eb971db1ba7952fedc0ae39cb3cd0f09/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/service/ProductService.java#L155-L174
-
-
-## c. 상품 랭킹 기능 구현기
-
-### 1. 문제
-쇼핑몰에 가면 실시간 가장 핫한 아이템 top 10을 어렵지 않게 볼 수 있다.\
-이 기능을 구현하고자 하는데,\
-바로 앞전에 [redis' sortedSet으로 클릭률 집계](#방법4-redis에-sortedset-자료구조로-클릭률-집계하기)로 구현하는게 일반적인 듯하다.\
-(구글 검색시 대부분 이방식으로 만듬)
-
-문제는 DB가 비싸서 cache layer을 쓰는데,\
-**cache layer 역시 비싸다**는 것이다.\
-같은 기능을 리소스 효율적이게 만들 순 없을까?
-
-
-### 2. 랭킹 집계에 적절한 자료구조 선정
-#### step1) Redis sortedSet
-
-
-| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
-|-----------------------------|---------------|-------|-----|------------|-------|--------|
-| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
-| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
-
-
-1. 방법
-	- redis의 `sortedSet` 자료구조에 `{product:view_count}`넣으면 랭킹 집계 해준다.
-	- time complexity
-		- write: O(log N)
-		- read: O(log N+M), where N = total element and M = number of returned element
-2. 장점
-	1. 정확한 조회수를 집계 가능하다.
-	2. 분산시스템에서 single source of truth라 ec2간 조회수 read()하면, 결과값 차이가 거의 없다.
-	3. 구현이 간단하다. 이미 redis 측에서 만든 자료구조를 가져다 쓰는 것이기 때문.
-3. 문제점
-	1. 상품 클릭할 때마다 view_count+1되서 write 부하가 엄청나게 클 텐데, `sortedSet`의 write-time-complexity가 O(1)도 아니고 O(log N)이다. 서비스가 커지고 상품 수(N)이 커질수록, 효율이 떨어진다.
-	2. redis는 비싸고 실전에서는 이미 다양하게 활용되고 있을텐데(세션관리, heavy query caching, rate-limiting, etc) 여기에 heavy_computation 작업 하나 추가하는게 맞나? 싶다.
-	3. 분리된 redis(aws_elastic_cache) 서버와 통신비용이 있다.
-	4. 벤치마크를 로컬pc에 설치된 redis로 돌렸기 때문에 통신비용이 고려 안되었음 + redis 서버 성능은 실전에서 사용하는 2core 6GiB RAM elastic_cache 대비, 로컬 pc가 8코어 16GiB RAM으로 월등히 우수한걸 고려하면, 실 성능이 이 보다 훨씬 더 낮다.
-4. 결론
-	- 벤치마크 결과가 다른 방식 대비 낮다. 다른 효율적인 방법을 찾아보자.
-5. 코드
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_01_redis/service/ProductRankingService.java#L11-L40
-
-
-#### step2) Max_Heap with concurrency control
-
-| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
-|-----------------------------|---------------|-------|-----|------------|-------|--------|
-| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
-| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
-| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
-| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
-
-1. 방법
-	- redis에서 view_count 집계를 하지 말고, 스프링 로컬서버에서 view_count & ranking 집계 하는 방식, max_heap 자료구조를 써서.
-	- Q. 로컬에서 랭킹 집계해도 되나? 정확도가 떨어지지 않을까?
-		- A. 원하는 값이 완전 정확하게 집계된 값이 아니라, 대략적으로 현재 트랜디 한 상품값이 필요한거라 이 방식이 가능한 것이다.
-		- 분산환경에서 WAS서버가 5대라고 할 때, 상품클릭률 분포는 조회수 조작하는 스팸유저만 없다면(이상현상 감지 후, 벤처리) WAS서버당 고르게 분포할 것이다.
-		- 만약 WAS-1에서 2등인 상품이 WAS-3에서 3 or 4등이다? 그정도의 오차는 top 10-in 했으니 괜찮다고 보는 것. 서버 자원관리를 위해.
-	- 상품별 view_count 필드에 `volatile` 키워드를 걸어서, write() 후 값이 multi-threads들에게 바로 보이도록 적용.
-		- multi-core 환경에서 원래는 thread들이 공유자원 접근시, cpu 내부 cache에 저장해서 쓰는데, 이러면 RAM에 값이 update되었을 때 cpu 내부 캐시 값을 읽으면 값이 틀리니까, 공유자원 값을 cpu 내부 cache에 저장하지 말고 RAM에서 가져와 쓰자는게 `volatile` 이다.
-	- view_count를 read/write 시, ReentrantLock사용
-		- read lock은 read하는 쓰레드끼리는 통과 가능하다
-		- write lock은 베타 락이다.
-	- view_count별 랭킹 정렬은 `priority_queue` 자료구조로 한다.
-		- time complexity
-			- write: O(log N) (ex. add(), offer())
-			- read: O(log N) (ex. poll(), remove())
-2. 장점
-	1. 벤치마크 결과, read가 `redis_sortedSet`의 read 대비 쓰루풋이 9.6배 더 좋다.
-		- `sortedSet`'s read_time_complexity: O(log N+M)
-		- `priority_queue`'s read_time_complexity: O(log N)
-	2. redis보다 상대적으로 비용이 저렴한 WAS서버에 로컬 램을 활용하기 때문에 경제적이다.
-3. 문제점
-	1. write 성능이 redis보다 안좋다. 베타 락이 `redis_sortedSet`이 내부적으로 사용하는 write_lock 방식보다 더 비용이 큰 것으로 예상된다.
-	2. 왜냐면 incrementView()시, 상품별 view_count 저장과 heap에 랭킹저장 2번 하는데, 랭킹저장시 `priority_queue`에 기존 product를 지우고, 새로운 view_count가 들어있는 product를 추가하기 때문.
-4. 결론
-	- redis에 부담을 WAS로 덜어주면서, read 성능이 개선되었다.
-	- read가 개선됬긴 했는데, 더 괜찮은 방법이 없을까?
-5. 코드
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_02_max_heap/ProductViewCountMaxHeap.java#L11-L173
-
-
-#### step3) ConcurrentSkipListMap
-
-
-| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
-|-----------------------------|---------------|-------|-----|------------|-------|--------|
-| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
-| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
-| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
-| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
-| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
-| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
-
-
-1. 방법
-	- `TreeMap`(sorted HashMap)인데, concurrency control이 달려있는게 `ConcurrentSkipListMap`이다.
-		- time complexity
-			- write: O(log N)
-			- read: O(log N)
-		- lock
-			- 베타락 안쓰는 대신 CAS(compare and swap) 방식을 쓴다.
-			- write 직후 정합성이 떨어진다고 한다.
-			- 그런데 정밀한 view_count를 원하는게 아니기에, 성능이 더 좋은게 더 낫다.
-2. 장점
-	1. read()가 redis_read() 대비 644배, max_heap_read() 대비 66.9배 빨라졌다.
-		- write()할 때 sort()까지 하는거라 read()가 엄청 빠르다.
-	2. redis가 아닌 로컬 RAM 이용하는거라 자원을 더 경제적으로 쓰는 방법이다.
-3. 코드
-https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_03_concurrentSkipList/ProductViewCounter.java#L29-L123
-
-
-##### Q. 왜 read()가 빨라졌지?
-
-1. max_heap read: O(log N)
-2. concurrentSkipListMap의 read: O(log N)
-...똑같은데 왜 성능차이 나는거지?
-
-
-###### A. `max_heap`에 read()가 애초에 비효율적이게 짜져있다.
-```java
-public List<MockProduct> getTopNProducts(int n) {
-	if (n <= 0) {
-		return Collections.emptyList();
-	}
-
-	heapLock.readLock().lock();
-	try {
-		List<MockProduct> result = new ArrayList<>();
-		// Create a temporary heap for reading to avoid blocking writes
-		PriorityQueue<MockProduct> tempHeap = new PriorityQueue<>(maxHeap);
-
-		for (int i = 0; i < n && !tempHeap.isEmpty(); i++) {
-			result.add(tempHeap.poll());
-		}
-
-		return result;
-	} finally {
-		heapLock.readLock().unlock();
-	}
-}
-```
-
-이게 `max_heap`의 read() 인데, 매번 read()할 때마다 `priority_queue`에 heap 통째로 넣어서 정렬한다.
-
-Q. 근데 `max_heap` 쓰는 이유가, write()시 정렬하기 때문에 read()가 빠르다는 이점 때문에 쓰는건데, read() 할 때마다 `priority_queue` 새로 만들어서 sort()할꺼면, `max_heap` 쓰는 이유가 퇴색되는거 아닌가?
-
-A. 맞다. 역시 늘상 느끼지만 ai가 짠 코드를 무지성으로 복붙하면 이런 폐혜가 생긴다.
-
-여튼 `max_heap`의 올바른 read()방식은 이렇다.
-
-write()할 때마다 정렬하면서 저장하고,
-
-read()할 땐 root node로 부터 BST(breadth first search)로 top-N-node 까지 돌면서 읽으면 된다.
-
-아마 `max_heap`을 원래 의도한 방식으로 짜면 `sorted treemap`과 read() 성능이 비슷하게 나올 것이라 예상된다.
-
-
-##### Q. 왜 write가 느리지?
-
-| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
-|-----------------------------|---------------|-------|-----|------------|-------|--------|
-| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
-| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
-
-
-`max_heap`은 view_count 1번, priority_queue에 1번 2번 write하는데,\
-`sorted_hashmap`은 1번 write하는데 왜 느릴까?
-
-```java
-public void incrementView(String productId, long delta) {
-	while (true) { // CAS loop for atomic update
-		Map.Entry<ViewCount, LongAdder> existingEntry = null;
-
-		// Find existing entry for this productId
-		for (Map.Entry<ViewCount, LongAdder> entry : viewCounts.entrySet()) {
-			if (entry.getKey().productId.equals(productId)) {
-				existingEntry = entry;
-				break;
-			}
-		}
-
-		if (existingEntry == null) {
-			// New product - try to insert
-			ViewCount newCount = new ViewCount(productId, delta, System.nanoTime());
-			LongAdder counter = new LongAdder();
-			counter.add(delta);
-
-			if (viewCounts.putIfAbsent(newCount, counter) == null) {
-				// Successfully inserted
-				break;
-			}
-			// If insert failed, retry
-			continue;
-		}
-
-		// Existing product - update count
-		ViewCount oldCount = existingEntry.getKey();
-		LongAdder counter = existingEntry.getValue();
-		counter.add(delta);
-
-		// Remove old entry and insert new one with updated count
-		ViewCount newCount = new ViewCount(productId, oldCount.count + delta,
-			oldCount.timestamp);
-		if (viewCounts.remove(oldCount) != null &&
-			viewCounts.putIfAbsent(newCount, counter) == null) {
-			// Successfully updated
-			break;
-		}
-		// If update failed, retry
-	}
-}
-```
-
-값이 바뀔 때 까지 쓰레드가 `while(true)` + retry 로 `WAITING` 상태다.\
-jmh 벤치마크 테스트할 때 코어수 2개에 맞게 쓰레드 2개 할당해줬는데 (실전엔 2코어 4기가 램 ec2 스케일 아웃한다고 가정)\
-쓰레드1이 write 끝날 때 까지 쓰레드2가 기다린다.
-
-CAS(compare and swap)방식이 low-contention 상황에서는 beta lock보다 성능이 더 좋다곤 하는데,
-
-문제는 view_count + 1은 high-contention 상황이다!
-
-그래서 write() 성능이 별로다.
-
-
-
-
-
-
-#### step4) ConcurrentHashMap for write + read from cached sorted_map
-
-| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
-|-----------------------------|---------------|-------|-----|------------|-------|--------|
-| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
-| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
-| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
-| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
-| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
-| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
-| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
-| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
-
-1. 방법
-	- 3번까지 아이디어는 자료구조에 write할 때 sort by view_count 하고, read할 때 이미 정렬된걸 읽자! 였다면,
-	- 4번 방식은 write할 땐 젤 빠른 방식인 `hashmap`에 O(1)으로 insert하고, 10분마다 sort by view_count를 데몬쓰레드로 돌려서 캐싱해두면, 캐싱해 둔 값을 read 하는 방식이다.
-2. 장점
-	1. write가 매우매우 빨라졌다. redis방식 대비 무려 191배, `max_heap` 대비 317배, `sorted_hashmap` 대비 429배 쓰루풋이 더 많다. 왜? O(1)이니까.
-	2. read도 매우매우 빨라졌다. 왜? 캐싱해둔거 로컬에서 그대로 꺼내쓰니까. redis 방식보다 무려 205배 빠르다.
-3. 문제점
-	1. 기존 1~3 방식은 실시간으로 랭킹을 볼 수 있다면, 4번 방식은 10분마다 캐싱한 랭킹을 보는 방식이라 성능을 얻었지만 정확도가 떨어졌다.
-4. 결론
-	1. 랭킹 정확도가 약간 떨어졌지만, read/write 효율이 압도적으로 좋아졌다.
-	2. 아마 레디스로 랭킹 관리 안하고 로컬에서 관리하면 대부분 이 방식으로 구현하지 않을까? 싶다.
-5. 코드
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_04_concurrentHashMap_with_cache/CachedViewCounter.java#L30-L113
-
-
-#### step5) Array for write + read from cache
-
-
-| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
-|-----------------------------|---------------|-------|-----|------------|-------|--------|
-| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
-| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
-| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
-| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
-| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
-| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
-| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
-| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
-| 05.array_read               | 2             | thrpt | 2   | 48065.797  |       | ops/ms |
-| 05.array_write              | 2             | thrpt | 2   | 18921.207  |       | ops/ms |
-
-1. 방법
-	- hashmap -> array로 바꾼 방법
-	- write도 O(1), read도 O(1) (from cache)
-	- 10분마다 sort할 땐 hashMap은 .stream() (map reduce internally)로 한다면, array는 quicksort(n < 10000) or merge sort(n >= 10000)를 쓴다.
-2. 장점
-	- step4)hashmap과 벤치마크 성능을 비교해보면 read 성능이 2.17배 쓰루풋이 더 좋다. write는 1.2배 더 좋다.
-3. 문제점
-	1. 10분에 한번씩 객체 수만개, 수십만개를 sort()할텐데, cpu_usage spike 치면 어쩌지?
-	2. 객체 수십만개 sort()하기 직전에, 기존 객체 수만, 수십만개를 메모리 해제할텐데, 이정도 규모면 full-gc 10분마다 n번씩 자주 일어나지 않을까?
-4. 결론
-	- redis방식 대비 read는 445배, write는 227배 나아지긴 했는데, 좀 더 최적화 시켜보자
-5. 코드
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_05_array_with_cache/ArrayViewCounter.java#L32-L139
-
-
-##### Q. 왜 array가 map 대비 더 빠르지?
-
-1. memory(cache) locality 때문.
-	- `AtomicLongArray`는 메모리상에서 값을 붙여서 저장하기 때문에, for문같은거로 read할 때 컴파일러가 안읽어도 array size만큼 chunk 띄어와서 cache에 저장하고 쓰는데,
-	- `hashmap`은 메모리 포인터가 다른 장소를 가르키는데, 캐싱하는 시점 컴파일러 입장에서는 포인터가 가르키는 장소에 다음 원소들이 어디있는지를 모르니까 다 읽어서 값을 가져와야 해서 느리다.
-2. `array`는 `hashmap` 대비, hash 계산을 안해도 된다.
-	- `hashmap`은 인덱스 정하려면 hash() 돌려야 하는데, `array`는 이 스텝을 스킵하고 바로 read/write 할 수 있다.
-	- 어떤 값은 다른데 hash() 돌리면 우연히 인덱스가 같은 값이 나온다. 이 때, hash-collision handling도 해줘야 해서 `array`보다 성능이 느리다.
-3. `ConcurrentHashMap`의 concurrency control이 `AtomicLongArray`의 방식보다 내부적으로 더 복잡하다고 한다.
-
-
-Q. array, hashmap 둘 다 read()의 time_complexity: O(1)인데, 실상은?
-
-```java
-// Array access - truly O(1)
-viewCounts.get(productId)  // Direct memory access
-
-// ConcurrentHashMap access - technically O(1) but with more steps
-viewCounts.get(productId)  // 1. Hash computation
-                           // 2. Segment location
-                           // 3. Bucket traversal if collision
-                           // 4. Value retrieval
-```
-
-#### step6) primitive Array for write + read from cache
-
-
-| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
-|-----------------------------|---------------|-------|-----|------------|-------|--------|
-| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
-| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
-| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
-| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
-| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
-| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
-| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
-| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
-| 05.array_read               | 2             | thrpt | 2   | 48065.797  |       | ops/ms |
-| 05.array_write              | 2             | thrpt | 2   | 18921.207  |       | ops/ms |
-| 06.array_optimized_read     | 2             | thrpt | 2   | 269472.295 |       | ops/ms |
-| 06.array_optimized_write    | 2             | thrpt | 2   | 19227.155  |       | ops/ms |
-
-
-
-1. 방법
-	- step5) array 방식에서 객체생성을 빼고, array의 index를 product_id 삼아 쓰는 방식
-	- write()시 lock을 쓰진 않고 CAS방식을 쓴다.
-2. 장점
-	1. 객체 생성하는 단계가 스킵되서 훨씬 빠르다. 객체 생성 하고 안하고 차이가 read는 쓰루풋 5.6배 빠르고, write는 1.6% 더 빠르다.
-	2. 상품별 view_count 객체 수만, 수십만개 안만들어도 되서 메모리를 아낄 수 있다.
-	3. 수만, 수십만개 객체가 young generation 꽉 채우고 old generation까지 넘어가서 full-gc할 때 드는 비용도 줄일 수 있다.
-3. 문제점
-	1. 프레임워크/언어에서 제공하는 자료구조를 쓰면, 다양한 상황에서도 모두 오류없이 동작해야 하기 때문에, safety-check가 깐깐하게 되있어서 조금 느려진다는 단점이 있지만, 에러날 확률이 낮아진다는 극장점이 있는데, 이렇게 자체적으로 자료구조를 만들면 예상치 못한 에러가 터질 수 있기 때문에, 단순히 성능 이외에 validation-check라던지 등과 꼼꼼한 테스트 등을 고려해야 한다.
-4. 결론
-	1. 성능은 압도적으로 좋긴 하나, 만약 실전이라면 음... 성능이 매우 고픈 상황이 아니라면 도입하기 망설여지긴 한다.
-	2. 만약 도입한다고 해도, safety-check 관련 코드를 꼼꼼히 붙이고, [fuzzy test & PBT](#d-돈관련-코드-테스트-정밀도-높힌-방법)도 붙일 듯 하다.
-5. 코드
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_06_primitive_array_with_cache/PrimitiveArrayViewCounter.java#L28-L123
-
-
-
-### 3. 적절한 정렬 알고리즘 선정
-
-Q. array에서 10분마다 상품별 랭킹을 sort해서 캐싱하는데, 어떤 방식으로 정렬해야 효율적일까?
-
-
-
-#### 3-1. when N < 50, insertion sort
-insertion sort의 Big O는 다음과 같다.
-- Time: O(n²)
-- Space: O(1)
-
-별도의 변수, 객체 선언 없이, 기존에 있던 메모리에서 swap()하며 옮기는 방식이라 메모리를 아낄 수 있다는 장점이 있다.
-
-시간복잡도는 O(N^2)이지만, 어짜피 N=50, 매우 작은 수라 괜찮다.
-
-[이 사이트](https://visualgo.net/en/sorting)에서 insertion sort가 어떻게 진행되는지 시각화해서 볼 수 있다.
-
-
-##### a. insertion sort, N=50 benchmark
-
-| Benchmark | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
-|-----------|-------------|-----------------|-------------|------|-----|-------|-------|--------|
-| simple_insertion_sort | 100000 | 50 | 2 | sample | 90599 | 0.452 | ± 0.355 | ms/op |
-| simple_insertion_sort (p0.00) | 100000 | 50 | 2 | sample | | 0.216 | | ms/op |
-| simple_insertion_sort (p0.50) | 100000 | 50 | 2 | sample | | 0.219 | | ms/op |
-| simple_insertion_sort (p0.90) | 100000 | 50 | 2 | sample | | 0.225 | | ms/op |
-| simple_insertion_sort (p0.95) | 100000 | 50 | 2 | sample | | 0.231 | | ms/op |
-| simple_insertion_sort (p0.99) | 100000 | 50 | 2 | sample | | 0.244 | | ms/op |
-| simple_insertion_sort (p0.999) | 100000 | 50 | 2 | sample | | 0.309 | | ms/op |
-| simple_insertion_sort (p0.9999) | 100000 | 50 | 2 | sample | | 1.965 | | ms/op |
-| simple_insertion_sort (p1.00) | 100000 | 50 | 2 | sample | | 5989.466 | | ms/op |
-
-N=50일 때 insertion sort를 벤치마크 돌린 결과값이다.
-
-N사이즈가 작으면
-1. 성능이 준수하고,
-2. worse / avg / best case scenario에서 even한 퍼포먼스를 보여주며,
-3. 메모리도 들지 않기 때문에
-
-... 적절한 선택지라 볼 수 있다.
-
-##### b. insertion sort, N=100,000 benchmark
-
-| Benchmark | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
-|-----------|-------------|-----------------|-------------|------|-----|-------|-------|--------|
-| simple_insertion_sort | 100000 | 100000 | 2 | sample | 4937 | 10.320 | ± 11.823 | ms/op |
-| simple_insertion_sort (p0.00) | 100000 | 100000 | 2 | sample | | 4.022 | | ms/op |
-| simple_insertion_sort (p0.50) | 100000 | 100000 | 2 | sample | | 4.039 | | ms/op |
-| simple_insertion_sort (p0.90) | 100000 | 100000 | 2 | sample | | 4.080 | | ms/op |
-| simple_insertion_sort (p0.95) | 100000 | 100000 | 2 | sample | | 4.100 | | ms/op |
-| simple_insertion_sort (p0.99) | 100000 | 100000 | 2 | sample | | 4.224 | | ms/op |
-| simple_insertion_sort (p0.999) | 100000 | 100000 | 2 | sample | | 1248.086 | | ms/op |
-| simple_insertion_sort (p0.9999) | 100000 | 100000 | 2 | sample | | 15837.692 | | ms/op |
-| simple_insertion_sort (p1.00) | 100000 | 100000 | 2 | sample | | 15837.692 | | ms/op |
-
-
-N=100,000으로 커지면, 99%까지는 고른 성능을 보여주다가,\
-99.9%부터 latency가 4ms -> 1248ms 로 느려지더니,\
-99.99%에는 4ms -> 15837ms 로 매우매우 느려지는걸 볼 수 있다.
-
-따라서 N이 커졌을 때, 안정적이게 좋은 성능을 내는 다른 정렬 알고리즘을 찾아야 한다.
-
-#### 3-2. when 50 < N < 10,000, quick sort
-- Big O
-	- Time: O(n log n) average
-	- Space: O(log n)
-- 정렬 방법
-	1. pivot number를 정해서,
-	2. 이 숫자보다 작은 애들을 왼쪽에, swap으로 넘기는걸 반복하면서 반씩 쪼개다가 (log N번 쪼갠다)
-	3. 정렬되면 합치는걸 하는 앤데,
-
-[이 사이트](https://visualgo.net/en/sorting)에서 quick sort가 어떻게 진행되는지 시각화해서 볼 수 있다.
-
-반씩 쪼갤 때 별도 메모리 공간 필요해서 space complexity가 O(1)보다 크고,\
-기본적으로 전체 row N 만큼 훑는걸 log N번 쪼갠 만큼 반복하니까\
-time complexity가 O(N log N)이라고 대~략적으로 이해하곤 있는데\
-Big O 엄밀하게 계산하는법이 따로 있다. 관심있으면 찾아보자.
-
-
-##### a. quick sort, N=10,000 성능비교 w/ insertion sort
-
-| Benchmark | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
-|-----------|-------------|-----------------|-------------|------|-----|-------|-------|--------|
-| optimized_multi_strategy_sort | 100000 | 10000 | 2 | thrpt | 2 | 4.357 | | ops/ms |
-| simple_insertion_sort | 100000 | 10000 | 2 | thrpt | 2 | 1.928 | | ops/ms |
-
-1. quicksort의 쓰루풋은 4.3 ops/ms
-2. insertion sort의 쓰루풋은 1.9 ops/ms
-
-2.2배 성능이 더 좋다.
-
-왜?
-
-insertion sort의 time complexity는 O(N^2), quicksort는 O(N log N)이기 때문.
-
-insertion sort 대비 2배 빨라졌지만, 단점도 있다.
-
-pivot number 기준으로 적은 수, 큰수 반토막씩 내는걸 log N번 하는데, 이 때, 추가 메모리 필요하고 stacktrace 차지한다.
-
-
-
-
-
-#### 3-3. when N > 10,000, heap sort? quick sort?
-
-- Time Complexity 비교
-	1. Quicksort: O(N log N)
-	2. Heap Sort: O(N log K), where N is size of view_count array & K is top-100 products
-
-
-N이 작으면 quicksort가 이름값 한다. heap sort보다 더 빠르다.
-
-왜?
-
-heap은 아무래도 tree이고, tree_node가 가르키는 다음 노드의 다음노드의 주솟값이 RAM상 어디인지 모르니, 컴파일러가 한번에 못가져가니까 다 읽어야 한다.
-
-반면 array는 arr[1000]이면 1000개 다 읽지 않아도 int size * 1000만큼 뭉텅이로 가져가서 캐싱해 처리하기 때문에 빠르다.
-
-
-하지만, top-100-products 랭킹 기능에서 결국 K값이 100밖에 안되니까,
-
-처음엔 quicksort가 더 빠를지라도, K는 고정값인데 N이 커지면, 언젠가 crossover 지점이 온다.
-
-그 지점이 언제일까?
-
-
-##### a. benchmark (quicksort vs heapsort)
-
-| Benchmark       | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
-|-----------------|--------------|-----------------|-------------|------|-----|-------|-------|-------|
-| heap_sort       | 100000       | 10000           | 2           | thrpt | 2   | 4.058 |       | ops/ms |
-| heap_sort       | 100000       | 100000          | 2           | thrpt | 2   | 0.667 |       | ops/ms |
-| heap_sort       | 100000       | 1000000         | 2           | thrpt | 2   | 0.643 |       | ops/ms |
-| quick_sort      | 100000       | 10000           | 2           | thrpt | 2   | 4.308 |       | ops/ms |
-| quick_sort      | 100000       | 100000          | 2           | thrpt | 2   | 0.519 |       | ops/ms |
-| quick_sort      | 100000       | 1000000         | 2           | thrpt | 2   | 0.508 |       | ops/ms |
-
-N이 만, 십만, 백만일 때 quick_sort vs heap_sort 벤치마크 돌렸다.
-
-N이 10,000일 때 quicksort가 heap_sort보다 쓰루풋이 더 좋다. (4.3 > 4.0)\
-하지만 N이 100,000이 넘어가는 순간 heap_sort의 성능이 더 좋아진다.
-
-
-
-| Benchmark       | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
-|-----------------|--------------|-----------------|-------------|------|-----|-------|-------|-------|
-| heap_sort       | 100000       | 10000           | 2           | avgt  | 2   | 0.512 |       | ms/op  |
-| heap_sort       | 100000       | 100000          | 2           | avgt  | 2   | 3.189 |       | ms/op  |
-| heap_sort       | 100000       | 1000000         | 2           | avgt  | 2   | 3.152 |       | ms/op  |
-| quick_sort      | 100000       | 10000           | 2           | avgt  | 2   | 0.484 |       | ms/op  |
-| quick_sort      | 100000       | 100000          | 2           | avgt  | 2   | 3.760 |       | ms/op  |
-| quick_sort      | 100000       | 1000000         | 2           | avgt  | 2   | 3.910 |       | ms/op  |
-
-latency를 봐도 마찬가지이다.
-
-N이 10만이상 부터는 heap_sort가 quick_sort보다 성능이 더 좋다.
-
-##### b. 코드로 이해하는 heap sort
-
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/9f536efcb18b883467a3e2d02b1fdd58c57c4dbf/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_07_primitive_array_with_cache_and_optimized_sort/PrimitiveArrayViewCounterSortOptimized.java#L252-L276
-
-
-heap sort는 크게 3파트로 이루어져 있다.
-
-1. view_count한 array를 for-loop 한다 - O(N)
-2. size가 100(top 100 products만 필요하니까)인 priority_queue에 .offer(), .poll()하면서 사이즈 100 맞춘다. - O(log K)를 2번 한다. (그래도 K값이 작아서 괜찮다.)
-3. priority_queue -> array로 형변환 하면 이게 top-100-products_id 이다.
-
-N이 10만이 넘어가도, K=100 고정값이라, step2를 반복하는 step1의 횟수가 더 늘어날 뿐이다. cost가 linear하게 늘어난다.
-
-반면 quicksort는 O(N log N)이다.\
-O(log K), where k=100 보다 O(log N), N=1,000,000 이 cost 증가폭이 더 높다.
-
-
-##### Q. 왜 heap에 insert & delete가 O(log K), where K = size of heap 이지?
-
-A. heap은 2진트리, 자식이 left_child, right_child 2개다.
-
-tree의 depth를 알고 싶으면, 자식수가 밑인 로그를 씌우면 된다.
-
-ex1. 2진트리에서 K값이 7(1 as root, 2 on 2nd layer, 4 on 3rd layer = total 7)일 때, depth는?
-
-3인데, root->leaf 노드로 갈 때 2번만 타면 된다.
-
-
-그래서 log_2 7 = 2.807355 -> 2
-
-ex2. 만약 이 트리에 노드가 하나 추가되서 K=8이라면?
-
-log_2 8 = 3  -> root node에서 3번 만으로 leaf노드까지 갈 수 있다.
-
-
-##### Q . heap에 insert/delete할 때 무슨 일이 일어나지?
-
-
-K=6인 heap이 있다고 하자.
-```
-K = 6일때:
-     1          level 0 (depth 0)
-   /   \
-  2     3       level 1 (depth 1)
- / \   /
-4   5 6         level 2 (depth 2)
-
-depth = ⌊log₂(6)⌋ = 2
-```
-
-여기서 노드 하나 insert하면 무슨일이 일어날까?
-
-```
-K = 6, 새로운 값 8 삽입:
-
-1) 초기 상태:        2) 8 추가:           3) swap with 3:      4) swap with 1:
-     1                    1                    1                    8
-   /   \                /   \                /   \                /   \
-  2     3              2     3              2     8              2     3
- / \   /              / \   / \            / \   / \            / \   / \
-4   5 6              4   5 6   8          4   5 6   3          4   5 6   1
-
-총 swap 횟수 = 트리의 높이 = ⌊log₂(7)⌋ = 2
-```
-
-
-step1) 8을 마지막에 추가한다- O(1)\
-step2) 8의 parent와 비교하여 크면 swap() 하는데, 이걸 root_node 까지 **tree_depth 만큼 반복**한다. - O(log K)
-
-그래서 tree_depth를 구하는 O(log K)가 O(log 100) = 6.64... = 6 이니까,
-
-매번 insert/delete 할 때마다 6번의 operation이 일어난다고 보면 된다.
-
-
-
-
-
-
-### 4. 결론
-
-| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
-|-----------------------------|---------------|-------|-----|------------|-------|--------|
-| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
-| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
-| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
-| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
-| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
-| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
-| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
-| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
-| 05.array_read               | 2             | thrpt | 2   | 48065.797  |       | ops/ms |
-| 05.array_write              | 2             | thrpt | 2   | 18921.207  |       | ops/ms |
-| 06.array_optimized_read     | 2             | thrpt | 2   | 269472.295 |       | ops/ms |
-| 06.array_optimized_write    | 2             | thrpt | 2   | 19227.155  |       | ops/ms |
-
-실시간 상품랭킹 기능을 구현하였다.
-
-일반적인 redis로 구현하는 방식 대비, read는 3326배, write는 231배의 성능 향상이 있었다.\
-혹은 로컬 concurrentHashMap으로 구현하는 방식 대비, read는 16.8배, write는 1.21배 성능향상이 있었다.
-
-
-10분마다 상품 조회수 정렬하는 알고리즘도,\
-상품 사이즈 N에 따라서 최적화된 정렬 알고리즘(insertion_sort, quick_sort, heap_sort)을 적용하였다.
-
-
-
-
-
-
-
-## d. 돈관련 코드 테스트 정밀도 높힌 방법
-
-### 1. 문제
-
-일반적인 코드는 테스트 커버리지가 넓은 integration 테스트 위주로 하면서,\
-에러나면 그 부분 위주로 top-down으로 디버깅하는 방식이 효율적이다.
-
-근데 돈 관련 코드는 실패하면 금전적 손실, 배상 및 소송, 평판 하락, 신뢰 손실 등\
-골치아파지기 때문에 테스트를 더 정교하게 짜야한다.
-
-문제는 테스트코드에서 예외케이스를 짤 정도로 **예상한 에러면, 이미 고쳤다는 것**이다.\
-예상하지 못한 다양한 예외케이스를 던져주는 테스트 라이브러리가 없을까?
-
-
-### 2. 방법론
-
-![](./documentation/images/fuzzy_testing_pbt.webp)
-
-PBT(`property_based_test`) + fuzzy testing을 이용하면 이 문제를 해결할 수 있다.
-
-
-#### 2-1. PBT: '속성'에서 반드시 참이어야 하는 부분 검증
-PBT란 '속성'을 던져주면 해당 '속성'이라면 반드시 참이여야 하는 점을 테스트 해준다.
-
-ex1) Q. `sort(list)`를 PBT하면, 출력 list가 반드시 만족해야 하는 속성이란?
-
-1. 입력 list.size()가 출력 list.size()와 반드시 같아야 한다.
-2. 출력 list의 n번째 원소는, n+1번째 원소보다 반드시 같거나 작아야 한다.
-
-
-ex2) `add(a,b)`를 PBT하면, `add(b,a)`의 출력 값도 같게 나오는지 테스트 해준다.
-
-
-...이걸 PBT가 자동으로 검증해준다.
-
-
-#### 2-2. fuzzy test: 파라미터에 edge cases 검증을 세심하게 해준다.
-테스트코드 짤 때, 모든 에지케이스들 다 생각하고 도입하는건 비현실적인데, 이걸 fuzzy test가 자동으로 해준다.
-
-Q. 테스트 인풋이 `Integer`이라면?
-
-A. 해당 인풋안에서 일어날 수 있는 모든 edge case들을 던져준다.
-
-ex. 0, -1, null, "abc", "0xfffffff", -2147483648, 2147483647, -2147483648-1, 4294967295, ...
-
-
-
-
-
-#### 2-3. fuzzy test: 랜덤 파라미터 넣는걸 수십, 수백번 해준다.
-
-
-```java
-@RunWith(JUnitQuickcheck.class)
-public class StringReverserProperties {
-
-    @Autowired
-    private StringReverser stringReverser;
-
-    @Property(trials = 50)  //랜덤 String s 를 보내고 50번 트라이 한다는 것
-    public void reversingTwiceGivesOriginalString(String s) {
-        String reversedOnce = stringReverser.reverse(s);
-        String reversedTwice = stringReverser.reverse(reversedOnce);
-        assertEquals(s, reversedTwice);
-    }
-}
-```
-
-예를들어, 이 코드는 `reverse_string()` 테스트 코드인데,\
-PBT가 50번동안 랜덤한 `String s`를 만들어 테스트 돌려준다.
-
-만약 테스트 실패했다?\
-그러면 실패한 모든 케이스 다 주는게 아니라,\
-실패 케이스 중에서 제일 짧고 간단한 케이스를 반환해줘서, 디버깅시 편하는 이점도 있다.
-
-내가 짠 코드의 **최소 반례 데이터**를 반환해준다.
-
-
-### 3. 주의점
-
-#### 3-1. 메서드 하나에 테스트 수십,수백번 돌리는거라 cpu cost가 매우 크고 시간도 오래걸린다.
-1. 수 많은 corner case들과
-2. 속성에 반드시 참이어야 하는 명제
-3. 랜덤 인풋 파라미터 수십번 테스트 돌리면,
-
-... test 비용이 매우 커지고 시간도 오래걸린다.
-
-
-그러니 모든 코드에 PBT를 적용할 순 없다.
-
-사람 생명 연관된 코드, 돈 관련코드 등,\
-반드시 실패하면 안되는 코드에만 적용하자.
-
-
-### 4. 적용
-
-#### 4-1. PBT + fuzzy test 지원 라이브러리 고르기
-
-아래의 후보군이 있었는데, 선정 기준은 다음과 같다.
-
-1. 필요한 기능(PBT + fuzzy test)을 지원하는가?
-2. 최근까지 maintain 되고 있는가?
-3. 사람들이 많이 사용하는가? star 수가 많은가?
-
-
-`jqwik` 쓰기로 했다.
-
----
-1. jqwik
-	1. junit5와의 호환이 가능하다
-	2. 최근까지 maintain 되고 있다
-	3. 4494 commits
-2. junit-quickcheck
-	1. 2022년까지 업데이트
-	2. 1161 commits
-	3. junit-quickcheck (2021.10.29. 현재 1.0 버전 기준)는 junit4에 dependency를 두고 있다고 명시되어있어서,
-	4. https://github.com/pholser/junit-quickcheck
-3. quick theory
-	1. 마지막 업데이트가 4년전
-	2. 212 commits
-	3. https://github.com/quicktheories/QuickTheories
-4. quickcheck
-	1. https://pholser.github.io/junit-quickcheck/site/1.0/javadoc.html
-5. kotlin test
-	1. also has basic support for PBT. Currently no shrinking yet.
-
-
-#### 4-2. 가격 discount 코드에 PBT + fuzzy test 적용하기
-
-돈관련된 상품가격에 할인율 적용하는 코드에 PBT + fuzzy test를 도입했다.
-
-https://github.com/Doohwancho/ecommerce_monolith/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L39-L68
-
-
-### 5. 결과
-
-이젠 머리아프게 수 많은 코너케이스들 고려 안해도 자동으로 처리해준다.\
-PBT + fuzzy test로 검증한 코드는 절대 안깨진다는걸 아니까,\
-안심하고 리펙토링 할 수 있다는 이점도 있다.
-
-
-
-
-
-
-
-
-# D. 기술적 도전 - Database
-
-## a. 정규화
-
-### 1. 문제점
-
-- 현 프로젝트는 작은 규모의 쇼핑몰 프로젝트이다.
-- 앱 론칭 초기엔, 요구사항 변경이 잦고, 그에 따라 데이터베이스 스키마가 추가/변경/삭제되는 경우도 종종 있다.
-- 성능을 고려하면서도, 유연하게 변경 가능한 ecommerce ERD를 설계해야 한다.
-
-
-
-### 2. 해결책1 - product를 비정규화 한 방식
-![](documentation/images/정규화-1.png)
-
-- **pros**
-	- 개별 제품 상세 페이지 쿼리는 빠르다.
-- **cons**
-	1. 주문 목록 query가 느려진다.
-		- 구매자가 주문목록 query하려면, 모든 상품 테이블들 다 돌면서 product_id 찾아야 하니까 엄청 느리다.
-		- 이걸 완화하기 위해, 모든 상품테이블에 들어았는 product_id를 인덱스 거는게 최선인 것 같지는 않다.
-	2. 상품 카테고리별로 테이블 만들어줘야 해서 테이블 갯수가 수십~수백개로 늘어난다.
-		- 의외로 테이블 갯수 자체가 늘어나는건 별 문제가 아니라고 한다.
-		- 다만, 그보다 비정규화 했을 때, 상품 끼리 통일된 구조가 아닌게 더 문제라고 한다.
-		- 통일된 구조가 아니면 나중에 확장할 때 merge, 변형 등이 힘들어지기 때문이다.
-		- erd 설계 한번하면 쭉 가는줄 알았는데, 의외로 서비스 초기 때에도 스키마 변경을 자주 할 수 있다고 한다. 유연한 설계를 하자.
-
----
-
-### 3. 해결책2 - order_item 테이블에 모든 비정규화한 상품테이블 리스트의 FK를 받는 방식
-![](documentation/images/정규화-2.png)
-
-- **pros**
-	- case 1과 같이, 개별 상품 페이지 쿼리는 빠르다.
-- **cons**
-	1. 필드 갯수가 100개 이상인 테이블이 생길 수 있다.
-		- 상품 종류가 100가지라 상품 테이블이 100가지면, order_item가 받는 상품들의 fk가 100개+가 될 것이기 때문이다.
-	2. 불필요한 null check 코드가 많아지고, 이는 휴먼에러날 확률을 높힌다.
-		- 주문목록 query하려면, null check 먼저 하고,해당 아이템의 fk 가지고 아이템 찾는 식 일텐데,
-		- 100개 컬럼 중 99개 컬럼이 Null인데 하나씩 Null비교해서 값을 꺼내는 방식은 안좋은 방식 같다.
-		- 왜냐하면 Null처리 잘못할 수 있어서 에러날 가능성이 있는 코드구조가 될 수 있기 때문이다.
-
-
-
-
-### 4. 해결책3 - 상품별 옵션을 정규화 해서 쪼개놓은 경우
-![](documentation/images/정규화-3.png)
-
-- **pros**
-	- 정규화가 잘 되있어서 변경에 유용하고 확장성이 좋은 설계이다.
-- **cons**
-	1. 정규화를 할 수록 쿼리할 떄 join & subquery 많이 해야 해서 성능이 느려진다.
-		- ex. 상품 등록/업데이트/삭제 시, product/product_item/category/option/option_variation/product_option_variation 이 6개 테이블에 트랜잭션/lock 걸릴텐데, 너무 느릴 것 같다.
-
-
-### 5. 결론
-해결책3을 택한다. 이유는 다음과 같다.
-
-
-#### 1. 서비스 초기에는 성능보다 확장성 우선
-
-비정규화는 일종의 최적화이고 되돌리기 힘든 과정이다.\
-서비스 초기 단계라면 구현된 기능 자체가 수정&삭제가 빈번한데 이럴 경우 정규화된 구조를 사용하여 기능의 수정 & 삭제같은 유지보수를 저렴한 비용으로 유연하게 할 수 있도록 하는 것이 맞다.
-
-서비스가 더 커진다 해도 캐싱, 인덱싱, 분산처리(가용영역 추가, 비쌈)같은 테크닉을 쓸 수 있고,\
-나중에 서비스가 커져서 비정규화나 MSA같이 RDBMS가 보장해주는 것 일부를 포기하고 더 최적화를 해야할 경우가 오면, 이 때 해당 프로젝트 진행하면 된다.
-
-결론: 정규화하고 최적화는 나중에 병목이 생기면 그 때 반정규화 한다.
-
-
----
-#### 2. 데이터베이스 규모별 정규화 & join 전략
-
-join 성능은 데이터 사이즈가 커질수록 안좋아진다.
-
-이유는 다음과 같다.
-
-여러 테이블 join시, primary key 기준으로 join한다고 해도, 데이터 사이즈가 작으면 primary key를 index한 테이블을 몇번 안타는데,\
-데이터 사이즈가 커지면, 여러 테이블들의 primary key index table 여러번 타기 때문에 join 성능이 떨어진다.
-
-예를들어, 5개정도 테이블을 left outer join 하는 경우, 약 10개의 rows씩 5개 테이블이니까 50개 rows가 쿼리 1번당 lock되는건데, 멀티쓰레드 환경에서는 반정규화로 row 1개만 락걸고 가져오는 것 대비 성능이 좋지 않다.
-
-따라서 서비스 초창기 때 데이터 수가 적을 땐 join 효율이 괜찮으니 정규화로 확장성을 잡다가,\
-유저수가 많아지고 데이터 쌓인게 엄청 많아져 join 효율이 떨어지는 시기가 오면,
-다음과 같은 행동을 취할 수 있다.
-
-1. 사용하던 RDB에서 정규화된 테이블을 비정규화 테이블로 마이그레이션을 한다.
-2. 사용하던 RDB에서 정규화된 테이블을 놔두고, 따로 비정규화된 테이블을 만들어서 write-through성 으로 따로 만든다.(대신 데이터 정합성이 떨어지는 것 고려해야 함)
-3. 별개의 nosql(ex. mongodb)에 기존 RDB 테이블들(aggregates)을 비정규화한 스키마를 하나 만든다.
-4. 샤딩
-5. 파티셔닝
-6. MSA로 쪼개서 도메인별로 해당 도메인에 맞는 데이터를 해당 서비스 전용 디비에 넣어 붙인다.
-7. 자주 사용하는 쿼리는 캐싱처리한다. (ex. main page)
-
-
-
-
-## b. 반정규화
-
-### 1. 문제
-
-정규화된 버전으로 [부하 테스트](#e-부하-테스트) 해봤는데 성능이 너무 안나왔다.
-
-잘게 쪼개놔서 join을 많이해야 하니까 DB CPU에 부하가 금방 올라간 것으로 보인다.
-
-반정규화 해서 join과 FK_insert 비용을 줄여보자.
-
-
-### 2. 해결책
-
-
-#### before) 정규화 버전
-![](documentation/images/erd.png)
-
-#### after) 반정규화 버전
-![](documentation/images/반정규화된_ERD.png)
-
-1. db에서는 join 없이 최대한 index타서 최소량만 i/o 해오는 식으로 짠다. 나머지 데이터 조립/가공은 서버에서 한다.
-	1. ex) 기존에 option, discount 테이블을 json화 시켜서 컬럼으로 밀어넣었다.
-	2. 원래는 여러번 join해야 했다면, 지금은 하나의 row를 i/o한 후, json을 파싱해서 사용한다.
-2. FK는 성능향상 목적으로 모두 제거했다.
-
-
-### 3. 성능테스트로 검증해보자 (100~800 RPS)
-
-#### 3-1. 실험 조건
-1. ec2, rds 둘다 2 core 4GiB RAM
-2. table size: user = 1000, product = 10000, order = 5000
-3. table rows ratio -> user:product:order = 1 : 10 : 5
-4. http request read:write ratio: 9:1
-
-#### 3-2. 반정규화 성능테스트 결과
-
-![](./documentation/images/3_반정규화_1000_ec2_ver2_after_orderby_index.png)
-
-![](./documentation/images/3_반정규화_1000_rds_ver2_after_orderby_index.png)
-
-
-### 4. 성능테스트 결과
-
-반정규화만 잘 하고, FK만 안넣어도, 성능차이가 어마어마하게 난다는걸 알게됬다.
-
-좀더 자세한 정규화 vs 반정규화 성능비교는 [부하 테스트](#e-부하-테스트)에 기술했다.
-
-
-
-## c. 통계 쿼리
-
-### 1. 요구사항
-1. 최근 N개월(최대 3개월) 사이에
-2. 카테고리 별 상품 갯수
-3. 해당 카테고리의 상품들의 평균 평점
-4. 해당 카테고리의 총 상품 판매액
-5. 해당 카테고리에서 가장 많이 팔린 상품의 productId
-6. 해당 카테고리에서 가장 많이 팔린 상품의 이름
-7. 해당 카테고리에서 가장 많이 팔린 상품의 총 판매액
-
-...을 query 한다.
-
-### 2. sql query 문
-
-![](documentation/images/통계쿼리.png)
-
-```sql
-SELECT
-    tmp1.CategoryId,
-    tmp1.CategoryName,
-    tmp1.NumberOfProductsPerCategory,
-    tmp1.AverageRating,
-    tmp1.TotalSalesPerCategory,
-    tmp2.ProductId,
-    tmp2.ProductName AS TopSalesProduct,
-    tmp2.TopSalesOfProduct
-FROM (
-	SELECT
-		c.CATEGORY_ID AS CategoryId,
-		c.NAME AS CategoryName,
-		COUNT(DISTINCT p.PRODUCT_ID) AS NumberOfProductsPerCategory,
-		ROUND(AVG(p.RATING), 1) AS AverageRating,
-		ROUND(SUM(pi.Quantity * pi.PRICE), 1) AS TotalSalesPerCategory
-	FROM CATEGORY c
-	INNER JOIN PRODUCT p ON c.CATEGORY_ID = p.CATEGORY_ID
-	INNER JOIN PRODUCT_ITEM pi ON p.PRODUCT_ID = pi.PRODUCT_ID
-	INNER JOIN product_option_variation pov ON pi.PRODUCT_ITEM_ID = pov.PRODUCT_ITEM_ID
-	INNER JOIN ORDER_ITEM oi ON pov.PRODUCT_OPTION_VARIATION_ID = oi.PRODUCT_OPTION_VARIATION_ID
-	INNER JOIN `ORDER` o ON oi.ORDER_ID = o.ORDER_ID
-	WHERE o.ORDER_DATE BETWEEN :startDate AND ':endDate
-	GROUP BY c.CATEGORY_ID
-) AS tmp1
-INNER JOIN
-	(
-	SELECT
-		a.CategoryId AS CategoryId,
-		b.ProductId As ProductId,
-		b.ProductName As ProductName,
-		a.TopSalesOfProduct AS TopSalesOfProduct
-	FROM
-		(SELECT
-			Sub.CategoryId,
-			Sub.CategoryName,
-			MAX(Sub.TotalSalesPerProduct) as TopSalesOfProduct
-		FROM
-			(SELECT
-				c.CATEGORY_ID as CategoryId,
-				c.name as CategoryName,
-				p2.PRODUCT_ID,
-				ROUND(SUM(pi2.Quantity * pi2.PRICE), 1) as TotalSalesPerProduct
-			FROM CATEGORY c
-			INNER JOIN PRODUCT p2 ON c.CATEGORY_ID = p2.CATEGORY_ID
-			INNER JOIN PRODUCT_ITEM pi2 ON p2.PRODUCT_ID = pi2.PRODUCT_ID
-			INNER JOIN PRODUCT_OPTION_VARIATION pov2 ON pi2.PRODUCT_ITEM_ID = pov2.PRODUCT_ITEM_ID
-			INNER JOIN ORDER_ITEM oi2 ON pov2.PRODUCT_OPTION_VARIATION_ID = oi2.PRODUCT_OPTION_VARIATION_ID
-			INNER JOIN `ORDER` o2 ON oi2.ORDER_ID = o2.ORDER_ID
-			WHERE o2.ORDER_DATE BETWEEN :startDate AND :endDate
-			GROUP BY c.CATEGORY_ID, p2.PRODUCT_ID
-			) as Sub
-		GROUP BY Sub.CategoryId
-		) a
-	INNER JOIN
-		(SELECT
-			c.CATEGORY_ID as CategoryId,
-			c.name as CategoryName,
-			p2.PRODUCT_ID as ProductId,
-			p2.name as ProductName,
-			ROUND(SUM(pi2.Quantity * pi2.PRICE), 1) as TopSalesOfProduct
-		FROM CATEGORY c
-		INNER JOIN PRODUCT p2 ON c.CATEGORY_ID = p2.CATEGORY_ID
-		INNER JOIN PRODUCT_ITEM pi2 ON p2.PRODUCT_ID = pi2.PRODUCT_ID
-		INNER JOIN PRODUCT_OPTION_VARIATION pov2 ON pi2.PRODUCT_ITEM_ID = pov2.PRODUCT_ITEM_ID
-		INNER JOIN ORDER_ITEM oi2 ON pov2.PRODUCT_OPTION_VARIATION_ID = oi2.PRODUCT_OPTION_VARIATION_ID
-		INNER JOIN `ORDER` o2 ON oi2.ORDER_ID = o2.ORDER_ID
-		WHERE o2.ORDER_DATE BETWEEN :startDate AND :endDate
-		GROUP BY c.CATEGORY_ID, p2.PRODUCT_ID
-			) b
-		ON a.CategoryId = b.CategoryId AND a.TopSalesOfProduct = b.TopSalesOfProduct
-	) AS tmp2
-ON tmp1.CategoryId = tmp2.CategoryId
-ORDER BY tmp1.CategoryId
-```
-https://github.com/Doohwancho/ecommerce_monolith/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java#L15-L110
-
-
-
-## d. SQL tuning
-
-### a. index 튜닝
-
-#### a-1. 문제
-동일 조건에서 정규화 vs 반정규화의 성능차이가 얼마나 날까 실험중이었는데,
-
-반정규화 DB의 cpu usage가 정규화보다 더 높았다?!
-
-단순히 100 RPS에서 측정된 값을 비교해보면,
-
-| Metric | 1. 정규화 버전 | 2. 반정규화 버전 |
-|--------|--------------------|-----------------------|
-| **EC2** |
-| CPU Usage | 10% | 7.8% |
-| Load Average | 0.2 | 0.1 |
-| Heap Used | 8.73% | N/A |
-| Non-Heap Used | 12.41% | N/A |
-| Last HTTP Latency | 88ms | 9ms |
-| Last Max Latency | N/A | 600ms |
-| Errors | None | None |
-| **RDS** |
-| CPU Usage | 4.2% | 16.3% |
-| Load Average | 0.3 | 0.8 |
-| Memory Availability | 71.35% | 71.64% |
-| QPS | 361 | 291 |
-| TPS | 280 | 155 |
-
-QPS(query per second)가 더 낮은데(join 덜하니까 쿼리를 여러번 쪼개서 날리지 않아서 그렇다고 해석)
-
-cpu usage가 12.3%가 더 높다?
-
-(심지어 이 점유율도 적게 잡힌것이다. 나중에 알았는데 pmm에 cpu usage 지표는 {node_name="ecommerce-db-instance"} 이걸 읽거나 전체 usage를 합친 값을 읽었어야 했는데 이땐 nice라고 써진 지표 기준으로 기록함)
-
-
-#### a-2. 문제 원인 분석
-
-![](./documentation/images/sql-tuning-index-1.png)
-
-pmm query analyzer에서 latency 순으로 정렬하니까
-
-한 쿼리가 75ms 걸리는게 확인된다.
-
-![](./documentation/images/sql-tuning-index-2.png)
-
-확인해보니
-
-1. type:ALL = full scan
-2. table_size가 10000rows인데 rows수 9628이면 전부 i/o 하는건데
-3. filtered = 10% 이면, 힘들게 i/o한 것에 90%는 버린다는 뜻이니까,
-
-인덱스를 안타서 엄청 비효율적이다라고 해석.
-
-
-#### a-3. 해결방안
-![](./documentation/images/sql-tuning-index-3.png)
-
-where절에 조건걸리는 필드에 인덱스를 걸어준다.
-
-#### a-4. 개선된 결과
-![](./documentation/images/sql-tuning-index-4.png)
-
-1. latency가 75ms -> 21ms 로 줄었고,
-2. type:All -> ref (인덱스 탐)
-3. key_len: 1023 -> 아마 9천개 rows i/o 안하고 천개만 i/o함.
-4. filtered 100% -> 필터율 100%이니까 힘들게 io한걸 버리지 않는다는 뜻
-
-
-### b. order by 튜닝
-
-#### b-1. 문제
-
-index tuning했으니까
-
-동일 조건에서 반정규화한 앱이 정규화된 앱보다 부하테스트 성능이 더 좋겠지?
-
-실험해봤는데, 이번에도 반정규화 앱의 RDS cpu usage가 더 높게 잡힘.
-
-?
-
-#### b-2. 문제 원인 분석
-정규화 버전 PMM 지표와 반정규화 버전 PMM 지표 비교해봤는데
-
-![](./documentation/images/sql-tuning-orderby-1.png)
-정규화 버전은 RPS 부하가 늘어나도 Sorts가 15ops/s 고정임을 확인할 수 있다.
-
-![](./documentation/images/sql-tuning-orderby-2.png)
-반면 비정규화 버전은 RPS 부하가 늘어나면 Sorts가 Mysql Questions(total # of query executed)와 비례하게 늘어난다?
-
-근데 부하테스트 하는 6개의 쿼리에서 sort를 쓴 기억이 없는데...?
-
-![](./documentation/images/sql-tuning-orderby-3.png)
-
-aws-rds에 ssl 접속해서 sort 빈도수가 가장 많은 순으로 쿼리 히스토리 정렬해봤더니,
-
-저 맨 위에 쿼리가 148만개의 rows를 sort했다는걸 확인할 수 있다.
-
-
-
-#### b-3. 해결방안
-저 쿼리 담당하는 repository, service에서는 문제가 없었는데
-
-controller에서 Pageable 객체 만들 때 sort 하는 코드가 있었다.
-
-```java
-Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-```
-
-성능 테스트 목적으로 ai한테 짜달라고 해서 나온건데
-
-무지성 복붙의 폐혜가...
-
-
-
-
-#### b-4. 개선된 결과
-![](./documentation/images/sql-tuning-orderby-4.png)
-
-기존 order by 쓰던 쿼리가 안잡히는 모습이다.
-
-
-![](./documentation/images/sql-tuning-orderby-5.png)
-
-부하 테스트를 해봐도 이젠 RPS, QPS에 비례해서 Sorts ops/s가 올라가질 않는걸 확인할 수 있다.
-
-
-#### b-5. 느낀점
-
-인덱스 하나, order by 하나
-
-쿼리 딱 2개 잘못짰는데 전체 데이터베이스 성능이 매우 하락하더라.
-
-디비 모니터링 붙이고 슬로우 쿼리 바로바로 잡는게 중요하다는걸 느꼈고,
-
-order by 케이스는 심지어 슬로쿼리로도 안잡혔다.
-
-수행시간은 빠른데 cpu usage를 많이 잡아먹은 케이스가 존재하더라.
-
-PMM에 Mysql Sorts 메트릭에 잡혀서 망정이지 아니었으면...
-
-
-
-
-
-
-
-
-### c. 통계 쿼리 튜닝
-[c. 통계 쿼리](#c-통계-쿼리)를 튜닝해보자.
-
-#### c-1. before tuning
-[c. 통계 쿼리](#c-통계-쿼리)"는 크게 3덩이의 subquery로 나뉜다.
-1. tmp1
-2. a
-3. b
-
-##### c-1-1. subquery 'a' 실행
-![](documentation/images/sql-tuning-before-3.png)
-이 부분은 가장 처음에 실행되는 쿼리로, 'a' subquery이다.
-
-문제점: 1000개 row가 있는 order 테이블을 fullscan 하는걸 볼 수 있다.
-
-##### c-1-2. subquery 'tmp1' 실행
-![](documentation/images/sql-tuning-before-4.png)
-
-문제점: where절 조건이 인덱스를 타지 않아서 풀스캔 한다.
-
-
-##### c-1-3. subquery 'b' 실행
-![](documentation/images/sql-tuning-before-5.png)
-문제점: **where절 조건이 인덱스를 안타서 풀스캔을 한다.**
-
-
-##### c-1-4. query statistics
-![](documentation/images/sql-tuning-before-1.png)
-
-총 비용(mysql workbench의 cost 계산 툴 기준): 170,763
-
-- 문제
-    1. 풀 테이블 스캔을 5번이나 하고,
-    2. index를 전혀 안탄다.
-
-- 해결책
-	- where절에 인덱스를 태워서 성능튜닝을 해보자..!
-
-#### c-2. WHERE절 조건의 ORDER_DATE 컬럼에 인덱스 적용하기
-
-##### c-2-1. 인덱스 만들고 적용하기
-
-1. 인덱스를 만들고,
-```java
-@Entity
-@Table(
-    name = "`ORDER`",
-    indexes = {
-        @Index(name = "idx_order_date", columnList = "ORDER_DATE")
-    }
-)
-@Getter
-@Setter
-public class OrderEntity {
-    //...
-}
-```
-
-2. 그냥 실행시켰더니, optimizer가 index를 타지 않아서, 타게하도록 힌트를 준다.
-```sql
-INNER JOIN `ORDER` o2 USE INDEX (idx_order_date) ON oi2.ORDER_ID = o2.ORDER_ID
-WHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
-```
-
-##### c-2-2. 결과
-![](documentation/images/sql-tuning-after-4.png)
-
-여전히 subquery해서 나온 결과물을 담은 tmp table을 두번 full scan하긴 하지만,\
-"idx_order_date" 인덱스를 index range scan을 3번 타는걸로 바뀌었다.
-
-그런데 수상하게 full scan타는 rows 수가 1200개에서 2660개로 늘어났다???
-
-
-![](documentation/images/sql-tuning-after-1.png)
-
-인덱스 적용했더니, 맨 처음 order table(1000 rows)에서 where절에 date 인덱스 태웠기 때문에 242 rows만 읽는걸 확인할 수 있다.
-
-여기까진 좋았다.
-
-그런데, 문제는 이 이후부터인데,
-
-첫 테이블만 5000 rows -> 242 rows로 줄었고, 이후에 join할 때마다 읽는 rows수가 1.2k rows -> 2.6k rows로 늘었다.\
-그런데 join을 여러번 하니까, 결과적으로 총 읽은 rows수의 양이 122k rows -> 266.6k rows로 늘었다.
-
-나머지 subquery들도 첫번째 subquery와 같은 현상이 일어났다.
-
-![](documentation/images/sql-tuning-after-2.png)
-![](documentation/images/sql-tuning-after-3.png)
-
-**총 읽은 rows수가 튜닝 전에는 170,763 rows 이었는데, 튜닝 후에 오히려 266,600 rows로 오히려 늘었다??**
-
-첫 테이블 읽는 rows수가 5000 rows(full scan) 에서 인덱스 태워서 242 rows 만 읽은건 이해가 가는데,
-
-왜 nested join loop에서 read하는 rows가 늘어나서 결과적으로는 성능이 떨어졌을까?
-
-
-##### c-2-3. 실행계획 뜯어보기
-
-###### c-2-3-1. date 인덱스 타기 전
-![](documentation/images/sql-tuning-before-1.png)
-id6 부분이 subquery 'a' 부분이다.
-
-- 실행순서
-	1. order table(1000 rows)를 full scan하면서, where절에 date를 태워서 필터한다. (약 200 rows정도 나옴)
-	2. 1의 결과로 나온 order table의(200 rows)를 order item table(5000 rows)와 inner nested join하는데, inner table은 order item table이 되고, order item table이 FK로 가지고 있던 Order table의 PK를 인덱스 삼아 조인한다.
-		- 이 때, where절 조건인 6개월에 걸리는 order item table의 rows 수는 약 1.2k rows(out of 5k)가 된다.
-		- 이 1.2k rows from order item table이, 튜닝 전, 5k rows full scan 이후 nested join 때 반복되는 1.2k 숫자가 나온 이유이다.
-	3. 해당 1.2k rows는, 다른 테이블과 nested join with pk 시 반복된다.
-
-![](documentation/images/sql-tuning-before-3.png)
-
-이제 nested loop join시 1.21k rows가 나온 이유가 설명되었다.
-
-```sql
-explain analyze select count(*)
-from `order_item` oi
-INNER JOIN `ORDER` o IGNORE INDEX(idx_order_date) ON oi.ORDER_ID = o.ORDER_ID
-INNER JOIN PRODUCT_OPTION_VARIATION pov ON oi.PRODUCT_OPTION_VARIATION_ID = pov.PRODUCT_OPTION_VARIATION_ID
-WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
-```
-
-약식 쿼리로,\
-order, order item, product option variation 테이블만 떼어내서 index 없이 조인하는 쿼리의 실행계획으로 뜯어보자.
-
-```
--> Aggregate: count(0)  (cost=1082.54 rows=1) (actual time=19.867..19.867 rows=1 loops=1)
-    -> Nested loop inner join  (cost=960.08 rows=1225) (actual time=2.657..19.746 rows=1235 loops=1)
-        -> Nested loop inner join  (cost=531.49 rows=1225) (actual time=2.162..15.960 rows=1235 loops=1)
-            -> Filter: (o.order_date between '2023-06-01' and '2023-12-31')  (cost=102.90 rows=111) (actual time=0.065..5.557 rows=247 loops=1)
-                -> Table scan on o  (cost=102.90 rows=1002) (actual time=0.060..4.873 rows=1002 loops=1)
-            -> Filter: (oi.product_option_variation_id is not null)  (cost=2.76 rows=11) (actual time=0.025..0.041 rows=5 loops=247)
-                -> Index lookup on oi using FKs234mi6jususbx4b37k44cipy (order_id=o.order_id)  (cost=2.76 rows=11) (actual time=0.025..0.040 rows=5 loops=247)
-        -> Single-row covering index lookup on pov using PRIMARY (product_option_variation_id=oi.product_option_variation_id)  (cost=0.25 rows=1) (actual time=0.003..0.003 rows=1 loops=1235)
-```
-
-- 실행순서
-	1. Table scan on o  (cost=102.90 rows=1002) (actual time=0.060..4.873 rows=1002 loops=1)
-		- order table(1000 rows)를 full scan하여
-	2. Filter: (o.order_date between '2023-06-01' and '2023-12-31')  (cost=102.90 rows=111) (actual time=0.065..5.557 rows=247 loops=1)
-		- where절 조건에 맞는 247 rows를 추출한다.
-	3. Index lookup on oi using FKs234mi6jususbx4b37k44cipy (order_id=o.order_id)  (cost=2.76 rows=11) (actual time=0.025..0.040 rows=5 loops=247)
-		- 이제 order item table을 nested loop inner join하는데, inner table 삼아, order item table에 order table의 PK를 FK 인덱스로 가지고 있던걸 한번 join당 5번씩 index tree를 읽는걸, 총 247번(outer table인 order table)만큼 하여 ...
-	4. Nested loop inner join  (cost=531.49 rows=1225) (actual time=2.162..15.960 rows=1235 loops=1)
-		- 총 1235 rows(5 rows * 247 loops)를 읽어 order table과 order item table을 조인한다.
-	5. Single-row covering index lookup on pov using PRIMARY (product_option_variation_id=oi.product_option_variation_id)  (cost=0.25 rows=1) (actual time=0.003..0.003 rows=1 loops=1235)
-		- product option variation table과는 pk를 인덱스 삼아 1 rows(pk니까 유니크하다) * 1235rows (step 4까지 order + order item table 조인한 rows 수) 만큼 rows를 읽는다
-
-
-
-###### c-2-3-2. date 인덱스 태운 이후
-![](documentation/images/sql-tuning-after-4.png)
-이번에도 id6가 subquery 'a'에 해당한다.
-
-저 2.6k rows read는 대체 어디서 나온걸까?
-
-![](documentation/images/sql-tuning-after-1.png)
-
-nested loop join 할 때마다 2.6k rows를 읽는다는데,\
-저래서 총 rows read 비용이 1.5배 이상 늘었는데, 저 2.6k rows라는 숫자는 어디서 튀어나온걸까?
-
-```sql
-select count(*)
-from `order_item` oi
-INNER JOIN `ORDER` o USE INDEX(idx_order_date) ON oi.ORDER_ID = o.ORDER_ID
-INNER JOIN PRODUCT_OPTION_VARIATION pov ON oi.PRODUCT_OPTION_VARIATION_ID = pov.PRODUCT_OPTION_VARIATION_ID
-WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
-```
-약식 쿼리를 만들어 실행계획을 뜯어보자!
-
-
-```
--> Aggregate: count(0)  (cost=2238.76 rows=1) (actual time=21.364..21.367 rows=1 loops=1)
-    -> Nested loop inner join  (cost=1972.56 rows=2662) (actual time=9.620..21.243 rows=1235 loops=1)
-        -> Nested loop inner join  (cost=1040.86 rows=2662) (actual time=8.423..17.201 rows=1235 loops=1)
-            -> Index range scan on o using idx_order_date over ('2023-06-01 00:00:00' <= order_date <= '2023-12-31 00:00:00'), with index condition: (o.order_date between '2023-06-01' and '2023-12-31')  (cost=109.16 rows=242) (actual time=0.734..3.069 rows=247 loops=1)
-            -> Filter: (oi.product_option_variation_id is not null)  (cost=2.75 rows=11) (actual time=0.047..0.056 rows=5 loops=247)
-                -> Index lookup on oi using FKs234mi6jususbx4b37k44cipy (order_id=o.order_id)  (cost=2.75 rows=11) (actual time=0.047..0.056 rows=5 loops=247)
-        -> Single-row covering index lookup on pov using PRIMARY (product_option_variation_id=oi.product_option_variation_id)  (cost=0.25 rows=1) (actual time=0.003..0.003 rows=1 loops=1235)
-```
-
-- 실행순서
-	1. Index range scan on o using idx_order_date over ('2023-06-01 00:00:00' <= order_date <= '2023-12-31 00:00:00'), with index condition: (o.order_date between '2023-06-01' and '2023-12-31')  (cost=109.16 rows=242) (actual time=0.734..3.069 rows=247 loops=1)
-		- order table(1000 rows)를 where절의 조건으로 index scan해서 247 rows만 읽는다.
-	2. Index lookup on oi using FKs234mi6jususbx4b37k44cipy (order_id=o.order_id)  (cost=2.75 rows=11) (actual time=0.047..0.056 rows=5 loops=247)
-		- order item table과 Order table을 join하기 위해, order item table에서 보관하던 fk를 11 rows 읽고, nested loop inner join시, inner table인 order item table(5000 rows)를 평균 5 rows씩 247번 loop하여 조인한다.
-	3. Nested loop inner join  **(cost=1040.86 rows=2662)  (actual time=8.423..17.201 rows=1235 loops=1)**
-		- 1235 rows는 step2에서 nested loop join시 fk index를 평균 5rows 씩 247번 loop하여 조인한 것의 결과이다.
-		- **오해했던 점은, mysql workbench에 explain visualize에서 나오던 2.6k rows를 읽는다는건, 그저 optimizer의 추정치였을 뿐, 실제 읽은 rows는 1235 rows였다!**
-	4. Single-row covering index lookup on pov using PRIMARY (product_option_variation_id=oi.product_option_variation_id)  (cost=0.25 rows=1) (actual time=0.003..0.003 rows=1 loops=1235)
-		- order + order item table이 조인됬는데, 다음으로 조인할 product_option_variation table은 pk로 조인하므로, 1조인 당 1개 rows씩 총 1235 loop하여 inner nested loop join을 한다.
-
-
-- 결론
-	1. **mysql workbench에 visual explain에서 나오는 rows read는 추정치일 뿐이라 그대로 믿으면 안된다.**
-	2. 실제 실행계획 수치는 mysql console에서 commandline인 'explain analyze'을 쳐서 실측치를 봐야한다.
-
-##### c-2-4. 검증
-[c. 통계 쿼리](#c-통계-쿼리)를 다시 돌리되,\
-데이터 사이즈를 키워서 index 타는 쿼리와 타지 않는 쿼리가 시간차가 얼마나 나는지 보자.
-
-```
-테이블 사이즈
-
-user: 10000 rows
-order: 10000 rows
-orderItem: 50000 rows
-product: 10000 rows
-productItem: 30000 rows
-productOptionVariation: 30000 rows
-```
-###### case1) where절에 index를 안태운 쿼리: 1027ms
-![](documentation/images/sql-tuning-after-5.png)
-
-
-###### case2) where절에 인덱스를 태운 쿼리: 572ms
-![](documentation/images/sql-tuning-after-6.png)
-
-
-하나의 컬럼에 index를 태웠는지 여부가 약 455ms latency 차이를 보여준다.
-
-## e. bulk insert
-
-### 1. 문제
-소규모 데이터 핸들링은, 어떤 DBMS를 사용하던, 어떻게 SQL을 짜던 큰 문제없이 처리 가능한데,\
-데이터 규모가 커질수록, sql tuning이라던지, dbms, engine 선택의 중요도가 높아진다.
-
-대규모 데이터 핸들링을 실습하기 위해, WAS 서버에서 datafaker라는 라이브러리로 가짜 데이터를 만든 후, saveAll()로 넣었다.
-
-문제는, 어느정도 튜닝이 필요할 볼륨이 적어도 1,000,000 rows 이상은 되어야 하는데, 기존보다 약 100배정도 많은 양을 bulk insert하는게 너무 느리다는 문제가 생겼다.
-
-백만 rows를 bulk-insert 해보자.
-
-
-
-### 2. RDS에 최대 몇개 rows 까지 입력 가능할까?
-
-성능 튜닝하기 전, 총 몇 rows를 넣어야 적합한지, 넣었을 때 차지하는 용량이 얼마나 되는지 등을 계산하자.
-
-
-#### step1. 각 테이블의 byte size 계산하기
-ERD 기준, 각 테이블의 평균 row 크기는 다음과 같다.
-```
-ADDRESS: 303바이트
-AUTHORITY: 33바이트
-CATEGORY: 95바이트
-DISCOUNT: 65바이트
-INACTIVE_MEMBER: 593바이트
-MEMBER: 281바이트
-MEMBER_AUTHORITY: 24바이트
-OPTION: 66바이트
-OPTION_VARIATION: 66바이트
-ORDER: 49바이트
-ORDER_ITEM: 24바이트
-PRODUCT: 205바이트
-PRODUCT_ITEM: 28바이트
-PRODUCT_OPTION_VARIATION: 24바이트
-```
-
-
-#### step2. 데이터가 테이블마다 들어갈 비율 정하기
-
-##### a. 사이즈가 고정인 테이블
-
-- 2 row from AUTHORITY TABLE = 33 byte * 2
-- total: **66 bytes**
-
-##### b. 10명의 유저가 있다고 했을 때,
-
-- 10 row from MEMBMER TABLE = 281 byte * 10
-- 10 row from MEMBER_AUTHORITY TABLE = 24 byte * 10
-- 10 row from ADDRESS TABLE = 303 byte * 10
-- 3 row from INACTIVE_MEMBER TABLE = 593 byte * 3 (유저 10명당 휴먼 유저 3명이라 가정)
-- 2 row from ORDER TABLE = 49 byte * 20 (유저 1명당 평균 2개의 주문을 했다고 가정)
-- 3 row from ORDER_ITEM = 24 byte * 20 (1개 주문당 평균 3개의 주문 아이템이 있다고 가정)
-- total: **9319 bytes** (2810 + 240 + 3030 + 1779 + 980 + 480), 38 rows
-
-##### c. 카테고리
-
-- 1 row from CATEGORY TABLE = 95 byte
-- 3 root categories are fixed: MEN, WOMEN, KIDS = 95 byte * 3
-- 4 mid level category per 3 root categories(total 12): Hat, Top, Bottom, Shoes per 3 root categories are fixed: 95 byte * 4 * 3
-- 5 low level categories per 4 mid level categories(total 60): 95 byte * 60
-- 3 option per a low level category(total 180): 49 byte * 180 = 8820
-- 3 option_variation per a option(total 540): 66 byte * 540 = 35640
-- total: **51585 bytes** (95 byte * (3 + 12 + 60) + 49 bytes * 180 + 66 bytes * 540), 795 rows
-
-
-##### d. 상품
-
-product테이블에 1 row씩 insert 하면, product_item과 product_option_variation에 3개 rows씩 추가 삽입 된다고 가정한다.\
-1 product_item당 1개의 discount가 붙는다고 가정한다.
-
-- PRODUCT: 1개 row = 205바이트
-- PRODUCT_ITEM: 3개 row = 3 * 28바이트 = 84바이트
-- DISCOUNT: 1개 row = 65 바이트
-- PRODUCT_OPTION_VARIATION: 3개 row = 3 * 24바이트 = 72바이트
-- total: **416 bytes** (205 + 84 + 65 + 72), 8 rows
-
-##### e. 유저 수 대비 상품수 비율 가정하기
-
-```
-쿠팡은 2020년 기준으로 약 1,800만 명의 월간 활성 사용자를 보유하고 있으며, 약 6,500만 개 이상의 상품을 판매하고 있다고 밝혔습니다.
-이는 쿠팡이 2020년 6월 미국 증시 상장을 위해 제출한 서류(F-1)를 통해 공개된 정보입니다.
-```
-
-100% 정확한 정보인지는 모르겠으나, 크리티컬하지는 않기에 맞다고 가정한다.
-
-유저 수: 상품 수 = 1: 3.6
-...으로 가정한다.
-
-###### f. 유저 수 대비 총 rows 수 계산하기
-
-1. 고정
-	- 2 rows (AUTHORITY)
-	- 795 rows (CATEGORY, OPTION)
-2. 가변 (1 유저, 1 상품 가정)
-	- 1 user: 3.8 rows
-	- 3.6 product: 8 rows * 3.6 = 28.8 rows
-
-- 결론: 고정 797 rows + 가변 32.6 rows per 1 user
-	- 32.6X + 797, where X is number of users
-
-
-##### g. 10명의 유저당 필요한 바이트수 정리
-
-유저 수: 상품 수가 1:3.6 비율일 때,
-
-유저 10명당 상품 36개가 등록된다고 가정하면,
-
-1. 유저 10명: 9319 bytes
-2. 상품 36개: 14976 bytes
-3. 권한 테이블(고정): 66 bytes
-4. 카테고리 테이블(고정): 51585 bytes
-
-total: 51651 bytes + 24295 bytes * N
-
-
-#### step3. 데이터베이스 용량 별 max 유저 수, rows 수 정하기
-```
-Y = (((X * 1024^3) - 51651) / 24295) / 10
-```
-X = 데이터베이스 용량 in GiB\
-Y = 유저 수
-
-...를 계산하려고 했으나, RDS는 64TB까지 저장 가능하고, 저장하는 데이터의 양의 비례해 요금을 부과한다고 한다.
-
-byte단위로 용량 계산하는건, EC2에 데이터베이스 설치해서 운영할 때나 쓸만한 접근 법인듯 하다..
-
-그런데 WAS서버를 띄운 이후, RDS로 1 million rows를 bulk insert하는 방법 이외에,
-1. 1 million rows를 로컬 pc에 저장한 이후,
-2. export해서
-3. aws s3에 저장한걸
-4. RDS에서 LOAD DATA INLINE으로 bulk insert하는 방식
-...도 있기 때문에, 계산해 본다.
-
-- 8GiB Storage = 35,000 유저, 126,000 상품, 1,141,797 rows
-	- 35,356.58 users = (((8 * 1024^3) - 51651) / 24295) / 10
-	- 1 million rows, 8GiB 정도면 중소규모 데이터 사이즈로, sql tuning이 유효한 사이즈로 보인다.
-
-물론 이 방식보다 ec2,rds 생성시 자동으로 JPA-saveAll() 하는 방식이 간편하기 때문에, 왠만하면 saveAll() 방식을 쓰도록 한다.
-
-
-
-
-### 3. JPA .saveAll()
-```java
-Integer numberOfFakeUsers = 2000; //6000 rows total
-Integer numberOfFakeCategories = 10; //75 rows total
-Integer numberOfFakeOptions = 3; //180 rows
-Integer numberOfFakeOptionsVariations = 3; //540 rows
-Integer numberOfFakeProducts = 4000;
-Integer numberOfFakeProductItems = 3; //12000 + 12000 (discount) rows total
-Integer numberOfFakeProductionOptionVariations = numberOfFakeProducts * numberOfFakeProductItems; //12000 rows
-Integer numberOfFakeOrders = 2000; //2000 rows
-Integer maxProductItemsPerOrder = 2; //4000 rows
-
-... total 52,730 rows
-```
-
-약 5만 rows의 fake-data를 for-loop으로 insert하는 방법
-```
-.lambda$initData$0:88] - Total execution time: 463886 ms
-```
-
-463.886s = 7.7m
-
-5만 rows 넣을 때 약 8분정도 소요.\
-100만 rows 넣을 때 약 2시간 40분 소요
-
-
-### 4. JPA .saveAll() + spring batch(chunk size of 1000)
-
-spring batch에 chunk size를 조절하는게 있길래,\
-chunk size를 1000정도로 늘려주면 한 transaction안에 여러 데이터를 넣으니까 훨씬 빠르지 않을까? 라고 생각했지만 오판이었다.
-
-오히려 더 느려졌다.
-
-.saveAll()하는건 똑같은데, spring batch를 내부적으로 로드하는 시간이 추가되서 그런 듯 하다.
-
-
-### 5. JPA .saveAll() + batch size of 1000
-
-spring.jpa.properties.hibernate.jdbc.batch_size = ?
-
-30,50,100,1000,2000 으로 설정하고 결과값을 비교하여 최적 소요시간을 찾아보자.
-
-- batch_size
-	1. 설정을 안한 경우: 463886ms
-	1. 30: 447800 ms
-	2. 50: 445065 ms
-	3. 100: 449799 ms
-	4. 1000: 442736 ms
-	5. 2000: 446292 ms
-
-
-5만 rows를 insert했을 때 batch_size를 1000으로 할 때 442736ms으로, 설정을 안한 경우보다 21,150ms 빨라졌다.
-
-하지만 batch_size를 30->2000으로 조절했는데도, 성능차이가 거의 안나는 것을 보면,\
-bulk-insert 하는게 아니라 여전히 row by row로 한줄씩 넣어서 느린 듯 하다.
-
-저 21,150ms 성능 개선은 jpa -> jdbc로 바꿀 때, jpa의 entity state를 hibernate가 관리해주는 로직과 safety check를 스킵해서 빨라진 듯 하다.
-
-
-
-
-### 6. jdbc bulk insert + batch size 1000
-
-Q. 왜 JPA .saveAll()이 jdbc bulk-insert보다 느릴까?
-
-1. hibernate가 entity 객체 주기적으로 확인하고 세션에 캐싱하기 때문에 느리다.
-	- JPA는 .saveAll()할 때 JPA entity lifecycle 을 거친다. 그 때, entity state를 확인하고, dirty checking을 통해 entity 객체가 modified 되었는지 확인한다. 이런 safety check 단계 때문에 bulk insert시 느려진다.
-	- entity 생성시 세션에 캐싱해 놓는데, bulk-insert는 어짜피 한번 넣기만 하고, 읽지는 않을거라 이 단계가 오버헤드다.
-2. @Id generation strategy 때문에 .saveAll()이 느려질 수 있다.
-	- entity @Id generation strategy 중에 IDENTITY를 보통 쓰는데, 이는 id를 데이터베이스보고 id값을 구해서 넣으라는 말이다.
-	- 그래서 JPA에서 쿼리 생성시, id 부분을 "?"로 채워서 보내준다.
-	- 문제는 JPA hibernate는 객체의 상태관리를 해야하기 때문에, insert한 이후, db가 반환한 id값을 받아 해당 엔티티의 id값을 업데이트 해야한다.
-	- 이 단계 때문에, IDENTITY 전략을 쓰면, bulk-insert를 한번에 모아서 할 수 없게된다. 한줄씩 넣은 다음, db에서 id값 받아서 업데이트 해주기 때문이다.
-
-
-Q. @Id generation 전략을 IDENTITY 말고 SEQUENCE 쓴다면?
-
-- JPA단에서 id를 순차적으로 +1해주는 SEQUENCE 전략을 써봤다.
-- SEQUENCE 전략은 insert하기 전에, db에서 마지막 id값이 몇인지 읽어온 다음, 그 값에 +1한 값을 insert id에 넣는 방식이다.
-- IDENTITY보다 SEQUENCE가 bulk-insert시에 성능이 훨씬 좋은데, 이유는, IDENTITY와는 다르게, 한번만 db query로 id를 가져오면, batch_size(ex. 1000)만큼 +1씩 해서 보내기 때문에, 묶어서 보낼 수 있기 때문이다.
-- 써봤는데 문제가 있었다. @Id값이 균일하게 +1씩 올라가는게 아니라, 중간에 몇백씩 구멍이 생기는 경우가 생겼다.
-- 파라미터 중에 allocationSize라고, batch_size인 1000을 입력하면, 천개의 rows마다 db에 마지막 id값을 쿼리해주는 파라미터가 있는데, 이게 서버가 여러개면 문제가 발생할 수 있겠다라는 생각이 들었다.
-- 예를들어 스케일 아웃된 서버 A,B가 있는데, A서버가 id값을 읽어온게 1이고, B서버가 id값을 읽어온게 30이고, read 쿼리 날리는걸 bulk-insert 때문에 1000정도로 해주면, A서버는 1001될 때까지 id를 안읽어오고, B서버도 1030이 될 때 까지 안읽어온다는 말인데, B서버가 write한 id값을 A서버가 write하는 경우가 발생할 수 있기 때문에, default id generation 전략이 IDENTITY인 듯 하다.
-- bulk-insert 때문에 엔티티 id 전략을 SEQUENCE로 바꾸는건 안좋은 생각인 것 같다. IDENTITY 전략을 냅두고, bulk-insert용 jdbc 쿼리를 짜는게 맞다는 생각이 든다.
-
-
-
-JPA .saveAll() -> jdbc bulk-insert로 바꾸고 동일한 숫자의 53,000 rows를 넣은 결과,
-```
-Total execution time: 188,535 ms
-```
-
-442,736ms -> 188,535ms로, JPA .saveAll()방법 대비, 약 254,201ms 만큼 성능향상이 되었다.
-
-442초 걸리던게 188초로 줄어든 것이니까 큰폭으로 성능 향상되었다.
-
-
-
-### 7. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true
-
-[stackoverflow에 jdbc batch optimization 기법](https://stackoverflow.com/questions/2993251/jdbc-batch-insert-performance)을 찾아보니
-`jdbc:mysql://${url}:3306/${database-name}?${parameter}`에, `&rewriteBatchedStatements=true`을 추가하면 빨라진다고 한다.
-
-왜냐?
-
-기존 jdbc bulk-insert는 mysql로 이런 쿼리를 날린다고 한다.
-```sql
-INSERT INTO X VALUES (A1,B1,C1)
-INSERT INTO X VALUES (A2,B2,C2)
-...
-INSERT INTO X VALUES (An,Bn,Cn)
-```
-
-그런데 `&rewriteBatchedStatements=true`을 하면, 저 쿼리를
-
-```sql
-INSERT INTO X VALUES (A1,B1,C1),(A2,B2,C2),...,(An,Bn,Cn)
-```
-
-..로 한줄 압축해서 보낸다고 한다.
-
-실험해 본 결과,
-```
-Total execution time: 152384 ms
-```
-
-..로 기존 5만 rows insert, 188,535 ms 대비, 36,151ms 더 빨라졌다.
-
-5만 rows 넣는데 2분 30초 걸리니까, 100만 rows를 넣을 때 까지, 약 50분 정도 걸린다.
-
-
-
-### 8. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + custom random generator
-
-조금 더 성능개선할 수 있는 여지가 있지 않을까?
-
-일단 datafaker를 안쓰고, 고정된 값을 넣으면 훨씬 빠르다.
-
-```
-Total execution time: 671 ms
-```
-
-5만 rows를 넣는게 2분 30초 걸리던게 이젠 1초도 안걸린다.
-
-100만 rows도 넣어보았다.
-```
-Total execution time: 9712 ms
-```
-
-100만 rows 넣는데 10초도 안걸렸다.
-
-그만큼 bulk-insert latency의 대부분의 병목이 datafaker 라이브러리의 random String generation에 있었다.
-
-#### 8-1. datafaker, 왜 느린가?
-
-datafaker library가 어떻게 random String generate하는지 뜯어보자.
-
-주소에 넣는 컬럼중의 하나인 ZIPCODE(우리나라로 치면 우편번호)가 어떻게 생성되는지 보자.
-
-##### step1. 먼저, [address.yml](https://github.com/datafaker-net/datafaker/blob/main/src/main/resources/en/address.yml)에는 postcode가 이런식으로 저장되어있다.
-
-```yml
-en:
-    faker:
-        address:
-            postcode:
-                - "#####" /* 저 "#####"의 의미는, '5'자리 랜덤한 숫자를 의미한다. */
-```
-
-
-##### step2. 이 문자열을 File I/O로 불러온다. [link](https://github.com/datafaker-net/datafaker/blob/main/src/main/java/net/datafaker/providers/base/Address.java)
-
-저 resolve()라는 메서드를 보자.
-```java
-/**
- * Returns a String representing a standard 5-digit zip code.
- *
- * @return a String representing a standard zip code
- */
-public String zipCode() {
-	return faker.bothify(resolve("address.postcode"));
-}
-```
-
-```java
-/**
- * Resolves a key to a method on an object or throws an exception with specified message.
- * <p>
- * #{hello} with result in a method call to current.hello();
- * <p>
- * #{Person.hello_someone} will result in a method call to person.helloSomeone();
- */
-public String resolve(String key, Object current, ProviderRegistration root, Supplier<String> exceptionMessage, FakerContext context) {
-	String expression = root == null ? key2Expression.get(context.getSingletonLocale()).get(key) : null;
-	if (expression == null) {
-		expression = safeFetch(key, context, null);
-		if (root == null) {
-			key2Expression.updateNestedValue(context.getSingletonLocale(),
-				MAP_STRING_STRING_SUPPLIER, key, expression);
-		}
-	}
-
-	if (expression == null) {
-		throw new RuntimeException(exceptionMessage.get());
-	}
-
-	return resolveExpression(expression, current, root, context);
-}
-```
-저 `safeFetch(key, ...)`를 통해 파일을 읽어오는 듯 하다.
-
-```java
-/**
- * Safely fetches a key.
- * <p>
- * If the value is null, it will return an empty string.
- * <p>
- * If it is a list, it will assume it is a list of strings and select a random value from it.
- * <p>
- * If the retrieved value is an slash encoded regular expression such as {@code /[a-b]/} then
- * the regex will be converted to a regexify expression and returned (ex. {@code #regexify '[a-b]'})
- * <p>
- * Otherwise it will just return the value as a string.
- *
- * @param key           the key to fetch from the YML structure.
- * @param defaultIfNull the value to return if the fetched value is null
- * @return see above
- */
-@SuppressWarnings("unchecked")
-public String safeFetch(String key, FakerContext context, String defaultIfNull) {
-	Object o = fetchObject(key, context);
-	String str;
-	if (o == null) return defaultIfNull;
-	if (o instanceof List) {
-		final List<String> values = (List<String>) o;
-		final int size = values.size();
-		return switch (size) {
-			case 0 -> defaultIfNull;
-			case 1 -> values.get(0);
-			default -> values.get(context.getRandomService().nextInt(size));
-		};
-	} else if (isSlashDelimitedRegex(str = o.toString())) {
-		return "#{regexify '%s'}".formatted(trimRegexSlashes(str));
-	} else {
-		return (String) o;
-	}
-}
-```
-다시 fetchObject(key, context);를 호출하는데,
-
-
-```java
-private final Map<SingletonLocale, FakeValuesInterface> fakeValuesInterfaceMap = new COWMap<>(IdentityHashMap::new);
-
-
-/**
- * Return the object selected by the key from yaml file.
- *
- * @param key key contains path to an object. Path segment is separated by
- *            dot. E.g. name.first_name
- */
-public Object fetchObject(String key, FakerContext context) {
-	Object result = null;
-	final List<SingletonLocale> localeChain = context.getLocaleChain();
-	final boolean hasMoreThanOneLocales = localeChain.size() > 1;
-	for (SingletonLocale sLocale : localeChain) {
-		// exclude default locale from cache checks
-		if (sLocale == DEFAULT_LOCALE && hasMoreThanOneLocales) {
-			continue;
-		}
-		Map<String, Object> stringObjectMap = key2fetchedObject.get(sLocale);
-		if (stringObjectMap != null && (result = stringObjectMap.get(key)) != null) {
-			return result;
-		}
-	}
-
-	String[] path = split(key);
-	SingletonLocale local2Add = null;
-	for (SingletonLocale sLocale : localeChain) {
-		Object currentValue = fakeValuesInterfaceMap.get(sLocale);
-		for (int p = 0; currentValue != null && p < path.length; p++) {
-			String currentPath = path[p];
-			if (currentValue instanceof Map) {
-				currentValue = ((Map<?, ?>) currentValue).get(currentPath);
-			} else {
-				currentValue = ((FakeValuesInterface) currentValue).get(currentPath);
-			}
-		}
-		result = currentValue;
-		if (result != null) {
-			local2Add = sLocale;
-			break;
-		}
-	}
-	if (local2Add != null) {
-		key2fetchedObject.updateNestedValue(local2Add, MAP_STRING_OBJECT_SUPPLIER, key, result);
-	}
-	return result;
-}
-
-private String[] split(String string) {
-	String[] result = KEY_2_SPLITTED_KEY.get(string);
-	if (result != null) {
-		return result;
-	}
-	int size = 0;
-	final char splitChar = '.';
-	final int length = string.length();
-	for (int i = 0; i < length; i++) {
-		if (string.charAt(i) == splitChar) {
-			size++;
-		}
-	}
-	result = new String[size + 1];
-	final char[] chars = string.toCharArray();
-	int start = 0;
-	int j = 0;
-	for (int i = 0; i < length; i++) {
-		if (string.charAt(i) == splitChar) {
-			if (i - start > 0) {
-				result[j++] = String.valueOf(chars, start, i - start);
-			}
-			start = i + 1;
-		}
-	}
-	result[j] = String.valueOf(chars, start, chars.length - start);
-	KEY_2_SPLITTED_KEY.putIfAbsent(string, result);
-	return result;
-}
-
-```
-1. split()메서드에서 "address.postcode"에 마침표를 기준삼아 String[]에 ["address", "postcode"]를 나눠담고,
-2. `Object currentValue = fakeValuesInterfaceMap.get(sLocale);`에서, sLocale이 수동으로 랜덤 문자열을 적은 .yml파일의 위치이고, 그 파일을 읽어서 Map에 담은 값이 currentValue인 듯 하다.
-
-`private final Map<SingletonLocale, FakeValuesInterface> fakeValuesInterfaceMap = new COWMap<>(IdentityHashMap::new);`에서 저 `FakeValuesInterface`를 implement하는 클래스를 찾아보면,
-
-```java
-public class FakeValues implements FakeValuesInterface {
-
-	//...
-
-	@Override
-    public Map<String, Object> get(String key) {
-        if (values == null) {
-            lock.lock();
-            try {
-                if (values == null) {
-                    values = loadValues();
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-
-        return values == null ? null : (Map) values.get(key);
-    }
-
-	private Map<String, Object> loadValues() {
-        Map<String, Object> result = loadFromUrl();
-        if (result != null) return result;
-        result = loadFromUrl();
-        if (result != null) return result;
-        final Locale locale = fakeValuesContext.getLocale();
-        final String fileName = fakeValuesContext.getFilename();
-        final String[] paths = fileName.isEmpty()
-            ? new String[] {"/" + locale.getLanguage() + ".yml"}
-            : new String[] {
-                "/" + locale.getLanguage() + "/" + fileName,
-                "/" + fileName + ".yml",
-                "/" + locale.getLanguage() + ".yml"};
-
-        for (String path : paths) {
-            try (InputStream stream = getClass().getResourceAsStream(path)) {
-                if (stream != null) {
-                    result = readFromStream(stream);
-                    enrichMapWithJavaNames(result);
-                } else {
-                    try (InputStream stream2 = getClass().getClassLoader().getResourceAsStream(path)) {
-                        result = readFromStream(stream2);
-                        enrichMapWithJavaNames(result);
-                    } catch (Exception e) {
-                        LOG.log(Level.SEVERE, "Exception: ", e);
-                    }
-                }
-
-            } catch (IOException e) {
-                LOG.log(Level.SEVERE, "Exception: ", e);
-            }
-            if (result != null) {
-                return result;
-            }
-        }
-        return null;
-    }
-
-	private Map<String, Object> loadFromUrl() {
-        final URL url = fakeValuesContext.getUrl();
-        if (url == null) {
-            return null;
-        }
-        try (InputStream stream = url.openStream()) {
-            return readFromStream(stream);
-        } catch (IOException e) {
-            LOG.log(Level.SEVERE, "Exception: ", e);
-        }
-        return null;
-    }
-
-	private Map<String, Object> readFromStream(InputStream stream) {
-        if (stream == null) return null;
-        final Map<String, Object> valuesMap = new Yaml().loadAs(stream, Map.class);
-        Map<String, Object> localeBased = (Map<String, Object>) valuesMap.get(fakeValuesContext.getLocale().getLanguage());
-        if (localeBased == null) {
-            localeBased = (Map<String, Object>) valuesMap.get(fakeValuesContext.getFilename());
-        }
-        return (Map<String, Object>) localeBased.get("faker");
-    }
-}
-
-
-```
-
-1. FakeValues는 모든 .yml파일을 읽어서 램에 저장해놓는게 아니라, 호출된 .yml파일만 lazy load로 읽는 듯 하다.
-2. FakeValues.get(key)는 파일을 읽기 전, ReentrantLock을 걸고, loadValues()를 호출,
-3. loadFromUrl()에서 파일 URL을 Stream 객체를 이용해 읽어, `Map<String, Object>`에 저장후 반환한다..
-
-
-
-
-##### step3. .yml 파일을 읽어 address.post에서 불러온 "#####"를 5자리 랜덤한 숫자로 변경한다. [link](https://github.com/datafaker-net/datafaker/blob/main/src/main/java/net/datafaker/service/FakeValuesService.java#L282)
-
-```java
-private static final char[] DIGITS = "0123456789".toCharArray();
-
-private String bothify(String input, FakerContext context, boolean isUpper, boolean numerify, boolean letterify) {
-	final int baseChar = isUpper ? 'A' : 'a';
-	final char[] res = input.toCharArray();
-	for (int i = 0; i < res.length; i++) {
-		switch (res[i]) {
-			case '#' -> {
-				if (numerify) {
-					res[i] = DIGITS[context.getRandomService().nextInt(10)];
-				}
-			}
-			case 'Ø' -> {
-				if (numerify) {
-					res[i] = DIGITS[context.getRandomService().nextInt(1, 9)];
-				}
-			}
-			case '?' -> {
-				if (letterify) {
-					res[i] = (char) (baseChar + context.getRandomService().nextInt(26)); // a-z
-				}
-			}
-			default -> {
-			}
-		}
-	}
-
-	return String.valueOf(res);
-}
-```
-
-파일 I/O를 파싱해서 가져온 저 "#####"값의 한자리를 지나갈 때마다, Random rand.nextInt()로 값을 얻은걸 char로 변환시켜 합친다.
-
-
-
-##### 결론: datafaker, 왜 느린가?
-
-1. `faker.address()` 관련 함수 호출시에는 address.yml 파일을 Stream객체로 파싱해 `Map<String, Object>`에 담아놓고, `faker.address().zipCode()`나 `faker.address().city()` 등 호출할 때, 저 맵에서 문자열을 가져오는 식으로 작동하는 듯 하다. 그러다 `faker.commerce()`나 `faker.name()`같은 다른 도메인을 호출하면, 다시 파일 I/O를 하는 듯 하다.
-2. 혹시 [병렬처리](https://github.com/search?q=repo%3Adatafaker-net%2Fdatafaker%20parallel&type=code)같은 성능최적화를 했나 보았으나, 하지 않은걸 확인했다. 왜 인걸 생각해 보면, 모든 row가 같은 형식인데 데이터만 다르면, 파일을 일정한 사이즈의 청크로 잘라서 parallel하게 읽을 수 있는데, 랜덤 문자열이 담긴 .yml 파일들은 파일마다 hierarchy 구조가 제각각이기 때문에, 나눠서 병렬로 읽을 수 없는 구조였다.
-3. 파일 I/O가 in-memory read보다 약 1000배정도 느리다고 하니까, 램공간만 충분하다면, in-memory에서 랜덤하게 문자열을 생성하는 알고리즘을 찾는게 성능상 더 빠르지 않을까?
-4. 커스텀 랜덤 문자열 생성기를 만들면, 범용 library에 포함되는 safety check 코드도 뺄 수 있어서 성능상 좀 더 빨라지지 않을까?
-
-
-
-
-#### 8-2. datafaker가 만드는 문자열은 반드시 unique하지도 않는다.
-
-datafaker는 File I/O 때문에 느리다 라는 단점 외에 또 다른 단점이 있었는데,\
-데이터 값이 커지면, unique한 값을 만들어내지도 않았다.
-
-```java
-public static void main(String[] args) {
-	int count = 1_000_000; // Number of strings to generate
-	Faker faker = new Faker();
-
-	Set<String> uniqueStrings = IntStream.range(0, count)
-//            .parallel()
-		.mapToObj(i -> {
-			return faker.name().fullName();
-		})
-		.collect(Collectors.toCollection(HashSet::new));
-
-	System.out.println("Generated " + uniqueStrings.size() + " unique strings");
-
-	int duplicateCount = count - uniqueStrings.size();
-	System.out.println("Found " + duplicateCount + " duplicate strings");
-}
-```
-해당 코드로 백만 랜덤 문자열 생성 시, 중복 확인 테스트를 해본 결과,
-
-```
-Generated 880416 unique strings
-Found 119584 duplicate strings
-```
-1. 백만 rows의 이름을 만들면, 그 중, 약 12만 rows가 중복이고,
-2. [공식문서](https://www.datafaker.net/documentation/unique-values/?h=unique#values-from-yaml-files)에 따르면, `.unique()`로 값을 뽑아낼 순 있으나, .yml 파일 안에 수동으로 입력한 값 이상을 요청하면 에러를 뱉는다고 한다.
-
-[name.yml](https://github.com/datafaker-net/datafaker/blob/main/src/main/resources/en/name.yml) 파일은 rows 수가 6천 rows정도 되서 이정도 카디널리티가 나오지, 다른 마이너한 도메인의 문자열은 중복도가 더 심할 것으로 예상된다.
-
-Q. 데이터가 중복으로 나오는게 왜 문제냐?
-
-중복값이 나오는건 매우 중요하다.
-
-인덱스 적용하는 컬럼의 카디널리티에 따라 적용되는 인덱스 종류와 조인 종류가 달라질 수 있고, 이는 성능에 크게 영향을 미칠 수 있기 때문이다.
-
-
-#### 8-3. in-memory에서 생성되는 random unique String generator를 만들자
-
-```java
-private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-private static final int STRING_LENGTH = 10;
-
-private static String[] generateUniqueStrings(int count) {
-	Set<String> uniqueSet = new HashSet<>(count);
-
-	ThreadLocalRandom random = ThreadLocalRandom.current();
-	while (uniqueSet.size() < count) {
-		uniqueSet.add(generateRandomString(random));
-	}
-
-	return uniqueSet.toArray(new String[0]);
-}
-
-private static String generateRandomString(ThreadLocalRandom random) {
-	StringBuilder sb = new StringBuilder(STRING_LENGTH);
-	for (int i = 0; i < STRING_LENGTH; i++) {
-		int randomIndex = random.nextInt(CHARACTERS.length());
-		sb.append(CHARACTERS.charAt(randomIndex));
-	}
-	return sb.toString();
-}
-```
-
-실험 결과, 백만 unique string을 만드는데 296ms가 걸렸다.
-
-File I/O도 없고, safety check도 없어서 빠르다.
-
-string길이도 원하는 대로 조절할 수 있다.
-
-
-같은 원리인데, 멀티 스레드 환경에서는 HashSet에서 값을 꺼낼 때, 같은 값을 두 쓰레드에서 꺼내갈 수 있으니, ConcurrentLinkedQueue에 값을 넣고 빼내는 식으로만 살짝 바꾼다.
-
-
-랜덤 int, double, 날짜도 필요하니 만들어준다.
-
-
-
-#### 8-4. 필요한 랜덤 변수의 양과 메모리 요구치를 계산하자
-```
-1. Random Strings:
-	- User-related fields (username, email, name, password, street, city, state, country, zipcode): 9 fields * 40,000 users = 360,000 strings
-	- Product-related fields (name, description): 2 fields * 80,000 products = 160,000 strings
-	- Category-related fields (category_code, name): 2 fields * (3 top categories + 12 mid categories + 60 low categories) = 150 strings
-	- Option-related fields (value): 1 field * (60 low categories * 3 options) = 180 strings
-	- OptionVariation-related fields (value): 1 field * (180 options * 3 variations) = 540 strings
-	- Total random strings needed: 360,000 + 160,000 + 150 + 180 + 540 = 520,870 strings
-	- 520,870 strings * 10 characters * 2 bytes = ~10.8 MB
-
-2. Random Integers:
-	- Product-related fields (rating_count): 1 field * 80,000 products = 80,000 integers
-	- ProductItem-related fields (quantity): 1 field * (80,000 products * 3 items) = 240,000 integers
-	- Order-related fields (quantity): 1 field * (40,000 users * 2 order items) = 80,000 integers
-	- Total random integers needed: 80,000 + 240,000 + 80,000 = 400,000 integers
-	- 400,000 integers * 4 bytes = ~1.6 MB
-
-3. Random Doubles:
-	- Product-related fields (rating): 1 field * 80,000 products = 80,000 doubles
-	- ProductItem-related fields (price): 1 field * (80,000 products * 3 items) = 240,000 doubles
-	- Discount-related fields (discount_value): 1 field * (240,000 product items * 1 discount) = 240,000 doubles
-	- Order-related fields (price): 1 field * (40,000 users * 2 order items) = 80,000 doubles
-	- Total random doubles needed: 80,000 + 240,000 + 240,000 + 80,000 = 640,000 doubles
-	- 640,000 doubles * 8 bytes = ~5.1 MB
-
-4. Random Dates:
-	- Discount-related fields (start_date, end_date): 2 fields * (240,000 product items * 1 discount) = 480,000 dates
-	- Order-related fields (order_date): 1 field * 40,000 users = 40,000 dates
-	- Total random dates needed: 480,000 + 40,000 = 520,000 dates
-	- 520,000 dates * 12 bytes = ~6.2 MB
-```
-
-대략적으로 23.7Mb의 메모리의 heap 공간을 차지한다고 나온다.
-
-각 데이터 타입당, 필요한 값의 range가 다른데, 이걸 계산해보면, 다음과 같다.
-
----
-1. string: 520,870 rows
-	- product
-		- product name
-		- product description
-	- discount type
-		- discount type
-	- address
-	- category
-	- option
-	- optionVariation
-2. integer
-	- orderItems: 80,000 rows (40,000 * 2)
-		- 1~30
-	- productRatingCount : 80,000 rows
-		- 1~1000
-	- productItem quantity : 240,000 rows (80,000 * 3)
-		- 1~1000
-3. double
-	- orderItem price : 80,000 rows (40,000 * 2)
-		- 100~1_000_000
-	- product rating: 80,000 rows
-		- 0.5~5
-	- product price: 240,000 rows (80,000 * 3)
-		- 100~1_000_000
-	- discount
-		- discountRate : 1~100 (rate) : 120,000 (80,000 * 3 / 2)
-		- discountRate: 100~100_000 (fixed) : 120,000 (80,000 * 3 / 2)
-4. date
-	- order
-		- order date (today - 과거 2년 사이) : 80,000 (40,000 * 2)
-	- discount: 240,000 (80,000 * 3)
-		- startDate: today - 30 days
-		- endDate: today + 30 days (start date + 30일 하자)
-
----
-필요한 수량 계산
-
-1. Integer 1~30 -> 80,000
-2. Integer 1~1000 -> 320,000
-3. double 0.5~5 -> 80,000
-4. double 1~100 -> 120,000
-5. double 100~100_000 -> 120,000
-6. double 100~1_000_000 -> 320,000
-7. date 2개월 전 ~ today -> 320,000
-
-
-
-#### 8-5. 성능 측정 해보기
-
-datafaker를 썼을 때 `Total execution time: 152384 ms` 가 나왔는데,\
-custom random value generator로 바꾼 후, `Total execution time: 152731ms`가 나왔다.
-
-왜 변화가 없을까?
-
-1. 약 2백만 random value 만드는데 걸리는 시간을 측정해본 결과 1초 미만으로 나왔다. 이건 빠르다.
-2. jvm monitoring 결과, 2백만개의 객체를 만들고, 다른 여타 datasource connection이나 preparedStatement 객체등을 만들 때, heap memory 부족으로 인해 GC가 계속 일어나는 현상을 확인했다.
-
-![](documentation/images/2024-03-26-17-18-41.png)
-
-- Allocation/Promotion metric을 보면, 초기에 프로그램 실행하고 2백만 객체를 만들 때, heap memory할당을 하다가, Eden 영역이 꽉 차서 promotion되는 객체들이 초당 884kb/s 의 메모리를 할당된다는걸 확인할 수 있다.
-- 그 후, major gc와 allocation failure gc가 100ms~400ms의 시간을 잡아먹을 동안, 오른쪽에 Allocated 메모리는 0으로 되고, Eden/Young 공간에 공간이 확보되면, 다시 메모리를 할당하다가, 꽉 차면 100ms 정도 걸리는 minor gc (allocation failure)가 발생하는걸 확인할 수 있다.
-- 만든 2백만개의 객체는, 한번 bulk-insert하면 어짜피 쓰이지 않으므로, insert이후 바로 minor gc로 메모리 해제되는 듯 하다. 다만 해제해야 하는 객체 숫자가 많아서 minor gc 시간이 오래걸리는 듯 하다.
-
-
-이렇듯, in-memory에 객체 수백만개를 만드는게 File에서 읽어오는 방식보다는 Disk I/O 가 없으니까 더 빠르긴 한데,\
-heap 메모리 부족으로 인한 잦은 gc 때문에 결과적으로 보았을 때, latency가 비슷했다.
-
-혹시나 heap size에 메모리를 더 많이 할당하면, 더 빨라지지 않을까? 해서 jvm heap memory를 2GiB까지 할당했다.
-
-```
-java -Xms512m -Xmx2g -jar app.jar
-```
-하지만 결론적으로는 성능상 별 차이는 없었다.
-
-Eden이 찰 때까지의 조금의 시간 동안만 약간 시간을 벌 수 있었으나, 더 많이 찬 만큼, minor gc가 더 오래 걸린게 상쇄해서이지 않을까? 로 예측된다.
-
-
-### 9. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + custom random generator + parallel
-
-기존에 single thread로 bulk-insert 메서드 4개를 순차실행하지 말고,
-
-bulk-insert 메서드 4개만큼 dataSource에서 Connection을 4개받아서, 동시에 병렬로 처리하면, 더 빨라지지 않을까?
-
-```java
-int numThreads = Runtime.getRuntime().availableProcessors(); //cpu core 수 만큼 bulk-insert를 분할정복할 thread 생성
-ExecutorService executorService = Executors.newFixedThreadPool(numThreads); //bulk-insert를 불할정복할 thread pool 생성
-
-List<Future<?>> futures = new ArrayList<>();
-
-for (int i = 0; i < numThreads; i++) {
-	int startUser = i * (numberOfUsers / numThreads);
-	int endUser = (i == numThreads - 1) ? numberOfUsers : (i + 1) * (numberOfUsers / numThreads);
-
-	int startProduct = i * (numberOfProducts / numThreads);
-	int endProduct = (i == numThreads - 1) ? numberOfProducts : (i + 1) * (numberOfProducts / numThreads);
-
-	int startOrder = i * (numberOfOrders / numThreads);
-	int endOrder = (i == numThreads - 1) ? numberOfOrders : (i + 1) * (numberOfOrders / numThreads);
-
-	futures.add(executorService.submit(() -> {
-		try (Connection connection = dataSource.getConnection()) {
-			connection.setAutoCommit(false);
-			bulkInsertDenormalizedUsers(connection, startUser, endUser, batchSize);
-			bulkInsertDenormalizedProducts(connection, startProduct, endProduct, batchSize);
-			bulkInsertDenormalizedOrders(connection, startOrder, endOrder, numberOfUsers, numberOfProducts, batchSize);
-			connection.commit();
-		} catch (SQLException | JsonProcessingException e) {
-			log.error("Error in bulk insert thread", e);
-			throw new RuntimeException(e);
-		}
-	}));
-}
-
-// Wait for all threads to complete
-for (Future<?> future : futures) {
-	future.get();
-}
-
-executorService.shutdown();
-```
-
-
-실험해본 결과,
-```
-Total execution time: 150127 ms
-```
-5만 rows 넣는데 2,604ms 개선으로, 약간의 개선은 있었으나 큰 차이는 없었다.
-
-왜일까?
-
-single thread로 순차적으로 bulk-insert하는거랑,
-
-4 thread로 동시에 4개의 bulk-insert를 하는거와 latency가 비슷하다는 말은,
-
-병목이 database에서 있다는 말 아닐까?
-
-database를 bulk-insert 전용으로 튜닝해보자.
-
-
-### 10. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + custom random generator + parallel + mysql tuning
-
-#### 10-1. buffer pool size 사이즈 키우기
-
-```sql
-mysql> SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size';
-+-------------------------+-----------+
-| Variable_name           | Value     |
-+-------------------------+-----------+
-| innodb_buffer_pool_size | 134217728 |
-+-------------------------+-----------+
-1 row in set (0.00 sec)
-```
-
-캐시 역할을 하는 buffer pool의 크기를 134Mb에서 500Mb로 늘려보자.
-
-bulk-insert시, 한번에 flush()하는 총 량을 늘려주는 효과가 있다고 한다.
-
-```
-mysql> SET GLOBAL innodb_buffer_pool_size = 512000000;
-Query OK, 0 rows affected, 2 warnings (0.00 sec)
-
-mysql> SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size';
-+-------------------------+-----------+
-| Variable_name           | Value     |
-+-------------------------+-----------+
-| innodb_buffer_pool_size | 536870912 |
-+-------------------------+-----------+
-1 row in set (0.00 sec)
-```
-
-
-실험 결과,
-```
-Total execution time: 150336 ms
-```
-..로 기존과 큰 차이는 없었다.
-
-
-#### 10-2. disable binary logging
-
-WAL(write ahead log)라고, 파일에 write하는 도중에 에러나면 데이터가 날아갈 수 있으니까,\
-에러났을 때 대비, 백업 retry, rollback 등을 위해 로그파일에 먼저 쓰기 작업을 하는데, 어짜피 가짜 데이터이고, 백만 rows중에 몇개 손실나도 큰 상관은 없으므로, bulk-insert 도중에는 꺼둔다.
-
-실험 결과,
-```
-Total execution time: 151768 ms
-```
-...로 기존과 큰 차이는 없었다.
-
-
-주의!
-
-root 권한이 아니면 이 설정을 할 수 없다!
-
-로컬 mysql에는 root로 접속하기 때문에 코드레벨에서 binary logging을 끌 수 있었으나,
-
-user로 접속하는 aws-rds의 경우 권한이 없으므로 실행하면 에러가 난다.
-
-rds parameter에 따로 설정을 해 주어야 한다!
-
-
-#### 10-3. increase max_allowed_packet size
-
-bulk-insert시, 하나의 쿼리에 수백, 수천개의 값을 넣는데, 이 최대치를 늘려주는 설정이다.
-
-```sql
-mysql> SHOW GLOBAL VARIABLES LIKE 'max_allowed_packet';
-+--------------------+----------+
-| Variable_name      | Value    |
-+--------------------+----------+
-| max_allowed_packet | 67108864 |
-+--------------------+----------+
-1 row in set (0.00 sec)
-```
-
-약 67Mb인데, 100Mb로 늘려보자.
-
-```sql
-mysql> SET GLOBAL max_allowed_packet = 100000000;
-Query OK, 0 rows affected, 1 warning (0.00 sec)
-
-mysql> SHOW GLOBAL VARIABLES LIKE 'max_allowed_packet';
-+--------------------+----------+
-| Variable_name      | Value    |
-+--------------------+----------+
-| max_allowed_packet | 99999744 |
-+--------------------+----------+
-1 row in set (0.00 sec)
-```
-
-실험 결과,
-```
-Total execution time: 148634 ms
-```
-약간 빨라졌으나 큰 차이는 없다.
-
-#### 10-4. `concurrent_insert` setting
-
-동시에 insert하는게 기본은 AUTO라고 되어있다.
-
-```sql
-mysql> SHOW GLOBAL VARIABLES LIKE 'concurrent_insert';
-+-------------------+-------+
-| Variable_name     | Value |
-+-------------------+-------+
-| concurrent_insert | AUTO  |
-+-------------------+-------+
-1 row in set (0.01 sec)
-```
-
-```sql
-mysql> SET GLOBAL concurrent_insert = 2;
-Query OK, 0 rows affected (0.00 sec)
-```
-concurrent insert를 허용한다.
-
-
-실험 결과,
-```
-Total execution time: 148767 ms
-```
-이전과 큰 차이는 없다.
-
-### 11. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + parallel + mysql tuning + custom random generator
-
-병렬처리하고, mysql 세팅을 bulk-insert 용으로 바꿔도 latency가 개선되지 않는걸 보면,
-
-결국 병목의 원인은 너무 많은 random value를 만들었는데, gc가 너무 자주 일어나서 생기는 문제로 보인다.
-
-따라서, 랜덤값을 만드는 양을 최소화 해보자.
-
-기존에 랜덤 변수 만드는 방식은 백만개 rows에서 들어가는 모든 변수들의 값을 랜덤하게 생성하는 것이었는데,
-
-어짜피 같은 column의 값만 안겹치면 되지, 다른 column의 값은 이전에 쓴거 또 써도 상관없으니까,
-
-랜덤값을 최소량으로 만들고, 최대한 여러 컬럼에 걸쳐서 돌려쓰게 만들자.
-
-
-1. String: 520,000 -> 80,000
-2. Integer, 1~30: 80000 -> 0
-3. Integer, 1~1000: 320,000 -> 0
-4. Double, 0~5: 80,000 -> 50 (0.1의자리 이상)
-5. Double, 1~100: 120,000 -> 1000 (0.1의 자리 이상)
-6. Double, 100~100,000: 120,000 -> 1,000
-7. Double, 100~1,000,000: 320,000 -> 10,000
-8. Double, today-N month: 520,000 -> N * 30
-
-
-약 150만개 객체 -> 10만개 객체로 줄여보자
-
-실험 결과,
-```
-Total execution time: 151452 ms
-```
-
-차이가 없거나 오히려 더 늘었다?
-
-![](documentation/images/2024-03-28-17-48-49.png)
-
-객체 150만개 만들적에는, major gc(metadata gc)는 400ms, minor gc(allocation failure)은 100ms 걸리던게,
-
-![](documentation/images/2024-03-28-17-49-42.png)
-
-major gc(metadata gc)는 75ms, minor gc(allocation gc)는 25ms로 많이 준걸 확인할 수 있다.
-
-그런데 왜, latency는 똑같을까?
-
-![](documentation/images/2024-03-28-17-52-01.png)
-
-mysql 컨테이너의 메트릭을 보니까,
-
-network i/o에서 read는 spring app으로부터 초당 51.8Mb나 받아오는데,
-
-disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o에서 병목이 있는 것 같다.
-
-이전 시행착오에서, mysql tuning한게 4종류 였다.
-1. increase buffer pool size
-2. disable binary logging
-3. increase max_allowed_packet size
-4. concurrent_insert setting to ON
-
-이 중에서, 사실상 1번은 read시에 disk i/o줄일려고 캐싱하려는 목적으로 buffer pool size를 늘리는거니까 별 효과 없을 것 같고,
-
-3번의 경우엔, 메트릭을 보니 mysql container가 초당 50Mb/s을 받아오는데, disk i/o write가 초당 2Mb밖에 안되니까, 이걸 더 늘려도 의미 없을 듯 하다.
-
-4번의 경우엔, default setting이 auto인데, bulk-insert같은 heavy-write 시에, mysql이 자동으로 ON으로 바꾸기 때문에, 건드려도 별 차이가 없는 듯 하다.
-
-사실상 2. disable binary logging이 가장 write disk i/o 성능을 높힐 수 있을 것 같으나,
-
-테스트 해보니, 이걸 끄면 최대 disk i/o write 속도가 12kb/s 밖에 나오지 않았다.
-
-왜 그렇게 나오는지는 ppm같은 mysql 전용 모니터링 툴을 붙여서 더 자세히 알아봐야 할 듯 싶다.
-
-
-
-
-# E. 기술적 도전 - Cloud
-
-## a. docker-compose로 개발환경 구성
-
-### 1. 사용한 이유
-1. 협업 할 때 개발자 머신마다 아키텍처 달라서(amd64/arm64/linux) 거기에 호환되는 버전 찾아 맞추는게 번거로운데, redis:latest 해놓으면 알아서 설치해주기에 편하다.
-2. 도커 이미지 버전 명시해두면 .yml파일로 깃에 버전관리가 된다.
-3. jenkins같은 cicd 서버에서 세팅하고 테스트할 때, 기존 빌드 스크립트 방식은 아주 길고 번거롭다. (java, mysql, redis, prometheus, grafana 버전 맞춰서 세팅, 중간에 에러나면 재시도 스크립트 등...) 근데 이건 `docker-compose up` 한방이면 끝난다.
-4. 이 외에 모니터링 서버 배포시에도, k6로 부하테스트 할 때에도 docker container로 간편하게 처리했다.
-
-
-### 2. 시행착오
-
-docker-compose.yml 작성하면서 제일 많이 시행착오 겪은게\
-**컨테이너간 통신**이다.\
-컨테이너간 통신만 알면 나머지는 그다지 막히는게 없을 것이다.
-
-
-### step1) 같은 network로 묶기
-```yml
-networks:
-  bridge_network: #frontend, backend, db 같은 네트워크로 묶는 것
-    driver: bridge
-```
-
-도커 컨테이너끼리 통신할 네트워크를 구성한다.
-
-```yml
-services:
-  redis:
-    container_name: 'redis'
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    networks:
-      - bridge_network
-
-  ecommerce-app1:
-    container_name: 'ecommerce-app1'
-    hostname: ecommerce-app1
-    build:
-      context: ./back/1.ecommerce
-      dockerfile: Dockerfile
-    ports: #backend server port는 외부 접속을 막아둔다. 다만, 개발시에는 편의를 위해 여는 경우도 있다.
-      - "8080:8080" #"HOST_PORT:CONTAINER_PORT"
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=docker
-    networks:
-      - bridge_network
-    depends_on:
-      - redis
-      - mysql
-    restart: on-failure
-```
-
-ecommerce-app1 컨테이너와 redis 컨테이너가 통신하려면, 반드시 같은 'bridge_network'에 묶여있어야 한다.
-
-
-
-
-
-### step2) 다른 컨테이너의 ip주소는 그 컨테이너의 이름으로 대체해서 적는다.
-
-만약 nextjs container가 `fetch('ecommerce-app1', request);` 하고 싶다고 하자.
-
-그러면 docker-compose.yml에 적은 호스트이름 대로 `http://ecommerce-app1:8080` <-- 여기에 요청해야 한다.
-
-**컨테이너 이름이 해당 컨테이너의 ip주소를 가르킨다.**
-
-도커 컨테이너 특성상 자주 죽었다가 재시작하는걸 염두하고 만들어졌는데,\
-그 때마다 새로운 ip를 부여받고, 할당받은 새 ip가 저 이름으로 재매핑되는 원리이다.
-
-
-### step3) localhost에 요청하는 경우, localhost가 아니라 host.docker.internal로 요청해야 한다.
-
-도커 컨테이너가 생성되거나 재생성될 때 고유한 네트워크에 매번 새로운 ip를 달고 만들어진다.\
-따라서 도커 내부에 호스트에 접근할 땐, localhost가 아닌 호스트 머신을 가르키는 host.docker.internal 주소를 사용해야 한다.
-
-
-ex. 프론트에서 스프링에 데이터 fetch 할 때,\
-`curl -X GET http://localhost:8080/products` 가 아닌,\
-`curl -X GET http://host.docker.internal:8080/products`로 해야한다.
-
-
-
-## b. provisioning: terraform and packer
-
-### 1. 문제
-
-그... 원래 테라폼같은 프로비저닝 툴은 세팅한번 딱 해놓고 버튼한번 누르면 인프라가 샤라락~\
-전체 인프라가 돌아가는 중에 인스턴스 스펙 업/다운 하고 싶으면 .tf 파일에서 스펙만 바꾸고 업데이트하면\
-자동으로 인스턴스 내리고 새롭게 만들어서 기존거랑 이어주는 맛으로 쓰는건데....
-
-내가 테라폼을 찾게 된 이유는,\
-부하테스트하려고 aws 세팅 찾아서 했는데, 내리고 다시 세팅하려니까 너무 귀찮았다.\
-그래서 그냥 냅뒀는데...\
-요금이 생각 이상으로 많이 나오더라.. 맘 찢어진다..\
-(도메인 ip도 무료로 사서 신경 꺼놨는데 1년뒤에 자동으로 유료로 바뀌면서 청구되더라... 아...)
-
-
-aws는 일일히 세팅하는것도 피곤한데, 부하테스트 끝나고 지우는 것도 피곤하다.\
-그리고 다 지웠다고 생각했는데 알고보니 ebs, elastic ip 안지워져서 요금청구되는거 볼 때마다 스트레스다.\
-왜냐면 인스턴스에 걸려있는 서비스는 그냥 지우면 안지워지고 그걸 걸치는 다른 서비스를 먼저 찾아서 지워야 지워지기 때문..
-
-aws-nuke이라는것도 써봤는데 이것도 가끔씩 에러터지면서 짜잘하게 안지워지는 부분이 있더라.
-
-
-### 2. 해결책
-
-테라폼 처음 한번만 세팅해두면\
-그 이후부터는 `terraform start`, `terraform destroy` 명령어 한방에 인프라가 샤라락! 펼쳐졌다 정리되기 때문에,\
-처음 진입장벽만 넘어서 딱 한번만 세팅해두면 이후로 매우 편하다.
-
-
-부하테스트 실험이 처음하면 생각보다 시행착오가 많다.\
-부하수준별 적정 스펙 찾는거나, 부하테스트를 거는 ec2가 생각보다 코어수가 많이 필요하다.\
-예를들어 1000RPS 테스트할 때 4코어 ec2로 안되길래 8코어 ec2로도 안되길래\
-16코어 ec2로 해도 터지길래 32코어로 하니까 됬다.\
-그리고 32코어 인스턴스, RDS, ALB, 모니터링 서버, elastic cache(cluster이면 더 비싸짐) 등 생각보다 엄청 비싼데,\
-힘들게 세팅했는데 밤이 깊어서 내일 해야지~ 낼 모래 해야지~ \
-미뤘다간 15일날인가 청구서 보고 손발이 덜덜 떨리는걸 경험하게된다.
-
-부하테스트의 RPS가 올라갈 수록 생각 이상으로 비싸지니까\
-`terraform start`가 땅! 끝나는 순간\
-바로 부하테스트 걸고\
-끝나자마자 모니터링 서버 화면 전체캡쳐 한 후\
-바로 `terraform destroy`를 눌러야\
-최소한의 돈으로 부하테스트를 할 수 있다.\
-(이거 진짜 꿀팁임)
-
-
-### 3. 다른 좋았던 점
-provisioning 기능 + 부하테스트시 유용하다는 장점 이외에 의외의 장점이 있다.
-
-**aws 이해에 도움을 준다.**
-
-왜냐면 aws 홈페이지에서 인프라 세팅하면 건드릴 수 있는 옵션이 많은데\
-대충 중요한것만 세팅하고 넘겨도 내부적으로 자동세팅 해준다.
-
-근데 테라폼 코드는 한글자만 잘못쳐도 에러를 뱉기 때문에 자세히 알아야 한다.\
-vpc, sg(security_group), rt(route_table), igw(internet_gateway) 이런 개념들 부터 시작해서
-
-```terraform
-module "vpc" {
-  source                           = "terraform-aws-modules/vpc/aws"
-  version                          = "5.5.0"
-
-  name                             = "${var.namespace}-vpc"
-  cidr                             = "10.0.0.0/16"
-
-  azs                              = data.aws_availability_zones.available.names
-  private_subnets                  = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets                   = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
-  database_subnets                 = ["10.0.21.0/24", "10.0.22.0/24", "10.0.23.0/24"]
-  elasticache_subnets              = ["10.0.31.0/24", "10.0.32.0/24"]
-
-  create_database_subnet_group     = true
-  enable_nat_gateway               = true
-  single_nat_gateway               = true
-}
-```
-cidr로 ip의 서브넷 나눠서 ec2, db, redis 서버에게 내부ip 할당하는걸 수동으로 해줘야 한다.
-
-추가적으로 .tf 파일은 git으로 버전관리 된다는 것도 이점이다.
-
-
-### 4. packer도 전통적인 alb-ec2-rds에서 scaleout시 유용하게 쓰일 수 있다.
-
-packer는 비유하자면 약간 도커 컨테이너에 이것저것 설치해놓고\
-이미지로 말아 도커 레지스트리에 올린거의 aws 버전이다.
-
-1. ec2 띄우고
-2. 이것저것 설치하고
-3. 프로젝트 클론 뜨고
-4. 빌드하고
-5. 실행한다
-
-이 과정에서 1 & 2번을 미리 해놔서 저장해놓는게 packer가 하는 일이다.
-
-
-요즘은 대부분 도커로 올리면 클라우드에서 자동으로 scale-out 해주는데,\
-전통적인 방식의 ec2 scale-out 하려면 앞단에 ALB 붙이고 특정 부하 시점이 오면,\
-packer로 만들어놓은 ec2-ami 띄운 후, 배포 스크립트 실행시키는 식으로 스케일아웃 한 걸로 안다.
-
-
-
-
-
-## c. monitoring: prometheus and grafana + PMM
-
-### 1. 문제
-서버를 구축하면, 에러 예방/핸들링, 성능 튜닝을 위한 스트레스 테스트 메트릭을 뽑기 위해 모니터링 서버를 구축해야 한다.
-
-### 2. EC2 모니터링 선택
-
-ec2 monitoring을 위해 고려한 APM 툴은 3가지 이다.
-1. datadog
-2. uptime kuma
-3. prometheus + grafana
-
----
-3. prometheus + grafana를 선택하였다.
-
-- 이유
-	1. 가장 현업에서 자주 쓴다는 datadog를 차용하려고 했지만, 간단한 WAS 서버 APM 최소비용만 월 `31$`이고, 이 외에 DB 모니터링은 최소 월 `70$` 부터 시작이라, 토이 프로젝트 치고 가격이 너무 쎄서 다른 툴을 쓰기로 했다.
-	2. APM 오픈소스중에 uptime kuma라는 툴이 있는데, 예전에 사용해본 경험이 있어 다른 툴 대비 익숙하고, 사용법도 간단하고, 스타 수도 46000개 정도 되고, 현재까지도 업데이트가 잘 이루어지고 있어서 써볼까 했으나, 후술할 이유로 인해 사용하지 않았다.
-	3. prometheus + grafana 조합이 현업에서 자주 이용되는 점과, 추후 이 프로젝트를 monolith에서 MSA로 변경할 때, k8s APM 툴로 prometheus를 많이 사용한다고 한다.
-
-
-
-### 3. mysql 모니터링 도구 선택
-mysql은 percona사에서 오픈소스로 제공하는 PMM(percona monitoring management)를 쓰기로 했다.
-
-무료 mysql 모니터링 도구중에 메트릭제공이 상세하고, 사람들이 많이 쓰기 때문이다.
-
-
-### 4. 구현 화면
-#### 4-1. ec2 monitoring
-![](documentation/images/prometheus-grafana.png)
-
-1. spring API 서버의 APM을 spring actuator + prometheus + grafana로 구성했다.
-2. jvm metric dashboard는 가장 사람들이 많이 다운받은 micrometer에서 제공한 jvm metric dashboard을 썼다. (5.7M download)
-
-#### 4-2. RDS monitoring using PMM
-![](documentation/images/pmm-1.png)
-![](documentation/images/pmm-2.png)
-
-
-## d. 시행착오 - 배포서버에서 log는 error랑 warn만 키자
+원인 찾는 과정에서 이것저것 배웠다.
 
 
 ### a. 사건의 발단
@@ -4515,12 +1358,120 @@ Heap 영역 메모리와 GC가 얼마나 일어나나 확인하기 위해 관련
 2. 웹서비스 관점으로 재해석해 트래픽 패턴과 latency를 강조한 RED method,
 3. 위 두 방법론을 섞어 SRE 관점으로 해석한 4 golden signals
 
+## b. terraform 도입!
 
-## e. 부하 테스트
+### tldr;
+aws로 부하테스트 몇번 하다보니\
+돈이 생각 이상으로 깨져서\
+어떻게 하면 돈 아낄 수 있지? 고민하다\
+terraform을 찾음.\
+start하면 인스턴스 생성 한방에 되고, destroy 하면 한방에 다 내려가서\
+한번만 세팅해두면 딱 부하테스트 할 때만 키고 끌 수 있다.\
+(사실 이런 용도로 나온게 아니긴 한데...)
 
-### a. 300 RPS 부하 테스트
 
-#### a-1. RPS 별 DAU 예측
+### 1. 문제
+
+그... 원래 테라폼같은 프로비저닝 툴은 세팅한번 딱 해놓고 버튼한번 누르면 인프라가 샤라락~\
+전체 인프라가 돌아가는 중에 인스턴스 스펙 업/다운 하고 싶으면 .tf 파일에서 스펙만 바꾸고 업데이트하면\
+자동으로 인스턴스 내리고 새롭게 만들어서 기존거랑 이어주는 맛으로 쓰는건데....
+
+내가 테라폼을 찾게 된 이유는,\
+부하테스트하려고 aws 세팅 찾아서 했는데, 내리고 다시 세팅하려니까 너무 귀찮았다.\
+그래서 그냥 냅뒀는데...\
+요금이 생각 이상으로 많이 나오더라.. 맘 찢어진다..\
+(도메인 ip도 무료로 사서 신경 꺼놨는데 1년뒤에 자동으로 유료로 바뀌면서 청구되더라... 아...)
+
+
+aws는 일일히 세팅하는것도 피곤한데, 부하테스트 끝나고 지우는 것도 피곤하다.\
+그리고 다 지웠다고 생각했는데 알고보니 ebs, elastic ip 안지워져서 요금청구되는거 볼 때마다 스트레스다.\
+왜냐면 인스턴스에 걸려있는 서비스는 그냥 지우면 안지워지고 그걸 걸치는 다른 서비스를 먼저 찾아서 지워야 지워지기 때문..
+
+aws-nuke이라는것도 써봤는데 이것도 가끔씩 에러터지면서 짜잘하게 안지워지는 부분이 있더라.
+
+
+### 2. 해결책
+
+테라폼 처음 한번만 세팅해두면\
+그 이후부터는 `terraform start`, `terraform destroy` 명령어 한방에 인프라가 샤라락! 펼쳐졌다 정리되기 때문에,\
+처음 진입장벽만 넘어서 딱 한번만 세팅해두면 이후로 매우 편하다.
+
+
+부하테스트 실험이 처음하면 생각보다 시행착오가 많다.\
+부하수준별 적정 스펙 찾는거나, 부하테스트를 거는 ec2가 생각보다 코어수가 많이 필요하다.\
+예를들어 1000RPS 테스트할 때 4코어 ec2로 안되길래 8코어 ec2로도 안되길래\
+16코어 ec2로 해도 터지길래 32코어로 하니까 됬다.\
+그리고 32코어 인스턴스, RDS, ALB, 모니터링 서버, elastic cache(cluster이면 더 비싸짐) 등 생각보다 엄청 비싼데,\
+힘들게 세팅했는데 밤이 깊어서 내일 해야지~ 낼 모래 해야지~ \
+미뤘다간 15일날인가 청구서 보고 손발이 덜덜 떨리는걸 경험하게된다.
+
+부하테스트의 RPS가 올라갈 수록 생각 이상으로 비싸지니까\
+`terraform start`가 땅! 끝나는 순간\
+바로 부하테스트 걸고\
+끝나자마자 모니터링 서버 화면 전체캡쳐 한 후\
+바로 `terraform destroy`를 눌러야\
+최소한의 돈으로 부하테스트를 할 수 있다.\
+(이거 진짜 꿀팁임)
+
+
+### 3. 다른 좋았던 점
+provisioning 기능 + 부하테스트시 유용하다는 장점 이외에 의외의 장점이 있다.
+
+**aws 이해에 도움을 준다.**
+
+왜냐면 aws 홈페이지에서 인프라 세팅하면 건드릴 수 있는 옵션이 많은데\
+대충 중요한것만 세팅하고 넘겨도 내부적으로 자동세팅 해준다.
+
+근데 테라폼 코드는 한글자만 잘못쳐도 에러를 뱉기 때문에 자세히 알아야 한다.\
+vpc, sg(security_group), rt(route_table), igw(internet_gateway) 이런 개념들 부터 시작해서
+
+```terraform
+module "vpc" {
+  source                           = "terraform-aws-modules/vpc/aws"
+  version                          = "5.5.0"
+
+  name                             = "${var.namespace}-vpc"
+  cidr                             = "10.0.0.0/16"
+
+  azs                              = data.aws_availability_zones.available.names
+  private_subnets                  = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets                   = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+  database_subnets                 = ["10.0.21.0/24", "10.0.22.0/24", "10.0.23.0/24"]
+  elasticache_subnets              = ["10.0.31.0/24", "10.0.32.0/24"]
+
+  create_database_subnet_group     = true
+  enable_nat_gateway               = true
+  single_nat_gateway               = true
+}
+```
+cidr로 ip의 서브넷 나눠서 ec2, db, redis 서버에게 내부ip 할당하는걸 수동으로 해줘야 한다.
+
+추가적으로 .tf 파일은 git으로 버전관리 된다는 것도 이점이다.
+
+
+### 4. packer도 전통적인 alb-ec2-rds에서 scaleout시 유용하게 쓰일 수 있다.
+
+packer는 비유하자면 약간 도커 컨테이너에 이것저것 설치해놓고\
+이미지로 말아 도커 레지스트리에 올린거의 aws 버전이다.
+
+1. ec2 띄우고
+2. 이것저것 설치하고
+3. 프로젝트 클론 뜨고
+4. 빌드하고
+5. 실행한다
+
+이 과정에서 1 & 2번을 미리 해놔서 저장해놓는게 packer가 하는 일이다.
+
+
+요즘은 대부분 도커로 올리면 클라우드에서 자동으로 scale-out 해주는데,\
+전통적인 방식의 ec2 scale-out 하려면 앞단에 ALB 붙이고 특정 부하 시점이 오면,\
+packer로 만들어놓은 ec2-ami 띄운 후, 배포 스크립트 실행시키는 식으로 스케일아웃 한 걸로 안다.
+
+
+
+## c. 300 RPS 부하 테스트
+
+#### c-1. RPS 별 DAU 예측
 
 목표: RPS당 피크 시간대 유저와 DAU 계산 in ecommerce app
 
@@ -4558,7 +1509,7 @@ html 페이지 용량까지 고려하면
 ...에서 남는 9만명은 특종기사 같은거 떴을 때 갑작스럽게 몰리는 유저인 것으로 보인다.
 
 
-#### a-2. 실험 방향 설정
+#### c-2. 실험 방향 설정
 
 1. 실험 목표
 	1. failover률이 1% 미만이면서
@@ -4607,7 +1558,7 @@ html 페이지 용량까지 고려하면
 	- k6
 
 
-#### a-3. AWS 아키텍처
+#### c-3. AWS 아키텍처
 
 ![](documentation/images/aws-architecture-2.png)
 
@@ -4634,7 +1585,7 @@ html 페이지 용량까지 고려하면
 	- 1개 노드
 
 
-#### a-4. 테스트 결과
+#### c-4. 테스트 결과
 
 ```
  data_received..................: 12 GB  10 MB/s
@@ -4660,15 +1611,15 @@ html 페이지 용량까지 고려하면
 	- max_req_duration = 2.4s (Q. full gc 때문?)
 2. failed = 0%
 
-#### a-5. 모니터링
+#### c-5. 모니터링
 
-##### a-5-1. Load Balancer
+##### c-5-1. Load Balancer
 ![](documentation/images/2024-02-06-04-02-20.png)
 
 ![](documentation/images/2024-02-06-04-02-31.png)
 
 
-##### a-5-2. EC2
+##### c-5-2. EC2
 case1) 300 RPS
 
 ![](documentation/images/2024-02-05-20-11-45.png)
@@ -4696,7 +1647,7 @@ old gen에서 메모리가 약간씩 오르다가 19:57분경 한번 뚝 떨어�
 
 major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하다.
 
-##### a-5-3. RDS
+##### c-5-3. RDS
 ![](documentation/images/2024-02-05-20-13-03.png)
 
 1. DatabaseConnections
@@ -4716,7 +1667,7 @@ major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하�
 	- 새 프로세스를 만들 기 위한 사용가능한 RAM 인데, 렘은 넉넉한 것으로 보인다.
 
 
-#### a-6. monthly cost estimation
+#### c-6. monthly cost estimation
 - total monthly cost(load balancer 제외한 경우)
 	1. on-demand: $268.33/month
 	2. 인스턴스 절감형 플랜: $194.08/month
@@ -4760,10 +1711,9 @@ major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하�
 		- 13.3Mb/s -> 47.88 Gb/h
 
 
-### b. 1000 RPS 부하 테스트
+## d. 1000 RPS 부하 테스트 (스케일 업해서)
 
-
-#### b-1. EC2 스펙 정하기
+### d-1. EC2 스펙 정하기
 
 1. core 갯수 정하기
 	- 2 CPU core가 300 RPS를 CPU 점유율 최대 88%로 버텼으니까, 그의 2배인 4코어로는 600 RPS를 버틸 수 있고, 그의 2배인 8 core정도는 되어야 안정적으로 1000 RPS를 버티지 않을까?
@@ -4788,7 +1738,7 @@ major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하�
 	- 8 core, 32GiB+ RAM, aws graviton processor, ebs 지원, 네트워크 대역폭 15Giga Bit, on-demand cost $0.3264 hourly
 
 
-#### b-2. RDS 스펙 정하기
+#### d-2. RDS 스펙 정하기
 
 1. 코어 갯수 정하기
 	- 1000 TPS를 요청하는 쿼리가 5개의 테이블을 join하는 쿼리인데, 5개 테이블 조인 외에, 별도의 CPU 연산을(ex. 정렬 등) 요구하지 않기 때문에, RDS 서버는 코어의 갯수 보다는, RAM이나 max_connection을 더 신경쓰면 된다고 보인다.
@@ -4816,14 +1766,14 @@ major gc가 일어난 순간, stop the world가 160ms 정도 소요된 듯 하�
 	- 서버 성능이 부족하다 판단하면 8 코어 32 GiB RAM 으로 올리되, 현 프로젝트의 http response에 담기는 문자열의 양이 그리 많지 않으므로, throughput이 적기 때문에 10.0 Gigabit network을 써도 된다고 판단하여 db.m6g.xlarge 를 선택한다.
 
 
-#### b-3. 시행착오 과정
+#### d-3. 시행착오 과정
 
 1. 1000 RPS load test한 결과 latency가 4초대가 나왔다.
 2. 병목의 90%는 database에서 일어난다길래, RDS를 4core -> 8core 늘렸는데도 매우 느렸다.
 3. RDS monitoring metrics에 database connections을 2000개+ 중에 10개밖에 안쓰길래, jdbc connection pool size의 최솟값 & 최댓값을 코어수 * 2 + HDD수 해서 총 17로 지정했는데도, 성능이 오히려졌다.
 4. 설마 인터넷 속도 문제인가 싶어서 40 Mbps 인터넷에서 440Mbps 인터넷으로 바꾼 후, 부하테스트를 했는데 latency가 500ms 보다 빨리 측정되었다.
 
-#### b-4. 부하테스트를 거는 client의 인터넷속도 역시 중요하다.
+#### d-4. 부하테스트를 거는 client의 인터넷속도 역시 중요하다.
 
 이런저런 삽질 결과, 인터넷 속도 차이가 부하테스트 결과에 큰 영향을 미친다는걸 발견했다.
 
@@ -4924,11 +1874,11 @@ latency만 365ms 차이나고, 서버로부터 받은 response 숫자만 약 20�
 
 
 
-#### b-5. monitoring metrics
+#### d-5. monitoring metrics
 
 인터넷 속도를 440 Mbps로 바꾼 후 테스트 결과
 
-##### b-5-1. aws instance specs
+##### d-5-1. aws instance specs
 
 - network load balancer
 - ec2 (API server)
@@ -4957,7 +1907,7 @@ latency만 365ms 차이나고, 서버로부터 받은 response 숫자만 약 20�
 	- RAM = 1.37 GiB
 
 
-##### b-5-2. k6 test result
+##### d-5-2. k6 test result
 ```
 data_received..................: 38 GB  32 MB/s
 data_sent......................: 119 MB 99 kB/s
@@ -4985,7 +1935,7 @@ vus_max........................: 1000   min=1000     max=1000
 	- p(95)가 320m정도로 양호한 편인데, max가 1m인 이유는 차후 후술한다.
 
 
-#### 5-3. EC2 metrics
+#### d-5-3. EC2 metrics
 ![](documentation/images/2024-03-08-21-00-24.png)
 
 - cpu usage가 70%까지 올라가는걸 확인할 수 있다.
@@ -5006,14 +1956,14 @@ vus_max........................: 1000   min=1000     max=1000
 
 - 부하테스트가 다 끝나갈 무렵인 20:50분 부터 20:53분 경에 major gc가 일어난걸 확인할 수 있다.
 
-#### 5-4. RDS metrics
+#### d-5-4. RDS metrics
 ![](documentation/images/2024-03-08-21-04-22.png)
 ![](documentation/images/2024-03-08-21-04-36.png)
 - 1000 TPS에서 cpu usage를 60%정도 쓰는걸로 보인다.
 - 신기한점은 1000 RPS인데도 10 connection 밖에 쓰지 않는다는 것이다.
 	- 그도 그럴 것이, 부하테스트를 건 쿼리의 실행 속도 측정 결과 5ms 이내로 나오기 때문에, isolation level을 높게 설정해서 read에 락을 걸지 않은 이상, 1 connection당 1초에 200번 쿼리 수행이 가능하고, 5 connection만 있으면 1초에 1000 쿼리를 수행 가능하다는 결론이 나온다.
 
-##### b-5-5. Q. 왜 8분경에 1000RPS에서 700RPS로 요청량이 감소했을까?
+##### d-5-5. Q. 왜 8분경에 1000RPS에서 700RPS로 요청량이 감소했을까?
 
 ![](documentation/images/2024-03-08-21-06-06.png)
 
@@ -5050,7 +2000,7 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 따라서 부하테스트를 거는 pc또한 상당한 컴퓨터 자원을 요구하므로,\
 대용량 부하테스트시, 하나의 로컬pc에서 하는게 아니라, 여러개의 ec2 인스턴스를 만들어 나눠서 부하테스트를 진행해야 하는 것으로 보인다.
 
-#### b-6. monthly cost estimation
+#### d-6. monthly cost estimation
 - architecture
 	- ec2 1개, rds 1개, elasticache 1개에 대한 비용이다.
 	- load balancer 비용이 예상외로 상당했기 때문에, 비용을 줄여보고자 간소화 하였다.
@@ -5115,9 +2065,7 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 
 
 
-
-
-#### b-7. 느낀점
+#### d-7. 느낀점
 
 부하테스트 시, 처음에는 서버 처리 속도에만 관심이 있었지, 다른 네트워크 지표들은 관심이 없었다.\
 예를들어, 'TCP connection 수립은 빨라서 무시해도 되겠지?' 라는 생각이나,\
@@ -5132,10 +2080,9 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 또한 부하테스트를 위한 별도서버 구축을 왜 해야 하는지도 알게되었다.
 
 
+## e. 500RPS -> 700RPS(정규화 -> 반정규화, FK 삭제)
 
-## c. 정규화 -> 반정규화로 변경 후 부하테스트 실험
-
-### c-1. 문제점
+### e-1. 문제점
 
 다른 개발자의 부하테스트 글 읽었는데,
 
@@ -5144,28 +2091,28 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 왜지? join 연산 여러번 해서 그런가?
 
 
-### c-2. 실험 조건
+### e-2. 실험 조건
 1. ec2, rds 둘다 2 core 4GiB RAM
 2. table size: user = 1000, product = 10000, order = 5000
 3. table rows ratio -> user:product:order = 1 : 10 : 5
 4. http request read:write ratio: 9:1
 
 
-#### c-2-before. 정규화 버전
+#### e-2-before. 정규화 버전
 ![](documentation/images/erd.png)
 
-#### c-2-after. 반정규화 버전
+#### e-2-after. 반정규화 버전
 ![](documentation/images/반정규화된_ERD.png)
 
 +FK도 삭제
 
-### c-3. 성능테스트로 검증해보자 (100~800 RPS)
+### e-3. 성능테스트로 검증해보자 (100~800 RPS)
 
 ![](./documentation/images/3_반정규화_1000_ec2_ver2_after_orderby_index.png)
 
 ![](./documentation/images/3_반정규화_1000_rds_ver2_after_orderby_index.png)
 
-#### c-3-1. RDS CPU usage 메트릭 해석시 주의점
+#### e-3-1. RDS CPU usage 메트릭 해석시 주의점
 
 PMM에서 제공하는 CPU usage 메트릭이 총 7개 이다.
 1. `{node_name="ecommerce-db-instance"}`: MySQL 인스턴스의 전체 CPU 사용률
@@ -5427,7 +2374,7 @@ PMM에서 제공하는 CPU usage 메트릭이 총 7개 이다.
 
 
 
-### c-4. 실험 결과 해석
+### e-4. 실험 결과 해석
 
 같은 스펙의 ec2, rds에서, 같은 테이블 사이즈에 동일한 load test를 했을 때,\
 정규화 버전의 한계는 560 RPS, 비정규화 버전의 한계는 750 RPS 정도 된다.
@@ -5444,26 +2391,2907 @@ join cost이 늘어나기 때문에 정규화, 비정규화 성능 격차는 더
 
 
 
-### c-5. 깨달은 점: 비용을 고려한 scale out 전략을 어떻게 짤 것인가?
-
-1. 성능테스트를 할 수록 느끼는건 **쿼리만 신경써서 짜도**([example](#d-sql-tuning)) 서버 스펙에 들어가는 돈을 많이 아낄 수 있다는 것이다.
-2. [반정규화](#b-반정규화) 실험에서 느낀건, 반정규화만 해놔도 서버 비용을 많이 아낄 수 있다.
-3. 서비스 초기 때 HA고려를 배제하면 많은 비용을 아낄 수 있다.
-	1. ALB가 생각보다 비용이 엄청 나온다. (기본 요금은 싼데 데이터 요금이 어마어마하게 많이 나온다. RDS보다 더 나온다.) 따라서 서비스 초기에 ALB + scale out 세팅 비용보다 단순 ec2 scale up이 훨씬 싸게 먹힌다.
-	2. elastic cache도 scale out된 ec2들이 authentication 목적으로 동일한 장소에서 동기화 되는 유저 정보를 쓰기 위함 + 통계쿼리 같은 DB 자원 많이먹는 쿼리 캐싱해두기 위해 썼는데 고스펙 ec2 하나에 local cache 쓰면 elastic cache 비용도 아낄 수 있다. CPU가 비싼거지 RAM은 싸다.
-4. DB 스케일업 전략
-	1. RDS는 scale up할 때마다 기하급수적으로 비용이 늘어나기 때문에, 8코어 쓰는 것 보다 1~2코어 master/read replicas 쓰는게 더 싸다.
-	2. master/slave 구조의 장점은 read heavy, write heavy 앱에 따라 전략이 달라질 수 있다. ecommerce app의 경우 read:write 9:1 비율이기 때문에, write 담당 master node는 싼거 쓰고 read replica는 CPU usage 40~70% 내에 속하는 스펙을 고르면 된다.
-	3. master/slave 구조의 또 다른 장점은 RDS proxy라는 서비스를 쓰면 master/read replicas thread pool 관리를 RDS proxy가 대신 해주기 때문에 CPU usage을 조금 낮출 수 있다. 다른 지표는 괜찮은데 CPU usage가 70%가 넘어가서 어쩔 수 없이 scale up 하는 상황에서 RDS proxy를 쓰면 CPU usage를 낮추고 scale up 안해도 된다.
-	4. cache layer(ex. elastic cache)를 붙이는 기준도, RDS scale up 비용이 기하급수적으로 올라가니까, RDS scale up 하느니 차라리 elastic cache 써서 거기에 쿼리 캐싱해서 RDS i/o줄이는게 이득일 때 하는 것이다.
-5. webapp에 따라 캐싱을 효율적으로 쓸 수 있는 서비스가 있다.
-	1. ecommerce 같은 경우엔 아무래도 판매자가 상품페이지 업데이트를 자주 할 수 있고, 했던게 바로 반영되어야 하니까, 캐싱을 이용할 수 있는 부분이 유저 인증이나 홈페이지에 뿌려지는 top 10 products 이런것들 뿐인데,
-	2. 디스패치같이 평소엔 트래픽 없다가 특종 터지면 트래픽이 10배, 20배 이상 터지는 서비스의 경우, 특종된 기사를 캐시에 저장하면 디비를 거치지 않고 빠르게 뿌릴 수 있기 때문에 DB 유지비용이 많이 줄어든다. ([디스패치 트래픽 대응 컨퍼런스](https://youtu.be/8uesJLEXxyk?t=1605))
 
 
 
+## f. prometheus만으론 부족해! DB monitoring 추가
 
-# F. 기술적 도전 - Frontend
+### 1. 문제
+DB가 병목의 핵심인데,\
+aws-RDS에서 제공되는 메트릭만으로는 부족하다! 
+
+
+### 2. mysql 모니터링 도구 선택
+mysql은 percona사에서 오픈소스로 제공하는 PMM(percona monitoring management)를 쓰기로 했다.
+
+무료 mysql 모니터링 도구중에 메트릭제공이 상세하기 때문.
+
+### 3. PMM 구현 화면
+![](documentation/images/pmm-1.png)
+![](documentation/images/pmm-2.png)
+
+
+## g. 700RPS -> 750+RPS (sql tuning)
+
+### a. index 튜닝
+
+#### a-1. 문제
+동일 조건에서 정규화 vs 반정규화의 성능차이가 얼마나 날까 실험중이었는데,
+
+반정규화 DB의 cpu usage가 정규화보다 더 높았다?!
+
+단순히 100 RPS에서 측정된 값을 비교해보면,
+
+| Metric | 1. 정규화 버전 | 2. 반정규화 버전 |
+|--------|--------------------|-----------------------|
+| **EC2** |
+| CPU Usage | 10% | 7.8% |
+| Load Average | 0.2 | 0.1 |
+| Heap Used | 8.73% | N/A |
+| Non-Heap Used | 12.41% | N/A |
+| Last HTTP Latency | 88ms | 9ms |
+| Last Max Latency | N/A | 600ms |
+| Errors | None | None |
+| **RDS** |
+| CPU Usage | 4.2% | 16.3% |
+| Load Average | 0.3 | 0.8 |
+| Memory Availability | 71.35% | 71.64% |
+| QPS | 361 | 291 |
+| TPS | 280 | 155 |
+
+QPS(query per second)가 더 낮은데(join 덜하니까 쿼리를 여러번 쪼개서 날리지 않아서 그렇다고 해석)
+
+cpu usage가 12.3%가 더 높다?
+
+(심지어 이 점유율도 적게 잡힌것이다. 나중에 알았는데 pmm에 cpu usage 지표는 {node_name="ecommerce-db-instance"} 이걸 읽거나 전체 usage를 합친 값을 읽었어야 했는데 이땐 nice라고 써진 지표 기준으로 기록함)
+
+
+#### a-2. 문제 원인 분석
+
+![](./documentation/images/sql-tuning-index-1.png)
+
+pmm query analyzer에서 latency 순으로 정렬하니까
+
+한 쿼리가 75ms 걸리는게 확인된다.
+
+![](./documentation/images/sql-tuning-index-2.png)
+
+확인해보니
+
+1. type:ALL = full scan
+2. table_size가 10000rows인데 rows수 9628이면 전부 i/o 하는건데
+3. filtered = 10% 이면, 힘들게 i/o한 것에 90%는 버린다는 뜻이니까,
+
+인덱스를 안타서 엄청 비효율적이다라고 해석.
+
+
+#### a-3. 해결방안
+![](./documentation/images/sql-tuning-index-3.png)
+
+where절에 조건걸리는 필드에 인덱스를 걸어준다.
+
+#### a-4. 개선된 결과
+![](./documentation/images/sql-tuning-index-4.png)
+
+1. latency가 75ms -> 21ms 로 줄었고,
+2. type:All -> ref (인덱스 탐)
+3. key_len: 1023 -> 아마 9천개 rows i/o 안하고 천개만 i/o함.
+4. filtered 100% -> 필터율 100%이니까 힘들게 io한걸 버리지 않는다는 뜻
+
+
+### b. order by 튜닝
+
+#### b-1. 문제
+
+index tuning했으니까
+
+동일 조건에서 반정규화한 앱이 정규화된 앱보다 부하테스트 성능이 더 좋겠지?
+
+실험해봤는데, 이번에도 반정규화 앱의 RDS cpu usage가 더 높게 잡힘.
+
+???
+
+#### b-2. 문제 원인 분석
+정규화 버전 PMM 지표와 반정규화 버전 PMM 지표 비교해봤는데
+
+![](./documentation/images/sql-tuning-orderby-1.png)
+정규화 버전은 RPS 부하가 늘어나도 Sorts가 15ops/s 고정임을 확인할 수 있다.
+
+![](./documentation/images/sql-tuning-orderby-2.png)
+반면 비정규화 버전은 RPS 부하가 늘어나면 Sorts가 Mysql Questions(total # of query executed)와 비례하게 늘어난다?
+
+근데 부하테스트 하는 6개의 쿼리에서 sort를 쓴 기억이 없는데...?
+
+![](./documentation/images/sql-tuning-orderby-3.png)
+
+aws-rds에 ssl 접속해서 sort 빈도수가 가장 많은 순으로 쿼리 히스토리 정렬해봤더니,
+
+저 맨 위에 쿼리가 148만개의 rows를 sort했다는걸 확인할 수 있다.
+
+
+
+#### b-3. 해결방안
+저 쿼리 담당하는 repository, service에서는 문제가 없었는데
+
+controller에서 Pageable 객체 만들 때 sort 하는 코드가 있었다.
+
+```java
+Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+```
+
+성능 테스트 목적으로 ai한테 짜달라고 해서 나온건데
+
+무지성 복붙의 폐혜가...
+
+
+
+
+#### b-4. 개선된 결과
+![](./documentation/images/sql-tuning-orderby-4.png)
+
+기존 order by 쓰던 쿼리가 안잡히는 모습이다.
+
+
+![](./documentation/images/sql-tuning-orderby-5.png)
+
+부하 테스트를 해봐도 이젠 RPS, QPS에 비례해서 Sorts ops/s가 올라가질 않는걸 확인할 수 있다.
+
+
+#### b-5. 느낀점
+
+인덱스 하나, order by 하나
+
+쿼리 딱 2개 잘못짰는데 전체 데이터베이스 성능이 매우 하락하더라.
+
+디비 모니터링 붙이고 슬로우 쿼리 바로바로 잡는게 중요하다는걸 느꼈고,
+
+order by 케이스는 심지어 슬로쿼리로도 안잡혔다.
+
+수행시간은 빠른데 cpu usage를 많이 잡아먹은 케이스가 존재하더라.
+
+PMM에 Mysql Sorts 메트릭에 잡혀서 망정이지 아니었으면...
+
+# D. 상품 랭킹 기능 구현기
+
+## 1. 문제
+쇼핑몰에 가면 실시간 가장 핫한 아이템 top 10을 어렵지 않게 볼 수 있다.\
+이 기능을 구현하고자 하는데,\
+바로 앞전에 [redis' sortedSet으로 클릭률 집계](#방법4-redis에-sortedset-자료구조로-클릭률-집계하기)로 구현하는게 일반적인 듯하다.\
+(구글 검색시 대부분 이방식으로 만듬)
+
+문제는 DB가 비싸서 cache layer을 쓰는데,\
+**cache layer 역시 비싸다**는 것이다.\
+같은 기능을 리소스 효율적이게 만들 순 없을까?
+
+
+## 2-1. Redis sortedSet
+
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+
+
+1. 방법
+	- redis의 `sortedSet` 자료구조에 `{product:view_count}`넣으면 랭킹 집계 해준다.
+	- time complexity
+		- write: O(log N)
+		- read: O(log N+M), where N = total element and M = number of returned element
+2. 장점
+	1. 정확한 조회수를 집계 가능하다.
+	2. 분산시스템에서 single source of truth라 ec2간 조회수 read()하면, 결과값 차이가 거의 없다.
+	3. 구현이 간단하다. 이미 redis 측에서 만든 자료구조를 가져다 쓰는 것이기 때문.
+3. 문제점
+	1. 상품 클릭할 때마다 view_count+1되서 write 부하가 엄청나게 클 텐데, `sortedSet`의 write-time-complexity가 O(1)도 아니고 O(log N)이다. 서비스가 커지고 상품 수(N)이 커질수록, 효율이 떨어진다.
+	2. redis는 비싸고 실전에서는 이미 다양하게 활용되고 있을텐데(세션관리, heavy query caching, rate-limiting, etc) 여기에 heavy_computation 작업 하나 추가하는게 맞나? 싶다.
+	3. 분리된 redis(aws_elastic_cache) 서버와 통신비용이 있다.
+	4. 벤치마크를 로컬pc에 설치된 redis로 돌렸기 때문에 통신비용이 고려 안되었음 + redis 서버 성능은 실전에서 사용하는 2core 6GiB RAM elastic_cache 대비, 로컬 pc가 8코어 16GiB RAM으로 월등히 우수한걸 고려하면, 실 성능이 이 보다 훨씬 더 낮다.
+4. 결론
+	- 벤치마크 결과가 다른 방식 대비 낮다. 다른 효율적인 방법을 찾아보자.
+5. 코드
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_01_redis/service/ProductRankingService.java#L11-L40
+
+
+## 2-2. Max_Heap with concurrency control
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+
+1. 방법
+	- redis에서 view_count 집계를 하지 말고, 스프링 로컬서버에서 view_count & ranking 집계 하는 방식, max_heap 자료구조를 써서.
+	- Q. 로컬에서 랭킹 집계해도 되나? 정확도가 떨어지지 않을까?
+		- A. 원하는 값이 완전 정확하게 집계된 값이 아니라, 대략적으로 현재 트랜디 한 상품값이 필요한거라 이 방식이 가능한 것이다.
+		- 분산환경에서 WAS서버가 5대라고 할 때, 상품클릭률 분포는 조회수 조작하는 스팸유저만 없다면(이상현상 감지 후, 벤처리) WAS서버당 고르게 분포할 것이다.
+		- 만약 WAS-1에서 2등인 상품이 WAS-3에서 3 or 4등이다? 그정도의 오차는 top 10-in 했으니 괜찮다고 보는 것. 서버 자원관리를 위해.
+	- 상품별 view_count 필드에 `volatile` 키워드를 걸어서, write() 후 값이 multi-threads들에게 바로 보이도록 적용.
+		- multi-core 환경에서 원래는 thread들이 공유자원 접근시, cpu 내부 cache에 저장해서 쓰는데, 이러면 RAM에 값이 update되었을 때 cpu 내부 캐시 값을 읽으면 값이 틀리니까, 공유자원 값을 cpu 내부 cache에 저장하지 말고 RAM에서 가져와 쓰자는게 `volatile` 이다.
+	- view_count를 read/write 시, ReentrantLock사용
+		- read lock은 read하는 쓰레드끼리는 통과 가능하다
+		- write lock은 베타 락이다.
+	- view_count별 랭킹 정렬은 `priority_queue` 자료구조로 한다.
+		- time complexity
+			- write: O(log N) (ex. add(), offer())
+			- read: O(log N) (ex. poll(), remove())
+2. 장점
+	1. 벤치마크 결과, read가 `redis_sortedSet`의 read 대비 쓰루풋이 9.6배 더 좋다.
+		- `sortedSet`'s read_time_complexity: O(log N+M)
+		- `priority_queue`'s read_time_complexity: O(log N)
+	2. redis보다 상대적으로 비용이 저렴한 WAS서버에 로컬 램을 활용하기 때문에 경제적이다.
+3. 문제점
+	1. write 성능이 redis보다 안좋다. 베타 락이 `redis_sortedSet`이 내부적으로 사용하는 write_lock 방식보다 더 비용이 큰 것으로 예상된다.
+	2. 왜냐면 incrementView()시, 상품별 view_count 저장과 heap에 랭킹저장 2번 하는데, 랭킹저장시 `priority_queue`에 기존 product를 지우고, 새로운 view_count가 들어있는 product를 추가하기 때문.
+4. 결론
+	- redis에 부담을 WAS로 덜어주면서, read 성능이 개선되었다.
+	- read가 개선됬긴 했는데, 더 괜찮은 방법이 없을까?
+5. 코드
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_02_max_heap/ProductViewCountMaxHeap.java#L11-L173
+
+
+## 2-3. ConcurrentSkipListMap
+
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+
+
+1. 방법
+	- `TreeMap`(sorted HashMap)인데, concurrency control이 달려있는게 `ConcurrentSkipListMap`이다.
+		- time complexity
+			- write: O(log N)
+			- read: O(log N)
+		- lock
+			- 베타락 안쓰는 대신 CAS(compare and swap) 방식을 쓴다.
+			- write 직후 정합성이 떨어진다고 한다.
+			- 그런데 정밀한 view_count를 원하는게 아니기에, 성능이 더 좋은게 더 낫다.
+2. 장점
+	1. read()가 redis_read() 대비 644배, max_heap_read() 대비 66.9배 빨라졌다.
+		- write()할 때 sort()까지 하는거라 read()가 엄청 빠르다.
+	2. redis가 아닌 로컬 RAM 이용하는거라 자원을 더 경제적으로 쓰는 방법이다.
+3. 코드
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_03_concurrentSkipList/ProductViewCounter.java#L29-L123
+
+
+### Q. 왜 read()가 빨라졌지?
+
+1. max_heap read: O(log N)
+2. concurrentSkipListMap의 read: O(log N)
+...똑같은데 왜 성능차이 나는거지?
+
+
+#### A. `max_heap`에 read()가 애초에 비효율적이게 짜져있다.
+```java
+public List<MockProduct> getTopNProducts(int n) {
+	if (n <= 0) {
+		return Collections.emptyList();
+	}
+
+	heapLock.readLock().lock();
+	try {
+		List<MockProduct> result = new ArrayList<>();
+		// Create a temporary heap for reading to avoid blocking writes
+		PriorityQueue<MockProduct> tempHeap = new PriorityQueue<>(maxHeap);
+
+		for (int i = 0; i < n && !tempHeap.isEmpty(); i++) {
+			result.add(tempHeap.poll());
+		}
+
+		return result;
+	} finally {
+		heapLock.readLock().unlock();
+	}
+}
+```
+
+이게 `max_heap`의 read() 인데, 매번 read()할 때마다 `priority_queue`에 heap 통째로 넣어서 정렬한다.
+
+Q. 근데 `max_heap` 쓰는 이유가, write()시 정렬하기 때문에 read()가 빠르다는 이점 때문에 쓰는건데, read() 할 때마다 `priority_queue` 새로 만들어서 sort()할꺼면, `max_heap` 쓰는 이유가 퇴색되는거 아닌가?
+
+A. 맞다. 역시 늘상 느끼지만 ai가 짠 코드를 무지성으로 복붙하면 이런 폐혜가 생긴다.
+
+여튼 `max_heap`의 올바른 read()방식은 이렇다.
+
+write()할 때마다 정렬하면서 저장하고,
+
+read()할 땐 root node로 부터 BST(breadth first search)로 top-N-node 까지 돌면서 읽으면 된다.
+
+아마 `max_heap`을 원래 의도한 방식으로 짜면 `sorted treemap`과 read() 성능이 비슷하게 나올 것이라 예상된다.
+
+
+### Q. 왜 write가 느리지?
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+
+
+`max_heap`은 view_count 1번, priority_queue에 1번 2번 write하는데,\
+`sorted_hashmap`은 1번 write하는데 왜 느릴까?
+
+```java
+public void incrementView(String productId, long delta) {
+	while (true) { // CAS loop for atomic update
+		Map.Entry<ViewCount, LongAdder> existingEntry = null;
+
+		// Find existing entry for this productId
+		for (Map.Entry<ViewCount, LongAdder> entry : viewCounts.entrySet()) {
+			if (entry.getKey().productId.equals(productId)) {
+				existingEntry = entry;
+				break;
+			}
+		}
+
+		if (existingEntry == null) {
+			// New product - try to insert
+			ViewCount newCount = new ViewCount(productId, delta, System.nanoTime());
+			LongAdder counter = new LongAdder();
+			counter.add(delta);
+
+			if (viewCounts.putIfAbsent(newCount, counter) == null) {
+				// Successfully inserted
+				break;
+			}
+			// If insert failed, retry
+			continue;
+		}
+
+		// Existing product - update count
+		ViewCount oldCount = existingEntry.getKey();
+		LongAdder counter = existingEntry.getValue();
+		counter.add(delta);
+
+		// Remove old entry and insert new one with updated count
+		ViewCount newCount = new ViewCount(productId, oldCount.count + delta,
+			oldCount.timestamp);
+		if (viewCounts.remove(oldCount) != null &&
+			viewCounts.putIfAbsent(newCount, counter) == null) {
+			// Successfully updated
+			break;
+		}
+		// If update failed, retry
+	}
+}
+```
+
+값이 바뀔 때 까지 쓰레드가 `while(true)` + retry 로 `WAITING` 상태다.\
+jmh 벤치마크 테스트할 때 코어수 2개에 맞게 쓰레드 2개 할당해줬는데 (실전엔 2코어 4기가 램 ec2 스케일 아웃한다고 가정)\
+쓰레드1이 write 끝날 때 까지 쓰레드2가 기다린다.
+
+CAS(compare and swap)방식이 low-contention 상황에서는 beta lock보다 성능이 더 좋다곤 하는데,
+
+문제는 view_count + 1은 high-contention 상황이다!
+
+그래서 write() 성능이 별로다.
+
+
+
+
+
+
+## 2-4. ConcurrentHashMap for write + read from cached sorted_map
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
+| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
+
+1. 방법
+	- 3번까지 아이디어는 자료구조에 write할 때 sort by view_count 하고, read할 때 이미 정렬된걸 읽자! 였다면,
+	- 4번 방식은 write할 땐 젤 빠른 방식인 `hashmap`에 O(1)으로 insert하고, 10분마다 sort by view_count를 데몬쓰레드로 돌려서 캐싱해두면, 캐싱해 둔 값을 read 하는 방식이다.
+2. 장점
+	1. write가 매우매우 빨라졌다. redis방식 대비 무려 191배, `max_heap` 대비 317배, `sorted_hashmap` 대비 429배 쓰루풋이 더 많다. 왜? O(1)이니까.
+	2. read도 매우매우 빨라졌다. 왜? 캐싱해둔거 로컬에서 그대로 꺼내쓰니까. redis 방식보다 무려 205배 빠르다.
+3. 문제점
+	1. 기존 1~3 방식은 실시간으로 랭킹을 볼 수 있다면, 4번 방식은 10분마다 캐싱한 랭킹을 보는 방식이라 성능을 얻었지만 정확도가 떨어졌다.
+4. 결론
+	1. 랭킹 정확도가 약간 떨어졌지만, read/write 효율이 압도적으로 좋아졌다.
+	2. 아마 레디스로 랭킹 관리 안하고 로컬에서 관리하면 대부분 이 방식으로 구현하지 않을까? 싶다.
+5. 코드
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_04_concurrentHashMap_with_cache/CachedViewCounter.java#L30-L113
+
+
+## 2-5. Array for write + read from cache
+
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
+| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
+| 05.array_read               | 2             | thrpt | 2   | 48065.797  |       | ops/ms |
+| 05.array_write              | 2             | thrpt | 2   | 18921.207  |       | ops/ms |
+
+1. 방법
+	- hashmap -> array로 바꾼 방법
+	- write도 O(1), read도 O(1) (from cache)
+	- 10분마다 sort할 땐 hashMap은 .stream() (map reduce internally)로 한다면, array는 quicksort(n < 10000) or merge sort(n >= 10000)를 쓴다.
+2. 장점
+	- step4)hashmap과 벤치마크 성능을 비교해보면 read 성능이 2.17배 쓰루풋이 더 좋다. write는 1.2배 더 좋다.
+3. 문제점
+	1. 10분에 한번씩 객체 수만개, 수십만개를 sort()할텐데, cpu_usage spike 치면 어쩌지?
+	2. 객체 수십만개 sort()하기 직전에, 기존 객체 수만, 수십만개를 메모리 해제할텐데, 이정도 규모면 full-gc 10분마다 n번씩 자주 일어나지 않을까?
+4. 결론
+	- redis방식 대비 read는 445배, write는 227배 나아지긴 했는데, 좀 더 최적화 시켜보자
+5. 코드
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_05_array_with_cache/ArrayViewCounter.java#L32-L139
+
+
+### Q. 왜 array가 map 대비 더 빠르지?
+
+1. memory(cache) locality 때문.
+	- `AtomicLongArray`는 메모리상에서 값을 붙여서 저장하기 때문에, for문같은거로 read할 때 컴파일러가 안읽어도 array size만큼 chunk 띄어와서 cache에 저장하고 쓰는데,
+	- `hashmap`은 메모리 포인터가 다른 장소를 가르키는데, 캐싱하는 시점 컴파일러 입장에서는 포인터가 가르키는 장소에 다음 원소들이 어디있는지를 모르니까 다 읽어서 값을 가져와야 해서 느리다.
+2. `array`는 `hashmap` 대비, hash 계산을 안해도 된다.
+	- `hashmap`은 인덱스 정하려면 hash() 돌려야 하는데, `array`는 이 스텝을 스킵하고 바로 read/write 할 수 있다.
+	- 어떤 값은 다른데 hash() 돌리면 우연히 인덱스가 같은 값이 나온다. 이 때, hash-collision handling도 해줘야 해서 `array`보다 성능이 느리다.
+3. `ConcurrentHashMap`의 concurrency control이 `AtomicLongArray`의 방식보다 내부적으로 더 복잡하다고 한다.
+
+
+Q. array, hashmap 둘 다 read()의 time_complexity: O(1)인데, 실상은?
+
+```java
+// Array access - truly O(1)
+viewCounts.get(productId)  // Direct memory access
+
+// ConcurrentHashMap access - technically O(1) but with more steps
+viewCounts.get(productId)  // 1. Hash computation
+                           // 2. Segment location
+                           // 3. Bucket traversal if collision
+                           // 4. Value retrieval
+```
+
+## 2-6. primitive Array for write + read from cache
+
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
+| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
+| 05.array_read               | 2             | thrpt | 2   | 48065.797  |       | ops/ms |
+| 05.array_write              | 2             | thrpt | 2   | 18921.207  |       | ops/ms |
+| 06.array_optimized_read     | 2             | thrpt | 2   | 269472.295 |       | ops/ms |
+| 06.array_optimized_write    | 2             | thrpt | 2   | 19227.155  |       | ops/ms |
+
+
+
+1. 방법
+	- step5) array 방식에서 객체생성을 빼고, array의 index를 product_id 삼아 쓰는 방식
+	- write()시 lock을 쓰진 않고 CAS방식을 쓴다.
+2. 장점
+	1. 객체 생성하는 단계가 스킵되서 훨씬 빠르다. 객체 생성 하고 안하고 차이가 read는 쓰루풋 5.6배 빠르고, write는 1.6% 더 빠르다.
+	2. 상품별 view_count 객체 수만, 수십만개 안만들어도 되서 메모리를 아낄 수 있다.
+	3. 수만, 수십만개 객체가 young generation 꽉 채우고 old generation까지 넘어가서 full-gc할 때 드는 비용도 줄일 수 있다.
+3. 문제점
+	1. 프레임워크/언어에서 제공하는 자료구조를 쓰면, 다양한 상황에서도 모두 오류없이 동작해야 하기 때문에, safety-check가 깐깐하게 되있어서 조금 느려진다는 단점이 있지만, 에러날 확률이 낮아진다는 극장점이 있는데, 이렇게 자체적으로 자료구조를 만들면 예상치 못한 에러가 터질 수 있기 때문에, 단순히 성능 이외에 validation-check라던지 등과 꼼꼼한 테스트 등을 고려해야 한다.
+4. 결론
+	1. 성능은 압도적으로 좋긴 하나, 만약 실전이라면 음... 성능이 매우 고픈 상황이 아니라면 도입하기 망설여지긴 한다.
+	2. 만약 도입한다고 해도, safety-check 관련 코드를 꼼꼼히 붙이고, [fuzzy test & PBT](#d-돈관련-코드-테스트-정밀도-높힌-방법)도 붙일 듯 하다.
+5. 코드
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/f35f25351bded04df94c3297a769cefa3f1e27ec/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_06_primitive_array_with_cache/PrimitiveArrayViewCounter.java#L28-L123
+
+
+
+## 3. 사이즈별 정렬 알고리즘 선정
+
+Q. array에서 10분마다 상품별 랭킹을 sort해서 캐싱하는데, 어떤 방식으로 정렬해야 효율적일까?
+
+
+
+### 3-1. when N < 50, insertion sort
+insertion sort의 Big O는 다음과 같다.
+- Time: O(n²)
+- Space: O(1)
+
+별도의 변수, 객체 선언 없이, 기존에 있던 메모리에서 swap()하며 옮기는 방식이라 메모리를 아낄 수 있다는 장점이 있다.
+
+시간복잡도는 O(N^2)이지만, 어짜피 N=50, 매우 작은 수라 괜찮다.
+
+[이 사이트](https://visualgo.net/en/sorting)에서 insertion sort가 어떻게 진행되는지 시각화해서 볼 수 있다.
+
+
+#### a. insertion sort, N=50 benchmark
+
+| Benchmark | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
+|-----------|-------------|-----------------|-------------|------|-----|-------|-------|--------|
+| simple_insertion_sort | 100000 | 50 | 2 | sample | 90599 | 0.452 | ± 0.355 | ms/op |
+| simple_insertion_sort (p0.00) | 100000 | 50 | 2 | sample | | 0.216 | | ms/op |
+| simple_insertion_sort (p0.50) | 100000 | 50 | 2 | sample | | 0.219 | | ms/op |
+| simple_insertion_sort (p0.90) | 100000 | 50 | 2 | sample | | 0.225 | | ms/op |
+| simple_insertion_sort (p0.95) | 100000 | 50 | 2 | sample | | 0.231 | | ms/op |
+| simple_insertion_sort (p0.99) | 100000 | 50 | 2 | sample | | 0.244 | | ms/op |
+| simple_insertion_sort (p0.999) | 100000 | 50 | 2 | sample | | 0.309 | | ms/op |
+| simple_insertion_sort (p0.9999) | 100000 | 50 | 2 | sample | | 1.965 | | ms/op |
+| simple_insertion_sort (p1.00) | 100000 | 50 | 2 | sample | | 5989.466 | | ms/op |
+
+N=50일 때 insertion sort를 벤치마크 돌린 결과값이다.
+
+N사이즈가 작으면
+1. 성능이 준수하고,
+2. worse / avg / best case scenario에서 even한 퍼포먼스를 보여주며,
+3. 메모리도 들지 않기 때문에
+
+... 적절한 선택지라 볼 수 있다.
+
+#### b. insertion sort, N=100,000 benchmark
+
+| Benchmark | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
+|-----------|-------------|-----------------|-------------|------|-----|-------|-------|--------|
+| simple_insertion_sort | 100000 | 100000 | 2 | sample | 4937 | 10.320 | ± 11.823 | ms/op |
+| simple_insertion_sort (p0.00) | 100000 | 100000 | 2 | sample | | 4.022 | | ms/op |
+| simple_insertion_sort (p0.50) | 100000 | 100000 | 2 | sample | | 4.039 | | ms/op |
+| simple_insertion_sort (p0.90) | 100000 | 100000 | 2 | sample | | 4.080 | | ms/op |
+| simple_insertion_sort (p0.95) | 100000 | 100000 | 2 | sample | | 4.100 | | ms/op |
+| simple_insertion_sort (p0.99) | 100000 | 100000 | 2 | sample | | 4.224 | | ms/op |
+| simple_insertion_sort (p0.999) | 100000 | 100000 | 2 | sample | | 1248.086 | | ms/op |
+| simple_insertion_sort (p0.9999) | 100000 | 100000 | 2 | sample | | 15837.692 | | ms/op |
+| simple_insertion_sort (p1.00) | 100000 | 100000 | 2 | sample | | 15837.692 | | ms/op |
+
+
+N=100,000으로 커지면, 99%까지는 고른 성능을 보여주다가,\
+99.9%부터 latency가 4ms -> 1248ms 로 느려지더니,\
+99.99%에는 4ms -> 15837ms 로 매우매우 느려지는걸 볼 수 있다.
+
+따라서 N이 커졌을 때, 안정적이게 좋은 성능을 내는 다른 정렬 알고리즘을 찾아야 한다.
+
+### 3-2. when 50 < N < 10,000, quick sort
+- Big O
+	- Time: O(n log n) average
+	- Space: O(log n)
+- 정렬 방법
+	1. pivot number를 정해서,
+	2. 이 숫자보다 작은 애들을 왼쪽에, swap으로 넘기는걸 반복하면서 반씩 쪼개다가 (log N번 쪼갠다)
+	3. 정렬되면 합치는걸 하는 앤데,
+
+[이 사이트](https://visualgo.net/en/sorting)에서 quick sort가 어떻게 진행되는지 시각화해서 볼 수 있다.
+
+반씩 쪼갤 때 별도 메모리 공간 필요해서 space complexity가 O(1)보다 크고,\
+기본적으로 전체 row N 만큼 훑는걸 log N번 쪼갠 만큼 반복하니까\
+time complexity가 O(N log N)이라고 대~략적으로 이해하곤 있는데\
+Big O 엄밀하게 계산하는법이 따로 있다. 관심있으면 찾아보자.
+
+
+#### a. quick sort, N=10,000 성능비교 w/ insertion sort
+
+| Benchmark | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
+|-----------|-------------|-----------------|-------------|------|-----|-------|-------|--------|
+| optimized_multi_strategy_sort | 100000 | 10000 | 2 | thrpt | 2 | 4.357 | | ops/ms |
+| simple_insertion_sort | 100000 | 10000 | 2 | thrpt | 2 | 1.928 | | ops/ms |
+
+1. quicksort의 쓰루풋은 4.3 ops/ms
+2. insertion sort의 쓰루풋은 1.9 ops/ms
+
+2.2배 성능이 더 좋다.
+
+왜?
+
+insertion sort의 time complexity는 O(N^2), quicksort는 O(N log N)이기 때문.
+
+insertion sort 대비 2배 빨라졌지만, 단점도 있다.
+
+pivot number 기준으로 적은 수, 큰수 반토막씩 내는걸 log N번 하는데, 이 때, 추가 메모리 필요하고 stacktrace 차지한다.
+
+
+
+### 3-3. when N > 10,000, heap sort? quick sort?
+
+- Time Complexity 비교
+	1. Quicksort: O(N log N)
+	2. Heap Sort: O(N log K), where N is size of view_count array & K is top-100 products
+
+
+N이 작으면 quicksort가 이름값 한다. heap sort보다 더 빠르다.
+
+왜?
+
+heap은 아무래도 tree이고, tree_node가 가르키는 다음 노드의 다음노드의 주솟값이 RAM상 어디인지 모르니, 컴파일러가 한번에 못가져가니까 다 읽어야 한다.
+
+반면 array는 arr[1000]이면 1000개 다 읽지 않아도 int size * 1000만큼 뭉텅이로 가져가서 캐싱해 처리하기 때문에 빠르다.
+
+
+하지만, top-100-products 랭킹 기능에서 결국 K값이 100밖에 안되니까,
+
+처음엔 quicksort가 더 빠를지라도, K는 고정값인데 N이 커지면, 언젠가 crossover 지점이 온다.
+
+그 지점이 언제일까?
+
+
+#### a. benchmark (quicksort vs heapsort)
+
+| Benchmark       | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
+|-----------------|--------------|-----------------|-------------|------|-----|-------|-------|-------|
+| heap_sort       | 100000       | 10000           | 2           | thrpt | 2   | 4.058 |       | ops/ms |
+| heap_sort       | 100000       | 100000          | 2           | thrpt | 2   | 0.667 |       | ops/ms |
+| heap_sort       | 100000       | 1000000         | 2           | thrpt | 2   | 0.643 |       | ops/ms |
+| quick_sort      | 100000       | 10000           | 2           | thrpt | 2   | 4.308 |       | ops/ms |
+| quick_sort      | 100000       | 100000          | 2           | thrpt | 2   | 0.519 |       | ops/ms |
+| quick_sort      | 100000       | 1000000         | 2           | thrpt | 2   | 0.508 |       | ops/ms |
+
+N이 만, 십만, 백만일 때 quick_sort vs heap_sort 벤치마크 돌렸다.
+
+N이 10,000일 때 quicksort가 heap_sort보다 쓰루풋이 더 좋다. (4.3 > 4.0)\
+하지만 N이 100,000이 넘어가는 순간 heap_sort의 성능이 더 좋아진다.
+
+
+
+| Benchmark       | maxProductId | nonZeroElements | threadCount | Mode | Cnt | Score | Error | Units |
+|-----------------|--------------|-----------------|-------------|------|-----|-------|-------|-------|
+| heap_sort       | 100000       | 10000           | 2           | avgt  | 2   | 0.512 |       | ms/op  |
+| heap_sort       | 100000       | 100000          | 2           | avgt  | 2   | 3.189 |       | ms/op  |
+| heap_sort       | 100000       | 1000000         | 2           | avgt  | 2   | 3.152 |       | ms/op  |
+| quick_sort      | 100000       | 10000           | 2           | avgt  | 2   | 0.484 |       | ms/op  |
+| quick_sort      | 100000       | 100000          | 2           | avgt  | 2   | 3.760 |       | ms/op  |
+| quick_sort      | 100000       | 1000000         | 2           | avgt  | 2   | 3.910 |       | ms/op  |
+
+latency를 봐도 마찬가지이다.
+
+N이 10만이상 부터는 heap_sort가 quick_sort보다 성능이 더 좋다.
+
+#### b. 코드로 이해하는 heap sort
+
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/9f536efcb18b883467a3e2d02b1fdd58c57c4dbf/back/1.ecommerce/src/jmh/java/com/cho/ecommerce/domain/product/view_count/_07_primitive_array_with_cache_and_optimized_sort/PrimitiveArrayViewCounterSortOptimized.java#L252-L276
+
+
+heap sort는 크게 3파트로 이루어져 있다.
+
+1. view_count한 array를 for-loop 한다 - O(N)
+2. size가 100(top 100 products만 필요하니까)인 priority_queue에 .offer(), .poll()하면서 사이즈 100 맞춘다. - O(log K)를 2번 한다. (그래도 K값이 작아서 괜찮다.)
+3. priority_queue -> array로 형변환 하면 이게 top-100-products_id 이다.
+
+N이 10만이 넘어가도, K=100 고정값이라, step2를 반복하는 step1의 횟수가 더 늘어날 뿐이다. cost가 linear하게 늘어난다.
+
+반면 quicksort는 O(N log N)이다.\
+O(log K), where k=100 보다 O(log N), N=1,000,000 이 cost 증가폭이 더 높다.
+
+
+#### Q. 왜 heap에 insert & delete가 O(log K), where K = size of heap 이지?
+
+A. heap은 2진트리, 자식이 left_child, right_child 2개다.
+
+tree의 depth를 알고 싶으면, 자식수가 밑인 로그를 씌우면 된다.
+
+ex1. 2진트리에서 K값이 7(1 as root, 2 on 2nd layer, 4 on 3rd layer = total 7)일 때, depth는?
+
+3인데, root->leaf 노드로 갈 때 2번만 타면 된다.
+
+
+그래서 log_2 7 = 2.807355 -> 2
+
+ex2. 만약 이 트리에 노드가 하나 추가되서 K=8이라면?
+
+log_2 8 = 3  -> root node에서 3번 만으로 leaf노드까지 갈 수 있다.
+
+
+#### Q . heap에 insert/delete할 때 무슨 일이 일어나지?
+
+
+K=6인 heap이 있다고 하자.
+```
+K = 6일때:
+     1          level 0 (depth 0)
+   /   \
+  2     3       level 1 (depth 1)
+ / \   /
+4   5 6         level 2 (depth 2)
+
+depth = ⌊log₂(6)⌋ = 2
+```
+
+여기서 노드 하나 insert하면 무슨일이 일어날까?
+
+```
+K = 6, 새로운 값 8 삽입:
+
+1) 초기 상태:        2) 8 추가:           3) swap with 3:      4) swap with 1:
+     1                    1                    1                    8
+   /   \                /   \                /   \                /   \
+  2     3              2     3              2     8              2     3
+ / \   /              / \   / \            / \   / \            / \   / \
+4   5 6              4   5 6   8          4   5 6   3          4   5 6   1
+
+총 swap 횟수 = 트리의 높이 = ⌊log₂(7)⌋ = 2
+```
+
+
+step1) 8을 마지막에 추가한다- O(1)\
+step2) 8의 parent와 비교하여 크면 swap() 하는데, 이걸 root_node 까지 **tree_depth 만큼 반복**한다. - O(log K)
+
+그래서 tree_depth를 구하는 O(log K)가 O(log 100) = 6.64... = 6 이니까,
+
+매번 insert/delete 할 때마다 6번의 operation이 일어난다고 보면 된다.
+
+
+
+
+## 4. 결론
+
+| Benchmark                   | (threadCount) | Mode  | Cnt | Score      | Error | Units  |
+|-----------------------------|---------------|-------|-----|------------|-------|--------|
+| 01.redis_read               | 2             | thrpt | 2   | 81.402     |       | ops/ms |
+| 01.redis_write              | 2             | thrpt | 2   | 83.705     |       | ops/ms |
+| 02.max_heap_read            | 2             | thrpt | 2   | 778.630    |       | ops/ms |
+| 02.max_heap_write           | 2             | thrpt | 2   | 50.298     |       | ops/ms |
+| 03.concurrentSkipList_read  | 2             | thrpt | 2   | 49278.453  |       | ops/ms |
+| 03.concurrentSkipList_write | 2             | thrpt | 2   | 35.381     |       | ops/ms |
+| 04.hashMap_cache_read       | 2             | thrpt | 2   | 15962.344  |       | ops/ms |
+| 04.hashMap_cache_write      | 2             | thrpt | 2   | 15855.741  |       | ops/ms |
+| 05.array_read               | 2             | thrpt | 2   | 48065.797  |       | ops/ms |
+| 05.array_write              | 2             | thrpt | 2   | 18921.207  |       | ops/ms |
+| 06.array_optimized_read     | 2             | thrpt | 2   | 269472.295 |       | ops/ms |
+| 06.array_optimized_write    | 2             | thrpt | 2   | 19227.155  |       | ops/ms |
+
+실시간 상품랭킹 기능을 구현하였다.
+
+일반적인 redis로 구현하는 방식 대비, read는 3326배, write는 231배의 성능 향상이 있었다.\
+혹은 로컬 concurrentHashMap으로 구현하는 방식 대비, read는 16.8배, write는 1.21배 성능향상이 있었다.
+
+
+10분마다 상품 조회수 정렬하는 알고리즘도,\
+상품 사이즈 N에 따라서 최적화된 정렬 알고리즘(insertion_sort, quick_sort, heap_sort)을 적용하였다.
+
+
+
+# E. DB 부하를 낮추기 위한 cache 도입기
+
+## 1. 문제
+
+[부하 테스트](#e-부하-테스트)를 해보니, **DB에 i/o를 줄이는게** 성능 & 비용 측면에서 필요하다 느꼈다.
+
+그렇다면, DB에 i/o를 줄이려면 어떻게 해야할까?
+
+자주 i/o되는 정보 위주로,\
+DB에 요청 보내기 전 앞단 미들웨어에 캐싱해두면,\
+DB 부하를 줄이면서 latency가 더 줄지 않을까?
+
+
+### Q. 자주 i/o 되는 쿼리?
+
+ecommerce 쿼리분포가 모든 상품에 **even**하게 나타나지 않는다.
+
+![안성재_even하게_익지_않았어요](./documentation/images/안성재_even.jpg)
+
+유저들이 ecommerce에서 상품검색하면,\
+보통 1,2,3등, 최대 10등까지 만 클릭하고 나머지 상품은 클릭 안한다.
+
+그렇다면,\
+**쿼리의 대부분을 차지하는 1,2,3등 상품정보만 캐싱하면 db부하를 줄일 수 있겠네?**
+
+
+**Q. 어떤 상품이 클릭수가 높고 낮은지 어떻게 파악하지?**
+
+## 2-1. 상품별 조회수 컬럼 추가
+
+![](./documentation/architecture/uml/db부하를_줄이기위한_cache도입기/01.상품별_조회수컬럼_추가.png)
+
+- 방법
+	1. product 필드에 view_count 추가해서
+	2. read 할 때마다 update(product.view_count+1) 한다.
+	3. 그리고 10분 주기 batch로
+		1. product order by view_count
+		2. redis-cache update
+		3. 모든 product들의 view_count set to 0
+- 장점
+	- 구현이 간단하다.
+- 문제점
+	1. DB에 view_count 컬럼에 계속 write하는게 DB에 부하를 많이 준다.
+	2. `ORDER BY VIEW_COUNT`는 PRODUCT table size가 커질수록 cost가 커질 것으로 예상된다.
+	3. 10분마다 product table을 full scan 하면서 view_count 를 0로 초기화 하는 배치 또한 DB에 부하를 많이 주고 lock contention으로 인한 latency 증가 우려가 있다.
+- 결론
+	- 구현은 간단하나, DB 부하 줄이겠다고 캐싱 도입한다는 본래 목적과 어긋나는 해결법이다.
+
+
+
+### 2-2. DB에서 처리
+
+![](./documentation/architecture/uml/db부하를_줄이기위한_cache도입기/02.db에서_처리.png)
+
+- 방법
+	1. Disk i/o 없이 RAM에서 작동하는 임시 테이블을 만든다. `CREATE TEMPORARY TABLE temp_product_views { product_id INT, view_count INT}`
+	2. 트리거를 건다: Product table에 특정 row가 읽힐 때 마다, 임시테이블의 해당 productId에 view_count+1
+	3. 집계 프로시저를 만든다: 임시 테이블에서 product_id를 `GROUP BY`로 묶어서 `select product_id, SUM(view_count) ...`
+	4. 프로시저의 결괏값을 batch로 n분마다 redis에 캐싱한다.
+- 장점
+	1. disk i/o가 아닌 RAM 기반이라 빠르다.
+- 문제점
+	1. 이 방법 역시 DB자원 아끼려고 캐시 미들웨어 도입하는 의미가 퇴색된다.
+		- 그나마 방법1 대비 장점은, 임시 테이블이 Disk I/O를 하지 않고 RAM에서 작동하기 때문에, view_count 같이 빠른 빈도로 write하는 상황에 더 어울린다는 것이다.
+		- 또한 product table에 직접 write하는게 아니라 다른 별개의 임시테이블에 write하기 때문에 기존에 product table에 write-lock을 걸지 않아, product table을 read/write하던 다른 쿼리에 lock contention으로 인한 latency delay를 주지 않는다.
+	2. DB에서 비즈니스로직을 SQL로 처리하면, 파일로 남지않아 버전관리가 힘들어, 후임개발자가 시스템 파악에 곤란할 수 있다.
+
+
+
+### 2-3. message queue + 분석 전용 모듈 추가
+
+![](./documentation/architecture/uml/db부하를_줄이기위한_cache도입기/03.mq_분석모듈_추가.png)
+
+- 방법
+	1. 상품조회가 일어날 때마다 비동기로 동작하는 메시지 브로커(e.g rabbitmq, kafka, etc)에 상품별 조회수를 남긴 후,
+	2. 메시지큐에서 상품별 view_count를 구독하는 분석전용 서버에서 가져와
+	3. view_count가 높은 상품 위주로 정렬해 redis에 저장하는 방식(다른 분석도 하는 겸)
+- 장점
+	1. 확장성 좋고 실시간 분석코드 추가 가능하다.
+- 문제점
+	1. 오버 엔지니어링이다.
+- 결론
+	- 단순히 핫한상품 캐시용이 아닌, 실시간 유저 행동 패턴 데이터를 a/b testing에 먹일 목적으로 전처리를 하거나, 헤비한 통계처리를 하거나 등의 특수목적용 서버가 있으면 고려해볼 순 있는 방법
+
+
+### 2-4. redis에 'sortedSet' 자료구조로 클릭률 집계하기
+
+![](./documentation/architecture/uml/db부하를_줄이기위한_cache도입기/04.redis_sortedset_집계.png)
+
+- what
+	- redis 자료구조 중에 `sortedSet`를 사용하는 방식.
+		- `{key:value}`인데 내부적으로 write할 때 정렬하는 듯 하며,
+		- write의 time_complexity는 O(log N),
+		- read의 time_complexity는 O(log N+M), where N = total element and M = number of returned element
+- 방법
+	1. read 할 때마다 `sortedSet`에 `{productId:view_count+1}` 추가한다.
+	2. 10분에 1번씩 배치로 `sortedSet`의 상위 N개의 아이템을 DB에서 쿼리해와서 Redis에 저장한다.
+- 장점
+	1. 실시간 정확한 상품별 클릭률 랭킹을 집계할 수 있다.
+- 문제점
+	1. 이미 유저 세션관리와 상품 디테일 정보 캐싱, heavy query 캐싱으로 redis가 자원을 많이 쓰는 상황에서 자원 많이 잡아먹는 일을 추가하면 시스템이 감당될까?
+		- ecommerce는 read:write 비율이 9:1인 read-heavy 앱이고, 상품 클릭률이 1초에 엄청 많은 수의 read 요청이 올텐데, 그걸 실시간으로 자료구조에서 view_count 계속 정렬하면서 다른 요청도 처리한다는건데, redis에 부하를 많이 주지 않을까?
+		- 다시 생각해보니 만약에 실시간 랭킹 시스템을 만든다고 해도, 그대로 sortedSet을 사용하지는 않을 듯 하다.
+		- 클릭률이 실시간으로 엄청나게 요청이 많이 올텐데, write연산이 O(1)도 아니고 O(log N)인 연산을 계속 끊기지 않고 하는건 시스템에 부하가 너무 클 듯 하다.
+- 결론
+	- 실시간 상품 랭킹이 필요하면 이 방법을 쓸 것 같긴 하지만, 실시간 랭킹이 아닌 대략 많이 클릭하는 상품들을 뭉텅이를 찾는 목적으로는 최적의 솔루션은 아닌 듯 하다.
+
+
+### 2-5. look aside + write through 전략
+
+![](./documentation/architecture/uml/db부하를_줄이기위한_cache도입기/05.lookaside_writethrough.png)
+
+조회수 많은거 집계해서 넣지 말고,\
+읽히는 상품만 캐싱하고 주기적으로 cache evict해주면,\
+실시간 핫한 상품이 바뀌더라도 좀 더 유연하지 않을까?
+
+
+- what
+	1. 읽기 전략 (Look Aside):
+	    - 데이터를 읽을 때 먼저 캐시를 확인합니다.
+	    - 캐시에 데이터가 있으면(cache hit) 바로 반환합니다.
+	    - 캐시에 데이터가 없으면(cache miss) DB에서 데이터를 가져와 반환하고, 동시에 캐시에 저장합니다.
+	2. 쓰기 전략 (Write Around):
+	    - 데이터를 쓸 때는 DB에만 직접 씁니다.
+	    - 캐시는 업데이트하지 않습니다.
+- 장점
+	1. 트랜드가 빠르게 바뀌는 타입의 ecommerce면 조회수를 한번에 집계해서 캐싱하는 전략보다 이 전략이 유리하다.
+		- Q. 만약 핫한 상품 뽑아서 캐싱했고, @CacheEvict를 3시간으로 설정했는데, 유튜브 때문에 이슈가 몰렸다던지의 이유로 특정 상품이 많이 조회되었는데 캐싱이 안된 상품이었다면?
+		- A. 다음 캐싱될 3시간 동안 DB는 평소 이상으로 부하를 받아 고통받을 것이다.
+- 문제점
+	1. 만약 상품의 read 분포가 고르다면? -> cache miss가 많아진다.
+		- Q. 여성의류쇼핑몰에서 유저 행동패턴이 안 살 상품들 이것저것 수십개씩 클릭한다? 100개 상품 중 40~50개 상품을 클릭한다면?
+		- A. cache_miss율이 올라가고, 불필요하게 redis에 요청하는 스텝이 하나 더 추가 +  cache에 write하는 스탭이 추가되어 오히려 latency가 더 느려질 수 있다.
+		- 또한 상품이 다양하고 양이 많을 수록, redis의 메모리 한계치까지 다 채워 out of memory의 위험도 있다.
+- 해결책
+	- read 분포가 퍼져서 redis 메모리가 빨리 채워진다면,  @CacheEvict 주기를 짧게 가저가서 자주 비워주면 된다.
+- 결론
+	- 트랜드가 자주 바뀔 수 있는 ecommerce에 적합한 캐싱 전략인 듯 하다.
+	- 쿠팡같이 카테고리별 제품 1,2위 찍으면 잘 안바뀌는 특성을 가진 ecommerce는 이 전략에 @CacheEvict 주기를 매우 길게해서 사용해도 될 것 같다.
+
+
+## 3. redis 고려사항
+
+### Q. cache evict 주기를 어떻게 설정해야 할까?
+
+A. 정답은 없다. 서비스 앱의 특성마다 다르고, 유저의 행동패턴에 따라 달라진다.
+
+1. redis 모니터링하면서
+2. 전체 상품의 몇%가 캐싱되었을 때, 해당 상품들이 레디스의 메모리를 몇% 차지하고,
+3. 다른 메모리 점유하는 데이터들과 함께, 얼마나 여유분의 메모리가 남았는지 체크하며 cache-evict 주기를 조절한다.
+
+
+### Q. 메모리 점유율 외에, 모니터링하면서 중점적으로 봐야할 부분은?
+**cache-hit율**을 봐야한다.
+
+유저의 상품 쿼리분포가 집약적이지 않고 고루 퍼져있어서 cache-miss가 자주 일어나고 있다면,\
+redis에 캐싱을 안하는게 더 빠를 수 있다.
+
+
+
+### Q. 서버 터지면 캐싱한 데이터는 어떻게 복구하지?
+
+- case1) 서버 자체가 터져버리는 경우 -> 로그 손실. 답이 없다.
+- case2) 서버는 살아있는데 레디스가 터진 후 재시작 되는 경우
+	- redis-client인 lettuce를 쓰면, 레디스 서버 시작시, 스냅샷으로 저장된걸 로드해준다고 한다.
+
+
+### Q. 데이터 복구 방법은 뭐가 있고 뭘 쓰지?
+
+레디스에는 데이터 백업뜨는 방법이 2가지 있다.
+
+1. 특정 조건 만족하면 snapshot 찍어서 dump.rdb파일로 보관하는 방법(default)
+2. 데이터에 read 말고 write 할 때마다 appendonly.aof 파일로 저장해 보관하는 방법
+
+
+1번이 부하가 몰릴 때 성능 측면에서 유리해 보이니, 1번을 선택한다.
+
+
+
+### Q. 스냅샷 뜨는 세팅 어떻게 설정하지?
+`redis.conf`를 보면 주석을 매우 친절하게 달아줬는데,
+
+```
+# Unless specified otherwise, by default Redis will save the DB:
+#   * After 3600 seconds (an hour) if at least 1 change was performed
+#   * After 300 seconds (5 minutes) if at least 100 changes were performed
+#   * After 60 seconds if at least 10000 changes were performed
+#
+# You can set these explicitly by uncommenting the following line.
+#
+# save 3600 1 300 100 60 10000
+```
+
+1. 매 1분마다 AOF에 저장한다. (데이터가 10000번 바뀐경우)
+2. 매 5분마다 AOF에 저장한다. (데이터가 100번 바뀐경우)
+3. 매 1시간마다 AOF에 저장한다. (데이터가 1번 바뀐경우)
+
+
+default 세팅이고, 이대로 사용한다.
+
+
+## 4. 결과
+### 1. look aside
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/3a07a123eb971db1ba7952fedc0ae39cb3cd0f09/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/service/ProductService.java#L64-L91
+
+### 2. write through
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/3a07a123eb971db1ba7952fedc0ae39cb3cd0f09/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/product/service/ProductService.java#L155-L174
+
+
+
+
+
+
+# F. 기술적 도전 - Backend
+
+## a. bulk insert 성능개선기
+
+### 1. 문제
+소규모 데이터 핸들링은, 어떤 DBMS를 사용하던, 어떻게 SQL을 짜던 큰 문제없이 처리 가능한데,\
+데이터 규모가 커질수록, sql tuning이라던지, dbms, engine 선택의 중요도가 높아진다.
+
+대규모 데이터 핸들링을 실습하기 위해, WAS 서버에서 datafaker라는 라이브러리로 가짜 데이터를 만든 후, saveAll()로 넣었다.
+
+문제는, 어느정도 튜닝이 필요할 볼륨이 적어도 1,000,000 rows 이상은 되어야 하는데, 기존보다 약 100배정도 많은 양을 bulk insert하는게 너무 느리다는 문제가 생겼다.
+
+백만 rows를 bulk-insert 해보자.
+
+
+
+### 2. RDS에 최대 몇개 rows 까지 입력 가능할까?
+
+성능 튜닝하기 전, 총 몇 rows를 넣어야 적합한지, 넣었을 때 차지하는 용량이 얼마나 되는지 등을 계산하자.
+
+
+#### step1. 각 테이블의 byte size 계산하기
+ERD 기준, 각 테이블의 평균 row 크기는 다음과 같다.
+```
+ADDRESS: 303바이트
+AUTHORITY: 33바이트
+CATEGORY: 95바이트
+DISCOUNT: 65바이트
+INACTIVE_MEMBER: 593바이트
+MEMBER: 281바이트
+MEMBER_AUTHORITY: 24바이트
+OPTION: 66바이트
+OPTION_VARIATION: 66바이트
+ORDER: 49바이트
+ORDER_ITEM: 24바이트
+PRODUCT: 205바이트
+PRODUCT_ITEM: 28바이트
+PRODUCT_OPTION_VARIATION: 24바이트
+```
+
+
+#### step2. 데이터가 테이블마다 들어갈 비율 정하기
+
+##### a. 사이즈가 고정인 테이블
+
+- 2 row from AUTHORITY TABLE = 33 byte * 2
+- total: **66 bytes**
+
+##### b. 10명의 유저가 있다고 했을 때,
+
+- 10 row from MEMBMER TABLE = 281 byte * 10
+- 10 row from MEMBER_AUTHORITY TABLE = 24 byte * 10
+- 10 row from ADDRESS TABLE = 303 byte * 10
+- 3 row from INACTIVE_MEMBER TABLE = 593 byte * 3 (유저 10명당 휴먼 유저 3명이라 가정)
+- 2 row from ORDER TABLE = 49 byte * 20 (유저 1명당 평균 2개의 주문을 했다고 가정)
+- 3 row from ORDER_ITEM = 24 byte * 20 (1개 주문당 평균 3개의 주문 아이템이 있다고 가정)
+- total: **9319 bytes** (2810 + 240 + 3030 + 1779 + 980 + 480), 38 rows
+
+##### c. 카테고리
+
+- 1 row from CATEGORY TABLE = 95 byte
+- 3 root categories are fixed: MEN, WOMEN, KIDS = 95 byte * 3
+- 4 mid level category per 3 root categories(total 12): Hat, Top, Bottom, Shoes per 3 root categories are fixed: 95 byte * 4 * 3
+- 5 low level categories per 4 mid level categories(total 60): 95 byte * 60
+- 3 option per a low level category(total 180): 49 byte * 180 = 8820
+- 3 option_variation per a option(total 540): 66 byte * 540 = 35640
+- total: **51585 bytes** (95 byte * (3 + 12 + 60) + 49 bytes * 180 + 66 bytes * 540), 795 rows
+
+
+##### d. 상품
+
+product테이블에 1 row씩 insert 하면, product_item과 product_option_variation에 3개 rows씩 추가 삽입 된다고 가정한다.\
+1 product_item당 1개의 discount가 붙는다고 가정한다.
+
+- PRODUCT: 1개 row = 205바이트
+- PRODUCT_ITEM: 3개 row = 3 * 28바이트 = 84바이트
+- DISCOUNT: 1개 row = 65 바이트
+- PRODUCT_OPTION_VARIATION: 3개 row = 3 * 24바이트 = 72바이트
+- total: **416 bytes** (205 + 84 + 65 + 72), 8 rows
+
+##### e. 유저 수 대비 상품수 비율 가정하기
+
+```
+쿠팡은 2020년 기준으로 약 1,800만 명의 월간 활성 사용자를 보유하고 있으며, 약 6,500만 개 이상의 상품을 판매하고 있다고 밝혔습니다.
+이는 쿠팡이 2020년 6월 미국 증시 상장을 위해 제출한 서류(F-1)를 통해 공개된 정보입니다.
+```
+
+100% 정확한 정보인지는 모르겠으나, 크리티컬하지는 않기에 맞다고 가정한다.
+
+유저 수: 상품 수 = 1: 3.6
+...으로 가정한다.
+
+###### f. 유저 수 대비 총 rows 수 계산하기
+
+1. 고정
+	- 2 rows (AUTHORITY)
+	- 795 rows (CATEGORY, OPTION)
+2. 가변 (1 유저, 1 상품 가정)
+	- 1 user: 3.8 rows
+	- 3.6 product: 8 rows * 3.6 = 28.8 rows
+
+- 결론: 고정 797 rows + 가변 32.6 rows per 1 user
+	- 32.6X + 797, where X is number of users
+
+
+##### g. 10명의 유저당 필요한 바이트수 정리
+
+유저 수: 상품 수가 1:3.6 비율일 때,
+
+유저 10명당 상품 36개가 등록된다고 가정하면,
+
+1. 유저 10명: 9319 bytes
+2. 상품 36개: 14976 bytes
+3. 권한 테이블(고정): 66 bytes
+4. 카테고리 테이블(고정): 51585 bytes
+
+total: 51651 bytes + 24295 bytes * N
+
+
+#### step3. 데이터베이스 용량 별 max 유저 수, rows 수 정하기
+```
+Y = (((X * 1024^3) - 51651) / 24295) / 10
+```
+X = 데이터베이스 용량 in GiB\
+Y = 유저 수
+
+...를 계산하려고 했으나, RDS는 64TB까지 저장 가능하고, 저장하는 데이터의 양의 비례해 요금을 부과한다고 한다.
+
+byte단위로 용량 계산하는건, EC2에 데이터베이스 설치해서 운영할 때나 쓸만한 접근 법인듯 하다..
+
+그런데 WAS서버를 띄운 이후, RDS로 1 million rows를 bulk insert하는 방법 이외에,
+1. 1 million rows를 로컬 pc에 저장한 이후,
+2. export해서
+3. aws s3에 저장한걸
+4. RDS에서 LOAD DATA INLINE으로 bulk insert하는 방식
+...도 있기 때문에, 계산해 본다.
+
+- 8GiB Storage = 35,000 유저, 126,000 상품, 1,141,797 rows
+	- 35,356.58 users = (((8 * 1024^3) - 51651) / 24295) / 10
+	- 1 million rows, 8GiB 정도면 중소규모 데이터 사이즈로, sql tuning이 유효한 사이즈로 보인다.
+
+물론 이 방식보다 ec2,rds 생성시 자동으로 JPA-saveAll() 하는 방식이 간편하기 때문에, 왠만하면 saveAll() 방식을 쓰도록 한다.
+
+
+
+
+### 3. JPA .saveAll()
+```java
+Integer numberOfFakeUsers = 2000; //6000 rows total
+Integer numberOfFakeCategories = 10; //75 rows total
+Integer numberOfFakeOptions = 3; //180 rows
+Integer numberOfFakeOptionsVariations = 3; //540 rows
+Integer numberOfFakeProducts = 4000;
+Integer numberOfFakeProductItems = 3; //12000 + 12000 (discount) rows total
+Integer numberOfFakeProductionOptionVariations = numberOfFakeProducts * numberOfFakeProductItems; //12000 rows
+Integer numberOfFakeOrders = 2000; //2000 rows
+Integer maxProductItemsPerOrder = 2; //4000 rows
+
+... total 52,730 rows
+```
+
+약 5만 rows의 fake-data를 for-loop으로 insert하는 방법
+```
+.lambda$initData$0:88] - Total execution time: 463886 ms
+```
+
+463.886s = 7.7m
+
+5만 rows 넣을 때 약 8분정도 소요.\
+100만 rows 넣을 때 약 2시간 40분 소요
+
+
+### 4. JPA .saveAll() + spring batch(chunk size of 1000)
+
+spring batch에 chunk size를 조절하는게 있길래,\
+chunk size를 1000정도로 늘려주면 한 transaction안에 여러 데이터를 넣으니까 훨씬 빠르지 않을까? 라고 생각했지만 오판이었다.
+
+오히려 더 느려졌다.
+
+.saveAll()하는건 똑같은데, spring batch를 내부적으로 로드하는 시간이 추가되서 그런 듯 하다.
+
+
+### 5. JPA .saveAll() + batch size of 1000
+
+spring.jpa.properties.hibernate.jdbc.batch_size = ?
+
+30,50,100,1000,2000 으로 설정하고 결과값을 비교하여 최적 소요시간을 찾아보자.
+
+- batch_size
+	1. 설정을 안한 경우: 463886ms
+	1. 30: 447800 ms
+	2. 50: 445065 ms
+	3. 100: 449799 ms
+	4. 1000: 442736 ms
+	5. 2000: 446292 ms
+
+
+5만 rows를 insert했을 때 batch_size를 1000으로 할 때 442736ms으로, 설정을 안한 경우보다 21,150ms 빨라졌다.
+
+하지만 batch_size를 30->2000으로 조절했는데도, 성능차이가 거의 안나는 것을 보면,\
+bulk-insert 하는게 아니라 여전히 row by row로 한줄씩 넣어서 느린 듯 하다.
+
+저 21,150ms 성능 개선은 jpa -> jdbc로 바꿀 때, jpa의 entity state를 hibernate가 관리해주는 로직과 safety check를 스킵해서 빨라진 듯 하다.
+
+
+
+
+### 6. jdbc bulk insert + batch size 1000
+
+Q. 왜 JPA .saveAll()이 jdbc bulk-insert보다 느릴까?
+
+1. hibernate가 entity 객체 주기적으로 확인하고 세션에 캐싱하기 때문에 느리다.
+	- JPA는 .saveAll()할 때 JPA entity lifecycle 을 거친다. 그 때, entity state를 확인하고, dirty checking을 통해 entity 객체가 modified 되었는지 확인한다. 이런 safety check 단계 때문에 bulk insert시 느려진다.
+	- entity 생성시 세션에 캐싱해 놓는데, bulk-insert는 어짜피 한번 넣기만 하고, 읽지는 않을거라 이 단계가 오버헤드다.
+2. @Id generation strategy 때문에 .saveAll()이 느려질 수 있다.
+	- entity @Id generation strategy 중에 IDENTITY를 보통 쓰는데, 이는 id를 데이터베이스보고 id값을 구해서 넣으라는 말이다.
+	- 그래서 JPA에서 쿼리 생성시, id 부분을 "?"로 채워서 보내준다.
+	- 문제는 JPA hibernate는 객체의 상태관리를 해야하기 때문에, insert한 이후, db가 반환한 id값을 받아 해당 엔티티의 id값을 업데이트 해야한다.
+	- 이 단계 때문에, IDENTITY 전략을 쓰면, bulk-insert를 한번에 모아서 할 수 없게된다. 한줄씩 넣은 다음, db에서 id값 받아서 업데이트 해주기 때문이다.
+
+
+Q. @Id generation 전략을 IDENTITY 말고 SEQUENCE 쓴다면?
+
+- JPA단에서 id를 순차적으로 +1해주는 SEQUENCE 전략을 써봤다.
+- SEQUENCE 전략은 insert하기 전에, db에서 마지막 id값이 몇인지 읽어온 다음, 그 값에 +1한 값을 insert id에 넣는 방식이다.
+- IDENTITY보다 SEQUENCE가 bulk-insert시에 성능이 훨씬 좋은데, 이유는, IDENTITY와는 다르게, 한번만 db query로 id를 가져오면, batch_size(ex. 1000)만큼 +1씩 해서 보내기 때문에, 묶어서 보낼 수 있기 때문이다.
+- 써봤는데 문제가 있었다. @Id값이 균일하게 +1씩 올라가는게 아니라, 중간에 몇백씩 구멍이 생기는 경우가 생겼다.
+- 파라미터 중에 allocationSize라고, batch_size인 1000을 입력하면, 천개의 rows마다 db에 마지막 id값을 쿼리해주는 파라미터가 있는데, 이게 서버가 여러개면 문제가 발생할 수 있겠다라는 생각이 들었다.
+- 예를들어 스케일 아웃된 서버 A,B가 있는데, A서버가 id값을 읽어온게 1이고, B서버가 id값을 읽어온게 30이고, read 쿼리 날리는걸 bulk-insert 때문에 1000정도로 해주면, A서버는 1001될 때까지 id를 안읽어오고, B서버도 1030이 될 때 까지 안읽어온다는 말인데, B서버가 write한 id값을 A서버가 write하는 경우가 발생할 수 있기 때문에, default id generation 전략이 IDENTITY인 듯 하다.
+- bulk-insert 때문에 엔티티 id 전략을 SEQUENCE로 바꾸는건 안좋은 생각인 것 같다. IDENTITY 전략을 냅두고, bulk-insert용 jdbc 쿼리를 짜는게 맞다는 생각이 든다.
+
+
+
+JPA .saveAll() -> jdbc bulk-insert로 바꾸고 동일한 숫자의 53,000 rows를 넣은 결과,
+```
+Total execution time: 188,535 ms
+```
+
+442,736ms -> 188,535ms로, JPA .saveAll()방법 대비, 약 254,201ms 만큼 성능향상이 되었다.
+
+442초 걸리던게 188초로 줄어든 것이니까 큰폭으로 성능 향상되었다.
+
+
+
+### 7. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true
+
+[stackoverflow에 jdbc batch optimization 기법](https://stackoverflow.com/questions/2993251/jdbc-batch-insert-performance)을 찾아보니
+`jdbc:mysql://${url}:3306/${database-name}?${parameter}`에, `&rewriteBatchedStatements=true`을 추가하면 빨라진다고 한다.
+
+왜냐?
+
+기존 jdbc bulk-insert는 mysql로 이런 쿼리를 날린다고 한다.
+```sql
+INSERT INTO X VALUES (A1,B1,C1)
+INSERT INTO X VALUES (A2,B2,C2)
+...
+INSERT INTO X VALUES (An,Bn,Cn)
+```
+
+그런데 `&rewriteBatchedStatements=true`을 하면, 저 쿼리를
+
+```sql
+INSERT INTO X VALUES (A1,B1,C1),(A2,B2,C2),...,(An,Bn,Cn)
+```
+
+..로 한줄 압축해서 보낸다고 한다.
+
+실험해 본 결과,
+```
+Total execution time: 152384 ms
+```
+
+..로 기존 5만 rows insert, 188,535 ms 대비, 36,151ms 더 빨라졌다.
+
+5만 rows 넣는데 2분 30초 걸리니까, 100만 rows를 넣을 때 까지, 약 50분 정도 걸린다.
+
+
+
+### 8. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + custom random generator
+
+조금 더 성능개선할 수 있는 여지가 있지 않을까?
+
+일단 datafaker를 안쓰고, 고정된 값을 넣으면 훨씬 빠르다.
+
+```
+Total execution time: 671 ms
+```
+
+5만 rows를 넣는게 2분 30초 걸리던게 이젠 1초도 안걸린다.
+
+100만 rows도 넣어보았다.
+```
+Total execution time: 9712 ms
+```
+
+100만 rows 넣는데 10초도 안걸렸다.
+
+그만큼 bulk-insert latency의 대부분의 병목이 datafaker 라이브러리의 random String generation에 있었다.
+
+#### 8-1. datafaker, 왜 느린가?
+
+datafaker library가 어떻게 random String generate하는지 뜯어보자.
+
+주소에 넣는 컬럼중의 하나인 ZIPCODE(우리나라로 치면 우편번호)가 어떻게 생성되는지 보자.
+
+##### step1. 먼저, [address.yml](https://github.com/datafaker-net/datafaker/blob/main/src/main/resources/en/address.yml)에는 postcode가 이런식으로 저장되어있다.
+
+```yml
+en:
+    faker:
+        address:
+            postcode:
+                - "#####" /* 저 "#####"의 의미는, '5'자리 랜덤한 숫자를 의미한다. */
+```
+
+
+##### step2. 이 문자열을 File I/O로 불러온다. [link](https://github.com/datafaker-net/datafaker/blob/main/src/main/java/net/datafaker/providers/base/Address.java)
+
+저 resolve()라는 메서드를 보자.
+```java
+/**
+ * Returns a String representing a standard 5-digit zip code.
+ *
+ * @return a String representing a standard zip code
+ */
+public String zipCode() {
+	return faker.bothify(resolve("address.postcode"));
+}
+```
+
+```java
+/**
+ * Resolves a key to a method on an object or throws an exception with specified message.
+ * <p>
+ * #{hello} with result in a method call to current.hello();
+ * <p>
+ * #{Person.hello_someone} will result in a method call to person.helloSomeone();
+ */
+public String resolve(String key, Object current, ProviderRegistration root, Supplier<String> exceptionMessage, FakerContext context) {
+	String expression = root == null ? key2Expression.get(context.getSingletonLocale()).get(key) : null;
+	if (expression == null) {
+		expression = safeFetch(key, context, null);
+		if (root == null) {
+			key2Expression.updateNestedValue(context.getSingletonLocale(),
+				MAP_STRING_STRING_SUPPLIER, key, expression);
+		}
+	}
+
+	if (expression == null) {
+		throw new RuntimeException(exceptionMessage.get());
+	}
+
+	return resolveExpression(expression, current, root, context);
+}
+```
+저 `safeFetch(key, ...)`를 통해 파일을 읽어오는 듯 하다.
+
+```java
+/**
+ * Safely fetches a key.
+ * <p>
+ * If the value is null, it will return an empty string.
+ * <p>
+ * If it is a list, it will assume it is a list of strings and select a random value from it.
+ * <p>
+ * If the retrieved value is an slash encoded regular expression such as {@code /[a-b]/} then
+ * the regex will be converted to a regexify expression and returned (ex. {@code #regexify '[a-b]'})
+ * <p>
+ * Otherwise it will just return the value as a string.
+ *
+ * @param key           the key to fetch from the YML structure.
+ * @param defaultIfNull the value to return if the fetched value is null
+ * @return see above
+ */
+@SuppressWarnings("unchecked")
+public String safeFetch(String key, FakerContext context, String defaultIfNull) {
+	Object o = fetchObject(key, context);
+	String str;
+	if (o == null) return defaultIfNull;
+	if (o instanceof List) {
+		final List<String> values = (List<String>) o;
+		final int size = values.size();
+		return switch (size) {
+			case 0 -> defaultIfNull;
+			case 1 -> values.get(0);
+			default -> values.get(context.getRandomService().nextInt(size));
+		};
+	} else if (isSlashDelimitedRegex(str = o.toString())) {
+		return "#{regexify '%s'}".formatted(trimRegexSlashes(str));
+	} else {
+		return (String) o;
+	}
+}
+```
+다시 fetchObject(key, context);를 호출하는데,
+
+
+```java
+private final Map<SingletonLocale, FakeValuesInterface> fakeValuesInterfaceMap = new COWMap<>(IdentityHashMap::new);
+
+
+/**
+ * Return the object selected by the key from yaml file.
+ *
+ * @param key key contains path to an object. Path segment is separated by
+ *            dot. E.g. name.first_name
+ */
+public Object fetchObject(String key, FakerContext context) {
+	Object result = null;
+	final List<SingletonLocale> localeChain = context.getLocaleChain();
+	final boolean hasMoreThanOneLocales = localeChain.size() > 1;
+	for (SingletonLocale sLocale : localeChain) {
+		// exclude default locale from cache checks
+		if (sLocale == DEFAULT_LOCALE && hasMoreThanOneLocales) {
+			continue;
+		}
+		Map<String, Object> stringObjectMap = key2fetchedObject.get(sLocale);
+		if (stringObjectMap != null && (result = stringObjectMap.get(key)) != null) {
+			return result;
+		}
+	}
+
+	String[] path = split(key);
+	SingletonLocale local2Add = null;
+	for (SingletonLocale sLocale : localeChain) {
+		Object currentValue = fakeValuesInterfaceMap.get(sLocale);
+		for (int p = 0; currentValue != null && p < path.length; p++) {
+			String currentPath = path[p];
+			if (currentValue instanceof Map) {
+				currentValue = ((Map<?, ?>) currentValue).get(currentPath);
+			} else {
+				currentValue = ((FakeValuesInterface) currentValue).get(currentPath);
+			}
+		}
+		result = currentValue;
+		if (result != null) {
+			local2Add = sLocale;
+			break;
+		}
+	}
+	if (local2Add != null) {
+		key2fetchedObject.updateNestedValue(local2Add, MAP_STRING_OBJECT_SUPPLIER, key, result);
+	}
+	return result;
+}
+
+private String[] split(String string) {
+	String[] result = KEY_2_SPLITTED_KEY.get(string);
+	if (result != null) {
+		return result;
+	}
+	int size = 0;
+	final char splitChar = '.';
+	final int length = string.length();
+	for (int i = 0; i < length; i++) {
+		if (string.charAt(i) == splitChar) {
+			size++;
+		}
+	}
+	result = new String[size + 1];
+	final char[] chars = string.toCharArray();
+	int start = 0;
+	int j = 0;
+	for (int i = 0; i < length; i++) {
+		if (string.charAt(i) == splitChar) {
+			if (i - start > 0) {
+				result[j++] = String.valueOf(chars, start, i - start);
+			}
+			start = i + 1;
+		}
+	}
+	result[j] = String.valueOf(chars, start, chars.length - start);
+	KEY_2_SPLITTED_KEY.putIfAbsent(string, result);
+	return result;
+}
+
+```
+1. split()메서드에서 "address.postcode"에 마침표를 기준삼아 String[]에 ["address", "postcode"]를 나눠담고,
+2. `Object currentValue = fakeValuesInterfaceMap.get(sLocale);`에서, sLocale이 수동으로 랜덤 문자열을 적은 .yml파일의 위치이고, 그 파일을 읽어서 Map에 담은 값이 currentValue인 듯 하다.
+
+`private final Map<SingletonLocale, FakeValuesInterface> fakeValuesInterfaceMap = new COWMap<>(IdentityHashMap::new);`에서 저 `FakeValuesInterface`를 implement하는 클래스를 찾아보면,
+
+```java
+public class FakeValues implements FakeValuesInterface {
+
+	//...
+
+	@Override
+    public Map<String, Object> get(String key) {
+        if (values == null) {
+            lock.lock();
+            try {
+                if (values == null) {
+                    values = loadValues();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        return values == null ? null : (Map) values.get(key);
+    }
+
+	private Map<String, Object> loadValues() {
+        Map<String, Object> result = loadFromUrl();
+        if (result != null) return result;
+        result = loadFromUrl();
+        if (result != null) return result;
+        final Locale locale = fakeValuesContext.getLocale();
+        final String fileName = fakeValuesContext.getFilename();
+        final String[] paths = fileName.isEmpty()
+            ? new String[] {"/" + locale.getLanguage() + ".yml"}
+            : new String[] {
+                "/" + locale.getLanguage() + "/" + fileName,
+                "/" + fileName + ".yml",
+                "/" + locale.getLanguage() + ".yml"};
+
+        for (String path : paths) {
+            try (InputStream stream = getClass().getResourceAsStream(path)) {
+                if (stream != null) {
+                    result = readFromStream(stream);
+                    enrichMapWithJavaNames(result);
+                } else {
+                    try (InputStream stream2 = getClass().getClassLoader().getResourceAsStream(path)) {
+                        result = readFromStream(stream2);
+                        enrichMapWithJavaNames(result);
+                    } catch (Exception e) {
+                        LOG.log(Level.SEVERE, "Exception: ", e);
+                    }
+                }
+
+            } catch (IOException e) {
+                LOG.log(Level.SEVERE, "Exception: ", e);
+            }
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+	private Map<String, Object> loadFromUrl() {
+        final URL url = fakeValuesContext.getUrl();
+        if (url == null) {
+            return null;
+        }
+        try (InputStream stream = url.openStream()) {
+            return readFromStream(stream);
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, "Exception: ", e);
+        }
+        return null;
+    }
+
+	private Map<String, Object> readFromStream(InputStream stream) {
+        if (stream == null) return null;
+        final Map<String, Object> valuesMap = new Yaml().loadAs(stream, Map.class);
+        Map<String, Object> localeBased = (Map<String, Object>) valuesMap.get(fakeValuesContext.getLocale().getLanguage());
+        if (localeBased == null) {
+            localeBased = (Map<String, Object>) valuesMap.get(fakeValuesContext.getFilename());
+        }
+        return (Map<String, Object>) localeBased.get("faker");
+    }
+}
+
+
+```
+
+1. FakeValues는 모든 .yml파일을 읽어서 램에 저장해놓는게 아니라, 호출된 .yml파일만 lazy load로 읽는 듯 하다.
+2. FakeValues.get(key)는 파일을 읽기 전, ReentrantLock을 걸고, loadValues()를 호출,
+3. loadFromUrl()에서 파일 URL을 Stream 객체를 이용해 읽어, `Map<String, Object>`에 저장후 반환한다..
+
+
+
+
+##### step3. .yml 파일을 읽어 address.post에서 불러온 "#####"를 5자리 랜덤한 숫자로 변경한다. [link](https://github.com/datafaker-net/datafaker/blob/main/src/main/java/net/datafaker/service/FakeValuesService.java#L282)
+
+```java
+private static final char[] DIGITS = "0123456789".toCharArray();
+
+private String bothify(String input, FakerContext context, boolean isUpper, boolean numerify, boolean letterify) {
+	final int baseChar = isUpper ? 'A' : 'a';
+	final char[] res = input.toCharArray();
+	for (int i = 0; i < res.length; i++) {
+		switch (res[i]) {
+			case '#' -> {
+				if (numerify) {
+					res[i] = DIGITS[context.getRandomService().nextInt(10)];
+				}
+			}
+			case 'Ø' -> {
+				if (numerify) {
+					res[i] = DIGITS[context.getRandomService().nextInt(1, 9)];
+				}
+			}
+			case '?' -> {
+				if (letterify) {
+					res[i] = (char) (baseChar + context.getRandomService().nextInt(26)); // a-z
+				}
+			}
+			default -> {
+			}
+		}
+	}
+
+	return String.valueOf(res);
+}
+```
+
+파일 I/O를 파싱해서 가져온 저 "#####"값의 한자리를 지나갈 때마다, Random rand.nextInt()로 값을 얻은걸 char로 변환시켜 합친다.
+
+
+
+##### 결론: datafaker, 왜 느린가?
+
+1. `faker.address()` 관련 함수 호출시에는 address.yml 파일을 Stream객체로 파싱해 `Map<String, Object>`에 담아놓고, `faker.address().zipCode()`나 `faker.address().city()` 등 호출할 때, 저 맵에서 문자열을 가져오는 식으로 작동하는 듯 하다. 그러다 `faker.commerce()`나 `faker.name()`같은 다른 도메인을 호출하면, 다시 파일 I/O를 하는 듯 하다.
+2. 혹시 [병렬처리](https://github.com/search?q=repo%3Adatafaker-net%2Fdatafaker%20parallel&type=code)같은 성능최적화를 했나 보았으나, 하지 않은걸 확인했다. 왜 인걸 생각해 보면, 모든 row가 같은 형식인데 데이터만 다르면, 파일을 일정한 사이즈의 청크로 잘라서 parallel하게 읽을 수 있는데, 랜덤 문자열이 담긴 .yml 파일들은 파일마다 hierarchy 구조가 제각각이기 때문에, 나눠서 병렬로 읽을 수 없는 구조였다.
+3. 파일 I/O가 in-memory read보다 약 1000배정도 느리다고 하니까, 램공간만 충분하다면, in-memory에서 랜덤하게 문자열을 생성하는 알고리즘을 찾는게 성능상 더 빠르지 않을까?
+4. 커스텀 랜덤 문자열 생성기를 만들면, 범용 library에 포함되는 safety check 코드도 뺄 수 있어서 성능상 좀 더 빨라지지 않을까?
+
+
+
+
+#### 8-2. datafaker가 만드는 문자열은 반드시 unique하지도 않는다.
+
+datafaker는 File I/O 때문에 느리다 라는 단점 외에 또 다른 단점이 있었는데,\
+데이터 값이 커지면, unique한 값을 만들어내지도 않았다.
+
+```java
+public static void main(String[] args) {
+	int count = 1_000_000; // Number of strings to generate
+	Faker faker = new Faker();
+
+	Set<String> uniqueStrings = IntStream.range(0, count)
+//            .parallel()
+		.mapToObj(i -> {
+			return faker.name().fullName();
+		})
+		.collect(Collectors.toCollection(HashSet::new));
+
+	System.out.println("Generated " + uniqueStrings.size() + " unique strings");
+
+	int duplicateCount = count - uniqueStrings.size();
+	System.out.println("Found " + duplicateCount + " duplicate strings");
+}
+```
+해당 코드로 백만 랜덤 문자열 생성 시, 중복 확인 테스트를 해본 결과,
+
+```
+Generated 880416 unique strings
+Found 119584 duplicate strings
+```
+1. 백만 rows의 이름을 만들면, 그 중, 약 12만 rows가 중복이고,
+2. [공식문서](https://www.datafaker.net/documentation/unique-values/?h=unique#values-from-yaml-files)에 따르면, `.unique()`로 값을 뽑아낼 순 있으나, .yml 파일 안에 수동으로 입력한 값 이상을 요청하면 에러를 뱉는다고 한다.
+
+[name.yml](https://github.com/datafaker-net/datafaker/blob/main/src/main/resources/en/name.yml) 파일은 rows 수가 6천 rows정도 되서 이정도 카디널리티가 나오지, 다른 마이너한 도메인의 문자열은 중복도가 더 심할 것으로 예상된다.
+
+Q. 데이터가 중복으로 나오는게 왜 문제냐?
+
+중복값이 나오는건 매우 중요하다.
+
+인덱스 적용하는 컬럼의 카디널리티에 따라 적용되는 인덱스 종류와 조인 종류가 달라질 수 있고, 이는 성능에 크게 영향을 미칠 수 있기 때문이다.
+
+
+#### 8-3. in-memory에서 생성되는 random unique String generator를 만들자
+
+```java
+private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+private static final int STRING_LENGTH = 10;
+
+private static String[] generateUniqueStrings(int count) {
+	Set<String> uniqueSet = new HashSet<>(count);
+
+	ThreadLocalRandom random = ThreadLocalRandom.current();
+	while (uniqueSet.size() < count) {
+		uniqueSet.add(generateRandomString(random));
+	}
+
+	return uniqueSet.toArray(new String[0]);
+}
+
+private static String generateRandomString(ThreadLocalRandom random) {
+	StringBuilder sb = new StringBuilder(STRING_LENGTH);
+	for (int i = 0; i < STRING_LENGTH; i++) {
+		int randomIndex = random.nextInt(CHARACTERS.length());
+		sb.append(CHARACTERS.charAt(randomIndex));
+	}
+	return sb.toString();
+}
+```
+
+실험 결과, 백만 unique string을 만드는데 296ms가 걸렸다.
+
+File I/O도 없고, safety check도 없어서 빠르다.
+
+string길이도 원하는 대로 조절할 수 있다.
+
+
+같은 원리인데, 멀티 스레드 환경에서는 HashSet에서 값을 꺼낼 때, 같은 값을 두 쓰레드에서 꺼내갈 수 있으니, ConcurrentLinkedQueue에 값을 넣고 빼내는 식으로만 살짝 바꾼다.
+
+
+랜덤 int, double, 날짜도 필요하니 만들어준다.
+
+
+
+#### 8-4. 필요한 랜덤 변수의 양과 메모리 요구치를 계산하자
+```
+1. Random Strings:
+	- User-related fields (username, email, name, password, street, city, state, country, zipcode): 9 fields * 40,000 users = 360,000 strings
+	- Product-related fields (name, description): 2 fields * 80,000 products = 160,000 strings
+	- Category-related fields (category_code, name): 2 fields * (3 top categories + 12 mid categories + 60 low categories) = 150 strings
+	- Option-related fields (value): 1 field * (60 low categories * 3 options) = 180 strings
+	- OptionVariation-related fields (value): 1 field * (180 options * 3 variations) = 540 strings
+	- Total random strings needed: 360,000 + 160,000 + 150 + 180 + 540 = 520,870 strings
+	- 520,870 strings * 10 characters * 2 bytes = ~10.8 MB
+
+2. Random Integers:
+	- Product-related fields (rating_count): 1 field * 80,000 products = 80,000 integers
+	- ProductItem-related fields (quantity): 1 field * (80,000 products * 3 items) = 240,000 integers
+	- Order-related fields (quantity): 1 field * (40,000 users * 2 order items) = 80,000 integers
+	- Total random integers needed: 80,000 + 240,000 + 80,000 = 400,000 integers
+	- 400,000 integers * 4 bytes = ~1.6 MB
+
+3. Random Doubles:
+	- Product-related fields (rating): 1 field * 80,000 products = 80,000 doubles
+	- ProductItem-related fields (price): 1 field * (80,000 products * 3 items) = 240,000 doubles
+	- Discount-related fields (discount_value): 1 field * (240,000 product items * 1 discount) = 240,000 doubles
+	- Order-related fields (price): 1 field * (40,000 users * 2 order items) = 80,000 doubles
+	- Total random doubles needed: 80,000 + 240,000 + 240,000 + 80,000 = 640,000 doubles
+	- 640,000 doubles * 8 bytes = ~5.1 MB
+
+4. Random Dates:
+	- Discount-related fields (start_date, end_date): 2 fields * (240,000 product items * 1 discount) = 480,000 dates
+	- Order-related fields (order_date): 1 field * 40,000 users = 40,000 dates
+	- Total random dates needed: 480,000 + 40,000 = 520,000 dates
+	- 520,000 dates * 12 bytes = ~6.2 MB
+```
+
+대략적으로 23.7Mb의 메모리의 heap 공간을 차지한다고 나온다.
+
+각 데이터 타입당, 필요한 값의 range가 다른데, 이걸 계산해보면, 다음과 같다.
+
+---
+1. string: 520,870 rows
+	- product
+		- product name
+		- product description
+	- discount type
+		- discount type
+	- address
+	- category
+	- option
+	- optionVariation
+2. integer
+	- orderItems: 80,000 rows (40,000 * 2)
+		- 1~30
+	- productRatingCount : 80,000 rows
+		- 1~1000
+	- productItem quantity : 240,000 rows (80,000 * 3)
+		- 1~1000
+3. double
+	- orderItem price : 80,000 rows (40,000 * 2)
+		- 100~1_000_000
+	- product rating: 80,000 rows
+		- 0.5~5
+	- product price: 240,000 rows (80,000 * 3)
+		- 100~1_000_000
+	- discount
+		- discountRate : 1~100 (rate) : 120,000 (80,000 * 3 / 2)
+		- discountRate: 100~100_000 (fixed) : 120,000 (80,000 * 3 / 2)
+4. date
+	- order
+		- order date (today - 과거 2년 사이) : 80,000 (40,000 * 2)
+	- discount: 240,000 (80,000 * 3)
+		- startDate: today - 30 days
+		- endDate: today + 30 days (start date + 30일 하자)
+
+---
+필요한 수량 계산
+
+1. Integer 1~30 -> 80,000
+2. Integer 1~1000 -> 320,000
+3. double 0.5~5 -> 80,000
+4. double 1~100 -> 120,000
+5. double 100~100_000 -> 120,000
+6. double 100~1_000_000 -> 320,000
+7. date 2개월 전 ~ today -> 320,000
+
+
+
+#### 8-5. 성능 측정 해보기
+
+datafaker를 썼을 때 `Total execution time: 152384 ms` 가 나왔는데,\
+custom random value generator로 바꾼 후, `Total execution time: 152731ms`가 나왔다.
+
+왜 변화가 없을까?
+
+1. 약 2백만 random value 만드는데 걸리는 시간을 측정해본 결과 1초 미만으로 나왔다. 이건 빠르다.
+2. jvm monitoring 결과, 2백만개의 객체를 만들고, 다른 여타 datasource connection이나 preparedStatement 객체등을 만들 때, heap memory 부족으로 인해 GC가 계속 일어나는 현상을 확인했다.
+
+![](documentation/images/2024-03-26-17-18-41.png)
+
+- Allocation/Promotion metric을 보면, 초기에 프로그램 실행하고 2백만 객체를 만들 때, heap memory할당을 하다가, Eden 영역이 꽉 차서 promotion되는 객체들이 초당 884kb/s 의 메모리를 할당된다는걸 확인할 수 있다.
+- 그 후, major gc와 allocation failure gc가 100ms~400ms의 시간을 잡아먹을 동안, 오른쪽에 Allocated 메모리는 0으로 되고, Eden/Young 공간에 공간이 확보되면, 다시 메모리를 할당하다가, 꽉 차면 100ms 정도 걸리는 minor gc (allocation failure)가 발생하는걸 확인할 수 있다.
+- 만든 2백만개의 객체는, 한번 bulk-insert하면 어짜피 쓰이지 않으므로, insert이후 바로 minor gc로 메모리 해제되는 듯 하다. 다만 해제해야 하는 객체 숫자가 많아서 minor gc 시간이 오래걸리는 듯 하다.
+
+
+이렇듯, in-memory에 객체 수백만개를 만드는게 File에서 읽어오는 방식보다는 Disk I/O 가 없으니까 더 빠르긴 한데,\
+heap 메모리 부족으로 인한 잦은 gc 때문에 결과적으로 보았을 때, latency가 비슷했다.
+
+혹시나 heap size에 메모리를 더 많이 할당하면, 더 빨라지지 않을까? 해서 jvm heap memory를 2GiB까지 할당했다.
+
+```
+java -Xms512m -Xmx2g -jar app.jar
+```
+하지만 결론적으로는 성능상 별 차이는 없었다.
+
+Eden이 찰 때까지의 조금의 시간 동안만 약간 시간을 벌 수 있었으나, 더 많이 찬 만큼, minor gc가 더 오래 걸린게 상쇄해서이지 않을까? 로 예측된다.
+
+
+### 9. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + custom random generator + parallel
+
+기존에 single thread로 bulk-insert 메서드 4개를 순차실행하지 말고,
+
+bulk-insert 메서드 4개만큼 dataSource에서 Connection을 4개받아서, 동시에 병렬로 처리하면, 더 빨라지지 않을까?
+
+```java
+int numThreads = Runtime.getRuntime().availableProcessors(); //cpu core 수 만큼 bulk-insert를 분할정복할 thread 생성
+ExecutorService executorService = Executors.newFixedThreadPool(numThreads); //bulk-insert를 불할정복할 thread pool 생성
+
+List<Future<?>> futures = new ArrayList<>();
+
+for (int i = 0; i < numThreads; i++) {
+	int startUser = i * (numberOfUsers / numThreads);
+	int endUser = (i == numThreads - 1) ? numberOfUsers : (i + 1) * (numberOfUsers / numThreads);
+
+	int startProduct = i * (numberOfProducts / numThreads);
+	int endProduct = (i == numThreads - 1) ? numberOfProducts : (i + 1) * (numberOfProducts / numThreads);
+
+	int startOrder = i * (numberOfOrders / numThreads);
+	int endOrder = (i == numThreads - 1) ? numberOfOrders : (i + 1) * (numberOfOrders / numThreads);
+
+	futures.add(executorService.submit(() -> {
+		try (Connection connection = dataSource.getConnection()) {
+			connection.setAutoCommit(false);
+			bulkInsertDenormalizedUsers(connection, startUser, endUser, batchSize);
+			bulkInsertDenormalizedProducts(connection, startProduct, endProduct, batchSize);
+			bulkInsertDenormalizedOrders(connection, startOrder, endOrder, numberOfUsers, numberOfProducts, batchSize);
+			connection.commit();
+		} catch (SQLException | JsonProcessingException e) {
+			log.error("Error in bulk insert thread", e);
+			throw new RuntimeException(e);
+		}
+	}));
+}
+
+// Wait for all threads to complete
+for (Future<?> future : futures) {
+	future.get();
+}
+
+executorService.shutdown();
+```
+
+
+실험해본 결과,
+```
+Total execution time: 150127 ms
+```
+5만 rows 넣는데 2,604ms 개선으로, 약간의 개선은 있었으나 큰 차이는 없었다.
+
+왜일까?
+
+single thread로 순차적으로 bulk-insert하는거랑,
+
+4 thread로 동시에 4개의 bulk-insert를 하는거와 latency가 비슷하다는 말은,
+
+병목이 database에서 있다는 말 아닐까?
+
+database를 bulk-insert 전용으로 튜닝해보자.
+
+
+### 10. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + custom random generator + parallel + mysql tuning
+
+#### 10-1. buffer pool size 사이즈 키우기
+
+```sql
+mysql> SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size';
++-------------------------+-----------+
+| Variable_name           | Value     |
++-------------------------+-----------+
+| innodb_buffer_pool_size | 134217728 |
++-------------------------+-----------+
+1 row in set (0.00 sec)
+```
+
+캐시 역할을 하는 buffer pool의 크기를 134Mb에서 500Mb로 늘려보자.
+
+bulk-insert시, 한번에 flush()하는 총 량을 늘려주는 효과가 있다고 한다.
+
+```
+mysql> SET GLOBAL innodb_buffer_pool_size = 512000000;
+Query OK, 0 rows affected, 2 warnings (0.00 sec)
+
+mysql> SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size';
++-------------------------+-----------+
+| Variable_name           | Value     |
++-------------------------+-----------+
+| innodb_buffer_pool_size | 536870912 |
++-------------------------+-----------+
+1 row in set (0.00 sec)
+```
+
+
+실험 결과,
+```
+Total execution time: 150336 ms
+```
+..로 기존과 큰 차이는 없었다.
+
+
+#### 10-2. disable binary logging
+
+WAL(write ahead log)라고, 파일에 write하는 도중에 에러나면 데이터가 날아갈 수 있으니까,\
+에러났을 때 대비, 백업 retry, rollback 등을 위해 로그파일에 먼저 쓰기 작업을 하는데, 어짜피 가짜 데이터이고, 백만 rows중에 몇개 손실나도 큰 상관은 없으므로, bulk-insert 도중에는 꺼둔다.
+
+실험 결과,
+```
+Total execution time: 151768 ms
+```
+...로 기존과 큰 차이는 없었다.
+
+
+주의!
+
+root 권한이 아니면 이 설정을 할 수 없다!
+
+로컬 mysql에는 root로 접속하기 때문에 코드레벨에서 binary logging을 끌 수 있었으나,
+
+user로 접속하는 aws-rds의 경우 권한이 없으므로 실행하면 에러가 난다.
+
+rds parameter에 따로 설정을 해 주어야 한다!
+
+
+#### 10-3. increase max_allowed_packet size
+
+bulk-insert시, 하나의 쿼리에 수백, 수천개의 값을 넣는데, 이 최대치를 늘려주는 설정이다.
+
+```sql
+mysql> SHOW GLOBAL VARIABLES LIKE 'max_allowed_packet';
++--------------------+----------+
+| Variable_name      | Value    |
++--------------------+----------+
+| max_allowed_packet | 67108864 |
++--------------------+----------+
+1 row in set (0.00 sec)
+```
+
+약 67Mb인데, 100Mb로 늘려보자.
+
+```sql
+mysql> SET GLOBAL max_allowed_packet = 100000000;
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> SHOW GLOBAL VARIABLES LIKE 'max_allowed_packet';
++--------------------+----------+
+| Variable_name      | Value    |
++--------------------+----------+
+| max_allowed_packet | 99999744 |
++--------------------+----------+
+1 row in set (0.00 sec)
+```
+
+실험 결과,
+```
+Total execution time: 148634 ms
+```
+약간 빨라졌으나 큰 차이는 없다.
+
+#### 10-4. `concurrent_insert` setting
+
+동시에 insert하는게 기본은 AUTO라고 되어있다.
+
+```sql
+mysql> SHOW GLOBAL VARIABLES LIKE 'concurrent_insert';
++-------------------+-------+
+| Variable_name     | Value |
++-------------------+-------+
+| concurrent_insert | AUTO  |
++-------------------+-------+
+1 row in set (0.01 sec)
+```
+
+```sql
+mysql> SET GLOBAL concurrent_insert = 2;
+Query OK, 0 rows affected (0.00 sec)
+```
+concurrent insert를 허용한다.
+
+
+실험 결과,
+```
+Total execution time: 148767 ms
+```
+이전과 큰 차이는 없다.
+
+### 11. jdbc bulk insert + batch size 1000 + &rewriteBatchedStatements=true + parallel + mysql tuning + custom random generator
+
+병렬처리하고, mysql 세팅을 bulk-insert 용으로 바꿔도 latency가 개선되지 않는걸 보면,
+
+결국 병목의 원인은 너무 많은 random value를 만들었는데, gc가 너무 자주 일어나서 생기는 문제로 보인다.
+
+따라서, 랜덤값을 만드는 양을 최소화 해보자.
+
+기존에 랜덤 변수 만드는 방식은 백만개 rows에서 들어가는 모든 변수들의 값을 랜덤하게 생성하는 것이었는데,
+
+어짜피 같은 column의 값만 안겹치면 되지, 다른 column의 값은 이전에 쓴거 또 써도 상관없으니까,
+
+랜덤값을 최소량으로 만들고, 최대한 여러 컬럼에 걸쳐서 돌려쓰게 만들자.
+
+
+1. String: 520,000 -> 80,000
+2. Integer, 1~30: 80000 -> 0
+3. Integer, 1~1000: 320,000 -> 0
+4. Double, 0~5: 80,000 -> 50 (0.1의자리 이상)
+5. Double, 1~100: 120,000 -> 1000 (0.1의 자리 이상)
+6. Double, 100~100,000: 120,000 -> 1,000
+7. Double, 100~1,000,000: 320,000 -> 10,000
+8. Double, today-N month: 520,000 -> N * 30
+
+
+약 150만개 객체 -> 10만개 객체로 줄여보자
+
+실험 결과,
+```
+Total execution time: 151452 ms
+```
+
+차이가 없거나 오히려 더 늘었다?
+
+![](documentation/images/2024-03-28-17-48-49.png)
+
+객체 150만개 만들적에는, major gc(metadata gc)는 400ms, minor gc(allocation failure)은 100ms 걸리던게,
+
+![](documentation/images/2024-03-28-17-49-42.png)
+
+major gc(metadata gc)는 75ms, minor gc(allocation gc)는 25ms로 많이 준걸 확인할 수 있다.
+
+그런데 왜, latency는 똑같을까?
+
+![](documentation/images/2024-03-28-17-52-01.png)
+
+mysql 컨테이너의 메트릭을 보니까,
+
+network i/o에서 read는 spring app으로부터 초당 51.8Mb나 받아오는데,
+
+disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o에서 병목이 있는 것 같다.
+
+이전 시행착오에서, mysql tuning한게 4종류 였다.
+1. increase buffer pool size
+2. disable binary logging
+3. increase max_allowed_packet size
+4. concurrent_insert setting to ON
+
+이 중에서, 사실상 1번은 read시에 disk i/o줄일려고 캐싱하려는 목적으로 buffer pool size를 늘리는거니까 별 효과 없을 것 같고,
+
+3번의 경우엔, 메트릭을 보니 mysql container가 초당 50Mb/s을 받아오는데, disk i/o write가 초당 2Mb밖에 안되니까, 이걸 더 늘려도 의미 없을 듯 하다.
+
+4번의 경우엔, default setting이 auto인데, bulk-insert같은 heavy-write 시에, mysql이 자동으로 ON으로 바꾸기 때문에, 건드려도 별 차이가 없는 듯 하다.
+
+사실상 2. disable binary logging이 가장 write disk i/o 성능을 높힐 수 있을 것 같으나,
+
+테스트 해보니, 이걸 끄면 최대 disk i/o write 속도가 12kb/s 밖에 나오지 않았다.
+
+왜 그렇게 나오는지는 ppm같은 mysql 전용 모니터링 툴을 붙여서 더 자세히 알아봐야 할 듯 싶다.
+
+
+## b. Ecommerce에서 인증 및 보안
+
+### 1. 문제
+
+돈 안걸린 서비스(ex. 이상형 월드컵)는 해킹 당해도 피해가 크진 않다.\
+'개인정보가 또 유출됬구나~'
+
+근데 전자상거래같은 돈 걸린 사이트는 해킹당하면 큰일난다.\
+'내 신용카드로 몇백 질러버리면?'\
+두려움에 편도체가 마비되고 기억에 강렬하게 남아 나쁘게 입소문난다.
+
+회사가 물질적 피해 물어줘야하고 소송당해서 법적 책임 물을 수도 있고 하여튼 골치아프다.\
+무엇보다 고객의 신뢰를 잃는다는게 제일 크다.
+
+
+인증 시스템을 사용해 어떻게 하면 보안수준을 높힐 수 있을까?
+
+
+
+### 2. 인증 시스템 플로우 차트
+```mermaid
+flowchart TD
+    subgraph Registration
+        A[/Register Page/] --> B{Register Form}
+        B --> C[Submit User Data]
+        C --> D[Save User to DB]
+        D --> E[/Login Page/]
+    end
+    subgraph Authentication
+        E[/Login Page/] --> F{Login Form}
+        F --> G[Submit Credentials]
+        G --> H{Check Credentials}
+        H -->|Valid| I[Redirect to Dashboard]
+        H -->|Invalid| Q[Increment Failed Attempts]
+        Q --> R{Failed >= 5 Times?}
+        R -->|No| F
+        R -->|Yes| S[Lock Account]
+        S --> W[Notify User via Email]
+        S --> Z1[Transfer to inactiveMember Table via Cron Job]
+    end
+    subgraph Password Recovery
+        E --> J{Forgot Password?}
+        J --> U[/Password Recovery Page/]
+        U --> K[Enter UserId]
+        K --> L{User Exists?}
+        L -->|Yes| M[Send Verification Email]
+        L -->|No| N[Display 'User Does Not Exist']
+        N --> V[Show Register Button] --> A
+        M --> O[User Enters 6-Digit Code]
+        O --> P{Code Valid?}
+        P -->|Yes| T[Unlock User's Account]
+        T --> X[Reset Password Form]
+        X --> Y{Password Requirements Met?}
+        Y -->|Yes| Z[Update Password] --> E
+        Y -->|No| X
+        P -->|No| O
+    end
+    %% Define classes for nodes with black text
+    classDef blackText fill:#fff,stroke:#333,color:#000
+    %% Apply black text class to all nodes
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,Z1 blackText
+    %% Registration nodes - Orange shades
+    style A fill:#FFB74D,stroke:#333
+    style B fill:#FFB74D,stroke:#333
+    style C fill:#FFB74D,stroke:#333
+    style D fill:#FFB74D,stroke:#333
+    style V fill:#FFB74D,stroke:#333
+
+    %% Authentication nodes - Blue shades
+    style E fill:#64B5F6,stroke:#333
+    style F fill:#64B5F6,stroke:#333
+    style G fill:#64B5F6,stroke:#333
+    style H fill:#64B5F6,stroke:#333
+    style I fill:#64B5F6,stroke:#333
+    style Q fill:#64B5F6,stroke:#333
+    style R fill:#64B5F6,stroke:#333
+
+    %% Account Lock/Unlock nodes - Red & Green shades
+    style S fill:#EF5350,stroke:#333
+    style T fill:#81C784,stroke:#333
+    style W fill:#EF5350,stroke:#333
+    style Z1 fill:#EF5350,stroke:#333
+
+    %% Password Reset nodes - Purple shades
+    style X fill:#9575CD,stroke:#333
+    style Y fill:#9575CD,stroke:#333
+    style Z fill:#9575CD,stroke:#333
+
+    %% Password Recovery nodes - Teal shades
+    style U fill:#4DB6AC,stroke:#333
+    style J fill:#4DB6AC,stroke:#333
+    style K fill:#4DB6AC,stroke:#333
+    style L fill:#4DB6AC,stroke:#333
+    style M fill:#4DB6AC,stroke:#333
+    style N fill:#4DB6AC,stroke:#333
+    style O fill:#4DB6AC,stroke:#333
+    style P fill:#4DB6AC,stroke:#333
+```
+
+인증 시스템이 양이 많으니까 나눠서 생각하자.
+
+1. 인증 방법 정하기(session vs jwt)
+2. 인증 실패 & 이상현상 감지 시, 유저 밴 기능
+3. 밴한 유저 정보 관리 & 리커버리 기능
+
+
+
+
+
+### 3. 인증 방법론 정하기
+
+#### 3-1. session vs jwt 뭐 쓰지?
+
+세션 썼다.
+
+왜?
+
+세션이 jwt보다 보안적으로 더 뛰어나니까.
+
+왜?
+
+세션은 이상현상 감지 시, "즉시" session invalidate 하고 계정 락 걸면 계정탈취 후에 일어나는 피해를 최소화할 수 있다.
+
+하지만 jwt는 토큰이 expire할 때 까지 서버에서 뭘 할 수가 없다.
+
+그래서 [jwt+refresh token](https://github.com/Doohwancho/spring/tree/main/03.spring-security/jwt-refresh-token) 쓰는 방법도 만들어 봤는데,\
+expire 시간을 아무리 짧게해도,\
+결국 stateful한 session 방식이 아닌 stateless한 jwt방식은 탈취당하면 서버에서 벤 할 방법이 없다.
+
+
+#### 3-2. 분산 시스템에서 JWT의 stateless함의 단점 극복법?
+추후 서비스가 성장하고 부하가 커져서 레디스로 수 많은 세션들 부하 처리가 힘들어지거나,\
+monolith에서 MSA로 변경 등의 이유로 jwt를 도입해야 할 때,\
+stateless의 단점인 '탈취 후 이상현상 감지시 즉시벤이 안됨'을 어떻게 극복할 수 있을까?
+
+redis에서 블랙리스트 관리하면 되지 않을까?\
+근데 그건 stateful한 방식이잖아? -> 세션 하위호환이다.
+
+ec2의 로컬캐시로 블랙리스트를 관리하면 된다.\
+근데 분산환경에서 ec2-1, ec2-2, ec2-3 여러개가 있는데, 서로 가지고있는 블랙리스트의 싱크가 안맞으니까\
+ec2들 앞단에 로드밸런서에 기능중에 sticky-session 기능이었던가? 를 이용해서\
+스케일아웃된 ec2들에게 요청을 라운드로빈으로 순서대로, 랜덤하게 보내는게 아니라,\
+한번 ip-2요청이 3번째 ec2에게 갔으면, 계속 ip-2는 ec2-3 에게 보내는 식으로 처리한 후,\
+스프링 로컬캐시로 블랙리스트를 캐싱하여 매 jwt validate마다 같이 검증할 듯 하다.\
+일정 주기마다 배치로 banned_user 테이블에 저장하고.
+
+이 방식은 분산시스템에서 redis 서버에 부하를 주지 않으면서,\
+수십, 수백개에 분산된 WAS서버에서 스스로 인증을 하는데\
+stateless한 jwt의 단점을 기술적으로 극복하여\
+stateful한 session의 이점인 즉시 벤처리 기능도 구현할 수 있는 방법인 것으로 예측된다.\
+(근데 안만들어봐서 확실하진 않다)
+
+
+
+
+#### 3-3. 세션 저장소는 어디에?
+Q. 클라이언트에서 세션키를 보관할건데, 보안적으로 그나마 우수한 장소는?
+
+![](./documentation/architecture/uml/authentication/저장소_보안.png)
+
+cookie에서 보관한다.
+
+javascript로 데이터 못빼가니까 그나마 보안적으로 다른 선택지 대비 낫다고 판단된다.
+
+
+
+#### 3-4. 이상행동 감지시 계정 잠금 기능
+
+![](documentation/architecture/uml/authentication/authentication_flowchart.png)
+
+현재는 가장 기초적인 password 5회 틀릴 시, 계정잠금 기능만 구현되어있다.\
+다른 이상현상의 예시로는 client에서 사용자 ip range가 한국에서 오는지, 외국에서 오는지 체크할 수 있다.
+
+
+
+
+#### 3-5. inactive user를 Member 테이블로부터 이관하기
+![](documentation/images/inactive-user.png)
+
+- what
+	- 잠긴 계정은 주기적으로 `Member table`에서 `INACTIVE_MEMBER table`로 이관된다.
+- why
+	- member table의 사이즈가 너무 커지면, `Member table` 쿼리 성능이 낮아지기 때문에, inactive user, banned user는 다른 테이블로 이관해줘서 자주 쓰이는 member table의 사이즈 조절해준다.
+- how
+	1. 매주 일요일 새벽 3시에
+	2. cron + batch로
+	3. locked account를
+	4. MEMBER table -> INACTIVE_MEMBER table로 이전한다.
+
+
+
+
+
+
+### 4. 결과
+
+#### a. 이상현상 감지 시, 유저 벤 기능
+1. session clustering (spring security + redis)
+2. 이상행동 감지시(로그인 5회 틀림) invalidate session + account lock 한다.
+3. 매주 일요일 새벽 3시에 cron + batch로 locked account를 MEMBER table에서 INACTIVE_MEMBER table로 이전한다.
+
+
+##### a-1. 기능1: login attempt 실패할 때마다 카운트+1
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L71-L82
+
+
+##### a-2. 기능2: 카운트가 일정 수치 이상 쌓이면 비정상적인 유저라고 판단, invalidate session && lock account
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L82-L101
+
+
+##### a-3. 기능3: INACTIVE_MEMBER를 다른 테이블로 이전, 매주 새벽 3시마다 cron job
+https://github.com/Doohwancho/ecommerce_monolith/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/step/UserToInactiveMemberStepConfig.java#L24-L144
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/main/java/com/cho/ecommerce/global/config/batch/scheduled/ScheduledJobConfig.java#L22-L32
+
+
+
+
+#### b. 'forgot password?' 에서 email로 유저 verify 후 reset password
+
+##### b-1. 기능1: send 6 digit code verification to user's email
+https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L125-L175
+
+##### b-2. 기능2: verify 6 digit code
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L201-L251
+
+##### b-3. 기능3: reset password
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3aae7547a8661c1/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/member/service/UserVerificationService.java#L353-L379
+
+
+
+
+
+## c. 돈관련 코드 테스트 정밀도 높힌 방법
+
+### 1. 문제
+
+일반적인 코드는 테스트 커버리지가 넓은 integration 테스트 위주로 하면서,\
+에러나면 그 부분 위주로 top-down으로 디버깅하는 방식이 효율적이다.
+
+근데 돈 관련 코드는 실패하면 금전적 손실, 배상 및 소송, 평판 하락, 신뢰 손실 등\
+골치아파지기 때문에 테스트를 더 정교하게 짜야한다.
+
+문제는 테스트코드에서 예외케이스를 짤 정도로 **예상한 에러면, 이미 고쳤다는 것**이다.\
+예상하지 못한 다양한 예외케이스를 던져주는 테스트 라이브러리가 없을까?
+
+
+### 2. 방법론
+
+![](./documentation/images/fuzzy_testing_pbt.webp)
+
+PBT(`property_based_test`) + fuzzy testing을 이용하면 이 문제를 해결할 수 있다.
+
+
+#### 2-1. PBT: '속성'에서 반드시 참이어야 하는 부분 검증
+PBT란 '속성'을 던져주면 해당 '속성'이라면 반드시 참이여야 하는 점을 테스트 해준다.
+
+ex1) Q. `sort(list)`를 PBT하면, 출력 list가 반드시 만족해야 하는 속성이란?
+
+1. 입력 list.size()가 출력 list.size()와 반드시 같아야 한다.
+2. 출력 list의 n번째 원소는, n+1번째 원소보다 반드시 같거나 작아야 한다.
+
+
+ex2) `add(a,b)`를 PBT하면, `add(b,a)`의 출력 값도 같게 나오는지 테스트 해준다.
+
+
+...이걸 PBT가 자동으로 검증해준다.
+
+
+#### 2-2. fuzzy test: 파라미터에 edge cases 검증을 세심하게 해준다.
+테스트코드 짤 때, 모든 에지케이스들 다 생각하고 도입하는건 비현실적인데, 이걸 fuzzy test가 자동으로 해준다.
+
+Q. 테스트 인풋이 `Integer`이라면?
+
+A. 해당 인풋안에서 일어날 수 있는 모든 edge case들을 던져준다.
+
+ex. 0, -1, null, "abc", "0xfffffff", -2147483648, 2147483647, -2147483648-1, 4294967295, ...
+
+
+
+
+
+#### 2-3. fuzzy test: 랜덤 파라미터 넣는걸 수십, 수백번 해준다.
+
+
+```java
+@RunWith(JUnitQuickcheck.class)
+public class StringReverserProperties {
+
+    @Autowired
+    private StringReverser stringReverser;
+
+    @Property(trials = 50)  //랜덤 String s 를 보내고 50번 트라이 한다는 것
+    public void reversingTwiceGivesOriginalString(String s) {
+        String reversedOnce = stringReverser.reverse(s);
+        String reversedTwice = stringReverser.reverse(reversedOnce);
+        assertEquals(s, reversedTwice);
+    }
+}
+```
+
+예를들어, 이 코드는 `reverse_string()` 테스트 코드인데,\
+PBT가 50번동안 랜덤한 `String s`를 만들어 테스트 돌려준다.
+
+만약 테스트 실패했다?\
+그러면 실패한 모든 케이스 다 주는게 아니라,\
+실패 케이스 중에서 제일 짧고 간단한 케이스를 반환해줘서, 디버깅시 편하는 이점도 있다.
+
+내가 짠 코드의 **최소 반례 데이터**를 반환해준다.
+
+
+### 3. 주의점
+
+#### 3-1. 메서드 하나에 테스트 수십,수백번 돌리는거라 cpu cost가 매우 크고 시간도 오래걸린다.
+1. 수 많은 corner case들과
+2. 속성에 반드시 참이어야 하는 명제
+3. 랜덤 인풋 파라미터 수십번 테스트 돌리면,
+
+... test 비용이 매우 커지고 시간도 오래걸린다.
+
+
+그러니 모든 코드에 PBT를 적용할 순 없다.
+
+사람 생명 연관된 코드, 돈 관련코드 등,\
+반드시 실패하면 안되는 코드에만 적용하자.
+
+
+### 4. 적용
+
+#### 4-1. PBT + fuzzy test 지원 라이브러리 고르기
+
+아래의 후보군이 있었는데, 선정 기준은 다음과 같다.
+
+1. 필요한 기능(PBT + fuzzy test)을 지원하는가?
+2. 최근까지 maintain 되고 있는가?
+3. 사람들이 많이 사용하는가? star 수가 많은가?
+
+
+`jqwik` 쓰기로 했다.
+
+---
+1. jqwik
+	1. junit5와의 호환이 가능하다
+	2. 최근까지 maintain 되고 있다
+	3. 4494 commits
+2. junit-quickcheck
+	1. 2022년까지 업데이트
+	2. 1161 commits
+	3. junit-quickcheck (2021.10.29. 현재 1.0 버전 기준)는 junit4에 dependency를 두고 있다고 명시되어있어서,
+	4. https://github.com/pholser/junit-quickcheck
+3. quick theory
+	1. 마지막 업데이트가 4년전
+	2. 212 commits
+	3. https://github.com/quicktheories/QuickTheories
+4. quickcheck
+	1. https://pholser.github.io/junit-quickcheck/site/1.0/javadoc.html
+5. kotlin test
+	1. also has basic support for PBT. Currently no shrinking yet.
+
+
+#### 4-2. 가격 discount 코드에 PBT + fuzzy test 적용하기
+
+돈관련된 상품가격에 할인율 적용하는 코드에 PBT + fuzzy test를 도입했다.
+
+https://github.com/Doohwancho/ecommerce_monolith/blob/add3486330c26f69afb55656aa5740ed5d11577d/back/1.ecommerce/src/test/java/com/cho/ecommerce/property_based_test/ProductPriceDiscountTest.java#L39-L68
+
+
+### 5. 결과
+
+이젠 머리아프게 수 많은 코너케이스들 고려 안해도 자동으로 처리해준다.\
+PBT + fuzzy test로 검증한 코드는 절대 안깨진다는걸 아니까,\
+안심하고 리펙토링 할 수 있다는 이점도 있다.
+
+
+
+
+
+
+
+
+# G. 기술적 도전 - Database
+
+## a. 정규화 도입한 방법론과 결국 반정규화 한 이유
+
+### 1. 문제점
+- 현 프로젝트는 작은 규모의 쇼핑몰 프로젝트이다.
+- 앱 론칭 초기엔, 요구사항 변경이 잦고, 그에 따라 데이터베이스 스키마가 추가/변경/삭제되는 경우도 종종 있다.
+- 성능을 고려하면서도, 유연하게 변경 가능한 ecommerce ERD를 설계해야 한다.
+
+### 2. 해결책1 - product를 비정규화 한 방식
+![](documentation/images/정규화-1.png)
+
+- **pros**
+	- 개별 제품 상세 페이지 쿼리는 빠르다.
+- **cons**
+	1. 주문 목록 query가 느려진다.
+		- 구매자가 주문목록 query하려면, 모든 상품 테이블들 다 돌면서 product_id 찾아야 하니까 엄청 느리다.
+		- 이걸 완화하기 위해, 모든 상품테이블에 들어았는 product_id를 인덱스 거는게 최선인 것 같지는 않다.
+	2. 상품 카테고리별로 테이블 만들어줘야 해서 테이블 갯수가 수십~수백개로 늘어난다.
+		- 의외로 테이블 갯수 자체가 늘어나는건 별 문제가 아니라고 한다.
+		- 다만, 그보다 비정규화 했을 때, 상품 끼리 통일된 구조가 아닌게 더 문제라고 한다.
+		- 통일된 구조가 아니면 나중에 확장할 때 merge, 변형 등이 힘들어지기 때문이다.
+		- erd 설계 한번하면 쭉 가는줄 알았는데, 의외로 서비스 초기 때에도 스키마 변경을 자주 할 수 있다고 한다. 유연한 설계를 하자.
+
+---
+
+### 3. 해결책2 - order_item 테이블에 모든 비정규화한 상품테이블 리스트의 FK를 받는 방식
+![](documentation/images/정규화-2.png)
+
+- **pros**
+	- case 1과 같이, 개별 상품 페이지 쿼리는 빠르다.
+- **cons**
+	1. 필드 갯수가 100개 이상인 테이블이 생길 수 있다.
+		- 상품 종류가 100가지라 상품 테이블이 100가지면, order_item가 받는 상품들의 fk가 100개+가 될 것이기 때문이다.
+	2. 불필요한 null check 코드가 많아지고, 이는 휴먼에러날 확률을 높힌다.
+		- 주문목록 query하려면, null check 먼저 하고,해당 아이템의 fk 가지고 아이템 찾는 식 일텐데,
+		- 100개 컬럼 중 99개 컬럼이 Null인데 하나씩 Null비교해서 값을 꺼내는 방식은 안좋은 방식 같다.
+		- 왜냐하면 Null처리 잘못할 수 있어서 에러날 가능성이 있는 코드구조가 될 수 있기 때문이다.
+
+
+
+
+### 4. 해결책3 - 상품별 옵션을 정규화 해서 쪼개놓은 경우
+![](documentation/images/정규화-3.png)
+
+- **pros**
+	- 정규화가 잘 되있어서 변경에 유용하고 확장성이 좋은 설계이다.
+- **cons**
+	1. 정규화를 할 수록 쿼리할 떄 join & subquery 많이 해야 해서 성능이 느려진다.
+		- ex. 상품 등록/업데이트/삭제 시, product/product_item/category/option/option_variation/product_option_variation 이 6개 테이블에 트랜잭션/lock 걸릴텐데, 너무 느릴 것 같다.
+
+
+### 5. 결론
+해결책3을 택한다. 이유는 다음과 같다.
+
+
+#### 1. 서비스 초기에는 성능보다 확장성 우선
+
+비정규화는 일종의 최적화이고 되돌리기 힘든 과정이다.\
+서비스 초기 단계라면 구현된 기능 자체가 수정&삭제가 빈번한데 이럴 경우 정규화된 구조를 사용하여 기능의 수정 & 삭제같은 유지보수를 저렴한 비용으로 유연하게 할 수 있도록 하는 것이 맞다.
+
+서비스가 더 커진다 해도 캐싱, 인덱싱, 분산처리(가용영역 추가, 비쌈)같은 테크닉을 쓸 수 있고,\
+나중에 서비스가 커져서 비정규화나 MSA같이 RDBMS가 보장해주는 것 일부를 포기하고 더 최적화를 해야할 경우가 오면, 이 때 해당 프로젝트 진행하면 된다.
+
+결론: 정규화하고 최적화는 나중에 병목이 생기면 그 때 반정규화 한다.
+
+
+---
+#### 2. 데이터베이스 규모별 정규화 & join 전략
+
+join 성능은 데이터 사이즈가 커질수록 안좋아진다.
+
+이유는 다음과 같다.
+
+여러 테이블 join시, primary key 기준으로 join한다고 해도, 데이터 사이즈가 작으면 primary key를 index한 테이블을 몇번 안타는데,\
+데이터 사이즈가 커지면, 여러 테이블들의 primary key index table 여러번 타기 때문에 join 성능이 떨어진다.
+
+예를들어, 5개정도 테이블을 left outer join 하는 경우, 약 10개의 rows씩 5개 테이블이니까 50개 rows가 쿼리 1번당 lock되는건데, 멀티쓰레드 환경에서는 반정규화로 row 1개만 락걸고 가져오는 것 대비 성능이 좋지 않다.
+
+따라서 서비스 초창기 때 데이터 수가 적을 땐 join 효율이 괜찮으니 정규화로 확장성을 잡다가,\
+유저수가 많아지고 데이터 쌓인게 엄청 많아져 join 효율이 떨어지는 시기가 오면,
+다음과 같은 행동을 취할 수 있다.
+
+1. 사용하던 RDB에서 정규화된 테이블을 비정규화 테이블로 마이그레이션을 한다.
+2. 사용하던 RDB에서 정규화된 테이블을 놔두고, 따로 비정규화된 테이블을 만들어서 write-through성 으로 따로 만든다.(대신 데이터 정합성이 떨어지는 것 고려해야 함)
+3. 별개의 nosql(ex. mongodb)에 기존 RDB 테이블들(aggregates)을 비정규화한 스키마를 하나 만든다.
+4. 샤딩
+5. 파티셔닝
+6. MSA로 쪼개서 도메인별로 해당 도메인에 맞는 데이터를 해당 서비스 전용 디비에 넣어 붙인다.
+7. 자주 사용하는 쿼리는 캐싱처리한다. (ex. main page)
+
+### 6. 반정규화 
+#### 6-1. 문제
+
+정규화된 버전으로 [부하 테스트](#e-부하-테스트) 해봤는데 성능이 너무 안나왔다.
+
+잘게 쪼개놔서 join을 많이해야 하니까 DB CPU에 부하가 금방 올라간 것으로 보인다.
+
+반정규화 해서 join과 FK_insert 비용을 줄여보자.
+
+#### 6-2. 해결책
+
+
+#### before) 정규화 버전
+![](documentation/images/erd.png)
+
+#### after) 반정규화 버전
+![](documentation/images/반정규화된_ERD.png)
+
+1. db에서는 join 없이 최대한 index타서 최소량만 i/o 해오는 식으로 짠다. 나머지 데이터 조립/가공은 서버에서 한다.
+	1. ex) 기존에 option, discount 테이블을 json화 시켜서 컬럼으로 밀어넣었다.
+	2. 원래는 여러번 join해야 했다면, 지금은 하나의 row를 i/o한 후, json을 파싱해서 사용한다.
+2. FK는 성능향상 목적으로 모두 제거했다.
+
+### 6-3. 성능테스트로 검증해보자 (100~800 RPS)
+#### 6-3-1. 실험 조건
+1. ec2, rds 둘다 2 core 4GiB RAM
+2. table size: user = 1000, product = 10000, order = 5000
+3. table rows ratio -> user:product:order = 1 : 10 : 5
+4. http request read:write ratio: 9:1
+
+#### 6-3-2. 반정규화 성능테스트 결과
+![](./documentation/images/3_반정규화_1000_ec2_ver2_after_orderby_index.png)
+
+![](./documentation/images/3_반정규화_1000_rds_ver2_after_orderby_index.png)
+
+
+### 6-4. 성능테스트 결과
+
+반정규화만 잘 하고, FK만 안넣어도, 성능차이가 어마어마하게 난다는걸 알게됬다.
+좀더 자세한 정규화 vs 반정규화 성능비교는 [부하 테스트](#e-부하-테스트)에 기술했다.
+
+
+## b. 통계 쿼리 튜닝
+
+### b-1. 요구사항
+1. 최근 N개월(최대 3개월) 사이에
+2. 카테고리 별 상품 갯수
+3. 해당 카테고리의 상품들의 평균 평점
+4. 해당 카테고리의 총 상품 판매액
+5. 해당 카테고리에서 가장 많이 팔린 상품의 productId
+6. 해당 카테고리에서 가장 많이 팔린 상품의 이름
+7. 해당 카테고리에서 가장 많이 팔린 상품의 총 판매액
+
+...을 query 한다.
+
+### b-2. sql query 문
+
+![](documentation/images/통계쿼리.png)
+
+```sql
+SELECT
+    tmp1.CategoryId,
+    tmp1.CategoryName,
+    tmp1.NumberOfProductsPerCategory,
+    tmp1.AverageRating,
+    tmp1.TotalSalesPerCategory,
+    tmp2.ProductId,
+    tmp2.ProductName AS TopSalesProduct,
+    tmp2.TopSalesOfProduct
+FROM (
+	SELECT
+		c.CATEGORY_ID AS CategoryId,
+		c.NAME AS CategoryName,
+		COUNT(DISTINCT p.PRODUCT_ID) AS NumberOfProductsPerCategory,
+		ROUND(AVG(p.RATING), 1) AS AverageRating,
+		ROUND(SUM(pi.Quantity * pi.PRICE), 1) AS TotalSalesPerCategory
+	FROM CATEGORY c
+	INNER JOIN PRODUCT p ON c.CATEGORY_ID = p.CATEGORY_ID
+	INNER JOIN PRODUCT_ITEM pi ON p.PRODUCT_ID = pi.PRODUCT_ID
+	INNER JOIN product_option_variation pov ON pi.PRODUCT_ITEM_ID = pov.PRODUCT_ITEM_ID
+	INNER JOIN ORDER_ITEM oi ON pov.PRODUCT_OPTION_VARIATION_ID = oi.PRODUCT_OPTION_VARIATION_ID
+	INNER JOIN `ORDER` o ON oi.ORDER_ID = o.ORDER_ID
+	WHERE o.ORDER_DATE BETWEEN :startDate AND ':endDate
+	GROUP BY c.CATEGORY_ID
+) AS tmp1
+INNER JOIN
+	(
+	SELECT
+		a.CategoryId AS CategoryId,
+		b.ProductId As ProductId,
+		b.ProductName As ProductName,
+		a.TopSalesOfProduct AS TopSalesOfProduct
+	FROM
+		(SELECT
+			Sub.CategoryId,
+			Sub.CategoryName,
+			MAX(Sub.TotalSalesPerProduct) as TopSalesOfProduct
+		FROM
+			(SELECT
+				c.CATEGORY_ID as CategoryId,
+				c.name as CategoryName,
+				p2.PRODUCT_ID,
+				ROUND(SUM(pi2.Quantity * pi2.PRICE), 1) as TotalSalesPerProduct
+			FROM CATEGORY c
+			INNER JOIN PRODUCT p2 ON c.CATEGORY_ID = p2.CATEGORY_ID
+			INNER JOIN PRODUCT_ITEM pi2 ON p2.PRODUCT_ID = pi2.PRODUCT_ID
+			INNER JOIN PRODUCT_OPTION_VARIATION pov2 ON pi2.PRODUCT_ITEM_ID = pov2.PRODUCT_ITEM_ID
+			INNER JOIN ORDER_ITEM oi2 ON pov2.PRODUCT_OPTION_VARIATION_ID = oi2.PRODUCT_OPTION_VARIATION_ID
+			INNER JOIN `ORDER` o2 ON oi2.ORDER_ID = o2.ORDER_ID
+			WHERE o2.ORDER_DATE BETWEEN :startDate AND :endDate
+			GROUP BY c.CATEGORY_ID, p2.PRODUCT_ID
+			) as Sub
+		GROUP BY Sub.CategoryId
+		) a
+	INNER JOIN
+		(SELECT
+			c.CATEGORY_ID as CategoryId,
+			c.name as CategoryName,
+			p2.PRODUCT_ID as ProductId,
+			p2.name as ProductName,
+			ROUND(SUM(pi2.Quantity * pi2.PRICE), 1) as TopSalesOfProduct
+		FROM CATEGORY c
+		INNER JOIN PRODUCT p2 ON c.CATEGORY_ID = p2.CATEGORY_ID
+		INNER JOIN PRODUCT_ITEM pi2 ON p2.PRODUCT_ID = pi2.PRODUCT_ID
+		INNER JOIN PRODUCT_OPTION_VARIATION pov2 ON pi2.PRODUCT_ITEM_ID = pov2.PRODUCT_ITEM_ID
+		INNER JOIN ORDER_ITEM oi2 ON pov2.PRODUCT_OPTION_VARIATION_ID = oi2.PRODUCT_OPTION_VARIATION_ID
+		INNER JOIN `ORDER` o2 ON oi2.ORDER_ID = o2.ORDER_ID
+		WHERE o2.ORDER_DATE BETWEEN :startDate AND :endDate
+		GROUP BY c.CATEGORY_ID, p2.PRODUCT_ID
+			) b
+		ON a.CategoryId = b.CategoryId AND a.TopSalesOfProduct = b.TopSalesOfProduct
+	) AS tmp2
+ON tmp1.CategoryId = tmp2.CategoryId
+ORDER BY tmp1.CategoryId
+```
+https://github.com/Doohwancho/ecommerce_monolith/blob/22668b91973432f5e40fd4cb9b74816be7470db9/back/1.ecommerce/src/main/java/com/cho/ecommerce/domain/order/repository/OrderRepository.java#L15-L110
+
+### b-3. 통계 쿼리 튜닝
+
+#### b-3-1. 튜닝 전, 쿼리 이해
+이 쿼리는 크게 3덩이의 subquery로 나뉜다.
+1. tmp1
+2. a
+3. b
+
+##### part1. subquery 'a' 실행
+![](documentation/images/sql-tuning-before-3.png)
+이 부분은 가장 처음에 실행되는 쿼리로, 'a' subquery이다.
+
+문제점: 1000개 row가 있는 order 테이블을 fullscan 하는걸 볼 수 있다.
+
+##### part2. subquery 'tmp1' 실행
+![](documentation/images/sql-tuning-before-4.png)
+
+문제점: where절 조건이 인덱스를 타지 않아서 풀스캔 한다.
+
+
+##### part3. subquery 'b' 실행
+![](documentation/images/sql-tuning-before-5.png)
+문제점: **where절 조건이 인덱스를 안타서 풀스캔을 한다.**
+
+
+##### part4. query statistics
+![](documentation/images/sql-tuning-before-1.png)
+
+총 비용(mysql workbench의 cost 계산 툴 기준): 170,763
+
+- 문제
+    1. 풀 테이블 스캔을 5번이나 하고,
+    2. index를 전혀 안탄다.
+
+- 해결책
+	- where절에 인덱스를 태워서 성능튜닝을 해보자..!
+
+#### b-3-2. WHERE절 조건의 ORDER_DATE 컬럼에 인덱스 적용하기
+
+##### 가. 인덱스 만들고 적용하기
+
+1. 인덱스를 만들고,
+```java
+@Entity
+@Table(
+    name = "`ORDER`",
+    indexes = {
+        @Index(name = "idx_order_date", columnList = "ORDER_DATE")
+    }
+)
+@Getter
+@Setter
+public class OrderEntity {
+    //...
+}
+```
+
+2. 그냥 실행시켰더니, optimizer가 index를 타지 않아서, 타게하도록 힌트를 준다.
+```sql
+INNER JOIN `ORDER` o2 USE INDEX (idx_order_date) ON oi2.ORDER_ID = o2.ORDER_ID
+WHERE o2.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
+```
+
+##### 나. 결과
+![](documentation/images/sql-tuning-after-4.png)
+
+여전히 subquery해서 나온 결과물을 담은 tmp table을 두번 full scan하긴 하지만,\
+"idx_order_date" 인덱스를 index range scan을 3번 타는걸로 바뀌었다.
+
+그런데 수상하게 full scan타는 rows 수가 1200개에서 2660개로 늘어났다???
+
+
+![](documentation/images/sql-tuning-after-1.png)
+
+인덱스 적용했더니, 맨 처음 order table(1000 rows)에서 where절에 date 인덱스 태웠기 때문에 242 rows만 읽는걸 확인할 수 있다.
+
+여기까진 좋았다.
+
+그런데, 문제는 이 이후부터인데,
+
+첫 테이블만 5000 rows -> 242 rows로 줄었고, 이후에 join할 때마다 읽는 rows수가 1.2k rows -> 2.6k rows로 늘었다.\
+그런데 join을 여러번 하니까, 결과적으로 총 읽은 rows수의 양이 122k rows -> 266.6k rows로 늘었다.
+
+나머지 subquery들도 첫번째 subquery와 같은 현상이 일어났다.
+
+![](documentation/images/sql-tuning-after-2.png)
+![](documentation/images/sql-tuning-after-3.png)
+
+**총 읽은 rows수가 튜닝 전에는 170,763 rows 이었는데, 튜닝 후에 오히려 266,600 rows로 오히려 늘었다??**
+
+첫 테이블 읽는 rows수가 5000 rows(full scan) 에서 인덱스 태워서 242 rows 만 읽은건 이해가 가는데,
+
+왜 nested join loop에서 read하는 rows가 늘어나서 결과적으로는 성능이 떨어졌을까?
+
+
+##### 다. 실행계획 뜯어보기
+
+###### before) date 인덱스 타기 전
+![](documentation/images/sql-tuning-before-1.png)
+id6 부분이 subquery 'a' 부분이다.
+
+- 실행순서
+	1. order table(1000 rows)를 full scan하면서, where절에 date를 태워서 필터한다. (약 200 rows정도 나옴)
+	2. 1의 결과로 나온 order table의(200 rows)를 order item table(5000 rows)와 inner nested join하는데, inner table은 order item table이 되고, order item table이 FK로 가지고 있던 Order table의 PK를 인덱스 삼아 조인한다.
+		- 이 때, where절 조건인 6개월에 걸리는 order item table의 rows 수는 약 1.2k rows(out of 5k)가 된다.
+		- 이 1.2k rows from order item table이, 튜닝 전, 5k rows full scan 이후 nested join 때 반복되는 1.2k 숫자가 나온 이유이다.
+	3. 해당 1.2k rows는, 다른 테이블과 nested join with pk 시 반복된다.
+
+![](documentation/images/sql-tuning-before-3.png)
+
+이제 nested loop join시 1.21k rows가 나온 이유가 설명되었다.
+
+```sql
+explain analyze select count(*)
+from `order_item` oi
+INNER JOIN `ORDER` o IGNORE INDEX(idx_order_date) ON oi.ORDER_ID = o.ORDER_ID
+INNER JOIN PRODUCT_OPTION_VARIATION pov ON oi.PRODUCT_OPTION_VARIATION_ID = pov.PRODUCT_OPTION_VARIATION_ID
+WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
+```
+
+약식 쿼리로,\
+order, order item, product option variation 테이블만 떼어내서 index 없이 조인하는 쿼리의 실행계획으로 뜯어보자.
+
+```
+-> Aggregate: count(0)  (cost=1082.54 rows=1) (actual time=19.867..19.867 rows=1 loops=1)
+    -> Nested loop inner join  (cost=960.08 rows=1225) (actual time=2.657..19.746 rows=1235 loops=1)
+        -> Nested loop inner join  (cost=531.49 rows=1225) (actual time=2.162..15.960 rows=1235 loops=1)
+            -> Filter: (o.order_date between '2023-06-01' and '2023-12-31')  (cost=102.90 rows=111) (actual time=0.065..5.557 rows=247 loops=1)
+                -> Table scan on o  (cost=102.90 rows=1002) (actual time=0.060..4.873 rows=1002 loops=1)
+            -> Filter: (oi.product_option_variation_id is not null)  (cost=2.76 rows=11) (actual time=0.025..0.041 rows=5 loops=247)
+                -> Index lookup on oi using FKs234mi6jususbx4b37k44cipy (order_id=o.order_id)  (cost=2.76 rows=11) (actual time=0.025..0.040 rows=5 loops=247)
+        -> Single-row covering index lookup on pov using PRIMARY (product_option_variation_id=oi.product_option_variation_id)  (cost=0.25 rows=1) (actual time=0.003..0.003 rows=1 loops=1235)
+```
+
+- 실행순서
+	1. Table scan on o  (cost=102.90 rows=1002) (actual time=0.060..4.873 rows=1002 loops=1)
+		- order table(1000 rows)를 full scan하여
+	2. Filter: (o.order_date between '2023-06-01' and '2023-12-31')  (cost=102.90 rows=111) (actual time=0.065..5.557 rows=247 loops=1)
+		- where절 조건에 맞는 247 rows를 추출한다.
+	3. Index lookup on oi using FKs234mi6jususbx4b37k44cipy (order_id=o.order_id)  (cost=2.76 rows=11) (actual time=0.025..0.040 rows=5 loops=247)
+		- 이제 order item table을 nested loop inner join하는데, inner table 삼아, order item table에 order table의 PK를 FK 인덱스로 가지고 있던걸 한번 join당 5번씩 index tree를 읽는걸, 총 247번(outer table인 order table)만큼 하여 ...
+	4. Nested loop inner join  (cost=531.49 rows=1225) (actual time=2.162..15.960 rows=1235 loops=1)
+		- 총 1235 rows(5 rows * 247 loops)를 읽어 order table과 order item table을 조인한다.
+	5. Single-row covering index lookup on pov using PRIMARY (product_option_variation_id=oi.product_option_variation_id)  (cost=0.25 rows=1) (actual time=0.003..0.003 rows=1 loops=1235)
+		- product option variation table과는 pk를 인덱스 삼아 1 rows(pk니까 유니크하다) * 1235rows (step 4까지 order + order item table 조인한 rows 수) 만큼 rows를 읽는다
+
+
+
+###### after) date 인덱스 태운 이후
+![](documentation/images/sql-tuning-after-4.png)
+이번에도 id6가 subquery 'a'에 해당한다.
+
+저 2.6k rows read는 대체 어디서 나온걸까?
+
+![](documentation/images/sql-tuning-after-1.png)
+
+nested loop join 할 때마다 2.6k rows를 읽는다는데,\
+저래서 총 rows read 비용이 1.5배 이상 늘었는데, 저 2.6k rows라는 숫자는 어디서 튀어나온걸까?
+
+```sql
+select count(*)
+from `order_item` oi
+INNER JOIN `ORDER` o USE INDEX(idx_order_date) ON oi.ORDER_ID = o.ORDER_ID
+INNER JOIN PRODUCT_OPTION_VARIATION pov ON oi.PRODUCT_OPTION_VARIATION_ID = pov.PRODUCT_OPTION_VARIATION_ID
+WHERE o.ORDER_DATE BETWEEN '2023-06-01' AND '2023-12-31'
+```
+약식 쿼리를 만들어 실행계획을 뜯어보자!
+
+
+```
+-> Aggregate: count(0)  (cost=2238.76 rows=1) (actual time=21.364..21.367 rows=1 loops=1)
+    -> Nested loop inner join  (cost=1972.56 rows=2662) (actual time=9.620..21.243 rows=1235 loops=1)
+        -> Nested loop inner join  (cost=1040.86 rows=2662) (actual time=8.423..17.201 rows=1235 loops=1)
+            -> Index range scan on o using idx_order_date over ('2023-06-01 00:00:00' <= order_date <= '2023-12-31 00:00:00'), with index condition: (o.order_date between '2023-06-01' and '2023-12-31')  (cost=109.16 rows=242) (actual time=0.734..3.069 rows=247 loops=1)
+            -> Filter: (oi.product_option_variation_id is not null)  (cost=2.75 rows=11) (actual time=0.047..0.056 rows=5 loops=247)
+                -> Index lookup on oi using FKs234mi6jususbx4b37k44cipy (order_id=o.order_id)  (cost=2.75 rows=11) (actual time=0.047..0.056 rows=5 loops=247)
+        -> Single-row covering index lookup on pov using PRIMARY (product_option_variation_id=oi.product_option_variation_id)  (cost=0.25 rows=1) (actual time=0.003..0.003 rows=1 loops=1235)
+```
+
+- 실행순서
+	1. Index range scan on o using idx_order_date over ('2023-06-01 00:00:00' <= order_date <= '2023-12-31 00:00:00'), with index condition: (o.order_date between '2023-06-01' and '2023-12-31')  (cost=109.16 rows=242) (actual time=0.734..3.069 rows=247 loops=1)
+		- order table(1000 rows)를 where절의 조건으로 index scan해서 247 rows만 읽는다.
+	2. Index lookup on oi using FKs234mi6jususbx4b37k44cipy (order_id=o.order_id)  (cost=2.75 rows=11) (actual time=0.047..0.056 rows=5 loops=247)
+		- order item table과 Order table을 join하기 위해, order item table에서 보관하던 fk를 11 rows 읽고, nested loop inner join시, inner table인 order item table(5000 rows)를 평균 5 rows씩 247번 loop하여 조인한다.
+	3. Nested loop inner join  **(cost=1040.86 rows=2662)  (actual time=8.423..17.201 rows=1235 loops=1)**
+		- 1235 rows는 step2에서 nested loop join시 fk index를 평균 5rows 씩 247번 loop하여 조인한 것의 결과이다.
+		- **오해했던 점은, mysql workbench에 explain visualize에서 나오던 2.6k rows를 읽는다는건, 그저 optimizer의 추정치였을 뿐, 실제 읽은 rows는 1235 rows였다!**
+	4. Single-row covering index lookup on pov using PRIMARY (product_option_variation_id=oi.product_option_variation_id)  (cost=0.25 rows=1) (actual time=0.003..0.003 rows=1 loops=1235)
+		- order + order item table이 조인됬는데, 다음으로 조인할 product_option_variation table은 pk로 조인하므로, 1조인 당 1개 rows씩 총 1235 loop하여 inner nested loop join을 한다.
+
+
+- 결론
+	1. **mysql workbench에 visual explain에서 나오는 rows read는 추정치일 뿐이라 그대로 믿으면 안된다.**
+	2. 실제 실행계획 수치는 mysql console에서 commandline인 'explain analyze'을 쳐서 실측치를 봐야한다.
+
+##### 라. 검증
+[c. 통계 쿼리](#c-통계-쿼리)를 다시 돌리되,\
+데이터 사이즈를 키워서 index 타는 쿼리와 타지 않는 쿼리가 시간차가 얼마나 나는지 보자.
+
+```
+테이블 사이즈
+
+user: 10000 rows
+order: 10000 rows
+orderItem: 50000 rows
+product: 10000 rows
+productItem: 30000 rows
+productOptionVariation: 30000 rows
+```
+###### case1) where절에 index를 안태운 쿼리: 1027ms
+![](documentation/images/sql-tuning-after-5.png)
+
+
+###### case2) where절에 인덱스를 태운 쿼리: 572ms
+![](documentation/images/sql-tuning-after-6.png)
+
+
+하나의 컬럼에 index를 태웠는지 여부가 약 455ms latency 차이를 보여준다.
+
+
+
+
+# H. 기술적 도전 - Frontend
 
 ## a. 카테고리바의 UX 개선기
 
@@ -5930,7 +5758,7 @@ A. 그야, **감성**있으니까...
 
 
 
-## b. 사용자경험(UX)을 반영한 맞춤형 앱 설계
+## b. 왜 나이키는 일부러 페이지를 끊기게 만들었을까?
 
 ### 1. 필터 적용시 refresh page 여부
 #### case1) nike: 필터 적용 ->  page refresh가 일어나서 끊김
@@ -6067,7 +5895,7 @@ SSR로 몸비틀기 한지 알게됬다.
 
 
 
-## c. 성능개선, 더 나은 UX를 위한
+## c. 성능개선
 
 ### 1. 문제
 
