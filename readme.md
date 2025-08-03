@@ -19,8 +19,8 @@
 	- b. [terraform 도입!](#b-terraform-도입)
 	- c. [300 RPS 부하 테스트](#c-300-rps-부하-테스트)
 	- d. [1000 RPS 부하 테스트 (스케일 업해서)](#d-1000-rps-부하-테스트-스케일-업해서)
-	- e. [500RPS -> 700RPS(정규화 -> 반정규화, FK 삭제)](#e-500rps---700rps정규화---반정규화-fk-삭제)
-	- f. [prometheus만으론 부족해! DB monitoring 추가](#f-prometheus만으론-부족해-db-monitoring-추가)
+	- e. [prometheus만으론 부족해! DB monitoring 추가](#e-prometheus만으론-부족해-db-monitoring-추가)
+	- f. [500RPS -> 700RPS(정규화 -> 반정규화, FK 삭제)](#f-500rps---700rps정규화---반정규화-fk-삭제)
 	- g. [700RPS -> 750+RPS (sql tuning)](#g-700rps---750rps-sql-tuning)
 - D. [상품 랭킹 기능 구현기](#d-상품-랭킹-기능-구현기)
 	- a. [문제](#1-문제)
@@ -2080,7 +2080,25 @@ http_req_receiving.............: avg=40.88ms  min=-115639ns med=2.89ms  max=59.9
 또한 부하테스트를 위한 별도서버 구축을 왜 해야 하는지도 알게되었다.
 
 
-## e. 500RPS -> 700RPS(정규화 -> 반정규화, FK 삭제)
+## e. prometheus만으론 부족해! DB monitoring 추가
+
+### 1. 문제
+DB가 병목의 핵심인데,\
+aws-RDS에서 제공되는 메트릭만으로는 부족하다! 
+
+
+### 2. mysql 모니터링 도구 선택
+mysql은 percona사에서 오픈소스로 제공하는 PMM(percona monitoring management)를 쓰기로 했다.
+
+무료 mysql 모니터링 도구중에 메트릭제공이 상세하기 때문.
+
+### 3. PMM 구현 화면
+![](documentation/images/pmm-1.png)
+![](documentation/images/pmm-2.png)
+
+
+
+## f. 500RPS -> 700RPS(정규화 -> 반정규화, FK 삭제)
 
 ### e-1. 문제점
 
@@ -2393,22 +2411,6 @@ join cost이 늘어나기 때문에 정규화, 비정규화 성능 격차는 더
 
 
 
-
-## f. prometheus만으론 부족해! DB monitoring 추가
-
-### 1. 문제
-DB가 병목의 핵심인데,\
-aws-RDS에서 제공되는 메트릭만으로는 부족하다! 
-
-
-### 2. mysql 모니터링 도구 선택
-mysql은 percona사에서 오픈소스로 제공하는 PMM(percona monitoring management)를 쓰기로 했다.
-
-무료 mysql 모니터링 도구중에 메트릭제공이 상세하기 때문.
-
-### 3. PMM 구현 화면
-![](documentation/images/pmm-1.png)
-![](documentation/images/pmm-2.png)
 
 
 ## g. 700RPS -> 750+RPS (sql tuning)
