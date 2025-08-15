@@ -42,9 +42,10 @@
 	- g. [redis 고려사항](#3-redis-고려사항)
 	- h. [결과](#4-결과)
 - F. [기술적 도전 - Backend](#f-기술적-도전---backend)
-	- a. [bulk insert 성능개선기](#a-bulk-insert-성능개선기)
-	- b. [ecommerce에서 인증 및 보안](#b-ecommerce에서-인증-및-보안) 
-	- c. [돈관련 코드 테스트 정밀도 높힌 방법](#c-돈관련-코드-테스트-정밀도-높힌-방법)
+	- a. [결제 모듈 도입기](#a-결제-모듈-도입기)
+	- b. [bulk insert 성능개선기](#b-bulk-insert-성능개선기)
+	- c. [ecommerce에서 인증 및 보안](#c-ecommerce에서-인증-및-보안) 
+	- d. [돈관련 코드 테스트 정밀도 높힌 방법](#d-돈관련-코드-테스트-정밀도-높힌-방법)
 - G. [기술적 도전 - Database](#g-기술적-도전---database)
 	- a. [정규화 도입한 방법론과 결국 반정규화 한 이유](#a-정규화-도입한-방법론과-결국-반정규화-한-이유)
 	- b. [통계 쿼리 튜닝](#b-통계-쿼리-튜닝)
@@ -3384,7 +3385,174 @@ https://github.com/Doohwancho/ecommerce_monolith/blob/3a07a123eb971db1ba7952fedc
 
 # F. 기술적 도전 - Backend
 
-## a. bulk insert 성능개선기
+## a. 결제 모듈 도입기 
+### 1. 문제정의 
+쇼핑몰에 결제 시스템이 필요하다!
+
+#### 1-1) 기술적 문제 
+Q. PG사 결제 요청이 200ms ~ 2000ms 로 오래걸리는데, 결제모듈에 동시요청이 많이 온다면 어떻게 처리해야 할까? 
+
+#### 1-2) 도메인 문제 
+PG사에 결제 요청을 하면 이런 문제들이 있는데 어떻게 해결해야 할까?
+
+1. success
+    1. immediate success
+2. failure 
+   1. 명시적 실패 (실패 메시지 보내줌)
+   2. 일시적 실패 
+   3. timeout 
+   4. 중복 결제 요청 
+   5. 유저가 결제 중 취소 
+
+
+### 2. 해결책 
+#### 2-1) 기술적 해결책
+- 문제 
+	- 기존 spring은 쓰레드풀에 쓰레드 몇개 놓고 동기로 요청을 처리했는데, 
+	- blocking 방식이라, pg사에서 2초 걸리면 쓰레드가 2초동안 기다려서 다른 일 처리를 못했다. 
+- 해결책 
+	- spring webflux를 썼다. 
+- 이유 
+	- non-blocking 으로 pg결제 요청을 쓰레드가 기다리지 않고 다른 요청을 처리하게 하기 위함 (i/o blocking 병목 회피)  
+- 작동방식
+	- spring webflux는 메인스레드를 코어 숫자만큼 만들고, 실시간 동시요청 오는걸 받아서 os kernel한테 위임한단다. (놀고있는 kernel-level thread한테 위임 하는 줄 알았는데 아니었다.)
+	- 그러면 os kernel은 수천개의 네트워크 커넥션을 감시하다가, 결과를 받으면 메인 스레드한테 알려주는걸 아주 적은 리소스로 할 수 있단다.(결과 끝나기를 감시하기 위해 수천개의 쓰레드 사용 안해도 된다)
+	- epoll(linux), kqueue(mac), iocp(window)을 이용한 것. 
+	- pg사에 결과가 끝나서 os kernel이 결과 끝났다고 스레드한테 알려주면, 콜백함수 실행하는 식으로 동작한다.
+
+
+
+#### 2-2) 도메인 문제에 대한 해결책 
+1. success
+    1. immediate success 
+		1. 결제 상태를 `COMPLETED`로 바꾸고, 
+		2. 결제 완료상태 됬다고 이벤트 발행, 해당 이벤트를 구독하는 다른 모듈들이 비동기로 이어서 처리하게끔 한다.
+2. failure 
+   1. 명시적 실패 (실패 메시지 보내줌)
+		1. 상태를 `FAILED`로 기록
+		2. 실패 사유를 db에 기록
+		3. 주문 서비스에 실패 이벤트 발행
+		4. response 메시지에 왜 결제 실패했는지 이유를 알려준다.
+   2. 일시적 실패 
+		1. `attemptCount`를 1씩 늘려가며 재시도 (재시도 중에 상태는 `PROCESSING`)
+		2. 최종 retry 까지 실패하면 `FAILED`로 상태처리한다. 
+   3. timeout 
+		1. 결제가 성공했을 수도, 안했을 수도 있는 상태라, 상태를 `UNKNOWN`으로 하고, 재시도 요청은 않는다. (2번 결제될 수도 있으니까)
+		2. 사용자에게는 "결제 결과를 확인 중입니다. 잠시 후 다시 확인해주세요." 와 같이 안내한다.
+		3. 스케쥴러로 매 5분마다 pg사에 해당 orderId로 상태를 조회여여 하여 결과 보고 후처리한다. 
+   4. 중복 결제 요청 
+		1. DB에 transaction을 이용하는 방법인데, 결제 요청 받으면 제일 먼저 DB에 이미 결제요청이 있는지 보고 있으면 반려한다.
+   5. 유저가 결제 중 취소 
+		1. PG사에 상태를 요청해서, 이미 결제 되었으면 환불로 재안내 하고, 결제완료가 아직 안되었다면 결제취소한다.
+
+
+### 3. flowchart 
+
+#### case1) 결제 처리
+```mermaid
+flowchart TD
+    subgraph "API Layer"
+        A[API: POST /payments/process]
+        A_Cancel["API: POST /payments/{id}/cancel"]
+    end
+
+    subgraph "Payment Service Logic"
+        %% Idempotency Check (멱등성 체크)
+        A --> B{DB: findByOrderId};
+        B -- 없음(New Payment) --> F[1\. DB: Payment 생성<br>status: PROCESSING];
+        B -- 있음(Existing Payment) --> C{기존 결제 상태?};
+        C -- COMPLETED --> D[기존 성공 결과 반환];
+        C -- PROCESSING/PENDING --> E[현재 처리 중 알림 반환];
+        C -- FAILED/CANCELLED/UNKNOWN --> F;
+
+        %% Payment Execution (결제 실행)
+        F --> G[2\. PG사에 결제 요청];
+        G --> H{PG 응답?};
+
+        %% Success Path (성공)
+        H -- 성공 (Success) --> I[3a. DB: status 'COMPLETED'로 변경];
+        I --> I_Event[4a. 이벤트 발행  - PaymentSuccess];
+        I_Event --> I_API[5a. API 성공 응답];
+
+        %% Failure Paths (실패)
+        H -- 명시적 실패 (Definitive Failure) --> L[3b. DB: status 'FAILED'로 변경<br>실패 사유 기록];
+        L --> L_Event[4b. 이벤트 발행 - PaymentFailed];
+        L_Event --> L_API[5b. API 실패 응답];
+        
+        %% Transient Failure Path (일시적 실패 - 재시도)
+        H -- 일시적 실패 (Transient) --> O{재시도 횟수?};
+        O -- 최대 횟수 미만 --> G;
+        O -- 최대 횟수 도달 --> L;
+
+        %% Timeout Path (타임아웃)
+        H -- 타임아웃 (Timeout) --> P[3c. DB: status 'UNKNOWN'으로 변경];
+        P --> P_API[5c. API 처리 중 응답];
+        
+        %% Cancellation Path (결제 취소)
+        A_Cancel --> W{DB: findByOrderId};
+        W -- 없음 --> W_Fail[API: 404 Not Found 응답];
+        W -- 있음 --> X{결제 상태?};
+        X -- PROCESSING/PENDING --> Y[DB: status 'CANCELLED'로 변경];
+        Y --> Y_Event[이벤트 발행 - PaymentCancelled];
+        Y_Event --> Y_API[API: 취소 성공 응답];
+        X -- COMPLETED --> X_Fail[API: 환불 필요 에러 응답];
+    end
+
+    subgraph "Scheduler (Background Job)"
+        %% Reconciliation Job (상태 동기화 스케줄러)
+        R[Scheduler: 5분마다 실행] --> S{DB: 5분 경과한<br>'UNKNOWN' 건 조회};
+        S -- 있음 --> T[PG사에 상태 조회 요청];
+        T --> U{조회 결과?};
+        U -- PG 응답: 성공 --> I;
+        U -- PG 응답: 실패 --> L;
+    end
+
+    %% Styling
+    style A fill:#9f9,stroke:#333,stroke-width:2px
+    style A_Cancel fill:#9f9,stroke:#333,stroke-width:2px
+    style R fill:#f9f,stroke:#333,stroke-width:2px
+```
+
+#### case2) 환불 처리 
+
+```mermaid
+flowchart TD
+    subgraph "API Layer & Sync Logic (즉시 응답)"
+        A["API: POST /payments/{orderId}/refund<br>Body: { amount, reason }"]
+        A --> B{DB: findByOrderId};
+        B -- 없음 --> C[API: 404 Not Found 응답];
+        B -- 있음 --> D{원본 결제 상태 'COMPLETED'?};
+        D -- 아니오 --> E["API: 400 Bad Request 응답<br>(환불 불가 상태)"];
+        D -- 예 --> F{환불 금액 유효한가?<br>원본 금액 이하};
+        F -- 아니오 --> G["API: 400 Bad Request 응답<br>(원본 금액 초과)"];
+        F -- 예 --> H["DB: 'refunds' 테이블에 데이터 생성<br>status: REFUND_REQUESTED"];
+        H --> I["API: 202 Accepted 응답<br>('환불 요청이 접수되었습니다')"];
+    end
+
+    subgraph "Scheduler & Async Logic (백그라운드 처리)"
+        J[Scheduler: 1분마다 실행] --> K{"DB: 'REFUND_REQUESTED'<br>상태인 환불 건 조회"};
+        K -- 처리할 건 없음 --> K_End(( ))
+        K -- 처리할 건 있음 --> L["DB: status<br>'REFUND_PROCESSING'으로 변경"];
+        L --> M[PG사에 환불 요청];
+        M --> N{PG 응답?};
+        
+        N -- 성공 --> O["DB: status 'REFUND_COMPLETED'<br>처리 시각 기록"];
+        N -- 실패 --> P["DB: status 'REFUND_FAILED'<br>처리 시각 기록"];
+
+        O --> Q[이벤트 발행 - RefundSuccess<br>-> 사용자에게 환불 완료 알림];
+        P --> R[이벤트 발행 - RefundFailed<br>-> 운영팀에 실패 알림];
+    end
+    
+    %% Styling
+    style A fill:#9cf,stroke:#333,stroke-width:2px
+    style J fill:#f9f,stroke:#333,stroke-width:2px
+    style I fill:#9f9,stroke:#333,stroke-width:1px
+```
+
+
+
+
+## b. bulk insert 성능개선기
 
 ### 1. 문제
 소규모 데이터 핸들링은, 어떤 DBMS를 사용하던, 어떻게 SQL을 짜던 큰 문제없이 처리 가능한데,\
@@ -4459,7 +4627,7 @@ disk i/o의 write 부분을 보면 2.1Mb밖에 되지 않는걸 보니, disk i/o
 왜 그렇게 나오는지는 ppm같은 mysql 전용 모니터링 툴을 붙여서 더 자세히 알아봐야 할 듯 싶다.
 
 
-## b. Ecommerce에서 인증 및 보안
+## c. Ecommerce에서 인증 및 보안
 
 ### 1. 문제
 
@@ -4696,7 +4864,7 @@ https://github.com/Doohwancho/ecommerce_monolith/blob/e3fdaade7ad601fccbcbbf15b3
 
 
 
-## c. 돈관련 코드 테스트 정밀도 높힌 방법
+## d. 돈관련 코드 테스트 정밀도 높힌 방법
 
 ### 1. 문제
 
