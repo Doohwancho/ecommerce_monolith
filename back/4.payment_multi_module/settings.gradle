@@ -1,3 +1,5 @@
 rootProject.name = 'payment_multi_module'
 include 'payment_service'
 include 'ecommerce_app'
+include 'common_module'
+

@@ -3,8 +3,9 @@ package com.ecommerce.payment.service;
 import com.ecommerce.payment.dto.PaymentRequest;
 import com.ecommerce.payment.entity.Payment;
 import com.ecommerce.payment.entity.PaymentStatus;
-import com.ecommerce.payment.event.PaymentCancelledEvent;
-import com.ecommerce.payment.event.PaymentFailedEvent;
+import com.ecommerce.common.dto.PaymentEventDto;
+import com.ecommerce.common.event.PaymentCancelledEvent;
+import com.ecommerce.common.event.PaymentFailedEvent;
 import com.ecommerce.payment.exception.TransientPaymentException;
 import com.ecommerce.payment.fake_pg.FakePaymentGatewayClient;
 import com.ecommerce.payment.fake_pg.PGResultCode;
@@ -152,7 +153,10 @@ public class PaymentService {
             .doOnSuccess(savedPayment -> {
                 // DB 저장 성공 후, 상태가 FAILED이면 이벤트 발행
                 if (savedPayment.getPaymentStatus() == PaymentStatus.FAILED) {
-                    eventPublisher.publishEvent(new PaymentFailedEvent(this, savedPayment));
+                    eventPublisher.publishEvent(new PaymentFailedEvent(this, toEventDto(savedPayment)));
+                }
+                if (savedPayment.getPaymentStatus() == PaymentStatus.FAILED) {
+                    eventPublisher.publishEvent(new PaymentFailedEvent(this, toEventDto(savedPayment)));
                 }
                 // (확장) 성공 시 PaymentCompletedEvent를 발행할 수도 있음
             });
@@ -182,12 +186,29 @@ public class PaymentService {
                     // 상태 업데이트 후 이벤트 발행 로직
                     return updatePaymentStatus(payment, PaymentStatus.CANCELLED)
                         .doOnSuccess(cancelledPayment ->
-                            eventPublisher.publishEvent(new PaymentCancelledEvent(this, cancelledPayment))
+                            eventPublisher.publishEvent(new PaymentCancelledEvent(this, toEventDto(cancelledPayment)))
                         );
                 }
                 // 이미 취소/실패된 건은 그대로 반환
                 return Mono.just(payment);
             });
+    }
+    
+    /**
+     * ✨ 추가: Payment 엔티티를 PaymentEventDto로 변환하는 private 헬퍼 메서드
+     */
+    private PaymentEventDto toEventDto(Payment payment) {
+        return PaymentEventDto.builder()
+            .paymentId(payment.getId())
+            .orderId(payment.getOrderId())
+            .paymentKey(payment.getPaymentKey())
+            .amount(payment.getAmount())
+            .paymentStatus(payment.getPaymentStatus().name())
+            .failureCode(payment.getFailureCode())
+            .failureMessage(payment.getFailureMessage())
+            .requestedAt(payment.getCreatedAt())
+            .processedAt(payment.getUpdatedAt())
+            .build();
     }
 }
 

@@ -3,8 +3,6 @@ plugins {
     id 'org.springframework.boot'
 }
 
-sourceCompatibility = '1.8'
-
 group 'org.example'
 version '1.0-SNAPSHOT'
 
@@ -13,6 +11,8 @@ repositories {
 }
 
 dependencies {
+    implementation project(':common_module')
+
     // 비동기 웹 애플리케이션
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
