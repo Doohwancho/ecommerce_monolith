@@ -23,9 +23,6 @@ dependencies {
     implementation 'com.querydsl:querydsl-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
-    // 비동기 payment-service를 호출하기 위한 WebClient 의존성
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
 //    implementation 'org.springframework.boot:spring-boot-starter-batch'
 //    implementation 'org.springframework.boot:spring-boot-starter-quartz'
 

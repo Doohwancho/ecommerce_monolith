@@ -17,7 +17,7 @@ public class FakePaymentGatewayClient {
      * @return Mono<PGResultCode> 결제 결과
      */
     public Mono<PGResultCode> requestPayment(String orderId, BigDecimal amount) {
-        long delayMillis = (long) (Math.random() * 800) + 200; // 0.2초 ~ 1.0초
+        long delayMillis = (long) (Math.random() * 1800) + 200; // 0.2초 ~ 2.0초
     
         // 시나리오 5가지
         int scenario = orderId.length() % 5;

@@ -42,7 +42,7 @@
 	- g. [redis 고려사항](#3-redis-고려사항)
 	- h. [결과](#4-결과)
 - F. [기술적 도전 - Backend](#f-기술적-도전---backend)
-	- a. [결제 모듈 도입기](#a-결제-모듈-도입기)
+	- a. [고가용성 비동기 결제 모듈 설계 및 구현](#a-고가용성-비동기-결제-모듈-설계-및-구현)
 	- b. [bulk insert 성능개선기](#b-bulk-insert-성능개선기)
 	- c. [ecommerce에서 인증 및 보안](#c-ecommerce에서-인증-및-보안) 
 	- d. [돈관련 코드 테스트 정밀도 높힌 방법](#d-돈관련-코드-테스트-정밀도-높힌-방법)
@@ -3385,44 +3385,230 @@ https://github.com/Doohwancho/ecommerce_monolith/blob/3a07a123eb971db1ba7952fedc
 
 # F. 기술적 도전 - Backend
 
-## a. 결제 모듈 도입기 
-### 1. 문제정의 
-쇼핑몰에 결제 시스템이 필요하다!
+## a. 고가용성 비동기 결제 모듈 설계 및 구현
 
-#### 1-1) 기술적 문제 
-Q. PG사 결제 요청이 200ms ~ 2000ms 로 오래걸리는데, 결제모듈에 동시요청이 많이 온다면 어떻게 처리해야 할까? 
+쇼핑몰에 결제 모듈이 필요하다. 
 
-#### 1-2) 도메인 문제 
-PG사에 결제 요청을 하면 이런 문제들이 있는데 어떻게 해결해야 할까?
+그런데 대규모 트래픽을 받을 수 있으면서 데이터 정합성까지 맞게 설계 & 구현 해보자!
 
-1. success
-    1. immediate success
-2. failure 
-   1. 명시적 실패 (실패 메시지 보내줌)
-   2. 일시적 실패 
-   3. timeout 
-   4. 중복 결제 요청 
-   5. 유저가 결제 중 취소 
+### challenge1: blocking I/O 병목
+결제 시스템은 외부 PG(결제 대행사) 통신으로 인한 긴 I/O 대기가 필연적이다. 
 
+전통적인 동기 방식에서는 이 대기 시간 동안 스레드와 DB 커넥션이 점유되어, 시스템 전체의 처리량 저하와 장애를 유발하는 심각한 문제를 가지고 있다. 
 
-### 2. 해결책 
-#### 2-1) 기술적 해결책
+#### 해결책) non blocking i/o 도입
 - 문제 
-	- 기존 spring은 쓰레드풀에 쓰레드 몇개 놓고 동기로 요청을 처리했는데, 
-	- blocking 방식이라, pg사에서 2초 걸리면 쓰레드가 2초동안 기다려서 다른 일 처리를 못했다. 
+	- 기존 spring은 쓰레드풀에 쓰레드 몇개 놓고 동기로 요청을 처리했는데, blocking 방식이라, pg사에서 2초 걸리면 쓰레드가 2초동안 기다려서 다른 일 처리를 못하던 문제가 존재
 - 해결책 
-	- spring webflux를 썼다. 
+	- 비동기 non-blocking 방식으로 처리하는 spring webflux를 사용 
+	- 기존 ecommerce는 동기 blocking i/o 방식으로 구현되어었기 때문에, multi-module로 분리하여 만듬 
+	- 분리된 모듈끼리 통신은 spring 내부적으로 제공하는 event publisher에 event를 넣고, 다른 모듈이 구독하는 식으로 구현함 
 - 이유 
 	- non-blocking 으로 pg결제 요청을 쓰레드가 기다리지 않고 다른 요청을 처리하게 하기 위함 (i/o blocking 병목 회피)  
 - 작동방식
-	- spring webflux는 메인스레드를 코어 숫자만큼 만들고, 실시간 동시요청 오는걸 받아서 os kernel한테 위임한단다. (놀고있는 kernel-level thread한테 위임 하는 줄 알았는데 아니었다.)
-	- 그러면 os kernel은 수천개의 네트워크 커넥션을 감시하다가, 결과를 받으면 메인 스레드한테 알려주는걸 아주 적은 리소스로 할 수 있단다.(결과 끝나기를 감시하기 위해 수천개의 쓰레드 사용 안해도 된다)
-	- epoll(linux), kqueue(mac), iocp(window)을 이용한 것. 
-	- pg사에 결과가 끝나서 os kernel이 결과 끝났다고 스레드한테 알려주면, 콜백함수 실행하는 식으로 동작한다.
+	1. spring webflux는 메인스레드를 코어 숫자만큼 만들고, 실시간 동시요청 오는걸 받아서 os kernel한테 위임한다. (놀고있는 kernel-level thread한테 위임 하는 줄 알았는데 아니었음)
+	2. 그러면 os kernel은 수천개의 네트워크 커넥션을 감시하다가, 결과를 받으면 메인 스레드한테 알려주는걸 아주 적은 리소스로 한다. (= 결과 끝나기를 감시하기 위해 수천개의 쓰레드 사용 안해도 된다)
+	3. epoll(linux), kqueue(mac), iocp(window)을 이용한 것 
+	4. pg사에 결과가 끝나서 os kernel이 결과 끝났다고 스레드한테 알려주면, 스레드가 콜백함수 실행하는 식으로 동작한다
+
+
+### challenge2: 긴 트랜잭션으로 인한 성능 저하 && 데이터 정합성 보장 
+외부 PG사 요청이 200ms ~ 2000ms+ 으로 오래 걸리는데,\
+pg사 요청을 transaction 범위안에 포함해버리면, 동시요청이 많은 상황에서는 connection pool에 쓰레드가 금방 고갈난다.
+
+그렇다고 pg사 요청을 transaction 밖으로 빼고, 다른 트랜젝션과 분리해버리면,\
+PG요청 보낸 후, 결제 시스템이 다운되면 데이터 불일치가 발생할 수 있는 문제점이 있다. 
+
+어떻게 처리해야 할까?
+
+#### 해결책) 트랜젝션 범위 짧게 잡고, 보상 트랜젝션 처리 도입
+
+##### Before: 긴 트랜잭션
+```mermaid
+sequenceDiagram
+    participant Client
+    participant PaymentService
+    participant Database
+    participant PaymentGateway as PG
+
+    Client->>PaymentService: processPayment() 요청
+    activate PaymentService
+
+    %% 트랜잭션 시작 %%
+    PaymentService->>Database: 1. BEGIN TRANSACTION
+    PaymentService->>Database: 2. SAVE Payment (status: PROCESSING)
+    
+    Note over PaymentService, PG: PG사 응답을 기다리는 동안<br/>DB 트랜잭션과 커넥션이<br/>계속 열려 있음 (비효율 발생)
+
+    PaymentService->>PaymentGateway as PG: 3. requestPayment()
+    PaymentGateway as PG-->>PaymentService: 4. 응답 (e.g. SUCCESS)
+
+    PaymentService->>Database: 5. UPDATE Payment (status: COMPLETED)
+    PaymentService->>Database: 6. COMMIT TRANSACTION
+    %% 트랜잭션 종료 %%
+    
+    PaymentService-->>Client: 최종 응답
+    deactivate PaymentService
+```
+
+*하나의 트랜잭션이 첫 DB 저장부터 외부 PG사 호출이 끝난 후 최종 DB 업데이트까지 계속 유지되는 상황*
+
+가장 큰 문제점은 PG사의 응답을 기다리는 동안 데이터베이스 커넥션이 계속 점유된다는 것
+
+
+##### After: 짧은 트랜잭션 분리 
+```mermaid
+sequenceDiagram
+    participant Client
+    participant PaymentService
+    participant Database
+    participant PaymentGateway as PG
+
+    Client->>PaymentService: processPayment() 요청
+    activate PaymentService
+
+    %% 트랜잭션 1: 초기 저장 %%
+    PaymentService->>Database: 1a. BEGIN TRANSACTION
+    PaymentService->>Database: 1b. SAVE Payment (status: PROCESSING)
+    PaymentService->>Database: 1c. COMMIT TRANSACTION
+    Note right of Database: 커넥션 즉시 반환!
+
+    %% 외부 API 호출 (트랜잭션 없음) %%
+    PaymentService->>PaymentGateway as PG: 2. requestPayment()
+    PaymentGateway as PG-->>PaymentService: 3. 응답 (e.g. SUCCESS)
+    
+    %% 트랜잭션 2: 상태 업데이트 %%
+    PaymentService->>Database: 4a. BEGIN TRANSACTION
+    PaymentService->>Database: 4b. UPDATE Payment (status: COMPLETED)
+    PaymentService->>Database: 4c. COMMIT TRANSACTION
+    Note right of Database: 커넥션 즉시 반환!
+
+    PaymentService-->>Client: 최종 응답
+    deactivate PaymentService
+```
+더 이상 PG사 요청이 connection pool을 점유하지 않는다!
+
+하지만, 이렇게 설계하면, 아래 상황에서 데이터 불일치가 일어난다.
+
+1. `[TX 1: 'PROCESSING' 저장 및 커밋] <-- (💥 시스템 장애 발생 가능 지점) --> [PG사 호출 및 최종 상태 업데이트]` 
+    - "좀비 데이터" 문제 
+    - 데이터베이스에는 PROCESSING 상태의 결제 기록이 남아있지만, 실제로는 PG사에 결제 요청이 전달되지 않았음 -> 영원히 처리되지 않고 DB에 남는 "좀비 데이터"가 됨.
+    - 이 상태만으로는 실제로 결제가 진행 중인지, 아니면 시스템 오류로 버려진 데이터인지 구분할 수 없음. 
+2. `[TX 1: 'PROCESSING' 저장 및 커밋] --> [PG사 호출 및 최종 상태 업데이트] <-- (💥 시스템 장애 발생 가능 지점) -->  [후처리]`
+    - 데이터 불일치 문제
+    - PG사 호출이 성공하여 고객의 돈은 실제로 빠져나갔지만, handlePGResponse에서 COMPLETED로 상태를 업데이트하는 두 번째 트랜잭션이 실패하는 경우. (예: DB가 순간적으로 장애 발생)
+    - PG사는 성공, 우리 DB는 PROCESSING 상태로 데이터가 불일치
+    - 사용자는 돈을 냈는데 서비스에서는 결제가 완료되지 않은 것으로 보임 
+
+---
+#### 해결책2) 오래된 'PROCESSING 건 처리' 스케줄러 추가
+
+1. 15분 마다 실행되는 cron-job인데, 
+2. 상태가 `PROCESSING`인 결제중에서, updated_at 필드가 30분 이전이라면, 
+3. "좀비 데이터"이나, "데이터 불일치"를 일으키는 정보라 판단하여, 
+4. PG사에 해당 결제에 대해 상태를 재요청 하여, 결과에 따라 상태를 업데이트하고 후처리한다. 
 
 
 
-#### 2-2) 도메인 문제에 대한 해결책 
+
+### challenge3: 도메인 로직 처리를 어떻게 할 것인가?
+결제 실패의 경우의 수가 다양한데, 이 실패들을 각각 어떻게 분기처리 할 것인가?
+
+1. 명시적 실패 (실패 메시지 보내줌)
+2. 일시적 실패 
+3. timeout 
+4. 중복 결제 요청 
+5. 유저가 결제 중 취소 
+
+#### 해결책) 결제 실패 요청에 대한 분기처리
+
+```mermaid
+flowchart TD
+    subgraph "API Layer"
+        A["API: POST /payments/process"]
+        A_Cancel["API: POST /payments/{id}/cancel"]
+    end
+
+    subgraph "Payment Service Logic"
+        %% Idempotency Check
+        A --> B{DB: findByOrderId};
+        B -- 없음(New Payment) --> F_Begin;
+        B -- 있음(Existing Payment) --> C{기존 결제 상태?};
+        C -- COMPLETED --> D[기존 성공 결과 반환];
+        C -- PROCESSING/PENDING --> E[현재 처리 중 알림 반환];
+        C -- FAILED/CANCELLED/UNKNOWN --> F_Begin;
+
+        %% Transaction 1: Initial Save
+        F_Begin("TX 1: BEGIN") --> F["DB: Payment 생성<br>(status: PROCESSING)"];
+        F --> F_Commit("TX 1: COMMIT");
+
+        %% Payment Execution (No Transaction)
+        F_Commit --> G["PG사에 결제 요청"];
+        G --> H{PG 응답?};
+
+        %% Success Path
+        H -- 성공 (Success) --> I_Begin;
+        I_Begin("TX 2: BEGIN") --> I["DB: status 'COMPLETED'로 변경"];
+        I --> I_Commit("TX 2: COMMIT");
+        I_Commit --> I_Event[이벤트 발행: PaymentSuccess];
+        I_Event --> I_API[API 성공 응답];
+
+        %% Failure Paths
+        H -- 명시적 실패 (Definitive Failure) --> L_Begin;
+        L_Begin("TX 2: BEGIN") --> L["DB: status 'FAILED'로 변경<br>실패 사유 기록"];
+        L --> L_Commit("TX 2: COMMIT");
+        L_Commit --> L_Event[이벤트 발행: PaymentFailed];
+        L_Event --> L_API[API 실패 응답];
+        
+        %% Transient Failure Path
+        H -- 일시적 실패 (Transient) --> O{재시도 횟수?};
+        O -- 최대 횟수 미만 --> G;
+        O -- 최대 횟수 도달 --> L_Begin;
+
+        %% Timeout Path
+        H -- 타임아웃 (Timeout) --> P_Begin;
+        P_Begin("TX 2: BEGIN") --> P["DB: status 'UNKNOWN'으로 변경"];
+        P --> P_Commit("TX 2: COMMIT");
+        P_Commit --> P_API[API 처리 중 응답];
+        
+        %% Cancellation Path
+        A_Cancel --> W{DB: findByOrderId};
+        W -- 없음 --> W_Fail[API: 404 Not Found 응답];
+        W -- 있음 --> X{결제 상태?};
+        X -- PROCESSING/PENDING --> Y_Begin;
+        Y_Begin("TX: BEGIN") --> Y["DB: status 'CANCELLED'로 변경"];
+        Y --> Y_Commit("TX: COMMIT");
+        Y_Commit --> Y_Event[이벤트 발행: PaymentCancelled];
+        Y_Event --> Y_API[API: 취소 성공 응답];
+        X -- COMPLETED --> X_Fail[API: 환불 필요 에러 응답];
+    end
+
+    subgraph "Scheduler (Background Job)"
+        R[Scheduler: 5분마다 실행] --> S{"DB: 5분 경과한<br>'UNKNOWN' 건 조회"};
+        S -- 있음 --> T[PG사에 상태 조회 요청];
+        T --> U{조회 결과?};
+        %% Scheduler's update also uses transactions
+        U -- PG 응답: 성공 --> I_Begin;
+        U -- PG 응답: 실패 --> L_Begin;
+    end
+
+    %% Styling
+    style A fill:#9f9,stroke:#333,stroke-width:2px
+    style A_Cancel fill:#9f9,stroke:#333,stroke-width:2px
+    style R fill:#f9f,stroke:#333,stroke-width:2px
+    %% Styling for Transaction Nodes
+    style F_Begin fill:#f0ad4e,stroke:#333,stroke-width:2px
+    style F_Commit fill:#f0ad4e,stroke:#333,stroke-width:2px
+    style I_Begin fill:#f0ad4e,stroke:#333,stroke-width:2px
+    style I_Commit fill:#f0ad4e,stroke:#333,stroke-width:2px
+    style L_Begin fill:#f0ad4e,stroke:#333,stroke-width:2px
+    style L_Commit fill:#f0ad4e,stroke:#333,stroke-width:2px
+    style P_Begin fill:#f0ad4e,stroke:#333,stroke-width:2px
+    style P_Commit fill:#f0ad4e,stroke:#333,stroke-width:2px
+    style Y_Begin fill:#f0ad4e,stroke:#333,stroke-width:2px
+    style Y_Commit fill:#f0ad4e,stroke:#333,stroke-width:2px
+```
+
 1. success
     1. immediate success 
 		1. 결제 상태를 `COMPLETED`로 바꾸고, 
@@ -3444,113 +3630,6 @@ PG사에 결제 요청을 하면 이런 문제들이 있는데 어떻게 해결�
 		1. DB에 transaction을 이용하는 방법인데, 결제 요청 받으면 제일 먼저 DB에 이미 결제요청이 있는지 보고 있으면 반려한다.
    5. 유저가 결제 중 취소 
 		1. PG사에 상태를 요청해서, 이미 결제 되었으면 환불로 재안내 하고, 결제완료가 아직 안되었다면 결제취소한다.
-
-
-### 3. flowchart 
-
-#### case1) 결제 처리
-```mermaid
-flowchart TD
-    subgraph "API Layer"
-        A[API: POST /payments/process]
-        A_Cancel["API: POST /payments/{id}/cancel"]
-    end
-
-    subgraph "Payment Service Logic"
-        %% Idempotency Check (멱등성 체크)
-        A --> B{DB: findByOrderId};
-        B -- 없음(New Payment) --> F[1\. DB: Payment 생성<br>status: PROCESSING];
-        B -- 있음(Existing Payment) --> C{기존 결제 상태?};
-        C -- COMPLETED --> D[기존 성공 결과 반환];
-        C -- PROCESSING/PENDING --> E[현재 처리 중 알림 반환];
-        C -- FAILED/CANCELLED/UNKNOWN --> F;
-
-        %% Payment Execution (결제 실행)
-        F --> G[2\. PG사에 결제 요청];
-        G --> H{PG 응답?};
-
-        %% Success Path (성공)
-        H -- 성공 (Success) --> I[3a. DB: status 'COMPLETED'로 변경];
-        I --> I_Event[4a. 이벤트 발행  - PaymentSuccess];
-        I_Event --> I_API[5a. API 성공 응답];
-
-        %% Failure Paths (실패)
-        H -- 명시적 실패 (Definitive Failure) --> L[3b. DB: status 'FAILED'로 변경<br>실패 사유 기록];
-        L --> L_Event[4b. 이벤트 발행 - PaymentFailed];
-        L_Event --> L_API[5b. API 실패 응답];
-        
-        %% Transient Failure Path (일시적 실패 - 재시도)
-        H -- 일시적 실패 (Transient) --> O{재시도 횟수?};
-        O -- 최대 횟수 미만 --> G;
-        O -- 최대 횟수 도달 --> L;
-
-        %% Timeout Path (타임아웃)
-        H -- 타임아웃 (Timeout) --> P[3c. DB: status 'UNKNOWN'으로 변경];
-        P --> P_API[5c. API 처리 중 응답];
-        
-        %% Cancellation Path (결제 취소)
-        A_Cancel --> W{DB: findByOrderId};
-        W -- 없음 --> W_Fail[API: 404 Not Found 응답];
-        W -- 있음 --> X{결제 상태?};
-        X -- PROCESSING/PENDING --> Y[DB: status 'CANCELLED'로 변경];
-        Y --> Y_Event[이벤트 발행 - PaymentCancelled];
-        Y_Event --> Y_API[API: 취소 성공 응답];
-        X -- COMPLETED --> X_Fail[API: 환불 필요 에러 응답];
-    end
-
-    subgraph "Scheduler (Background Job)"
-        %% Reconciliation Job (상태 동기화 스케줄러)
-        R[Scheduler: 5분마다 실행] --> S{DB: 5분 경과한<br>'UNKNOWN' 건 조회};
-        S -- 있음 --> T[PG사에 상태 조회 요청];
-        T --> U{조회 결과?};
-        U -- PG 응답: 성공 --> I;
-        U -- PG 응답: 실패 --> L;
-    end
-
-    %% Styling
-    style A fill:#9f9,stroke:#333,stroke-width:2px
-    style A_Cancel fill:#9f9,stroke:#333,stroke-width:2px
-    style R fill:#f9f,stroke:#333,stroke-width:2px
-```
-
-#### case2) 환불 처리 
-
-```mermaid
-flowchart TD
-    subgraph "API Layer & Sync Logic (즉시 응답)"
-        A["API: POST /payments/{orderId}/refund<br>Body: { amount, reason }"]
-        A --> B{DB: findByOrderId};
-        B -- 없음 --> C[API: 404 Not Found 응답];
-        B -- 있음 --> D{원본 결제 상태 'COMPLETED'?};
-        D -- 아니오 --> E["API: 400 Bad Request 응답<br>(환불 불가 상태)"];
-        D -- 예 --> F{환불 금액 유효한가?<br>원본 금액 이하};
-        F -- 아니오 --> G["API: 400 Bad Request 응답<br>(원본 금액 초과)"];
-        F -- 예 --> H["DB: 'refunds' 테이블에 데이터 생성<br>status: REFUND_REQUESTED"];
-        H --> I["API: 202 Accepted 응답<br>('환불 요청이 접수되었습니다')"];
-    end
-
-    subgraph "Scheduler & Async Logic (백그라운드 처리)"
-        J[Scheduler: 1분마다 실행] --> K{"DB: 'REFUND_REQUESTED'<br>상태인 환불 건 조회"};
-        K -- 처리할 건 없음 --> K_End(( ))
-        K -- 처리할 건 있음 --> L["DB: status<br>'REFUND_PROCESSING'으로 변경"];
-        L --> M[PG사에 환불 요청];
-        M --> N{PG 응답?};
-        
-        N -- 성공 --> O["DB: status 'REFUND_COMPLETED'<br>처리 시각 기록"];
-        N -- 실패 --> P["DB: status 'REFUND_FAILED'<br>처리 시각 기록"];
-
-        O --> Q[이벤트 발행 - RefundSuccess<br>-> 사용자에게 환불 완료 알림];
-        P --> R[이벤트 발행 - RefundFailed<br>-> 운영팀에 실패 알림];
-    end
-    
-    %% Styling
-    style A fill:#9cf,stroke:#333,stroke-width:2px
-    style J fill:#f9f,stroke:#333,stroke-width:2px
-    style I fill:#9f9,stroke:#333,stroke-width:1px
-```
-
-
-
 
 ## b. bulk insert 성능개선기
 
