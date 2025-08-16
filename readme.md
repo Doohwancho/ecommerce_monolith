@@ -3385,7 +3385,7 @@ https://github.com/Doohwancho/ecommerce_monolith/blob/3a07a123eb971db1ba7952fedc
 
 # F. 기술적 도전 - Backend
 
-## a. 고처리량 결제 모듈 설계 및 구현
+## a. 고처리량 비동기 결제 모듈 설계 및 구현
 
 쇼핑몰에 결제 모듈이 필요하다. 
 
@@ -3421,7 +3421,7 @@ PG요청 보낸 후, 결제 시스템이 다운되면 데이터 불일치가 발
 
 어떻게 처리해야 할까?
 
-#### 해결책) 트랜젝션 범위 짧게 잡고, 보상 트랜젝션 처리 도입
+#### 해결책1) 트랜젝션 범위 짧게 잡고, 보상 트랜젝션 처리 도입
 
 ##### Before: 긴 트랜잭션
 ```mermaid
@@ -3506,9 +3506,28 @@ sequenceDiagram
 1. 15분 마다 실행되는 cron-job인데, 
 2. 상태가 `PROCESSING`인 결제중에서, updated_at 필드가 30분 이전이라면, 
 3. "좀비 데이터"이나, "데이터 불일치"를 일으키는 정보라 판단하여, 
-4. PG사에 해당 결제에 대해 상태를 재요청 하여, 결과에 따라 상태를 업데이트하고 후처리한다. 
+4. PG사에 해당 결제에 대해 상태를 재요청 하여, 결과에 따라 상태를 업데이트하고 이벤트 메시지를 남긴다.
 
+#### 해결책3) SAGA 보상 트랜젝션
+```mermaid
+sequenceDiagram
+    participant PaymentService
+    participant SpringEventBus as "Event Bus"
+    participant OrderEventListener
+    participant OrderService
 
+    PaymentService->>PaymentService: 1. 결제 실패 상태로 DB 업데이트 (TX)
+    PaymentService->>SpringEventBus as "Event Bus": 2. PaymentFailedEvent 발행
+    SpringEventBus as "Event Bus"-->>OrderEventListener: 3. 이벤트 수신
+    OrderEventListener->>OrderService: 4. 보상 로직 실행 요청
+    activate OrderService
+    OrderService->>OrderService: 5. 주문 상태 변경, 재고 원복 (TX)
+    deactivate OrderService
+```
+
+1. 결제모듈에 결제취소 이벤트 메시지를 구독하는 order_module이 메시지를 받으면
+2. 주문 취소하고
+3. 재고수량을 롤백한다.
 
 
 ### challenge3: 도메인 로직 처리를 어떻게 할 것인가?
